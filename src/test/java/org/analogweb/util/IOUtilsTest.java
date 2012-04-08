@@ -1,0 +1,66 @@
+package org.analogweb.util;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+
+
+import org.analogweb.util.IOUtils;
+import org.junit.Test;
+
+/**
+ * @author snowgoose
+ */
+public class IOUtilsTest {
+
+    @Test
+    public void testCloseQuierly() throws IOException {
+        Closeable closeable = mock(Closeable.class);
+        IOUtils.closeQuietly(closeable);
+        verify(closeable).close();
+    }
+
+    @Test
+    public void testCloseQuierlyThrowsException() throws IOException {
+        Closeable closeable = mock(Closeable.class);
+        doThrow(new IOException()).when(closeable).close();
+        IOUtils.closeQuietly(closeable);
+    }
+
+    @Test
+    public void testCloseQuierlyWithoutResource() throws IOException {
+        Closeable closeable = null;
+        IOUtils.closeQuietly(closeable);
+
+    }
+
+    @Test
+    public void testCopy() {
+        InputStream in = new ByteArrayInputStream("this is test!".getBytes());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        IOUtils.copy(in, out);
+        assertThat(new String(out.toByteArray()), is("this is test!"));
+    }
+
+    @Test
+    public void testCopyOnException() throws Exception {
+        InputStream in = new ByteArrayInputStream("this is test!".getBytes());
+        ByteArrayOutputStream out = new ByteArrayOutputStream() {
+            @Override
+            public void flush() throws IOException {
+                write(" with exception!".getBytes());
+                throw new IOException();
+            }
+        };
+        IOUtils.copy(in, out);
+        assertThat(new String(out.toByteArray()), is("this is test! with exception!"));
+    }
+}
