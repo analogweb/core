@@ -11,6 +11,7 @@ import javax.xml.bind.Unmarshaller;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
+import org.analogweb.util.StringUtils;
 
 /**
  * JAXBによる変換により、リクエストされたXMLを任意のオブジェクト
@@ -34,11 +35,13 @@ public class XmlTypeMapper implements TypeMapper {
         return null;
     }
 
-    private boolean isXmlType(RequestContext context) {
-        HttpServletRequest request = context.getRequest();
-        String contentType = request.getContentType();
-        return contentType.startsWith("text/xml") || contentType.startsWith("application/xml");
-    }
+	private boolean isXmlType(RequestContext context) {
+		HttpServletRequest request = context.getRequest();
+		String contentType = request.getContentType();
+		return StringUtils.isNotEmpty(contentType)
+				&& (contentType.startsWith("text/xml") || contentType
+						.startsWith("application/xml"));
+	}
 
     private Unmarshaller createUnmarshaller(Class<?> requiredType) {
         try {

@@ -95,6 +95,18 @@ public class XmlTypeMapperTest {
         verify(request).getContentType();
     }
 
+    @Test
+    public void testMapToTypeWithoutContentType() {
+        when(context.getRequest()).thenReturn(request);
+        when(request.getContentType()).thenReturn(null);
+        byte[] xmlBytes = "plain text".getBytes();
+        InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
+        Hello actual = (Hello) mapper
+                .mapToType(context, attributes, xmlBody, UnHello.class, new String[0]);
+        assertThat(actual, is(nullValue()));
+        verify(request).getContentType();
+    }
+
     @XmlRootElement
     static class Hello implements Serializable {
         private static final long serialVersionUID = 1L;
