@@ -60,7 +60,7 @@ public class ScopedMapArgumentPreparatorTest {
     @Test
     public void testMapToFirstArgument() {
         Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
-        Method doSomething = ReflectionUtils.getDeclaredMethodQuietly(MockAction.class,
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class,
                 "doSomething", parameterTypes);
         Map<Integer, Object> arguments = Maps.newEmptyHashMap();
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
@@ -78,7 +78,7 @@ public class ScopedMapArgumentPreparatorTest {
     @Test
     public void testMapToFirstArgumentNotAssignableFromMap() {
         Class<?>[] parameterTypes = new Class[] { String.class, String.class };
-        Method doSomething = ReflectionUtils.getDeclaredMethodQuietly(MockAction.class,
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class,
                 "doAnything", parameterTypes);
         Map<Integer, Object> arguments = Maps.newEmptyHashMap();
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
@@ -93,7 +93,7 @@ public class ScopedMapArgumentPreparatorTest {
     @Test
     public void testMapToFirstArgumentNotEqualsMap() {
         Class<?>[] parameterTypes = new Class[] { HashMap.class, String.class };
-        Method doSomething = ReflectionUtils.getDeclaredMethodQuietly(MockAction.class,
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class,
                 "doNothing", parameterTypes);
         Map<Integer, Object> arguments = Maps.newEmptyHashMap();
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);

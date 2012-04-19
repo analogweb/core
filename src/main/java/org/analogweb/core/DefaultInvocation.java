@@ -54,7 +54,7 @@ public class DefaultInvocation implements Invocation {
     public Object invoke() throws InvocationFailureException {
         Class<?> actionClass = getInvocationInstance().getClass();
         Class<?>[] methodArgumentTypes = getMetadata().getArgumentTypes();
-        Method method = ReflectionUtils.getDeclaredMethodQuietly(actionClass, getMetadata()
+        Method method = ReflectionUtils.getMethodQuietly(actionClass, getMetadata()
                 .getMethodName(), methodArgumentTypes);
         Invocation invocation = this;
         List<InvocationProcessor> processors = getProcessors();

@@ -75,7 +75,7 @@ public class DefaultInvocationTest {
         MockActions instance = new MockActions();
         final String methodName = "doSomething";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(MockActions.class,
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
@@ -114,7 +114,7 @@ public class DefaultInvocationTest {
         MockActions actionInstance = new MockActions();
         final String methodName = "doNothing";
         final Class<?>[] argumentTypes = new Class<?>[0];
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(MockActions.class,
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
         invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
                 context, converters, processors);
@@ -145,7 +145,7 @@ public class DefaultInvocationTest {
         MockActions actionInstance = new MockActions();
         final String methodName = "doAnything";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class, Integer.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(MockActions.class,
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
         invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
                 context, converters, processors);
@@ -184,7 +184,7 @@ public class DefaultInvocationTest {
         MockActions actionInstance = new MockActions();
         final String methodName = "doSomething";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(MockActions.class,
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
         invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
                 context, converters, processors);
@@ -223,7 +223,7 @@ public class DefaultInvocationTest {
         MockActions actionInstance = new MockActions();
         final String methodName = "doSomething";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(MockActions.class,
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
         invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
                 context, converters, processors);
@@ -261,7 +261,7 @@ public class DefaultInvocationTest {
         MockActions actionInstance = new MockActions();
         final String methodName = "doSomethingWithException";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, Long.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(MockActions.class,
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
         invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
                 context, converters, processors);

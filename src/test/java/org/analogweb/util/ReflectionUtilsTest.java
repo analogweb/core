@@ -119,14 +119,14 @@ public class ReflectionUtilsTest {
 
     @Test
     public void testGetDeclaredMethodQuietly() {
-        Method doSomething = ReflectionUtils.getDeclaredMethodQuietly(MockObject.class,
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockObject.class,
                 "doSomething", new Class[] { String.class });
         assertNotNull(doSomething);
     }
 
     @Test
     public void testGetDeclaredMethodQuietlyNoSuchMethod() {
-        Method doSomething = ReflectionUtils.getDeclaredMethodQuietly(MockObject.class,
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockObject.class,
                 "doAnything", new Class[] { String.class });
         assertNull(doSomething);
     }

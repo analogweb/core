@@ -196,7 +196,7 @@ public class WebApplication implements Application {
         for (Class<?> clazz : collectedClasses) {
             for (InvocationMetadataFactory factory : factories) {
                 if (factory.containsInvocationClass(clazz)) {
-                    Method[] methods = clazz.getDeclaredMethods();
+                    Method[] methods = clazz.getMethods();
                     for (Method method : methods) {
                         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(
                                 clazz, method);

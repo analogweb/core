@@ -65,7 +65,7 @@ public class BindAttributeArgumentPreparatorTest {
     @Test
     public void testPrepare() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(
+        final Method method = ReflectionUtils.getMethodQuietly(
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doSomething",
                 argumentTypes);
 
@@ -92,7 +92,7 @@ public class BindAttributeArgumentPreparatorTest {
     public void testPrepareWithSrecialArgs() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, HttpServletRequest.class,
                 String.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(
+        final Method method = ReflectionUtils.getMethodQuietly(
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doAnything",
                 argumentTypes);
 
@@ -119,7 +119,7 @@ public class BindAttributeArgumentPreparatorTest {
     public void testPrepareWithSrecialArgsAndNoBindArg() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, ServletContext.class,
                 String.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(
+        final Method method = ReflectionUtils.getMethodQuietly(
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doNothing",
                 argumentTypes);
 
@@ -142,7 +142,7 @@ public class BindAttributeArgumentPreparatorTest {
     public void testPrepareWithSrecialArgsAndTypeMapping() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, HttpSession.class,
                 Date.class, String.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(
+        final Method method = ReflectionUtils.getMethodQuietly(
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doTypeMap",
                 argumentTypes);
 
@@ -170,7 +170,7 @@ public class BindAttributeArgumentPreparatorTest {
     @Test
     public void testPrepareWithSrecialArgsAndScope() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(
+        final Method method = ReflectionUtils.getMethodQuietly(
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doScope",
                 argumentTypes);
 
@@ -192,7 +192,7 @@ public class BindAttributeArgumentPreparatorTest {
     @Test
     public void testPrepareWithCoveredAnnotation() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(
+        final Method method = ReflectionUtils.getMethodQuietly(
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class,
                 "doWithCustomAnnotation", argumentTypes);
 
@@ -214,7 +214,7 @@ public class BindAttributeArgumentPreparatorTest {
     public void testPrepareWithNotAvairableValueInContext() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, HttpServletResponse.class,
                 String.class, Integer.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(
+        final Method method = ReflectionUtils.getMethodQuietly(
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doWithoutArgs",
                 argumentTypes);
 
@@ -244,7 +244,7 @@ public class BindAttributeArgumentPreparatorTest {
     @Test
     public void testPrepareWithFormat() {
         final Class<?>[] argumentTypes = new Class<?>[] { BigDecimal.class };
-        final Method method = ReflectionUtils.getDeclaredMethodQuietly(
+        final Method method = ReflectionUtils.getMethodQuietly(
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doWithFormat",
                 argumentTypes);
 

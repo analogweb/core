@@ -191,8 +191,17 @@ public final class ReflectionUtils {
         });
     }
 
-    public static Method getDeclaredMethodQuietly(Class<?> clazz, String methodName,
+    public static Method getMethodQuietly(Class<?> clazz, String methodName,
             Class<?>[] parameterTypes) {
+    	// try inherit method.
+        try {
+            return clazz.getMethod(methodName, parameterTypes);
+        } catch (SecurityException e) {
+            log.log("DU000011", e, clazz, methodName);
+        } catch (NoSuchMethodException e) {
+            log.log("DU000011", e, clazz, methodName);
+        }
+    	// try declared method.
         try {
             return clazz.getDeclaredMethod(methodName, parameterTypes);
         } catch (SecurityException e) {
