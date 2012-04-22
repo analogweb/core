@@ -91,6 +91,10 @@ public final class ReflectionUtils {
         }
         return implementsTypes;
     }
+    
+    public static Method[] getMethods(Class<?> clazz){
+        return clazz.getMethods();
+    }
 
     public interface TypeFilter {
         <T> Class<T> filterType(Class<?> actualClass, Class<T> filteringType);
