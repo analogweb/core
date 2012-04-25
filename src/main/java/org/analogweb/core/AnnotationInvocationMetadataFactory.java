@@ -14,6 +14,7 @@ import org.analogweb.annotation.Get;
 import org.analogweb.annotation.On;
 import org.analogweb.annotation.Post;
 import org.analogweb.annotation.Put;
+import org.analogweb.util.AnnotationUtils;
 import org.analogweb.util.StringUtils;
 
 
@@ -28,17 +29,20 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
     }
 
     @Override
-    public InvocationMetadata createInvocationMetadata(Class<?> actionsClass, Method actionMethod) {
-        On typePathMapping = actionsClass.getAnnotation(On.class);
-        On methodPathMapping = actionMethod.getAnnotation(On.class);
-        if (typePathMapping != null && methodPathMapping != null) {
-            return new DefaultInvocationMetadata(actionsClass, actionMethod.getName(),
-                    actionMethod.getParameterTypes(), relativeRequestPath(actionsClass,
-                            actionMethod, typePathMapping, methodPathMapping));
-        } else {
-            return null;
-        }
-    }
+	public InvocationMetadata createInvocationMetadata(Class<?> actionsClass,
+			Method actionMethod) {
+		On typePathMapping = AnnotationUtils.findAnnotation(On.class,
+				actionsClass);
+		On methodPathMapping = actionMethod.getAnnotation(On.class);
+		if (typePathMapping != null && methodPathMapping != null) {
+			return new DefaultInvocationMetadata(actionsClass,
+					actionMethod.getName(), actionMethod.getParameterTypes(),
+					relativeRequestPath(actionsClass, actionMethod,
+							typePathMapping, methodPathMapping));
+		} else {
+			return null;
+		}
+	}
 
     protected RequestPathMetadata relativeRequestPath(Class<?> actionsClass, Method actionMethod,
             On typePathMapping, On methodPathMapping) {
