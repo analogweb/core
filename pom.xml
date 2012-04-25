@@ -23,7 +23,7 @@
 	<packaging>jar</packaging>
 	<version>0.7.0-SNAPSHOT</version>
 	<name>analogweb-core</name>
-	<url>http://code.google.com/p/analog</url>
+	<url>https://github.com/analogweb</url>
 	<organization>
 		<name>Analog Web Framework Development Team</name>
 	</organization>
@@ -38,8 +38,8 @@
 	<inceptionYear>2012</inceptionYear>
 	<contributors />
 	<scm>
-		<connection>scm:git:https://code.google.com/p/analog.core</connection>
-		<developerConnection>scm:git:https://code.google.com/p/analog.core</developerConnection>
+		<connection>scm:git:git@github.com:analogweb/core.git</connection>
+		<developerConnection>scm:git:git@github.com:analogweb/core.git</developerConnection>
 	</scm>
 	<licenses>
 		<license>
