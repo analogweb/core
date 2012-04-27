@@ -46,7 +46,7 @@ public class IOUtilsTest {
     public void testCopy() {
         InputStream in = new ByteArrayInputStream("this is test!".getBytes());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        IOUtils.copy(in, out);
+        assertThat(IOUtils.copy(in, out),is(13));
         assertThat(new String(out.toByteArray()), is("this is test!"));
     }
 
@@ -60,7 +60,7 @@ public class IOUtilsTest {
                 throw new IOException();
             }
         };
-        IOUtils.copy(in, out);
+        assertThat(IOUtils.copy(in, out),is(-1));
         assertThat(new String(out.toByteArray()), is("this is test! with exception!"));
     }
 }

@@ -29,23 +29,29 @@ public final class IOUtils {
         }
     }
 
-    public static void copy(InputStream input, OutputStream output) {
-        copy(new BufferedInputStream(input), new BufferedOutputStream(output));
-    }
+	public static int copy(InputStream input, OutputStream output) {
+		return copy(new BufferedInputStream(input), new BufferedOutputStream(
+				output));
+	}
 
-    public static void copy(BufferedInputStream input, BufferedOutputStream output) {
-        Assertion.notNull(input, InputStream.class.getName());
-        Assertion.notNull(output, OutputStream.class.getName());
-        try {
-            int i;
-            while ((i = input.read()) != -1) {
-                output.write(i);
-            }
-            output.flush();
-        } catch (IOException e) {
-            log.log("DU000008", e, input);
-        } finally {
-            closeQuietly(input);
-        }
-    }
+	public static int copy(BufferedInputStream input,
+			BufferedOutputStream output) {
+		Assertion.notNull(input, InputStream.class.getName());
+		Assertion.notNull(output, OutputStream.class.getName());
+		try {
+			int count = 0;
+			int i;
+			while ((i = input.read()) != -1) {
+				output.write(i);
+				count++;
+			}
+			output.flush();
+			return count;
+		} catch (IOException e) {
+			log.log("DU000008", e, input);
+			return -1;
+		} finally {
+			closeQuietly(input);
+		}
+	}
 }
