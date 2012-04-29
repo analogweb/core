@@ -76,7 +76,7 @@ public class Text implements Direction {
     }
 
     protected void writeToStream(OutputStream out) throws IOException {
-        IOUtils.copy(textToInputStream(getResponseText(), getCharset()), out);
+        IOUtils.copyQuietly(textToInputStream(getResponseText(), getCharset()), out);
     }
 
     protected ByteArrayInputStream textToInputStream(String text, String charset) throws IOException {

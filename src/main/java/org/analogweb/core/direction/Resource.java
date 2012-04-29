@@ -77,7 +77,7 @@ public class Resource implements Direction {
         OutputStream out = response.getOutputStream();
         response.setContentType(getContentType());
         response.setHeader(CONTENT_DISPOSITION, createContentDisposition());
-        IOUtils.copy(getInputStream(), out);
+        IOUtils.copyQuietly(getInputStream(), out);
     }
 
     protected String createContentDisposition() throws UnsupportedEncodingException {

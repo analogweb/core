@@ -29,13 +29,24 @@ public final class IOUtils {
         }
     }
 
-	public static int copy(InputStream input, OutputStream output) {
-		return copy(new BufferedInputStream(input), new BufferedOutputStream(
+	public static int copyQuietly(InputStream input, OutputStream output) {
+		try{
+			return copyInternal(new BufferedInputStream(input), new BufferedOutputStream(
+					output));
+		} catch(IOException e){
+			log.log("DU000008", e, input);
+			return -1;
+		}
+	}
+
+	public static int copy(InputStream input,
+			OutputStream output) throws IOException {
+		return copyInternal(new BufferedInputStream(input), new BufferedOutputStream(
 				output));
 	}
 
-	public static int copy(BufferedInputStream input,
-			BufferedOutputStream output) {
+	private static int copyInternal(InputStream input,
+			OutputStream output) throws IOException {
 		Assertion.notNull(input, InputStream.class.getName());
 		Assertion.notNull(output, OutputStream.class.getName());
 		try {
@@ -47,9 +58,6 @@ public final class IOUtils {
 			}
 			output.flush();
 			return count;
-		} catch (IOException e) {
-			log.log("DU000008", e, input);
-			return -1;
 		} finally {
 			closeQuietly(input);
 		}
