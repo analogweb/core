@@ -81,7 +81,7 @@ public class WebApplicationTest {
 
         ApplicationProperties props = ApplicationPropertiesHolder.current();
 
-        assertThat(props.geApplicationSpecifier(), is(".rn"));
+        assertThat(props.getApplicationSpecifier(), is(".rn"));
         Collection<String> packageNames = props.getComponentPackageNames();
 
         assertThat(packageNames.size(), is(1));
@@ -105,7 +105,7 @@ public class WebApplicationTest {
         log.debug(modules.getInvocationProcessors().toString());
         ApplicationProperties props = ApplicationPropertiesHolder.current();
 
-        assertThat(props.geApplicationSpecifier(), is(""));
+        assertThat(props.getApplicationSpecifier(), is(""));
         Collection<String> packageNames = props.getComponentPackageNames();
 
         assertThat(packageNames.size(), is(1));

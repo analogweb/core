@@ -62,7 +62,7 @@ public class WebApplication implements Application {
         modulesPackageNames.addAll(actionPackageNames);
         modulesPackageNames.add(DEFAULT_PACKAGE_NAME);
         log.log(Markers.BOOT_APPLICATION, "DB000002", modulesPackageNames);
-        initApplication(modulesPackageNames, actionPackageNames, props.geApplicationSpecifier());
+        initApplication(modulesPackageNames, actionPackageNames, props.getApplicationSpecifier());
         log.log(Markers.BOOT_APPLICATION, "IB000002");
     }
 
@@ -94,7 +94,7 @@ public class WebApplication implements Application {
                     }
 
                     @Override
-                    public String geApplicationSpecifier() {
+                    public String getApplicationSpecifier() {
                         if (this.applicationSpecifier == null) {
                             this.applicationSpecifier = createApplicationSpecifier(filterConfig);
                         }

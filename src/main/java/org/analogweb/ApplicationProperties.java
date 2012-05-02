@@ -23,7 +23,7 @@ public interface ApplicationProperties {
      * 取得します。
      * @return 識別子
      */
-    String geApplicationSpecifier();
+    String getApplicationSpecifier();
 
     /**
      * アプリケーション全般で利用可能なテンポラリディレクトリ
