@@ -35,7 +35,6 @@ import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
 
-
 /**
  * @author snowgoose
  */
@@ -66,43 +65,44 @@ public class WebApplication implements Application {
         initApplication(modulesPackageNames, actionPackageNames, props.geApplicationSpecifier());
         log.log(Markers.BOOT_APPLICATION, "IB000002");
     }
-    
-    private ApplicationProperties configureApplicationProperties(final FilterConfig filterConfig){
-        ApplicationPropertiesHolder.configure(this,
-        new ApplicationPropertiesHolder.Creator() {
+
+    private ApplicationProperties configureApplicationProperties(final FilterConfig filterConfig) {
+        ApplicationPropertiesHolder.configure(this, new ApplicationPropertiesHolder.Creator() {
             @Override
             public ApplicationProperties create() {
                 return new ApplicationProperties() {
+
                     private Collection<String> packageNames;
                     private String applicationSpecifier;
                     private String tempDirectoryPath;
+
                     @Override
                     public File getTempDir() {
                         if (this.tempDirectoryPath == null) {
                             this.tempDirectoryPath = createTempDirPath(filterConfig);
-                        } else {
-                            this.tempDirectoryPath = System.getProperty("java.io.tmpdir");
+
                         }
                         return new File(tempDirectoryPath);
                     }
-                    
+
                     @Override
                     public Collection<String> getComponentPackageNames() {
-                        if(this.packageNames == null){
+                        if (this.packageNames == null) {
                             this.packageNames = createUserDefinedPackageNames(filterConfig);
                         }
                         return this.packageNames;
                     }
-                    
+
                     @Override
                     public String geApplicationSpecifier() {
-                        if(this.applicationSpecifier == null){
+                        if (this.applicationSpecifier == null) {
                             this.applicationSpecifier = createApplicationSpecifier(filterConfig);
                         }
                         return this.applicationSpecifier;
                     }
                 };
             }
+
             private Set<String> createUserDefinedPackageNames(FilterConfig filterConfig) {
                 String tokenizedRootPackageNames = filterConfig
                         .getInitParameter(INIT_PARAMETER_ROOT_COMPONENT_PACKAGES);
@@ -114,23 +114,29 @@ public class WebApplication implements Application {
                     }
                     return packageNames;
                 } else {
-                    throw new MissingRequiredParameterException(INIT_PARAMETER_ROOT_COMPONENT_PACKAGES);
+                    throw new MissingRequiredParameterException(
+                            INIT_PARAMETER_ROOT_COMPONENT_PACKAGES);
                 }
             }
+
             private String createApplicationSpecifier(FilterConfig filterConfig) {
-                String specifier = filterConfig.getInitParameter(INIT_PARAMETER_APPLICATION_SPECIFIER);
+                String specifier = filterConfig
+                        .getInitParameter(INIT_PARAMETER_APPLICATION_SPECIFIER);
                 if (StringUtils.isEmpty(specifier)) {
                     return StringUtils.EMPTY;
                 } else {
                     return specifier;
                 }
             }
+
             private String createTempDirPath(FilterConfig filterConfig) {
-                String tmpDirPath = filterConfig.getInitParameter(INIT_PARAMETER_APPLICATION_TEMPORARY_DIR);
+                String tmpDirPath = filterConfig
+                        .getInitParameter(INIT_PARAMETER_APPLICATION_TEMPORARY_DIR);
                 if (StringUtils.isEmpty(tmpDirPath)) {
-                    return null;
+                    return System.getProperty("java.io.tmpdir") + "/"
+                            + WebApplication.class.getCanonicalName();
                 } else {
-                    return tmpDirPath;
+                    return tmpDirPath + "/" + WebApplication.class.getCanonicalName();
                 }
             }
         });
