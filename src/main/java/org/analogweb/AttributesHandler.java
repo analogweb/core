@@ -3,7 +3,7 @@ package org.analogweb;
 /**
  * @author snowgoose
  */
-public interface AttributesHandler extends Module {
+public interface AttributesHandler extends MultiModule {
 
     /**
      * このコンポーネントが値を操作可能なスコープ名を取得します。

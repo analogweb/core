@@ -14,11 +14,6 @@ public interface ModulesBuilder {
     ModulesBuilder setModulesProviderClass(
             Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> modulesProviderClass);
 
-    ModulesBuilder addInvocationMetadataFactoriesClass(
-            Class<? extends InvocationMetadataFactory> invocationMetadataFactoryClass);
-
-    ModulesBuilder clearInvocationMetadataFactoriesClass();
-
     ModulesBuilder setInvokerClass(Class<? extends Invoker> invokerClass);
 
     ModulesBuilder setInvocationInstanceProviderClass(
@@ -41,20 +36,25 @@ public interface ModulesBuilder {
     ModulesBuilder setRequestContextFactoryClass(
             Class<? extends RequestContextFactory> requestContextFactoryClass);
 
+    ModulesBuilder setRequestAttributesFactoryClass(
+            Class<? extends RequestAttributesFactory> requestAttributesFactoryClass);
+
+    ModulesBuilder setResultAttributesFactoryClass(
+            Class<? extends ResultAttributesFactory> resultAttributesFactoryClass);
+
+    ModulesBuilder addInvocationMetadataFactoriesClass(
+            Class<? extends InvocationMetadataFactory> invocationMetadataFactoryClass);
+
+    ModulesBuilder clearInvocationMetadataFactoriesClass();
+
     ModulesBuilder addInvocationProcessorClass(
             Class<? extends InvocationProcessor> invocationProcessorClass);
 
     ModulesBuilder clearInvocationProcessorClass();
 
-    ModulesBuilder setRequestAttributesFactoryClass(
-            Class<? extends RequestAttributesFactory> requestAttributesFactoryClass);
-
     ModulesBuilder addAttributesHandlerClass(
             Class<? extends AttributesHandler> attributesHandlerClass);
 
     ModulesBuilder clearAttributesHanderClass();
-
-    ModulesBuilder setResultAttributesFactoryClass(
-            Class<? extends ResultAttributesFactory> resultAttributesFactoryClass);
 
 }

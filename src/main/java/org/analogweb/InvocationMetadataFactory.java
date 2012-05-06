@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
  * 対応するパス({@link RequestPathMetadata})と共にマッピングされます。
  * @author snowgoose
  */
-public interface InvocationMetadataFactory extends Module {
+public interface InvocationMetadataFactory extends MultiModule {
 
     /**
      * 指定されたクラスがリクエストによって起動可能なメソッドを含む場合は{@code true}を返します。
