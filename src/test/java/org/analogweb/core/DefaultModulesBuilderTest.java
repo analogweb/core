@@ -301,6 +301,59 @@ public class DefaultModulesBuilderTest {
 
     }
 
+    @Test
+    public void testIgnoreModules() {
+        final ContainerAdaptor defaultAdaptor = mock(ContainerAdaptor.class);
+
+        List<InvocationProcessor> processors = new ArrayList<InvocationProcessor>();
+        processors.add(new ProcessorA());
+        processors.add(new ProcessorB());
+        processors.add(new ProcessorC());
+
+        when(defaultAdaptor.getInstancesOfType(InvocationProcessor.class)).thenReturn(processors);
+
+        ca = defaultAdaptor;
+        builder.setModulesProviderClass(MockContainerAdaptorFactory.class);
+        builder.addInvocationProcessorClass(InvocationProcessor.class);
+
+        Modules modules = builder.buildModules(servletContext, defaultAdaptor);
+
+        List<InvocationProcessor> actual = modules.getInvocationProcessors();
+        log.debug(actual.toString());
+        assertThat(actual.size(), is(3));
+        
+        builder.ignore(ProcessorB.class);
+        modules = builder.buildModules(servletContext, defaultAdaptor);
+        actual = modules.getInvocationProcessors();
+        log.debug(actual.toString());
+        assertThat(actual.size(), is(1));
+    }
+
+    @Test
+    public void testIgnoreTypesUndefined() {
+        thrown.expect(AssertionFailureException.class);
+        builder.ignore(null);
+    }
+
+    private static ContainerAdaptor ca ;
+    public static class MockContainerAdaptorFactory implements ContainerAdaptorFactory<ContainerAdaptor> {
+
+        @Override
+        public ContainerAdaptor createContainerAdaptor(ServletContext servletContext) {
+            return ca;
+        }
+        
+    }
+    
+    private static class ProcessorA extends AbstractInvocationProcessor {
+    }
+
+    private static class ProcessorB extends ProcessorA {
+    }
+
+    private static class ProcessorC extends ProcessorB {
+    }
+
     public static class MockModulesProvidingContainerAdaptor implements ContainerAdaptor {
 
         private final Map<Class<Object>, Object> classDefMap = new HashMap<Class<Object>, Object>();

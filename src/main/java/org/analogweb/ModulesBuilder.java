@@ -57,4 +57,6 @@ public interface ModulesBuilder {
 
     ModulesBuilder clearAttributesHanderClass();
 
+    ModulesBuilder ignore(Class<? extends MultiModule> multiModuleClass);
+
 }

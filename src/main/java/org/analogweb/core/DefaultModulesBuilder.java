@@ -1,11 +1,12 @@
 package org.analogweb.core;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
-
 
 import org.analogweb.AttributesHandler;
 import org.analogweb.ContainerAdaptor;
@@ -20,6 +21,7 @@ import org.analogweb.Invoker;
 import org.analogweb.Modules;
 import org.analogweb.ModulesAware;
 import org.analogweb.ModulesBuilder;
+import org.analogweb.MultiModule;
 import org.analogweb.RequestAttributesFactory;
 import org.analogweb.RequestContextFactory;
 import org.analogweb.ResultAttributes;
@@ -31,7 +33,6 @@ import org.analogweb.exception.MissingModulesProviderException;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
-
 
 /**
  * @author snowgoose
@@ -52,11 +53,13 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private final List<Class<? extends InvocationProcessor>> invocationProcessorClasses;
     private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
     private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
+    private final List<Class<? extends MultiModule>> ignoreClasses;
 
     public DefaultModulesBuilder() {
-        this.invocationProcessorClasses = new ArrayList<Class<? extends InvocationProcessor>>();
-        this.invocationMetadataFactoryClasses = new ArrayList<Class<? extends InvocationMetadataFactory>>();
-        this.attributesHandlerClasses = new ArrayList<Class<? extends AttributesHandler>>();
+        this.invocationProcessorClasses = new LinkedList<Class<? extends InvocationProcessor>>();
+        this.invocationMetadataFactoryClasses = new LinkedList<Class<? extends InvocationMetadataFactory>>();
+        this.attributesHandlerClasses = new LinkedList<Class<? extends AttributesHandler>>();
+        this.ignoreClasses = new LinkedList<Class<? extends MultiModule>>();
     }
 
     @Override
@@ -152,8 +155,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
             @Override
             public List<AttributesHandler> getAttributesHandlers() {
-                return getComponentInstances(moduleContainerAdaptor,
-                        getAttributesHandlerClasses());
+                return getComponentInstances(moduleContainerAdaptor, getAttributesHandlerClasses());
             }
 
             @Override
@@ -211,6 +213,15 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                             instances.add(clazzInstance);
                         }
                         instanceFQDNs.add(FQDN);
+                    }
+                }
+                Iterator<T> itr = instances.iterator();
+                while (itr.hasNext()) {
+                    T next = itr.next();
+                    for (Class<? extends MultiModule> moduleClass : getIgnoringClasses()) {
+                        if (moduleClass.isInstance(next)) {
+                            itr.remove();
+                        }
                     }
                 }
                 return instances;
@@ -391,6 +402,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         return resultAttributesFactoryClass;
     }
 
+    protected List<Class<? extends MultiModule>> getIgnoringClasses() {
+        return this.ignoreClasses;
+    }
+
     @Override
     public ModulesBuilder setResultAttributesFactoryClass(
             Class<? extends ResultAttributesFactory> resultAttributesFactoryClass) {
@@ -413,6 +428,13 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     @Override
     public ModulesBuilder clearAttributesHanderClass() {
         this.attributesHandlerClasses.clear();
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder ignore(Class<? extends MultiModule> multiModuleClass) {
+        Assertion.notNull(multiModuleClass, MultiModule.class.getCanonicalName());
+        this.ignoreClasses.add(multiModuleClass);
         return this;
     }
 
