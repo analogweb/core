@@ -1,10 +1,11 @@
 package org.analogweb.core.direction;
 
-import java.io.OutputStream;
+import java.io.IOException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.analogweb.RequestContext;
 import org.analogweb.exception.FormatFailureException;
 
 /**
@@ -28,13 +29,15 @@ public class Xml extends TextFormattable {
         super.withCharset(DEFAULT_CHARSET);
     }
 
-    static class DefaultFormatter implements ReplaceableFormatter {
+    static class DefaultFormatter implements ReplaceableFormatWriter {
         @Override
-        public void format(OutputStream writeTo, String charset, Object source)
+        public void write(RequestContext writeTo, String charset, Object source)
                 throws FormatFailureException {
             try {
                 JAXBContext jaxb = JAXBContext.newInstance(source.getClass());
-                jaxb.createMarshaller().marshal(source, writeTo);
+                jaxb.createMarshaller().marshal(source, writeTo.getResponse().getOutputStream());
+            } catch (IOException e) {
+                throw new FormatFailureException(e, source, getClass().getName());
             } catch (JAXBException e) {
                 throw new FormatFailureException(e, source, getClass().getName());
             }
@@ -43,7 +46,7 @@ public class Xml extends TextFormattable {
     }
 
     @Override
-    protected ReplaceableFormatter getDefaultFormatter() {
+    protected ReplaceableFormatWriter getDefaultFormatter() {
         return new Xml.DefaultFormatter();
     }
 

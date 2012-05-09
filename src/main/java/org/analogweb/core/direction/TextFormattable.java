@@ -1,9 +1,12 @@
 package org.analogweb.core.direction;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Map;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+
+import org.analogweb.RequestContext;
 import org.analogweb.exception.FormatFailureException;
 import org.analogweb.util.Maps;
 
@@ -13,7 +16,7 @@ import org.analogweb.util.Maps;
  */
 public abstract class TextFormattable extends Text {
 
-    private static Map<String, ReplaceableFormatter> formatters = Maps.newConcurrentHashMap();
+    private static Map<String, ReplaceableFormatWriter> formatters = Maps.newConcurrentHashMap();
     private Object source;
 
     /**
@@ -21,8 +24,8 @@ public abstract class TextFormattable extends Text {
      * インスタンスをテキストフォーマットする実装を入れ替える為に使用します。
      * @author snowgoose
      */
-    public static interface ReplaceableFormatter {
-        void format(OutputStream writeTo, String charset, Object source)
+    public static interface ReplaceableFormatWriter {
+        void write(RequestContext writeTo, String charset, Object source)
                 throws FormatFailureException;
     }
 
@@ -47,27 +50,27 @@ public abstract class TextFormattable extends Text {
     }
 
     /**
-     * 現在のフォーマット可能な{@link ReplaceableFormatter}を取得します。<br/>
-     * 自分のクラスに該当する{@link ReplaceableFormatter}がない場合はnullを返します。
-     * その場合、自分のクラスに適切な{@link ReplaceableFormatter}を
+     * 現在のフォーマット可能な{@link ReplaceableFormatWriter}を取得します。<br/>
+     * 自分のクラスに該当する{@link ReplaceableFormatWriter}がない場合はnullを返します。
+     * その場合、自分のクラスに適切な{@link ReplaceableFormatWriter}を
      * {@link #render(org.analogweb.RequestContext)}を用いて登録する必要があります。
-     * @return {@link ReplaceableFormatter}
+     * @return {@link ReplaceableFormatWriter}
      */
-    protected <T extends TextFormattable> ReplaceableFormatter getFormatter() {
+    protected <T extends TextFormattable> ReplaceableFormatWriter getFormatter() {
         return formatters.get(getClass().getCanonicalName());
     }
 
     /**
-     * 指定した{@link ReplaceableFormatter}によって特定のフォーマットのレンダリングを行います。<br/>
-     * この{@link ReplaceableFormatter}は全ての<T>のインスタンスに適用されます。{@link ReplaceableFormatter}
-     * にnullを渡すと、その{@link TextFormattable}に関連付けられている{@link ReplaceableFormatter}を
+     * 指定した{@link ReplaceableFormatWriter}によって特定のフォーマットのレンダリングを行います。<br/>
+     * この{@link ReplaceableFormatWriter}は全ての<T>のインスタンスに適用されます。{@link ReplaceableFormatWriter}
+     * にnullを渡すと、その{@link TextFormattable}に関連付けられている{@link ReplaceableFormatWriter}を
      * 破棄します。
      * @param <T> フォーマットする対象の型
      * @param textFormattable {@link TextFormattable}
-     * @param formatter {@link ReplaceableFormatter}
+     * @param formatter {@link ReplaceableFormatWriter}
      */
     public static synchronized <T extends TextFormattable> void replace(Class<T> textFormattable,
-            ReplaceableFormatter formatter) {
+            ReplaceableFormatWriter formatter) {
         if (formatter == null) {
             formatters.remove(textFormattable.getCanonicalName());
         } else {
@@ -76,24 +79,26 @@ public abstract class TextFormattable extends Text {
     }
 
     @Override
-    protected void writeToStream(OutputStream out) throws IOException {
+    public void render(RequestContext context) throws IOException, ServletException {
+        HttpServletResponse response = context.getResponse();
+        response.setContentType(getContentType());
         Object toXml = getSource();
         if (toXml == null) {
-            super.writeToStream(out);
+            super.writeToStream(response.getOutputStream());
             return;
         }
-        ReplaceableFormatter formatter = getFormatter();
-        if (formatter == null) {
+        ReplaceableFormatWriter writter = getFormatter();
+        if (writter == null) {
             replace(getClass(), getDefaultFormatter());
-            formatter = getFormatter();
+            writter = getFormatter();
         }
-        formatter.format(out, getCharset(), toXml);
+        writter.write(context, getCharset(), toXml);
     }
 
     /**
-     * デフォルトの{@link ReplaceableFormatter}によって特定のフォーマットへのレンダリングを行います。<br/>
-     * この{@link ReplaceableFormatter}は全ての{@link TextFormattable}のインスタンスに適用されます。
+     * デフォルトの{@link ReplaceableFormatWriter}によって特定のフォーマットへのレンダリングを行います。<br/>
+     * この{@link ReplaceableFormatWriter}は全ての{@link TextFormattable}のインスタンスに適用されます。
      */
-    protected abstract ReplaceableFormatter getDefaultFormatter();
+    protected abstract ReplaceableFormatWriter getDefaultFormatter();
 
 }

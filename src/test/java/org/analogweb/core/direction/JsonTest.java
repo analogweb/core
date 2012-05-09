@@ -18,7 +18,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.analogweb.RequestContext;
-import org.analogweb.core.direction.TextFormattable.ReplaceableFormatter;
+import org.analogweb.core.direction.TextFormattable.ReplaceableFormatWriter;
 import org.analogweb.exception.FormatFailureException;
 import org.analogweb.mock.MockServletOutputStream;
 import org.hamcrest.BaseMatcher;
@@ -245,7 +245,7 @@ public class JsonTest {
 
     @Test
     public void testReplaceFormatter() throws Exception {
-        ReplaceableFormatter formatter = mock(ReplaceableFormatter.class);
+        ReplaceableFormatWriter formatter = mock(ReplaceableFormatWriter.class);
         Json.replace(Json.class, formatter);
 
         Simple bean = new Simple("foo", 33, null);
@@ -257,7 +257,7 @@ public class JsonTest {
 
         json.render(context);
 
-        verify(formatter).format(out, "Shift-JIS", bean);
+        verify(formatter).write(context, "Shift-JIS", bean);
     }
 
     static class Simple implements Serializable {
