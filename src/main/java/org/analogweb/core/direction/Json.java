@@ -5,12 +5,12 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import org.analogweb.Direction;
+import org.analogweb.RequestContext;
 import org.analogweb.exception.FormatFailureException;
 import org.analogweb.util.ArrayUtils;
 
@@ -48,16 +48,16 @@ public class Json extends TextFormattable {
         super.withCharset(DEFAULT_JSON_CHARSET);
     }
 
-    static class DefaultFormatter implements ReplaceableFormatter {
+    static class DefaultFormatter implements ReplaceableFormatWriter {
 
         @Override
-        public void format(OutputStream writeTo, String charset, Object source)
+        public void write(RequestContext writeTo, String charset, Object source)
                 throws FormatFailureException {
             StringBuilder buffer = new StringBuilder();
             OutputStreamWriter output;
             try {
                 format(buffer, source);
-                output = new OutputStreamWriter(writeTo, charset);
+                output = new OutputStreamWriter(writeTo.getResponse().getOutputStream(), charset);
                 output.write(buffer.toString());
                 output.flush();
             } catch (IOException e) {
@@ -163,11 +163,11 @@ public class Json extends TextFormattable {
     }
 
     /**
-     * デフォルトの{@link ReplaceableFormatter}によってJSONのレンダリングを行います。<br/>
-     * この{@link ReplaceableFormatter}は全ての{@link Json}のインスタンスに適用されます。
+     * デフォルトの{@link ReplaceableFormatWriter}によってJSONのレンダリングを行います。<br/>
+     * この{@link ReplaceableFormatWriter}は全ての{@link Json}のインスタンスに適用されます。
      */
     @Override
-    public ReplaceableFormatter getDefaultFormatter() {
+    public ReplaceableFormatWriter getDefaultFormatter() {
         return new Json.DefaultFormatter();
     }
 
