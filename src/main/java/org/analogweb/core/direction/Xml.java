@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.analogweb.DirectionFormatter;
 import org.analogweb.RequestContext;
 import org.analogweb.exception.FormatFailureException;
 
@@ -14,7 +15,7 @@ import org.analogweb.exception.FormatFailureException;
  * デフォルトのContent-Typeは「application/xml; charset=UTF-8」です。
  * @author snowgoose
  */
-public class Xml extends TextFormattable {
+public class Xml extends TextFormattable<Xml> {
 
     private static final String DEFAULT_CONTENT_TYPE = "application/xml";
     private static final String DEFAULT_CHARSET = "UTF-8";
@@ -29,9 +30,9 @@ public class Xml extends TextFormattable {
         super.withCharset(DEFAULT_CHARSET);
     }
 
-    static class DefaultFormatter implements ReplaceableFormatWriter {
+    static class DefaultFormatter implements DirectionFormatter {
         @Override
-        public void write(RequestContext writeTo, String charset, Object source)
+        public void formatAndWriteInto(RequestContext writeTo, String charset, Object source)
                 throws FormatFailureException {
             try {
                 JAXBContext jaxb = JAXBContext.newInstance(source.getClass());
@@ -46,7 +47,7 @@ public class Xml extends TextFormattable {
     }
 
     @Override
-    protected ReplaceableFormatWriter getDefaultFormatter() {
+    protected DirectionFormatter getDefaultFormatter() {
         return new Xml.DefaultFormatter();
     }
 

@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import org.analogweb.Direction;
+import org.analogweb.DirectionFormatter;
 import org.analogweb.RequestContext;
 import org.analogweb.exception.FormatFailureException;
 import org.analogweb.util.ArrayUtils;
@@ -20,7 +21,7 @@ import org.analogweb.util.ArrayUtils;
  * デフォルトのContent-Typeは「application/json; charset=UTF-8」です。
  * @author snowgoose
  */
-public class Json extends TextFormattable {
+public class Json extends TextFormattable<Json> {
 
     private static final String DEFAULT_JSON_CHARSET = "UTF-8";
     private static final String DEFAULT_JSON_CONTENT_TYPE = "application/json";
@@ -48,10 +49,10 @@ public class Json extends TextFormattable {
         super.withCharset(DEFAULT_JSON_CHARSET);
     }
 
-    static class DefaultFormatter implements ReplaceableFormatWriter {
+    static class DefaultFormatter implements DirectionFormatter {
 
         @Override
-        public void write(RequestContext writeTo, String charset, Object source)
+        public void formatAndWriteInto(RequestContext writeTo, String charset, Object source)
                 throws FormatFailureException {
             StringBuilder buffer = new StringBuilder();
             OutputStreamWriter output;
@@ -159,7 +160,6 @@ public class Json extends TextFormattable {
 
     public static synchronized void flushCache() {
         Introspector.flushCaches();
-        replace(Json.class, null);
     }
 
     /**
@@ -167,7 +167,7 @@ public class Json extends TextFormattable {
      * この{@link ReplaceableFormatWriter}は全ての{@link Json}のインスタンスに適用されます。
      */
     @Override
-    public ReplaceableFormatWriter getDefaultFormatter() {
+    public DirectionFormatter getDefaultFormatter() {
         return new Json.DefaultFormatter();
     }
 

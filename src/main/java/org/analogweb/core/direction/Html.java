@@ -2,12 +2,13 @@ package org.analogweb.core.direction;
 
 import java.util.Map;
 
+import org.analogweb.DirectionFormatter;
 import org.analogweb.util.Assertion;
 
 /**
  * @author snowgoose
  */
-public class Html extends TextFormattable {
+public class Html extends TextFormattable<Html> {
 
     private static final String DEFAULT_HTML_CHARSET = "UTF-8";
     private static final String DEFAULT_HTML_CONTENT_TYPE = "text/html";
@@ -52,7 +53,7 @@ public class Html extends TextFormattable {
     }
 
     @Override
-    protected ReplaceableFormatWriter getDefaultFormatter() {
+    protected DirectionFormatter getDefaultFormatter() {
         // TODO Implement!
         throw new UnsupportedOperationException();
     }
