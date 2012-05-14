@@ -9,26 +9,16 @@ import org.analogweb.DirectionFormatter;
 import org.analogweb.DirectionFormatterAware;
 import org.analogweb.DirectionFormatters;
 import org.analogweb.RequestContext;
-import org.analogweb.exception.FormatFailureException;
 
 /**
  * テキストフォーマットが可能な{@link org.analogweb.Direction}の実装です。
  * @author snowgoose
  */
-public abstract class TextFormattable<T extends TextFormattable<T>> extends TextFormat<T> implements DirectionFormatterAware<T> {
+public abstract class TextFormattable<T extends TextFormattable<T>> extends TextFormat<T> implements
+        DirectionFormatterAware<T> {
 
     private Object source;
     private DirectionFormatter formatter;
-
-    /**
-     * 特定のインスタンスをテキストにフォーマットし、ストリームに書き出します。
-     * インスタンスをテキストフォーマットする実装を入れ替える為に使用します。
-     * @author snowgoose
-     */
-    public static interface ReplaceableFormatWriter {
-        void write(RequestContext writeTo, String charset, Object source)
-                throws FormatFailureException;
-    }
 
     public TextFormattable() {
         super();
@@ -91,8 +81,7 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
     @SuppressWarnings("unchecked")
     public T attach(DirectionFormatter formatter) {
         this.formatter = formatter;
-        return (T)this;
+        return (T) this;
     }
-    
 
 }
