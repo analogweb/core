@@ -17,10 +17,11 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-
 import org.analogweb.AttributesHandler;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
+import org.analogweb.Direction;
+import org.analogweb.DirectionFormatter;
 import org.analogweb.DirectionHandler;
 import org.analogweb.DirectionResolver;
 import org.analogweb.ExceptionHandler;
@@ -78,6 +79,7 @@ public class DefaultModulesBuilderTest {
     private ExceptionHandler exceptionHandler;
     private TypeMapperContext typeMapperContext;
     private TypeMapper typeMapper;
+    private DirectionFormatter directionFormatter;
 
     @Before
     public void setUp() {
@@ -103,6 +105,7 @@ public class DefaultModulesBuilderTest {
         exceptionHandler = mock(ExceptionHandler.class);
         typeMapperContext = mock(TypeMapperContext.class);
         typeMapper = mock(TypeMapper.class);
+        directionFormatter = mock(DirectionFormatter.class);
 
         adaptor.register(invocationMetadataFactory.getClass(), invocationMetadataFactory);
         adaptor.register(invoker.getClass(), invoker);
@@ -118,6 +121,7 @@ public class DefaultModulesBuilderTest {
         adaptor.register(exceptionHandler.getClass(), exceptionHandler);
         adaptor.register(typeMapperContext.getClass(), typeMapperContext);
         adaptor.register(typeMapper.getClass(), typeMapper);
+        adaptor.register(directionFormatter.getClass(), directionFormatter);
     }
 
     @SuppressWarnings("unchecked")
@@ -138,6 +142,8 @@ public class DefaultModulesBuilderTest {
         builder.setResultAttributesFactoryClass(resultAttributesFactory.getClass());
         builder.setExceptionHandlerClass(exceptionHandler.getClass());
         builder.setTypeMapperContextClass(typeMapperContext.getClass());
+        Direction mapToDirection = mock(Direction.class);
+        builder.addDirectionFormatterClass(mapToDirection.getClass(), directionFormatter.getClass());
 
         Modules modules = builder.buildModules(servletContext, adaptor);
 
@@ -157,12 +163,11 @@ public class DefaultModulesBuilderTest {
         assertSame(modules.getExceptionHandler(), exceptionHandler);
         assertSame(modules.getTypeMapperContext(), typeMapperContext);
         assertSame(modules.findTypeMapper(typeMapper.getClass()), typeMapper);
+        assertSame(modules.findDirectionFormatter(mapToDirection.getClass()), directionFormatter);
 
         when(attributesHandler.getScopeName()).thenReturn("request");
-        assertSame(modules.getAttributesHandlersMap().get("request"),
-                attributesHandler);
-        assertSame(modules.getAttributesHandlersMap().get("request"),
-                attributesHandler);
+        assertSame(modules.getAttributesHandlersMap().get("request"), attributesHandler);
+        assertSame(modules.getAttributesHandlersMap().get("request"), attributesHandler);
     }
 
     @Test
@@ -321,7 +326,7 @@ public class DefaultModulesBuilderTest {
         List<InvocationProcessor> actual = modules.getInvocationProcessors();
         log.debug(actual.toString());
         assertThat(actual.size(), is(3));
-        
+
         builder.ignore(ProcessorB.class);
         modules = builder.buildModules(servletContext, defaultAdaptor);
         actual = modules.getInvocationProcessors();
@@ -335,16 +340,18 @@ public class DefaultModulesBuilderTest {
         builder.ignore(null);
     }
 
-    private static ContainerAdaptor ca ;
-    public static class MockContainerAdaptorFactory implements ContainerAdaptorFactory<ContainerAdaptor> {
+    private static ContainerAdaptor ca;
+
+    public static class MockContainerAdaptorFactory implements
+            ContainerAdaptorFactory<ContainerAdaptor> {
 
         @Override
         public ContainerAdaptor createContainerAdaptor(ServletContext servletContext) {
             return ca;
         }
-        
+
     }
-    
+
     private static class ProcessorA extends AbstractInvocationProcessor {
     }
 
@@ -357,7 +364,6 @@ public class DefaultModulesBuilderTest {
     public static class MockModulesProvidingContainerAdaptor implements ContainerAdaptor {
 
         private final Map<Class<Object>, Object> classDefMap = new HashMap<Class<Object>, Object>();
-
 
         @Override
         @SuppressWarnings("unchecked")

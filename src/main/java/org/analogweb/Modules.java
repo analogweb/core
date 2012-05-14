@@ -42,4 +42,7 @@ public interface Modules extends Disposable {
     ResultAttributes getResultAttributes();
 
     Map<String, AttributesHandler> getAttributesHandlersMap();
+
+    DirectionFormatter findDirectionFormatter(Class<? extends Direction> mapToDirection);
+
 }

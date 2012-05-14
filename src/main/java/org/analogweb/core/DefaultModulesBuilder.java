@@ -11,6 +11,8 @@ import javax.servlet.ServletContext;
 import org.analogweb.AttributesHandler;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
+import org.analogweb.Direction;
+import org.analogweb.DirectionFormatter;
 import org.analogweb.DirectionHandler;
 import org.analogweb.DirectionResolver;
 import org.analogweb.ExceptionHandler;
@@ -53,12 +55,14 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private final List<Class<? extends InvocationProcessor>> invocationProcessorClasses;
     private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
     private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
+    private final Map<Class<? extends Direction>, Class<? extends DirectionFormatter>> directionFormatterClasses;
     private final List<Class<? extends MultiModule>> ignoreClasses;
 
     public DefaultModulesBuilder() {
         this.invocationProcessorClasses = new LinkedList<Class<? extends InvocationProcessor>>();
         this.invocationMetadataFactoryClasses = new LinkedList<Class<? extends InvocationMetadataFactory>>();
         this.attributesHandlerClasses = new LinkedList<Class<? extends AttributesHandler>>();
+        this.directionFormatterClasses = Maps.newConcurrentHashMap();
         this.ignoreClasses = new LinkedList<Class<? extends MultiModule>>();
     }
 
@@ -183,6 +187,16 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return this.attributesHandlerMap;
             }
 
+            @Override
+            public DirectionFormatter findDirectionFormatter(
+                    Class<? extends Direction> mapToDirection) {
+                Class<? extends DirectionFormatter> formatterClass = getDirectionFormatterClass(mapToDirection);
+                if(formatterClass != null){
+                    return getComponentInstance(moduleContainerAdaptor, formatterClass);
+                }
+                return null;
+            }
+
             private <T> T getComponentInstance(ContainerAdaptor adaptor, Class<T> componentClass) {
                 Assertion.notNull(componentClass, "component-class");
                 T instance = adaptor.getInstanceOfType(componentClass);
@@ -240,6 +254,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 setRequestContextFactoryClass(null);
                 setResultAttributesFactoryClass(null);
                 setTypeMapperContextClass(null);
+                this.attributesHandlerMap = null;
             }
 
         };
@@ -402,6 +417,11 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         return resultAttributesFactoryClass;
     }
 
+    protected Class<? extends DirectionFormatter> getDirectionFormatterClass(
+            Class<? extends Direction> mapToDirection) {
+        return this.directionFormatterClasses.get(mapToDirection);
+    }
+
     protected List<Class<? extends MultiModule>> getIgnoringClasses() {
         return this.ignoreClasses;
     }
@@ -428,6 +448,20 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     @Override
     public ModulesBuilder clearAttributesHanderClass() {
         this.attributesHandlerClasses.clear();
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder addDirectionFormatterClass(
+            Class<? extends Direction> mapToDirectionClass,
+            Class<? extends DirectionFormatter> directionFormatterClass) {
+        this.directionFormatterClasses.put(mapToDirectionClass, directionFormatterClass);
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder clearDirectionFormatterClass() {
+        this.directionFormatterClasses.clear();
         return this;
     }
 

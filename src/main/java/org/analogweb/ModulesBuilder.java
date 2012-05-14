@@ -57,6 +57,11 @@ public interface ModulesBuilder {
 
     ModulesBuilder clearAttributesHanderClass();
 
+    ModulesBuilder addDirectionFormatterClass(Class<? extends Direction> mapToDirectionClass,
+            Class<? extends DirectionFormatter> directionFormatterClass);
+
+    ModulesBuilder clearDirectionFormatterClass();
+
     ModulesBuilder ignore(Class<? extends MultiModule> multiModuleClass);
 
 }

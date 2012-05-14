@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.analogweb.DirectionFormatter;
 import org.analogweb.DirectionFormatterAware;
-import org.analogweb.DirectionFormatters;
 import org.analogweb.RequestContext;
 
 /**
