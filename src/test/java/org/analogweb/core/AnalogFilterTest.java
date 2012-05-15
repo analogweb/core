@@ -129,13 +129,13 @@ public class AnalogFilterTest {
         when(directionResolver.resolve(result, metadata, requestContext)).thenReturn(direction);
         DirectionHandler directionHandler = mock(DirectionHandler.class);
         when(modules.getDirectionHandler()).thenReturn(directionHandler);
-        doNothing().when(directionHandler).handleResult(direction, requestContext,
+        doNothing().when(directionHandler).handleResult(direction, null, requestContext,
                 requestAttributes);
 
         filter.init(filterConfig);
         filter.doFilter(request, response, filterChain);
 
-        verify(directionHandler).handleResult(direction, requestContext, requestAttributes);
+        verify(directionHandler).handleResult(direction, null,requestContext, requestAttributes);
     }
 
     @Test

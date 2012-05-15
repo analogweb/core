@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.analogweb.Application;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.Direction;
+import org.analogweb.DirectionFormatter;
 import org.analogweb.DirectionHandler;
 import org.analogweb.DirectionResolver;
 import org.analogweb.ExceptionHandler;
@@ -101,9 +102,17 @@ public class AnalogFilter implements Filter {
             DirectionResolver resultResolver = modules.getDirectionResolver();
             Direction result = resultResolver.resolve(invocationResult, metadata, context);
             log.log(Markers.LIFECYCLE, "DL000008",invocationResult, result);
+            
+            DirectionFormatter resultFormatter = modules.findDirectionFormatter(result.getClass());
+
+            if (resultFormatter != null) {
+                log.log(Markers.LIFECYCLE, "DL000010", result, resultFormatter);
+            } else {
+                log.log(Markers.LIFECYCLE, "DL000011", result);
+            }
 
             DirectionHandler resultHandler = modules.getDirectionHandler();
-            resultHandler.handleResult(result, context, attributes);
+            resultHandler.handleResult(result, resultFormatter, context, attributes);
         } catch (Exception e) {
             ExceptionHandler handler = modules.getExceptionHandler();
             log.log(Markers.LIFECYCLE, "DL000009", e, handler);
