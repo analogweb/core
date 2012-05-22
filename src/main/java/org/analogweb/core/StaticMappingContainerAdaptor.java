@@ -65,6 +65,8 @@ public final class StaticMappingContainerAdaptor implements ContainerAdaptor {
         Assertion.notNull(concleteType, "conclete type");
         T value = ReflectionUtils.getInstanceQuietly(concleteType);
         if (value == null) {
+            log.log(Markers.BOOT_APPLICATION, "TB000003", concleteType, getClass().getSimpleName(),
+                    requiredType);
             return;
         }
         AssignableFromClassKey requiredTypeKey = AssignableFromClassKey.valueOf(requiredType);
