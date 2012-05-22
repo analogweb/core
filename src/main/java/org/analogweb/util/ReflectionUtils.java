@@ -48,6 +48,9 @@ public final class ReflectionUtils {
             argTypes.add(arg.getClass());
         }
         try {
+            if(args == null || args.length == 0){
+                return (T)clazz.newInstance();
+            }
             final Constructor<T> constructor = clazz.getConstructor(argTypes
                     .toArray(new Class<?>[argTypes.size()]));
             AccessController.doPrivileged(new PrivilegedAction<T>() {
