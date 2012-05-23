@@ -63,6 +63,9 @@ public final class StaticMappingContainerAdaptor implements ContainerAdaptor {
     public <T> void register(Class<T> requiredType, Class<? extends T> concleteType) {
         Assertion.notNull(requiredType, "instance of type");
         Assertion.notNull(concleteType, "conclete type");
+        if (concleteType.isInterface()) {
+            return;
+        }
         T value = ReflectionUtils.getInstanceQuietly(concleteType);
         if (value == null) {
             log.log(Markers.BOOT_APPLICATION, "TB000003", concleteType, getClass().getSimpleName(),
