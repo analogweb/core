@@ -83,4 +83,11 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
         return (T) this;
     }
 
+    @Override
+    public String toString() {
+        DirectionFormatter f;
+        return String.format("%s with %s", getClass(),
+                (f = getFormatter()) == null ? "default-formatter" : f);
+    }
+
 }
