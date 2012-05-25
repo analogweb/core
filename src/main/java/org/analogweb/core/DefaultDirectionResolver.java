@@ -1,6 +1,5 @@
 package org.analogweb.core;
 
-
 import org.analogweb.Direction;
 import org.analogweb.DirectionResolver;
 import org.analogweb.InvocationMetadata;
@@ -18,17 +17,25 @@ public class DefaultDirectionResolver implements DirectionResolver {
     public Direction resolve(Object invocationResult, InvocationMetadata metadata,
             RequestContext context) {
         Class<?> type = invocationResult.getClass();
-        if(type.equals(Integer.TYPE) || Integer.class.isAssignableFrom(type)){
-            return HttpStatus.valueOf((Integer)invocationResult);
+        if(type.equals(Integer.TYPE) || Number.class.isAssignableFrom(type)){
+            return numberToDirection((Number)invocationResult);
         }
         if (String.class.isAssignableFrom(type)) {
-            return Text.with((String) invocationResult);
+            return stringToDirection((String) invocationResult);
         }
         if (Direction.class.isAssignableFrom(type)) {
             return (Direction) invocationResult;
         } else {
             throw new UnresolvableResultException(invocationResult);
         }
+    }
+    
+    protected Direction numberToDirection(Number num){
+        return HttpStatus.valueOf(num.intValue());
+    }
+
+    protected Direction stringToDirection(String str){
+        return Text.with(str);
     }
 
 }
