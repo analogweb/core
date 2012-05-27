@@ -134,5 +134,17 @@ public class StringUtilsTest {
         actual = StringUtils.substring(null, 1, 0);
         assertNull(actual);
     }
+    
+    @Test
+    public void testTrimToEmpty(){
+        assertThat(StringUtils.trimToEmpty("foo "),is("foo"));
+        assertThat(StringUtils.trimToEmpty(" "),is(StringUtils.EMPTY));
+        assertThat(StringUtils.trimToEmpty("           "),is(StringUtils.EMPTY));
+        assertThat(StringUtils.trimToEmpty(" foo"),is("foo"));
+        assertThat(StringUtils.trimToEmpty(" foo "),is("foo"));
+        assertThat(StringUtils.trimToEmpty("          foo            "),is("foo"));
+        assertThat(StringUtils.trimToEmpty(null),is(StringUtils.EMPTY));
+        assertThat(StringUtils.trimToEmpty(""),is(StringUtils.EMPTY));
+    }
 
 }
