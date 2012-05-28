@@ -1,8 +1,10 @@
 package org.analogweb.core.direction;
 
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,9 +46,9 @@ public class AcceptableTest {
     @Test
     public void testRenderAcceptableXML() throws Exception {
 
-        Member m = new Member("snowgoose", 34,
+        final Member m = new Member("snowgoose", 34,
                 new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
-        String actual = schenarioRender(" text/xml", m);
+        final String actual = schenarioRender(" text/xml", m);
         assertThat(
                 actual,
                 is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age><birthDay>1978-04-20T00:00:00+09:00</birthDay></member>"));
@@ -55,9 +57,9 @@ public class AcceptableTest {
     @Test
     public void testRenderAcceptableSecondXML() throws Exception {
 
-        Member m = new Member("snowgoose", 34,
+        final Member m = new Member("snowgoose", 34,
                 new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
-        String actual = schenarioRender(" text/x-dvi; q=0.8, application/xml, */*", m);
+        final String actual = schenarioRender(" text/x-dvi; q=0.8, application/xml, */*", m);
         assertThat(
                 actual,
                 is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age><birthDay>1978-04-20T00:00:00+09:00</birthDay></member>"));
@@ -66,9 +68,9 @@ public class AcceptableTest {
     @Test
     public void testRenderAcceptableXMLWithQuality() throws Exception {
 
-        Member m = new Member("snowgoose", 34,
+        final Member m = new Member("snowgoose", 34,
                 new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
-        String actual = schenarioRender(" text/x-dvi; q=0.8, text/xml; q=6, */*", m);
+        final String actual = schenarioRender(" text/x-dvi; q=0.8, text/xml; q=6, */*", m);
         assertThat(
                 actual,
                 is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age><birthDay>1978-04-20T00:00:00+09:00</birthDay></member>"));
@@ -77,27 +79,27 @@ public class AcceptableTest {
     @Test
     public void testRenderAcceptableJSON() throws Exception {
 
-        Member m = new Member("snowgoose", 34,
+        final Member m = new Member("snowgoose", 34,
                 new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
-        String actual = schenarioRender(" application/json, application/xml", m);
+        final String actual = schenarioRender(" application/json, application/xml", m);
         assertThat(actual, is("{\"age\": 34,\"birthDay\": 261846000000,\"name\": \"snowgoose\"}"));
     }
 
     @Test
     public void testRenderAcceptableAny() throws Exception {
 
-        Member m = new Member("snowgoose", 34,
+        final Member m = new Member("snowgoose", 34,
                 new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
-        String accept = " text/x-dvi,image/png, */*";
+        final String accept = " text/x-dvi,image/png, */*";
         when(request.getHeader("Accept")).thenReturn(accept);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
             @Override
-            public void write(int arg0) throws IOException {
+            public void write(final int arg0) throws IOException {
                 out.write(arg0);
             }
         });
-        Direction anyDirection = mock(Direction.class);
+        final Direction anyDirection = mock(Direction.class);
         Acceptable.as(m).mapToAny(anyDirection).render(context);
         verify(anyDirection).render(context);
     }
@@ -105,9 +107,9 @@ public class AcceptableTest {
     @Test
     public void testRenderSwitAcceptableAny() throws Exception {
 
-        Member m = new Member("snowgoose", 34,
+        final Member m = new Member("snowgoose", 34,
                 new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
-        String actual = schenarioRender(" text/x-dvi,image/png, */*", m);
+        final String actual = schenarioRender(" text/x-dvi,image/png, */*", m);
         // mapped json.
         assertThat(actual, is("{\"age\": 34,\"birthDay\": 261846000000,\"name\": \"snowgoose\"}"));
     }
@@ -115,11 +117,11 @@ public class AcceptableTest {
     @Test
     public void testRenderSwitchedAcceptable() throws Exception {
 
-        Member m = new Member("snowgoose", 34,
+        final Member m = new Member("snowgoose", 34,
                 new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
-        String accept = " text/x-dvi,image/png, application/json";
+        final String accept = " text/x-dvi,image/png, application/json";
         when(request.getHeader("Accept")).thenReturn(accept);
-        Direction replaceDirection = mock(Direction.class);
+        final Direction replaceDirection = mock(Direction.class);
         Acceptable.as(m).map(replaceDirection, "application/json").render(context);
         verify(replaceDirection).render(context);
     }
@@ -127,9 +129,9 @@ public class AcceptableTest {
     @Test
     public void testRenderNotAcceptable() throws Exception {
 
-        Member m = new Member("snowgoose", 34,
+        final Member m = new Member("snowgoose", 34,
                 new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
-        String actual = schenarioRender(" text/x-dvi,image/png, text/*", m);
+        final String actual = schenarioRender(" text/x-dvi,image/png, text/*", m);
         assertThat(actual, is(""));
         verify(response).setStatus(406);
     }
@@ -137,22 +139,22 @@ public class AcceptableTest {
     @Test
     public void testRenderNotAcceptable2() throws Exception {
 
-        Member m = new Member("snowgoose", 34,
+        final Member m = new Member("snowgoose", 34,
                 new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
-        String accept = " text/x-dvi,image/png, text/javascript, */*";
+        final String accept = " text/x-dvi,image/png, text/javascript, */*";
         when(request.getHeader("Accept")).thenReturn(accept);
-        Direction replaceDirection = mock(Direction.class);
+        final Direction replaceDirection = mock(Direction.class);
         Acceptable.as(m).mapToAny(replaceDirection).render(context);
         verify(replaceDirection).render(context);
     }
 
-    private String schenarioRender(String accept, Member m) throws Exception {
+    private String schenarioRender(final String accept, final Member m) throws Exception {
 
         when(request.getHeader("Accept")).thenReturn(accept);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
             @Override
-            public void write(int arg0) throws IOException {
+            public void write(final int arg0) throws IOException {
                 out.write(arg0);
             }
         });
@@ -163,7 +165,7 @@ public class AcceptableTest {
 
     @Test
     public void testComparator() {
-        List<String> accepts = Arrays.asList(" text/plain", " application/*;level=1",
+        final List<String> accepts = Arrays.asList(" text/plain", " application/*;level=1",
                 " application/json", " */*", " text/html;q=1", " text/*");
         Collections.sort(accepts, new Acceptable.AcceptHeaderComparator());
         assertThat(accepts.size(), is(6));
@@ -188,7 +190,7 @@ public class AcceptableTest {
             super();
         }
 
-        public Member(String name, int age, Date birthDay) {
+        public Member(final String name, final int age, final Date birthDay) {
             super();
             this.name = name;
             this.age = age;

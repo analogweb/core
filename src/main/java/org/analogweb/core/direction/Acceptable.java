@@ -23,8 +23,8 @@ import org.analogweb.util.StringUtils;
  * (例えば、[text/xml]や[application/xml]をキーとして{@link Xml}がマッピング
  * されています。)[*&#47;*](全てのメディアタイプ)にはデフォルトで{@link Json}が
  * マッピングされています。複数のメディアタイプがヘッダから検出される場合は、
- * <a href="#">RFC2616 Section 14.1</a>に示される順序に従って、対応する
- * {@link Direction}を検索し、評価します。
+ * <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC2616 Section 14.1</a>
+ * に示される順序に従って、対応する{@link Direction}を検索し、評価します。
  * (この時、品質値(q)などの付加的なパラメータは全て加味されません。)<br/>
  * 評価する対象の{@link Direction}が存在しない（マッピングされていない）場合は、
  * {@link HttpStatus#NOT_ACCEPTABLE}を返します。
@@ -40,7 +40,6 @@ public class Acceptable implements Direction {
             put("application/json", Creators.json());
             put("application/xml", Creators.xml());
             put("text/xml", Creators.xml());
-            put("text/plain", Creators.text());
             put(ANY_TYPE, Creators.json());
         }
     };
