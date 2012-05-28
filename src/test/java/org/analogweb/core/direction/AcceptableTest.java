@@ -27,7 +27,7 @@ import org.junit.Test;
  * @author snowgoose
  */
 public class AcceptableTest {
-    
+
     private RequestContext context;
     private HttpServletRequest request;
     private HttpServletResponse response;
@@ -44,7 +44,8 @@ public class AcceptableTest {
     @Test
     public void testRenderAcceptableXML() throws Exception {
 
-        Member m = new Member("snowgoose", 34, new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        Member m = new Member("snowgoose", 34,
+                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
         String actual = schenarioRender(" text/xml", m);
         assertThat(
                 actual,
@@ -54,7 +55,8 @@ public class AcceptableTest {
     @Test
     public void testRenderAcceptableSecondXML() throws Exception {
 
-        Member m = new Member("snowgoose", 34, new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        Member m = new Member("snowgoose", 34,
+                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
         String actual = schenarioRender(" text/x-dvi; q=0.8, application/xml, */*", m);
         assertThat(
                 actual,
@@ -64,7 +66,8 @@ public class AcceptableTest {
     @Test
     public void testRenderAcceptableXMLWithQuality() throws Exception {
 
-        Member m = new Member("snowgoose", 34, new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        Member m = new Member("snowgoose", 34,
+                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
         String actual = schenarioRender(" text/x-dvi; q=0.8, text/xml; q=6, */*", m);
         assertThat(
                 actual,
@@ -74,77 +77,80 @@ public class AcceptableTest {
     @Test
     public void testRenderAcceptableJSON() throws Exception {
 
-        Member m = new Member("snowgoose", 34, new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        Member m = new Member("snowgoose", 34,
+                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
         String actual = schenarioRender(" application/json, application/xml", m);
-        assertThat(
-                actual,
-                is("{\"age\": 34,\"birthDay\": 261846000000,\"name\": \"snowgoose\"}"));
+        assertThat(actual, is("{\"age\": 34,\"birthDay\": 261846000000,\"name\": \"snowgoose\"}"));
     }
 
     @Test
     public void testRenderAcceptableAny() throws Exception {
 
-        Member m = new Member("snowgoose", 34, new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        Member m = new Member("snowgoose", 34,
+                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
         String accept = " text/x-dvi,image/png, */*";
         when(request.getHeader("Accept")).thenReturn(accept);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(response.getOutputStream()).thenReturn(new ServletOutputStream() {            
+        when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
             @Override
             public void write(int arg0) throws IOException {
                 out.write(arg0);
             }
         });
         Direction anyDirection = mock(Direction.class);
-        Acceptable.as(m).matchesAny(anyDirection).render(context);
+        Acceptable.as(m).mapToAny(anyDirection).render(context);
         verify(anyDirection).render(context);
     }
 
     @Test
     public void testRenderSwitAcceptableAny() throws Exception {
 
-        Member m = new Member("snowgoose", 34, new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        Member m = new Member("snowgoose", 34,
+                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
         String actual = schenarioRender(" text/x-dvi,image/png, */*", m);
         // mapped json.
-        assertThat(
-                actual,
-                is("{\"age\": 34,\"birthDay\": 261846000000,\"name\": \"snowgoose\"}"));
+        assertThat(actual, is("{\"age\": 34,\"birthDay\": 261846000000,\"name\": \"snowgoose\"}"));
     }
 
     @Test
     public void testRenderSwitchedAcceptable() throws Exception {
 
-        Member m = new Member("snowgoose", 34, new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        Member m = new Member("snowgoose", 34,
+                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
         String accept = " text/x-dvi,image/png, application/json";
         when(request.getHeader("Accept")).thenReturn(accept);
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(response.getOutputStream()).thenReturn(new ServletOutputStream() {            
-            @Override
-            public void write(int arg0) throws IOException {
-                out.write(arg0);
-            }
-        });
         Direction replaceDirection = mock(Direction.class);
-        Acceptable.as(m).map(replaceDirection,"application/json").render(context);
+        Acceptable.as(m).map(replaceDirection, "application/json").render(context);
         verify(replaceDirection).render(context);
     }
 
     @Test
     public void testRenderNotAcceptable() throws Exception {
 
-        Member m = new Member("snowgoose", 34, new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        Member m = new Member("snowgoose", 34,
+                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
         String actual = schenarioRender(" text/x-dvi,image/png, text/*", m);
-        assertThat(
-                actual,
-                is(""));
+        assertThat(actual, is(""));
         verify(response).setStatus(406);
     }
 
+    @Test
+    public void testRenderNotAcceptable2() throws Exception {
 
-    private String schenarioRender(String accept,Member m) throws Exception {
+        Member m = new Member("snowgoose", 34,
+                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        String accept = " text/x-dvi,image/png, text/javascript, */*";
+        when(request.getHeader("Accept")).thenReturn(accept);
+        Direction replaceDirection = mock(Direction.class);
+        Acceptable.as(m).mapToAny(replaceDirection).render(context);
+        verify(replaceDirection).render(context);
+    }
+
+    private String schenarioRender(String accept, Member m) throws Exception {
 
         when(request.getHeader("Accept")).thenReturn(accept);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(response.getOutputStream()).thenReturn(new ServletOutputStream() {            
+        when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
             @Override
             public void write(int arg0) throws IOException {
                 out.write(arg0);
@@ -154,13 +160,19 @@ public class AcceptableTest {
         Acceptable.as(m).render(context);
         return new String(out.toByteArray());
     }
-    
+
     @Test
     public void testComparator() {
         List<String> accepts = Arrays.asList(" text/plain", " application/*;level=1",
                 " application/json", " */*", " text/html;q=1", " text/*");
         Collections.sort(accepts, new Acceptable.AcceptHeaderComparator());
-        System.out.println(accepts);
+        assertThat(accepts.size(), is(6));
+        assertThat(accepts.get(0), is(" text/html;q=1"));
+        assertThat(accepts.get(1), is(" text/plain"));
+        assertThat(accepts.get(2), is(" application/json"));
+        assertThat(accepts.get(3), is(" application/*;level=1"));
+        assertThat(accepts.get(4), is(" text/*"));
+        assertThat(accepts.get(5), is(" */*"));
     }
 
     @XmlRootElement
@@ -171,24 +183,29 @@ public class AcceptableTest {
         private int age;
         @XmlElement
         private Date birthDay;
+
         public Member() {
             super();
         }
+
         public Member(String name, int age, Date birthDay) {
             super();
             this.name = name;
             this.age = age;
             this.birthDay = birthDay;
         }
+
         public String getName() {
             return name;
         }
+
         public int getAge() {
             return age;
         }
+
         public Date getBirthDay() {
             return birthDay;
         }
-        
+
     }
 }

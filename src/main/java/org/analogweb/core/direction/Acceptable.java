@@ -17,13 +17,24 @@ import org.analogweb.RequestContext;
 import org.analogweb.util.StringUtils;
 
 /**
+ * リクエストヘッダ[Accept]に適合する{@link Direction}を選択して
+ * レンダリング処理を委譲する{@link Direction}の実装です。<br/>
+ * 委譲する{@link Direction}は対応するメディアタイプをキーとしてマッピングされます。
+ * (例えば、[text/xml]や[application/xml]をキーとして{@link Xml}がマッピング
+ * されています。)[*&#47;*](全てのメディアタイプ)にはデフォルトで{@link Json}が
+ * マッピングされています。複数のメディアタイプがヘッダから検出される場合は、
+ * <a href="#">RFC2616 Section 14.1</a>に示される順序に従って、対応する
+ * {@link Direction}を検索し、評価します。
+ * (この時、品質値(q)などの付加的なパラメータは全て加味されません。)<br/>
+ * 評価する対象の{@link Direction}が存在しない（マッピングされていない）場合は、
+ * {@link HttpStatus#NOT_ACCEPTABLE}を返します。
  * @author snowgoose
  */
 public class Acceptable implements Direction {
 
     private Object source;
-    private static final String ANY_TYPE = "*/*";
-    private static final Map<String, Creator> DEFAULT_MEDIA_TYPE_MAP = new HashMap<String, Creator>() {
+    protected static final String ANY_TYPE = "*/*";
+    protected static final Map<String, Creator> DEFAULT_MEDIA_TYPE_MAP = new HashMap<String, Creator>() {
         private static final long serialVersionUID = 1L;
         {
             put("application/json", Creators.json());
@@ -33,14 +44,24 @@ public class Acceptable implements Direction {
             put(ANY_TYPE, Creators.json());
         }
     };
-    private Map<String, Creator> mediaTypeMap = new HashMap<String, Creator>(DEFAULT_MEDIA_TYPE_MAP);
+    private Map<String, Creator> mediaTypeMap;
 
+    /**
+     * {@link Acceptable}のインスタンスを生成します。
+     * @param obj 委譲される{@link Direction}に使用されるオブジェクト
+     * @return {@link Acceptable}
+     */
     public static Acceptable as(Object obj) {
         return new Acceptable(obj);
     }
 
+    /**
+     * コンストラクタ
+     * @param obj 委譲される{@link Direction}に使用されるオブジェクト
+     */
     protected Acceptable(Object obj) {
         this.source = obj;
+        this.mediaTypeMap = new HashMap<String, Creator>(DEFAULT_MEDIA_TYPE_MAP);
     }
 
     @Override
@@ -58,10 +79,22 @@ public class Acceptable implements Direction {
         }
     }
 
-    public Acceptable matchesAny(Direction matchesAny) {
+    /**
+     * map(matchesAny,ANY_TYPE)のショートカットです。
+     * @param matchesAny 全てのメディアタイプに対応する{@link Direction}
+     * @return 自身のインスタンス
+     */
+    public Acceptable mapToAny(Direction matchesAny) {
         return map(matchesAny, ANY_TYPE);
     }
 
+    /**
+     * 指定したメディアタイプが検出された場合に、処理を委譲する{@link Direction}
+     * をマップします。既に同じメディアタイプでマップされている場合は上書きされます。
+     * @param matchesAny 全てのメディアタイプに対応する{@link Direction}
+     * @param mediaTypesStartWith この{@link Direction}をマップする全てのメディアタイプ
+     * @return 自身のインスタンス
+     */
     public Acceptable map(Direction matches, String... mediaTypesStartWith) {
         for (String mediaTypeStartWith : mediaTypesStartWith) {
             putToMediaTypeMap(mediaTypeStartWith, Creators.self(matches));
