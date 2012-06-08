@@ -1,10 +1,12 @@
 package org.analogweb.core;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 
@@ -215,13 +217,13 @@ public class DefaultModulesBuilder implements ModulesBuilder {
             private <T> List<T> getComponentInstances(ContainerAdaptor adaptor,
                     List<Class<? extends T>> componentClasses) {
                 List<T> instances = new ArrayList<T>();
-                List<String> instanceFQDNs = new ArrayList<String>();
+                Set<String> instanceFQDNs = new HashSet<String>();
                 for (Class<? extends T> clazz : componentClasses) {
-                    List<? extends T> clazzInstances = adaptor.getInstancesOfType(clazz);
-                    if (clazzInstances.isEmpty()) {
-                        clazzInstances = getOptionalContainerAdaptor().getInstancesOfType(clazz);
-                    }
+                    LinkedList<T> clazzInstances = new LinkedList<T>();
+                    clazzInstances.addAll(adaptor.getInstancesOfType(clazz));
+                    clazzInstances.addAll(getOptionalContainerAdaptor().getInstancesOfType(clazz));
                     for (T clazzInstance : clazzInstances) {
+                        // filter same FQDN's instance.
                         String FQDN = clazzInstance.getClass().getCanonicalName();
                         if (instanceFQDNs.contains(FQDN) == false) {
                             instances.add(clazzInstance);
