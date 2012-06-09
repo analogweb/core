@@ -27,7 +27,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
     }
 
     @Override
-    public void onInvoke(Object instance, Class<?>[] argumentTypes, InvocationArguments args) {
+    public void onInvoke(Method method, InvocationMetadata metadata, InvocationArguments args) {
         // nop.
     }
 

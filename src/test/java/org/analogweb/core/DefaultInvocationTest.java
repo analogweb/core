@@ -14,18 +14,16 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
+import org.analogweb.InvocationProcessor.InvocationArguments;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.InvocationProcessor.InvocationArguments;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
-import org.analogweb.core.DefaultInvocation;
 import org.analogweb.exception.InvocationFailureException;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ReflectionUtils;
@@ -102,7 +100,7 @@ public class DefaultInvocationTest {
 
         verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
                 converters);
-        verify(processor).onInvoke(eq(instance), eq(argumentTypes), isA(InvocationArguments.class));
+        verify(processor).onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class));
         verify(processor).postInvoke("foo is something!!", invocation, metadata, context,
                 attributes, resultAttributes);
         verify(processor).afterCompletion(context, invocation, metadata, actionResult);

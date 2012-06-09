@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-
 import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
@@ -66,7 +65,7 @@ public class DefaultInvocation implements Invocation {
         Object invocationResult = null;
         try {
             for (InvocationProcessor processor : processors) {
-                processor.onInvoke(getInvocationInstance(), methodArgumentTypes, argumentList);
+                processor.onInvoke(method, getMetadata(), argumentList);
             }
             invocationResult = invoke(method, getInvocationInstance(),
                     argumentList.toArray());

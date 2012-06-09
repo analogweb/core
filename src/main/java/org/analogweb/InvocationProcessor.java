@@ -12,7 +12,7 @@ public interface InvocationProcessor extends MultiModule {
     /**
      * {@link Invocation}の実行前に処理を追加します。<br/>
      * 通常は引数に指定された{@link Invocation}をそのまま返します。
-     * @param method {@link Method}
+     * @param method 実行対象の{@link Method}
      * @param invocation {@link Invocation}
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
@@ -29,11 +29,11 @@ public interface InvocationProcessor extends MultiModule {
      * {@link Invocation}に引き渡される、確定されたパラメータを変更することは
      * できません。未確定(null)であるパラメータにたいする値の追加を行うことが
      * 可能です。
-     * @param instance {@link Invocation}により、実行されるインスタンス。
-     * @param argumentTypes 実行される{@link Invocation}に渡されるパラメータの型
+     * @param method 実行対象の{@link Method}
+     * @param metadata {@link InvocationMetadata}
      * @param args {@link InvocationArguments}
      */
-    void onInvoke(Object instance,Class<?>[] argumentTypes, InvocationArguments args);
+    void onInvoke(Method method,InvocationMetadata metadata, InvocationArguments args);
     
     /**
      * {@link Invocation}実行時に例外が発生した場合に、処理を追加します。
