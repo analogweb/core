@@ -21,7 +21,7 @@ public interface InvocationFactory extends Module {
      * @param processors 生成される{@link Invocation}に適用される全ての{@link InvocationProcessor}
      * @return　生成された{@link Invocation}
      */
-    Invocation createActionInvocation(ContainerAdaptor instanceProvider, InvocationMetadata metadata,
+    Invocation createInvocation(ContainerAdaptor instanceProvider, InvocationMetadata metadata,
             RequestAttributes attributes, ResultAttributes resultAttributes,
             RequestContext context, TypeMapperContext converters,
             List<InvocationProcessor> processors);

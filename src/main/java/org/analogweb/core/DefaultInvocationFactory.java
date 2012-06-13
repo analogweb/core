@@ -24,7 +24,7 @@ public class DefaultInvocationFactory implements InvocationFactory {
 
     private static final Log log = Logs.getLog(DefaultInvocationFactory.class);
 
-    public Invocation createActionInvocation(ContainerAdaptor instanceProvider, InvocationMetadata metadata,
+    public Invocation createInvocation(ContainerAdaptor instanceProvider, InvocationMetadata metadata,
             RequestAttributes attributes, ResultAttributes resultAttributes,
             RequestContext context, TypeMapperContext converters,
             List<InvocationProcessor> processors) {

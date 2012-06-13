@@ -75,7 +75,7 @@ public class DefaultInvokerTest {
         when(adaptor.getInstanceOfType(MockActions.class)).thenReturn(actionInstance);
         when(metadata.getInvocationClass()).thenReturn((Class)MockActions.class);
         when(
-                factory.createActionInvocation(adaptor, metadata, attributes,
+                factory.createInvocation(adaptor, metadata, attributes,
                         resultAttributes, context, null, processors)).thenReturn(invocation);
 
         Invocation invocation = mock(Invocation.class);

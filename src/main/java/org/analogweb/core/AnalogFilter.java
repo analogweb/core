@@ -90,7 +90,7 @@ public class AnalogFilter implements Filter {
 
             ResultAttributes resultAttributes = modules.getResultAttributes();
             
-            Invocation invocation = modules.getInvocationFactory().createActionInvocation(
+            Invocation invocation = modules.getInvocationFactory().createInvocation(
                     invocationInstances, metadata, attributes, resultAttributes, context,
                     modules.getTypeMapperContext(), modules.getInvocationProcessors());
 

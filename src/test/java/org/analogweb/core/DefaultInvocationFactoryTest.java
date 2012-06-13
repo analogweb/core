@@ -60,7 +60,7 @@ public class DefaultInvocationFactoryTest {
         when(provider.getInstanceOfType(DefaultActionInvocationFactoryTestMockActions.class)).thenReturn(actionInstance);
         when(metadata.getInvocationClass()).thenReturn((Class)DefaultActionInvocationFactoryTestMockActions.class);
         DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        Invocation invocation = factory.createActionInvocation(provider, metadata,
+        Invocation invocation = factory.createInvocation(provider, metadata,
                 attributes, resultAttributes, context, converters, processors);
         assertSame(invocation.getInvocationInstance(), actionInstance);
         assertTrue(invocation.getPreparedArgs().isEmpty());
