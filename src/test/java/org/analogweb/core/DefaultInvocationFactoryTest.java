@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
@@ -19,9 +18,11 @@ import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
-import org.analogweb.core.DefaultInvocationFactory;
+import org.analogweb.exception.UnresolvableInvocationException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author snowgoose
@@ -36,6 +37,9 @@ public class DefaultInvocationFactoryTest {
     private TypeMapperContext converters;
     private List<InvocationProcessor> processors;
     private InvocationProcessor processor;
+    
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     /**
      * @throws java.lang.Exception
@@ -64,6 +68,17 @@ public class DefaultInvocationFactoryTest {
                 attributes, resultAttributes, context, converters, processors);
         assertSame(invocation.getInvocationInstance(), actionInstance);
         assertTrue(invocation.getPreparedArgs().isEmpty());
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void testCreateWithNullInstance() {
+        thrown.expect(UnresolvableInvocationException.class);
+        when(provider.getInstanceOfType(DefaultActionInvocationFactoryTestMockActions.class)).thenReturn(null);
+        when(metadata.getInvocationClass()).thenReturn((Class)DefaultActionInvocationFactoryTestMockActions.class);
+        DefaultInvocationFactory factory = new DefaultInvocationFactory();
+        factory.createInvocation(provider, metadata,
+                attributes, resultAttributes, context, converters, processors);
     }
 
     @On
