@@ -2,7 +2,6 @@ package org.analogweb.core;
 
 import java.util.List;
 
-
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationFactory;
@@ -12,27 +11,39 @@ import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
+import org.analogweb.exception.UnresolvableInvocationException;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
 
-
 /**
+ * 既定の{@link InvocationFactory}の実装です。
  * @author snowgoose
  */
 public class DefaultInvocationFactory implements InvocationFactory {
 
     private static final Log log = Logs.getLog(DefaultInvocationFactory.class);
 
-    public Invocation createActionInvocation(ContainerAdaptor instanceProvider, InvocationMetadata metadata,
+    public Invocation createInvocation(ContainerAdaptor instanceProvider, InvocationMetadata metadata,
             RequestAttributes attributes, ResultAttributes resultAttributes,
             RequestContext context, TypeMapperContext converters,
             List<InvocationProcessor> processors) {
-        Object invocationInstance = instanceProvider
-                .getInstanceOfType(metadata.getInvocationClass());
+        Object invocationInstance = resolveInvocationInstance(instanceProvider, metadata,
+                attributes, context);
         log.log(Markers.LIFECYCLE, "DL000001", invocationInstance, instanceProvider);
         return new DefaultInvocation(invocationInstance, metadata, attributes, resultAttributes,
                 context, converters, processors);
+    }
+    
+    protected Object resolveInvocationInstance(ContainerAdaptor instanceProvider,
+            InvocationMetadata metadata, RequestAttributes attributes, RequestContext context)
+            throws UnresolvableInvocationException {
+        Object invocationInstance = instanceProvider.getInstanceOfType(metadata
+                .getInvocationClass());
+        if (invocationInstance == null) {
+            throw new UnresolvableInvocationException(metadata);
+        }
+        return invocationInstance;
     }
 
 }

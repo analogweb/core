@@ -65,7 +65,10 @@ public class DefaultInvocation implements Invocation {
         Object invocationResult = null;
         try {
             for (InvocationProcessor processor : processors) {
-                processor.onInvoke(method, getMetadata(), argumentList);
+                Object interraption = processor.onInvoke(method, getMetadata(), argumentList);
+                if (interraption != null) {
+                    return interraption;
+                }
             }
             invocationResult = invoke(method, getInvocationInstance(),
                     argumentList.toArray());
@@ -76,7 +79,10 @@ public class DefaultInvocation implements Invocation {
             }
         } catch (Exception e) {
             for (InvocationProcessor processor : processors) {
-                processor.processException(e, getRequestContext(), invocation, getMetadata());
+                Object interraption = processor.processException(e, getRequestContext(), invocation, getMetadata());
+                if(interraption != null){
+                    return interraption;
+                }
             }
         } finally {
             for (InvocationProcessor processor : processors) {

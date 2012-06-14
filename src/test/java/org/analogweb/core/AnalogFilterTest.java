@@ -117,7 +117,7 @@ public class AnalogFilterTest {
         when(modules.getInvocationProcessors()).thenReturn(processors);
         Invocation invocation = mock(Invocation.class);
         when(modules.getInvocationFactory()).thenReturn(invocationFactory);
-        when(invocationFactory.createActionInvocation(provider, metadata, requestAttributes, resultAttributes, requestContext, typeContext, processors)).thenReturn(invocation);
+        when(invocationFactory.createInvocation(provider, metadata, requestAttributes, resultAttributes, requestContext, typeContext, processors)).thenReturn(invocation);
         Object result = new Object();
         when(invoker.invoke(invocation, metadata, requestAttributes, resultAttributes, requestContext))
                 .thenReturn(result);
@@ -172,7 +172,7 @@ public class AnalogFilterTest {
         when(modules.getInvocationProcessors()).thenReturn(processors);
         Invocation invocation = mock(Invocation.class);
         when(modules.getInvocationFactory()).thenReturn(invocationFactory);
-        when(invocationFactory.createActionInvocation(provider, metadata, requestAttributes, resultAttributes, requestContext, typeContext, processors)).thenReturn(invocation);
+        when(invocationFactory.createInvocation(provider, metadata, requestAttributes, resultAttributes, requestContext, typeContext, processors)).thenReturn(invocation);
         when(invoker.invoke(invocation, metadata, requestAttributes, resultAttributes, requestContext))
                 .thenThrow(ex);
 
