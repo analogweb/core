@@ -27,12 +27,13 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
     }
 
     @Override
-    public void onInvoke(Object instance, Class<?>[] argumentTypes, InvocationArguments args) {
+    public Object onInvoke(Object instance, Class<?>[] argumentTypes, InvocationArguments args) {
         // nop.
+        return null;
     }
 
     @Override
-    public void processException(Exception ex, RequestContext request, Invocation invocation,
+    public Object processException(Exception ex, RequestContext request, Invocation invocation,
             InvocationMetadata metadata) {
         if (ex instanceof InvocationFailureException) {
             throw (InvocationFailureException) ex;

@@ -27,13 +27,17 @@ public interface InvocationProcessor extends MultiModule {
      * 全ての{@link InvocationProcessor}の#prepareInvoke実行後、
      * {@link Invocation#invoke()}が実行される直前に行う処理を追加します。<br/>
      * {@link Invocation}に引き渡される、確定されたパラメータを変更することは
-     * できません。未確定(null)であるパラメータにたいする値の追加を行うことが
-     * 可能です。
+     * できません。未確定(null)であるパラメータに対する値の追加を行うことが
+     * 可能です。{@link Invocation}を引き続き実行する場合はnullを返します。
+     * {@code null}以外の値が返される場合、それを実行結果として処理し、
+     * {@link Invocation}および続く{@link InvocationProcessor}の処理は
+     * 中断されます。
      * @param instance {@link Invocation}により、実行されるインスタンス。
      * @param argumentTypes 実行される{@link Invocation}に渡されるパラメータの型
      * @param args {@link InvocationArguments}
+     * @return 実行処理を中断する結果({@link Direction}など。)
      */
-    void onInvoke(Object instance,Class<?>[] argumentTypes, InvocationArguments args);
+    Object onInvoke(Object instance,Class<?>[] argumentTypes, InvocationArguments args);
     
     /**
      * {@link Invocation}実行時に例外が発生した場合に、処理を追加します。
@@ -41,8 +45,9 @@ public interface InvocationProcessor extends MultiModule {
      * @param request {@link RequestContext}
      * @param invocation 例外が発生した対象の{@link Invocation}
      * @param metadata {@link InvocationMetadata}
+     * @return 実行処理を中断する結果({@link Direction}など。)
      */
-    void processException(Exception ex, RequestContext request, Invocation invocation,
+    Object processException(Exception ex, RequestContext request, Invocation invocation,
             InvocationMetadata metadata);
 
     /**
@@ -61,7 +66,8 @@ public interface InvocationProcessor extends MultiModule {
     /**
      * {@link Invocation}実行後に処理を追加します。<br/>
      * このメソッドは{@link Invocation}の実行において例外が発生した場合でも
-     * 実行されます。
+     * {@link #processException(Exception, RequestContext, Invocation, InvocationMetadata)}
+     * で結果が買えされない場合実行されます。
      * @param request {@link RequestContext}
      * @param invocation {@link Invocation}
      * @param metadata {@link InvocationMetadata}

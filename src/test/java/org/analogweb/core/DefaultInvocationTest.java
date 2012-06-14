@@ -14,18 +14,16 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
+import org.analogweb.InvocationProcessor.InvocationArguments;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.InvocationProcessor.InvocationArguments;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
-import org.analogweb.core.DefaultInvocation;
 import org.analogweb.exception.InvocationFailureException;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ReflectionUtils;
@@ -106,6 +104,39 @@ public class DefaultInvocationTest {
         verify(processor).postInvoke("foo is something!!", invocation, metadata, context,
                 attributes, resultAttributes);
         verify(processor).afterCompletion(context, invocation, metadata, actionResult);
+    }
+
+    @Test
+    public void testInvokeWithResultOnInvoke() {
+
+        MockActions instance = new MockActions();
+        final String methodName = "doSomething";
+        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
+                methodName, argumentTypes);
+        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
+                context, converters, processors);
+
+        when(metadata.getMethodName()).thenReturn(methodName);
+        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+                .thenAnswer(new Answer<Invocation>() {
+
+                    @Override
+                    public Invocation answer(InvocationOnMock mock) throws Throwable {
+                        invocation.putPreparedArg(0, "foo");
+                        return invocation;
+                    }
+                });
+        Object result = new Object();
+        when(processor.onInvoke(eq(instance),eq(argumentTypes),isA(InvocationArguments.class))).thenReturn(result);
+
+        Object actual = invocation.invoke();
+        assertThat(actual, is(result));
+
+        verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
+                converters);
+        verify(processor).onInvoke(eq(instance), eq(argumentTypes), isA(InvocationArguments.class));
     }
 
     @Test
@@ -300,6 +331,59 @@ public class DefaultInvocationTest {
         verify(processor).postInvoke("baa is something!!", invocation, metadata, context,
                 attributes, resultAttributes);
         verify(processor).afterCompletion(context, invocation, metadata, null);
+    }
+
+    @Test
+    public void testInvokeWithExceptionWithInterraption() {
+
+        InvocationProcessor processor2 = mock(InvocationProcessor.class);
+        processors.add(processor2);
+
+        MockActions actionInstance = new MockActions();
+        final String methodName = "doSomethingWithException";
+        final Class<?>[] argumentTypes = new Class<?>[] { String.class, Long.class };
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
+                argumentTypes);
+        invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
+                context, converters, processors);
+
+        when(metadata.getMethodName()).thenReturn(methodName);
+        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+
+        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+                .thenAnswer(new Answer<Invocation>() {
+                    @Override
+                    public Invocation answer(InvocationOnMock mock) throws Throwable {
+                        invocation.putPreparedArg(0, "foo");
+                        return invocation;
+                    }
+                });
+
+        when(
+                processor2.prepareInvoke(method, invocation, metadata, context, attributes,
+                        converters)).thenAnswer(new Answer<Invocation>() {
+            @Override
+            public Invocation answer(InvocationOnMock mock) throws Throwable {
+                invocation.putPreparedArg(1, 100L);
+                return invocation;
+            }
+        });
+        Object invocationResult = new Object();
+        when(
+                processor2.processException(isA(InvocationFailureException.class), eq(context),
+                        eq(invocation), eq(metadata))).thenReturn(invocationResult);
+
+        Object actual = invocation.invoke();
+
+        assertThat(actual, is(invocationResult));
+
+        verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
+                converters);
+        /*
+        verify(processor).postInvoke("baa is something!!", invocation, metadata, context,
+                attributes, resultAttributes);
+//        verify(processor).afterCompletion(context, invocation, metadata, null);
+ * */
     }
 
     private Matcher<InvocationFailureException> rootExceptionIs(final Class<? extends Throwable> t) {
