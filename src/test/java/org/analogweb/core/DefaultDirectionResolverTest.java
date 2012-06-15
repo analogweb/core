@@ -5,11 +5,9 @@ import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-
 import org.analogweb.Direction;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
-import org.analogweb.core.DefaultDirectionResolver;
 import org.analogweb.core.direction.HttpStatus;
 import org.analogweb.core.direction.Text;
 import org.junit.Before;
@@ -60,4 +58,11 @@ public class DefaultDirectionResolverTest extends DefaultDirectionResolver {
         assertThat(actual.toString(),is(invocationResult));
     }
 
+    @Test
+    public void testResolveWithoutResult() {
+        Direction invocationResult = null;
+        HttpStatus actual = (HttpStatus)resolver.resolve(invocationResult, metadata, context);
+        
+        assertThat(actual,is(sameInstance(HttpStatus.NO_CONTENT)));
+    }
 }
