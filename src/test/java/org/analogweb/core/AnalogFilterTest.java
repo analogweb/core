@@ -14,9 +14,9 @@ import java.util.Map;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 import org.analogweb.Application;
 import org.analogweb.ContainerAdaptor;
@@ -38,9 +38,10 @@ import org.analogweb.RequestPathMapping;
 import org.analogweb.ResultAttributes;
 import org.analogweb.ServletRequestPathMetadata;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.core.AnalogFilter;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author snowgoose
@@ -60,6 +61,9 @@ public class AnalogFilterTest {
     private RequestPathMapping mapping;
     private Modules modules;
     private RequestContextFactory requestContextFactory;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -142,6 +146,8 @@ public class AnalogFilterTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testInvokeWithException() throws Exception {
 
+        thrown.expect(ServletException.class);
+
         // specify application request.
         schenarioSpecifyApplicationRequest(false);
 
@@ -178,13 +184,75 @@ public class AnalogFilterTest {
 
         ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
         when(modules.getExceptionHandler()).thenReturn(exceptionHandler);
-        doNothing().when(exceptionHandler).handleException(ex);
+        when(exceptionHandler.handleException(ex)).thenThrow(new ServletException(ex));
 
         filter.init(filterConfig);
         filter.doFilter(request, response, filterChain);
 
         verify(exceptionHandler).handleException(ex);
         verify(filterChain).doFilter(request, response);
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void testInvokeWithExceptionResult() throws Exception {
+
+        // specify application request.
+        schenarioSpecifyApplicationRequest(false);
+
+        // find metadata.
+        schenarioFindMetadata(true);
+
+        // invoke path oriented method.
+        when(application.getModules()).thenReturn(modules);
+        ContainerAdaptor provider = mock(ContainerAdaptor.class);
+        when(modules.getInvocationInstanceProvider()).thenReturn(provider);
+        Class targetClass = getClass();
+        when(metadata.getInvocationClass()).thenReturn(targetClass);
+        when(provider.getInstanceOfType(targetClass)).thenReturn(this);
+        RequestAttributes requestAttributes = mock(RequestAttributes.class);
+        RequestAttributesFactory factory = mock(RequestAttributesFactory.class);
+        when(modules.getRequestAttributesFactory()).thenReturn(factory);
+        when(requestContext.resolveRequestAttributes(eq(factory), eq(metadata), isA(Map.class))).thenReturn(
+                requestAttributes);
+        ResultAttributes resultAttributes = mock(ResultAttributes.class);
+        when(modules.getResultAttributes()).thenReturn(resultAttributes);
+        Invoker invoker = mock(Invoker.class);
+        when(modules.getInvoker()).thenReturn(invoker);
+        IllegalStateException ex = new IllegalStateException();
+        TypeMapperContext typeContext = mock(TypeMapperContext.class);
+        when(modules.getTypeMapperContext()).thenReturn(typeContext);
+        InvocationFactory invocationFactory = mock(InvocationFactory.class);
+        List<InvocationProcessor> processors = new ArrayList<InvocationProcessor>();
+        when(modules.getInvocationProcessors()).thenReturn(processors);
+        Invocation invocation = mock(Invocation.class);
+        when(modules.getInvocationFactory()).thenReturn(invocationFactory);
+        when(invocationFactory.createInvocation(provider, metadata, requestAttributes, resultAttributes, requestContext, typeContext, processors)).thenReturn(invocation);
+        when(invoker.invoke(invocation, metadata, requestAttributes, resultAttributes, requestContext))
+                .thenThrow(ex);
+
+        ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
+        when(modules.getExceptionHandler()).thenReturn(exceptionHandler);
+        Direction exceptionHandlingResult = mock(Direction.class);
+        when(exceptionHandler.handleException(ex)).thenReturn(exceptionHandlingResult);
+
+        // direct result.
+        DirectionResolver directionResolver = mock(DirectionResolver.class);
+        when(modules.getDirectionResolver()).thenReturn(directionResolver);
+        when(directionResolver.resolve(exceptionHandlingResult, metadata, requestContext))
+                .thenReturn(exceptionHandlingResult);
+        DirectionHandler directionHandler = mock(DirectionHandler.class);
+        when(modules.getDirectionHandler()).thenReturn(directionHandler);
+        doNothing().when(directionHandler).handleResult(exceptionHandlingResult, null,
+                requestContext, requestAttributes);
+
+        filter.init(filterConfig);
+        filter.doFilter(request, response, filterChain);
+
+        verify(exceptionHandler).handleException(ex);
+        verify(filterChain).doFilter(request, response);
+        verify(directionHandler).handleResult(exceptionHandlingResult, null, requestContext,
+                requestAttributes);
     }
 
     @Test

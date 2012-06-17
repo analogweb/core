@@ -12,7 +12,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 import org.analogweb.Application;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.Direction;
@@ -52,6 +51,7 @@ public class AnalogFilter implements Filter {
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
+
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
@@ -80,13 +80,13 @@ public class AnalogFilter implements Filter {
             return;
         }
 
+        RequestAttributes attributes = context.resolveRequestAttributes(
+                modules.getRequestAttributesFactory(), metadata,
+                modules.getAttributesHandlersMap());
+
         log.log(Markers.LIFECYCLE, "DL000006", requestedPath, metadata);
         try {
             ContainerAdaptor invocationInstances = modules.getInvocationInstanceProvider();
-
-            RequestAttributes attributes = context.resolveRequestAttributes(
-                    modules.getRequestAttributesFactory(), metadata,
-                    modules.getAttributesHandlersMap());
 
             ResultAttributes resultAttributes = modules.getResultAttributes();
             
@@ -99,29 +99,18 @@ public class AnalogFilter implements Filter {
 
             log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(), invocationResult);
 
-            DirectionResolver resultResolver = modules.getDirectionResolver();
-            Direction result = resultResolver.resolve(invocationResult, metadata, context);
-            log.log(Markers.LIFECYCLE, "DL000008",invocationResult, result);
-            
-            DirectionFormatter resultFormatter = modules.findDirectionFormatter(result.getClass());
-
-            if (resultFormatter != null) {
-                log.log(Markers.LIFECYCLE, "DL000010", result, resultFormatter);
-            } else {
-                log.log(Markers.LIFECYCLE, "DL000011", result);
-            }
-
-            DirectionHandler resultHandler = modules.getDirectionHandler();
-            resultHandler.handleResult(result, resultFormatter, context, attributes);
+            handleDirection(modules, invocationResult, metadata, context, attributes);
         } catch (Exception e) {
             ExceptionHandler handler = modules.getExceptionHandler();
             log.log(Markers.LIFECYCLE, "DL000009", e, handler);
-            handler.handleException(e);
+            Object exceptionResult = handler.handleException(e);
+            if (exceptionResult != null) {
+                handleDirection(modules, exceptionResult, metadata, context, attributes);
+            }
             chain.doFilter(request, response);
-            return;
         }
     }
-
+    
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         this.servletContext = filterConfig.getServletContext();
@@ -138,6 +127,25 @@ public class AnalogFilter implements Filter {
 
     protected final ServletContext getServletContext() {
         return this.servletContext;
+    }
+
+    protected void handleDirection(Modules modules, Object result,
+            InvocationMetadata metadata, RequestContext context, RequestAttributes attributes)
+            throws IOException, ServletException {
+        DirectionResolver resultResolver = modules.getDirectionResolver();
+        Direction resolved = resultResolver.resolve(result, metadata, context);
+        log.log(Markers.LIFECYCLE, "DL000008", result, result);
+
+        DirectionFormatter resultFormatter = modules.findDirectionFormatter(resolved.getClass());
+
+        if (resultFormatter != null) {
+            log.log(Markers.LIFECYCLE, "DL000010", result, resultFormatter);
+        } else {
+            log.log(Markers.LIFECYCLE, "DL000011", result);
+        }
+
+        DirectionHandler resultHandler = modules.getDirectionHandler();
+        resultHandler.handleResult(resolved, resultFormatter, context, attributes);
     }
 
 }

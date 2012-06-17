@@ -9,10 +9,12 @@ import javax.servlet.ServletException;
 public interface ExceptionHandler extends Module {
 
     /**
-     * 発生した例外をハンドルします。
+     * 発生した例外をハンドルします。<br/>
+     * nullではない結果を返した場合は、戻り値は{@link DirectionResolver}にて処理されます。
      * @param exception 発生した{@link Exception}
      * @throws ServletException フィルタに例外を送出する際、{@link ServletException}にラップされます。
+     * @return 例外をハンドルした結果、示されるレスポンス({@link Direction}など)
      */
-    void handleException(Exception exception) throws ServletException;
+    Object handleException(Exception exception) throws ServletException;
 
 }
