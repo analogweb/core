@@ -11,7 +11,7 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestAttributesFactory;
 import org.analogweb.RequestContext;
-import org.analogweb.ServletRequestPathMetadata;
+import org.analogweb.RequestPath;
 
 
 /**
@@ -46,8 +46,8 @@ public class DefaultRequestContext implements RequestContext {
     }
 
     @Override
-    public ServletRequestPathMetadata getRequestedPath() {
-        return new DefaultServletRequestPathMetadata(getRequest());
+    public RequestPath getRequestedPath() {
+        return new DefaultRequestPath(getRequest());
     }
 
     @Override

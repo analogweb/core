@@ -26,7 +26,7 @@ import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPathMapping;
 import org.analogweb.ResultAttributes;
-import org.analogweb.ServletRequestPathMetadata;
+import org.analogweb.RequestPath;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
@@ -60,7 +60,7 @@ public class AnalogFilter implements Filter {
         RequestContext context = modules.getRequestContextFactory().createRequestContext(
                 getServletContext(), request, response);
 
-        ServletRequestPathMetadata requestedPath = context.getRequestedPath();
+        RequestPath requestedPath = context.getRequestedPath();
 
         log.log(Markers.LIFECYCLE, "DL000002", requestedPath);
 

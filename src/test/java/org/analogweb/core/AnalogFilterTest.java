@@ -36,7 +36,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestContextFactory;
 import org.analogweb.RequestPathMapping;
 import org.analogweb.ResultAttributes;
-import org.analogweb.ServletRequestPathMetadata;
+import org.analogweb.RequestPath;
 import org.analogweb.TypeMapperContext;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,7 +56,7 @@ public class AnalogFilterTest {
     private FilterConfig filterConfig;
     private ServletContext servletContext;
     private RequestContext requestContext;
-    private ServletRequestPathMetadata servletRequestPath;
+    private RequestPath servletRequestPath;
     private InvocationMetadata metadata;
     private RequestPathMapping mapping;
     private Modules modules;
@@ -81,7 +81,7 @@ public class AnalogFilterTest {
         servletContext = mock(ServletContext.class);
         when(filterConfig.getServletContext()).thenReturn(servletContext);
         requestContext = mock(RequestContext.class);
-        servletRequestPath = mock(ServletRequestPathMetadata.class);
+        servletRequestPath = mock(RequestPath.class);
         metadata = mock(InvocationMetadata.class);
         mapping = mock(RequestPathMapping.class);
         modules = mock(Modules.class);
@@ -294,7 +294,7 @@ public class AnalogFilterTest {
         when(modules.getRequestContextFactory()).thenReturn(requestContextFactory);
         when(requestContextFactory.createRequestContext(servletContext, request, response))
                 .thenReturn(requestContext);
-        servletRequestPath = mock(ServletRequestPathMetadata.class);
+        servletRequestPath = mock(RequestPath.class);
         when(requestContext.getRequestedPath()).thenReturn(servletRequestPath);
         String suffix = "";
         when(application.getApplicationSpecifier()).thenReturn(suffix);

@@ -32,10 +32,10 @@ public interface RequestContext {
     ServletContext getContext();
 
     /**
-     * 現在のリクエストにおける{@link ServletRequestPathMetadata}を取得します。
-     * @return {@link ServletRequestPathMetadata}
+     * 現在のリクエストにおける{@link RequestPath}を取得します。
+     * @return {@link RequestPath}
      */
-    ServletRequestPathMetadata getRequestedPath();
+    RequestPath getRequestedPath();
 
     /**
      * 現在のリクエストにおける{@link RequestAttributes}を取得します。

@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPathMetadata;
-import org.analogweb.ServletRequestPathMetadata;
+import org.analogweb.RequestPath;
 import org.analogweb.core.PathVariableScopeRequestAttributesResolver;
 import org.analogweb.util.Maps;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public class PathVariableScopeRequestAttributesResolverTest {
 
     @Test
     public void testResolveAttributeValue() {
-        ServletRequestPathMetadata requestedPath = mock(ServletRequestPathMetadata.class);
+        RequestPath requestedPath = mock(RequestPath.class);
         when(context.getRequest()).thenReturn(request);
         when(context.getRequestedPath()).thenReturn(requestedPath);
         when(requestedPath.getActualPath()).thenReturn("/mock/do/any/else");
@@ -70,7 +70,7 @@ public class PathVariableScopeRequestAttributesResolverTest {
 
     @Test
     public void testResolveAttributeValueWithoutPlaceHolder() {
-        ServletRequestPathMetadata requestedPath = mock(ServletRequestPathMetadata.class);
+        RequestPath requestedPath = mock(RequestPath.class);
         when(context.getRequest()).thenReturn(request);
         when(context.getRequestedPath()).thenReturn(requestedPath);
         when(requestedPath.getActualPath()).thenReturn("/mock/do/any/else");

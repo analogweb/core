@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.analogweb.AttributesHandler;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestAttributesFactory;
-import org.analogweb.ServletRequestPathMetadata;
+import org.analogweb.RequestPath;
 import org.analogweb.core.DefaultRequestContext;
 import org.analogweb.util.Maps;
 import org.junit.Before;
@@ -53,7 +53,7 @@ public class DefaultRequestContextTest {
         assertSame(context.getContext(), servletContext);
         assertSame(context.getRequest(), request);
         assertSame(context.getResponse(), response);
-        assertTrue(context.getRequestedPath() instanceof ServletRequestPathMetadata);
+        assertTrue(context.getRequestedPath() instanceof RequestPath);
     }
 
     @Test
