@@ -295,7 +295,7 @@ public class AnalogFilterTest {
         when(requestContextFactory.createRequestContext(servletContext, request, response))
                 .thenReturn(requestContext);
         servletRequestPath = mock(RequestPath.class);
-        when(requestContext.getRequestedPath()).thenReturn(servletRequestPath);
+        when(requestContext.getRequestPath()).thenReturn(servletRequestPath);
         String suffix = "";
         when(application.getApplicationSpecifier()).thenReturn(suffix);
         when(servletRequestPath.pathThrowgh(suffix)).thenReturn(pathThrowgh);

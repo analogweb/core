@@ -35,7 +35,7 @@ public interface RequestContext {
      * 現在のリクエストにおける{@link RequestPath}を取得します。
      * @return {@link RequestPath}
      */
-    RequestPath getRequestedPath();
+    RequestPath getRequestPath();
 
     /**
      * 現在のリクエストにおける{@link RequestAttributes}を取得します。

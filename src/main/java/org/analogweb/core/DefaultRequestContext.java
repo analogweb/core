@@ -46,7 +46,7 @@ public class DefaultRequestContext implements RequestContext {
     }
 
     @Override
-    public RequestPath getRequestedPath() {
+    public RequestPath getRequestPath() {
         return new DefaultRequestPath(getRequest());
     }
 

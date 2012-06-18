@@ -53,7 +53,7 @@ public class DefaultRequestContextTest {
         assertSame(context.getContext(), servletContext);
         assertSame(context.getRequest(), request);
         assertSame(context.getResponse(), response);
-        assertTrue(context.getRequestedPath() instanceof RequestPath);
+        assertTrue(context.getRequestPath() instanceof RequestPath);
     }
 
     @Test

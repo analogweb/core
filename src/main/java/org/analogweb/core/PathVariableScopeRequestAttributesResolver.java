@@ -34,7 +34,7 @@ public class PathVariableScopeRequestAttributesResolver extends AbstractAttribut
         }
         RequestPathMetadata definedPath = metadata.getDefinedPath();
         if (hasPlaceHolder(definedPath.getActualPath())) {
-            RequestPathMetadata requestedPath = requestContext.getRequestedPath();
+            RequestPathMetadata requestedPath = requestContext.getRequestPath();
             if (definedPath.match(requestedPath)) {
                 Map<String, String> pathVariables = extractPathValues(definedPath.getActualPath(),
                         requestedPath.getActualPath());

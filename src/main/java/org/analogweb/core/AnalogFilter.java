@@ -60,7 +60,7 @@ public class AnalogFilter implements Filter {
         RequestContext context = modules.getRequestContextFactory().createRequestContext(
                 getServletContext(), request, response);
 
-        RequestPath requestedPath = context.getRequestedPath();
+        RequestPath requestedPath = context.getRequestPath();
 
         log.log(Markers.LIFECYCLE, "DL000002", requestedPath);
 

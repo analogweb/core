@@ -45,7 +45,7 @@ public class PathVariableScopeRequestAttributesResolverTest {
     public void testResolveAttributeValue() {
         RequestPath requestedPath = mock(RequestPath.class);
         when(context.getRequest()).thenReturn(request);
-        when(context.getRequestedPath()).thenReturn(requestedPath);
+        when(context.getRequestPath()).thenReturn(requestedPath);
         when(requestedPath.getActualPath()).thenReturn("/mock/do/any/else");
         RequestPathMetadata definedPath = mock(RequestPathMetadata.class);
         when(metadata.getDefinedPath()).thenReturn(definedPath);
@@ -72,7 +72,7 @@ public class PathVariableScopeRequestAttributesResolverTest {
     public void testResolveAttributeValueWithoutPlaceHolder() {
         RequestPath requestedPath = mock(RequestPath.class);
         when(context.getRequest()).thenReturn(request);
-        when(context.getRequestedPath()).thenReturn(requestedPath);
+        when(context.getRequestPath()).thenReturn(requestedPath);
         when(requestedPath.getActualPath()).thenReturn("/mock/do/any/else");
         RequestPathMetadata definedPath = mock(RequestPathMetadata.class);
         when(metadata.getDefinedPath()).thenReturn(definedPath);
