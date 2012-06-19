@@ -9,18 +9,17 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-
-import org.analogweb.Modules;
+import org.analogweb.ContainerAdaptor;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
-import org.analogweb.core.DefaultTypeMapperContext;
 import org.analogweb.exception.AssertionFailureException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.stubbing.OngoingStubbing;
 
 /**
  * @author snowgoose
@@ -32,20 +31,19 @@ public class DefaultTypeMapperContextTest {
     private TypeMapper defaultTypeMapper;
     private RequestAttributes attributes;
     private RequestContext requestContext;
-    private Modules modules;
+    private ContainerAdaptor containerAdaptor;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
-        context = new DefaultTypeMapperContext();
+        containerAdaptor = mock(ContainerAdaptor.class);
+        context = new DefaultTypeMapperContext(containerAdaptor);
         typeMapper = mock(TypeMapper.class);
         defaultTypeMapper = mock(TypeMapper.class);
         attributes = mock(RequestAttributes.class);
         requestContext = mock(RequestContext.class);
-        modules = mock(Modules.class);
-        context.setModules(modules);
     }
 
     @After
@@ -53,10 +51,12 @@ public class DefaultTypeMapperContextTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testMapToType() {
         String[] formats = new String[] { "yyyy/MM/dd" };
         Date now = new Date();
-        when(modules.findTypeMapper(typeMapper.getClass())).thenReturn(typeMapper);
+        ((OngoingStubbing<TypeMapper>) when(containerAdaptor.getInstanceOfType(typeMapper
+                .getClass()))).thenReturn(typeMapper);
         when(typeMapper.mapToType(requestContext, attributes, "2010/08/10", Date.class, formats))
                 .thenReturn(now);
         Date actual = (Date) context.mapToType(typeMapper.getClass(), requestContext, attributes,
@@ -76,7 +76,7 @@ public class DefaultTypeMapperContextTest {
         String[] formats = new String[] { "yyyy/MM/dd" };
         Date now = new Date();
         // not found.
-        when(modules.findTypeMapper(typeMapper.getClass())).thenReturn(null);
+        when(containerAdaptor.getInstanceOfType(typeMapper.getClass())).thenReturn(null);
         when(
                 defaultTypeMapper.mapToType(requestContext, attributes, "2010/08/10", Date.class,
                         formats)).thenReturn(now);

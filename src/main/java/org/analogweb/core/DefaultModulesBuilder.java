@@ -23,7 +23,6 @@ import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.Modules;
-import org.analogweb.ModulesAware;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.MultiModule;
 import org.analogweb.RequestAttributesFactory;
@@ -138,9 +137,17 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return getComponentInstance(moduleContainerAdaptor, clazz);
             }
 
+            private TypeMapperContext typeMapperContext;
+
             @Override
             public TypeMapperContext getTypeMapperContext() {
-                return getComponentInstance(moduleContainerAdaptor, getTypeMapperContextClass());
+                if(this.typeMapperContext == null){
+                    typeMapperContext = moduleContainerAdaptor.getInstanceOfType(getTypeMapperContextClass());
+                    if(typeMapperContext == null){
+                        typeMapperContext = new DefaultTypeMapperContext(moduleContainerAdaptor);
+                    }
+                }
+                return this.typeMapperContext;
             }
 
             @Override
@@ -208,9 +215,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                         throw new MissingModuleException(componentClass);
                     }
                 }
-                if (instance instanceof ModulesAware) {
-                    ((ModulesAware) instance).setModules(this);
-                }
                 return instance;
             }
 
@@ -257,6 +261,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 setResultAttributesFactoryClass(null);
                 setTypeMapperContextClass(null);
                 this.attributesHandlerMap = null;
+                this.typeMapperContext = null;
             }
 
         };

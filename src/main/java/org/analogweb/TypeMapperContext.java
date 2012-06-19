@@ -5,7 +5,7 @@ package org.analogweb;
  * {@link TypeMapper}によって変換された型を返します。
  * @author snowgoose
  */
-public interface TypeMapperContext extends Module,ModulesAware {
+public interface TypeMapperContext extends Module {
 
     /**
      * 指定された型に変換を行います。<br/>

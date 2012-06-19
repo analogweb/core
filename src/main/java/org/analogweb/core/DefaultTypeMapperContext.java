@@ -3,7 +3,7 @@ package org.analogweb.core;
 import java.lang.reflect.Array;
 import java.util.Collection;
 
-import org.analogweb.Modules;
+import org.analogweb.ContainerAdaptor;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
@@ -20,8 +20,12 @@ import org.analogweb.util.logging.Markers;
 public class DefaultTypeMapperContext implements TypeMapperContext {
 
     private static final Log log = Logs.getLog(DefaultTypeMapperContext.class);
-    private Modules modules;
     private TypeMapper defaultTypeMapper = new AutoTypeMapper();
+    private ContainerAdaptor containerAdapter;
+    
+    public DefaultTypeMapperContext(ContainerAdaptor containerAdapter){
+        this.containerAdapter = containerAdapter;
+    }
 
     @Override
     public Object mapToType(Class<? extends TypeMapper> typeMapperClass, RequestContext context,
@@ -92,20 +96,15 @@ public class DefaultTypeMapperContext implements TypeMapperContext {
         if (clazz == null || isDefaultTypeMapper(clazz)) {
             return null;
         }
-        return getModules().findTypeMapper(clazz);
+        return getContainerAdaptor().getInstanceOfType(clazz);
+    }
+
+    protected ContainerAdaptor getContainerAdaptor(){
+        return this.containerAdapter;
     }
 
     protected boolean isDefaultTypeMapper(Class<? extends TypeMapper> clazz) {
         return clazz.equals(TypeMapper.class);
-    }
-
-    protected Modules getModules() {
-        return this.modules;
-    }
-
-    @Override
-    public void setModules(Modules modules) {
-        this.modules = modules;
     }
 
     protected TypeMapper getDefaultTypeMapper() {
