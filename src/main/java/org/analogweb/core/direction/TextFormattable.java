@@ -73,13 +73,16 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
 
     /**
      * 指定した{@link DirectionFormatter}によって特定のフォーマットのレンダリングを行います。<br/>
+     * 既に{@link DirectionFormatter}が指定されている場合は無視されます。
      * @param <T> フォーマットする対象の型
      * @param formatter {@link DirectionFormatter}
      */
     @Override
     @SuppressWarnings("unchecked")
     public T attach(DirectionFormatter formatter) {
-        this.formatter = formatter;
+        if (this.formatter == null) {
+            this.formatter = formatter;
+        }
         return (T) this;
     }
 
