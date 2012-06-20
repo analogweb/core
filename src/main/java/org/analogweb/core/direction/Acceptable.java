@@ -90,7 +90,7 @@ public class Acceptable implements Direction {
     /**
      * 指定したメディアタイプが検出された場合に、処理を委譲する{@link Direction}
      * をマップします。既に同じメディアタイプでマップされている場合は上書きされます。
-     * @param matchesAny 全てのメディアタイプに対応する{@link Direction}
+     * @param matches 指定したメディアタイプに対応する{@link Direction}
      * @param mediaTypesStartWith この{@link Direction}をマップする全てのメディアタイプ
      * @return 自身のインスタンス
      */

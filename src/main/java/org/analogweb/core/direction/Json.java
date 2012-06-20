@@ -163,8 +163,8 @@ public class Json extends TextFormattable<Json> {
     }
 
     /**
-     * デフォルトの{@link ReplaceableFormatWriter}によってJSONのレンダリングを行います。<br/>
-     * この{@link ReplaceableFormatWriter}は全ての{@link Json}のインスタンスに適用されます。
+     * デフォルトの{@link DirectionFormatter}によってJSONのレンダリングを行います。<br/>
+     * この{@link DirectionFormatter}は全ての{@link Json}のインスタンスに適用されます。
      */
     @Override
     public DirectionFormatter getDefaultFormatter() {

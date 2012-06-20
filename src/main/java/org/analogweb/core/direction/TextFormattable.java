@@ -11,6 +11,7 @@ import org.analogweb.RequestContext;
 
 /**
  * テキストフォーマットが可能な{@link org.analogweb.Direction}の実装です。
+ * @param <T> フォーマットする{@link TextFormattable}の型
  * @author snowgoose
  */
 public abstract class TextFormattable<T extends TextFormattable<T>> extends TextFormat<T> implements
@@ -41,9 +42,7 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
 
     /**
      * 現在のフォーマット可能な{@link DirectionFormatter}を取得します。<br/>
-     * 自分のクラスに適切な{@link DirectionFormatter}が
-     * {@link DirectionFormatters}のインスタンスに登録されている必要があります。
-     * @return {@link ReplaceableFormatWriter}
+     * @return {@link DirectionFormatter}
      */
     protected DirectionFormatter getFormatter() {
         return this.formatter;
@@ -66,15 +65,14 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
     }
 
     /**
-     * デフォルトの{@link ReplaceableFormatWriter}によって特定のフォーマットへのレンダリングを行います。<br/>
-     * この{@link ReplaceableFormatWriter}は全ての{@link TextFormattable}のインスタンスに適用されます。
+     * デフォルトの{@link DirectionFormatter}によって特定のフォーマットへのレンダリングを行います。<br/>
+     * この{@link DirectionFormatter}は全ての{@link TextFormattable}のインスタンスに適用されます。
      */
     protected abstract DirectionFormatter getDefaultFormatter();
 
     /**
      * 指定した{@link DirectionFormatter}によって特定のフォーマットのレンダリングを行います。<br/>
      * 既に{@link DirectionFormatter}が指定されている場合は無視されます。
-     * @param <T> フォーマットする対象の型
      * @param formatter {@link DirectionFormatter}
      */
     @Override

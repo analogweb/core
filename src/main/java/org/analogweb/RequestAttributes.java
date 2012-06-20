@@ -21,7 +21,6 @@ public interface RequestAttributes {
      * スコープ名をキーとした、このインスタンスで取得が可能な全ての{@link AttributesHandler}
      * の{@link Map}を取得します。
      * @return 全ての{@link AttributesHandler}
-     * @see RequestAttributesFactory#createRequestAttributes(Map);
      */
     Map<String, AttributesHandler> getAttributesHandlersMap();
 

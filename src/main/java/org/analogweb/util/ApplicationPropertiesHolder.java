@@ -28,8 +28,8 @@ public class ApplicationPropertiesHolder {
     /**
      * {@link Creator}の設定に従って、{@link ApplicationProperties}を生成、設定します。
      * @param app {@link Application}
-     * @param config
-     * @return
+     * @param config {@link Creator}
+     * @return 生成された{@link ApplicationProperties}
      */
     public static ApplicationProperties configure(Application app, Creator config) {
         if (properties != null) {
