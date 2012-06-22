@@ -39,13 +39,13 @@ public class Json extends TextFormattable<Json> {
 
     protected Json(Object source) {
         super(source);
-        super.as(DEFAULT_JSON_CONTENT_TYPE);
+        super.typeAs(DEFAULT_JSON_CONTENT_TYPE);
         super.withCharset(DEFAULT_JSON_CHARSET);
     }
 
     protected Json(String input) {
         super(input);
-        super.as(DEFAULT_JSON_CONTENT_TYPE);
+        super.typeAs(DEFAULT_JSON_CONTENT_TYPE);
         super.withCharset(DEFAULT_JSON_CHARSET);
     }
 

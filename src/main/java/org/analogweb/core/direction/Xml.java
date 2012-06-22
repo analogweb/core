@@ -26,7 +26,7 @@ public class Xml extends TextFormattable<Xml> {
 
     protected Xml(Object source) {
         super(source);
-        super.as(DEFAULT_CONTENT_TYPE);
+        super.typeAs(DEFAULT_CONTENT_TYPE);
         super.withCharset(DEFAULT_CHARSET);
     }
 

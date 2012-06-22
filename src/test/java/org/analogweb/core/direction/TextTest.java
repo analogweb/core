@@ -99,7 +99,7 @@ public class TextTest {
     public void testXMLText() throws Exception {
         final String charset = Charset.defaultCharset().displayName();
         final String responseText = "<root/>";
-        final Text actual = Text.with(responseText).as("text/xml");
+        final Text actual = Text.with(responseText).typeAs("text/xml");
 
         when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream();
@@ -119,7 +119,7 @@ public class TextTest {
     public void testJSONText() throws Exception {
         final String charset = "utf-8";
         final String responseText = "{\"foo\",\"baa\"}";
-        final Text actual = Text.with(responseText).as("application/json").withCharset(charset);
+        final Text actual = Text.with(responseText).typeAs("application/json").withCharset(charset);
 
         when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream();

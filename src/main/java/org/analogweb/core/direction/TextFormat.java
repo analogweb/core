@@ -48,7 +48,7 @@ public class TextFormat<T extends TextFormat<T>> implements Direction {
     }
 
     @SuppressWarnings("unchecked")
-    public T as(String contentType) {
+    public T typeAs(String contentType) {
         this.contentType = contentType;
         return (T)this;
     }

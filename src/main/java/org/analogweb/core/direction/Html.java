@@ -42,13 +42,13 @@ public class Html extends TextFormattable<Html> {
 
     protected Html(Object source) {
         super(source);
-        super.as(DEFAULT_HTML_CONTENT_TYPE);
+        super.typeAs(DEFAULT_HTML_CONTENT_TYPE);
         super.withCharset(DEFAULT_HTML_CHARSET);
     }
 
     protected Html(String input) {
         super(input);
-        super.as(DEFAULT_HTML_CONTENT_TYPE);
+        super.typeAs(DEFAULT_HTML_CONTENT_TYPE);
         super.withCharset(DEFAULT_HTML_CHARSET);
     }
 
