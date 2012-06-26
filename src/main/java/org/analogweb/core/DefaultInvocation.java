@@ -19,14 +19,13 @@ import org.analogweb.exception.InvocationFailureException;
 import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
 
-
 /**
  * {@link Invocation}のデフォルトの実装です。
  * @author snowgoose
  */
 public class DefaultInvocation implements Invocation {
 
-    private final Object actionInstance;
+    private final Object invocationInstance;
     private final InvocationMetadata metadata;
     private final RequestAttributes requestAttributes;
     private final ResultAttributes resultAttributes;
@@ -35,11 +34,11 @@ public class DefaultInvocation implements Invocation {
     private final TypeMapperContext converters;
     private final List<InvocationProcessor> processors;
 
-    public DefaultInvocation(Object actionInstance, InvocationMetadata metadata,
+    public DefaultInvocation(Object invocationInstance, InvocationMetadata metadata,
             RequestAttributes attributes, ResultAttributes resultAttributes,
             RequestContext context, TypeMapperContext converters,
             List<InvocationProcessor> processors) {
-        this.actionInstance = actionInstance;
+        this.invocationInstance = invocationInstance;
         this.metadata = metadata;
         this.requestAttributes = attributes;
         this.resultAttributes = resultAttributes;
@@ -47,6 +46,23 @@ public class DefaultInvocation implements Invocation {
         this.converters = converters;
         this.processors = processors;
         this.preparedArgsMap = Maps.newTreeMap();
+    }
+
+    /**
+     * Copy constractor.
+     * switch invocation instance.
+     * @param invocationInstance invocation instance.
+     * @param invocation original {@link DefaultInvocation}
+     */
+    public DefaultInvocation(Object invocationInstance,DefaultInvocation invocation) {
+        this.invocationInstance = invocationInstance;
+        this.metadata = invocation.metadata;
+        this.requestAttributes = invocation.requestAttributes;
+        this.resultAttributes = invocation.resultAttributes;
+        this.requestContext = invocation.requestContext;
+        this.converters = invocation.converters;
+        this.processors = invocation.processors;
+        this.preparedArgsMap = invocation.preparedArgsMap;
     }
 
     @Override
@@ -133,7 +149,7 @@ public class DefaultInvocation implements Invocation {
 
     @Override
     public Object getInvocationInstance() {
-        return actionInstance;
+        return invocationInstance;
     }
 
     @Override
