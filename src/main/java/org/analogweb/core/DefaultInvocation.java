@@ -16,6 +16,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.InvocationFailureException;
+import org.analogweb.exception.UnresolvableInvocationException;
 import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
 
@@ -77,6 +78,10 @@ public class DefaultInvocation implements Invocation {
             invocation = processor.prepareInvoke(method, invocation, getMetadata(),
                     getRequestContext(), getRequestAttributes(), getConverters());
         }
+        Object instance;
+        if (invocation == null || (instance = invocation.getInvocationInstance()) == null) {
+            throw new UnresolvableInvocationException(getMetadata());
+        }
         InvocationArguments argumentList = getArguments(getPreparedArgs(), methodArgumentTypes);
         Object invocationResult = null;
         try {
@@ -86,8 +91,7 @@ public class DefaultInvocation implements Invocation {
                     return interraption;
                 }
             }
-            invocationResult = invoke(method, getInvocationInstance(),
-                    argumentList.toArray());
+            invocationResult = invoke(method, instance, argumentList.toArray());
             for (InvocationProcessor processor : processors) {
                 invocationResult = processor.postInvoke(invocationResult, invocation,
                         getMetadata(), getRequestContext(), getRequestAttributes(),

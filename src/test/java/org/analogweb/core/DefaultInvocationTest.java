@@ -25,6 +25,7 @@ import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
 import org.analogweb.exception.InvocationFailureException;
+import org.analogweb.exception.UnresolvableInvocationException;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ReflectionUtils;
 import org.hamcrest.BaseMatcher;
@@ -396,11 +397,51 @@ public class DefaultInvocationTest {
 
         verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
                 converters);
-        /*
-        verify(processor).postInvoke("baa is something!!", invocation, metadata, context,
-                attributes, resultAttributes);
-//        verify(processor).afterCompletion(context, invocation, metadata, null);
- * */
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
+    public void testInvokeWithoutInvocation() {
+
+        thrown.expect(UnresolvableInvocationException.class);
+        MockActions instance = new MockActions();
+        final String methodName = "doSomething";
+        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
+                methodName, argumentTypes);
+        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
+                context, converters, processors);
+
+        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        when(metadata.getMethodName()).thenReturn(methodName);
+        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+        // processor returns null invocation
+                .thenReturn(null);
+
+        invocation.invoke();
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
+    public void testInvokeWithoutInvocationInstance() {
+
+        thrown.expect(UnresolvableInvocationException.class);
+        MockActions instance = new MockActions();
+        final String methodName = "doSomething";
+        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
+                methodName, argumentTypes);
+        invocation = new DefaultInvocation(null, metadata, attributes, resultAttributes,
+                context, converters, processors);
+
+        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        when(metadata.getMethodName()).thenReturn(methodName);
+        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+                .thenReturn(invocation);
+
+        invocation.invoke();
     }
 
     private Matcher<InvocationFailureException> rootExceptionIs(final Class<? extends Throwable> t) {
