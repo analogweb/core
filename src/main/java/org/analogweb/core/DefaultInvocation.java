@@ -67,7 +67,7 @@ public class DefaultInvocation implements Invocation {
 
     @Override
     public Object invoke() throws InvocationFailureException {
-        Class<?> actionClass = getInvocationInstance().getClass();
+        Class<?> actionClass = getMetadata().getInvocationClass();
         Class<?>[] methodArgumentTypes = getMetadata().getArgumentTypes();
         Method method = ReflectionUtils.getMethodQuietly(actionClass, getMetadata()
                 .getMethodName(), methodArgumentTypes);

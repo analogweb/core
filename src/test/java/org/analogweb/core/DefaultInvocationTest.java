@@ -68,6 +68,7 @@ public class DefaultInvocationTest {
     }
 
     @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
     public void testInvoke() {
 
         MockActions instance = new MockActions();
@@ -78,6 +79,7 @@ public class DefaultInvocationTest {
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
 
+        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
@@ -107,6 +109,7 @@ public class DefaultInvocationTest {
     }
 
     @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
     public void testInvokeWithResultOnInvoke() {
 
         MockActions instance = new MockActions();
@@ -117,6 +120,7 @@ public class DefaultInvocationTest {
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
 
+        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
@@ -141,16 +145,18 @@ public class DefaultInvocationTest {
     }
 
     @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
     public void testInvokeNoAccessableMethod() {
 
-        MockActions actionInstance = new MockActions();
+        MockActions instance = new MockActions();
         final String methodName = "doNothing";
         final Class<?>[] argumentTypes = new Class<?>[0];
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
-        invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
+        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
 
+        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
@@ -172,16 +178,18 @@ public class DefaultInvocationTest {
     }
 
     @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
     public void testInvokeWithMultiArgs() {
 
-        MockActions actionInstance = new MockActions();
+        MockActions instance = new MockActions();
         final String methodName = "doAnything";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class, Integer.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
-        invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
+        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
 
+        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
@@ -211,16 +219,18 @@ public class DefaultInvocationTest {
     }
 
     @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
     public void testInvokePutArg() {
 
-        MockActions actionInstance = new MockActions();
+        MockActions instance = new MockActions();
         final String methodName = "doSomething";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
-        invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
+        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
 
+        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
@@ -250,16 +260,18 @@ public class DefaultInvocationTest {
     }
 
     @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
     public void testInvokePutArgWithIllegalArgument() {
 
-        MockActions actionInstance = new MockActions();
+        MockActions instance = new MockActions();
         final String methodName = "doSomething";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
-        invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
+        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
 
+        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
@@ -281,6 +293,7 @@ public class DefaultInvocationTest {
     }
 
     @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
     public void testInvokeWithException() {
 
         thrown.expect(InvocationFailureException.class);
@@ -290,14 +303,15 @@ public class DefaultInvocationTest {
         InvocationProcessor processor2 = mock(InvocationProcessor.class);
         processors.add(processor2);
 
-        MockActions actionInstance = new MockActions();
+        MockActions instance = new MockActions();
         final String methodName = "doSomethingWithException";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, Long.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
                 methodName, argumentTypes);
-        invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
+        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
 
+        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
 
@@ -335,19 +349,21 @@ public class DefaultInvocationTest {
     }
 
     @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
     public void testInvokeWithExceptionWithInterraption() {
 
         InvocationProcessor processor2 = mock(InvocationProcessor.class);
         processors.add(processor2);
 
-        MockActions actionInstance = new MockActions();
+        MockActions instance = new MockActions();
         final String methodName = "doSomethingWithException";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, Long.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
                 argumentTypes);
-        invocation = new DefaultInvocation(actionInstance, metadata, attributes, resultAttributes,
+        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
 
+        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
 
