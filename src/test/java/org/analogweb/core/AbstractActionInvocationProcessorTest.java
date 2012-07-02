@@ -9,14 +9,13 @@ import static org.mockito.Mockito.mock;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-
 import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
+import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.core.AbstractInvocationProcessor;
 import org.analogweb.exception.InvocationFailureException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.junit.Before;
@@ -54,9 +53,9 @@ public class AbstractActionInvocationProcessorTest {
 
     @Test
     public void testPrepareInvoke() {
-        Invocation actual = processor.prepareInvoke((Method) null, invocation, metadata, context,
+        Object actual = processor.prepareInvoke((Method) null, invocation, metadata, context,
                 attributes, converters);
-        assertSame(actual, invocation);
+        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package org.analogweb.core;
 
-
 import java.lang.reflect.Method;
 
 import org.analogweb.Invocation;
@@ -13,23 +12,21 @@ import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.InvocationFailureException;
 import org.analogweb.util.ArrayUtils;
 
-
 /**
  * @author snowgoose
  */
 public abstract class AbstractInvocationProcessor implements InvocationProcessor {
 
     @Override
-    public Invocation prepareInvoke(Method method, Invocation invocation,
+    public Object prepareInvoke(Method method, Invocation invocation,
             InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
             TypeMapperContext converters) {
-        return invocation;
+        return NO_INTERRUPTION;
     }
 
     @Override
     public Object onInvoke(Method method, InvocationMetadata metadata, InvocationArguments args) {
-        // nop.
-        return null;
+        return NO_INTERRUPTION;
     }
 
     @Override

@@ -35,8 +35,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 /**
  * @author snowgoose
@@ -69,29 +67,24 @@ public class DefaultInvocationTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testInvoke() {
 
         MockActions instance = new MockActions();
         final String methodName = "doSomething";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
-                methodName, argumentTypes);
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
+                argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
-
-        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        invocation.putPreparedArg(0, "foo");
+        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
-                .thenAnswer(new Answer<Invocation>() {
-
-                    @Override
-                    public Invocation answer(InvocationOnMock mock) throws Throwable {
-                        invocation.putPreparedArg(0, "foo");
-                        return invocation;
-                    }
-                });
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         Object actionResult = new Object();
         when(
                 processor.postInvoke("foo is something!!", invocation, metadata, context,
@@ -110,29 +103,23 @@ public class DefaultInvocationTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testInvokeWithResultOnInvoke() {
 
         MockActions instance = new MockActions();
         final String methodName = "doSomething";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
-                methodName, argumentTypes);
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
+                argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
+        invocation.putPreparedArg(0, "foo");
 
-        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
-                .thenAnswer(new Answer<Invocation>() {
-
-                    @Override
-                    public Invocation answer(InvocationOnMock mock) throws Throwable {
-                        invocation.putPreparedArg(0, "foo");
-                        return invocation;
-                    }
-                });
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         Object result = new Object();
         when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
                 .thenReturn(result);
@@ -146,29 +133,24 @@ public class DefaultInvocationTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testInvokeNoAccessableMethod() {
 
         MockActions instance = new MockActions();
         final String methodName = "doNothing";
         final Class<?>[] argumentTypes = new Class<?>[0];
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
-                methodName, argumentTypes);
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
+                argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
 
-        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
-                .thenAnswer(new Answer<Invocation>() {
-
-                    @Override
-                    public Invocation answer(InvocationOnMock mock) throws Throwable {
-                        invocation.putPreparedArg(0, "foo");
-                        return invocation;
-                    }
-                });
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
 
         invocation.invoke();
 
@@ -179,30 +161,26 @@ public class DefaultInvocationTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testInvokeWithMultiArgs() {
 
         MockActions instance = new MockActions();
         final String methodName = "doAnything";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class, Integer.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
-                methodName, argumentTypes);
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
+                argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
+        invocation.putPreparedArg(0, "foo");
+        invocation.putPreparedArg(2, 1);
 
-        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
-                .thenAnswer(new Answer<Invocation>() {
-
-                    @Override
-                    public Invocation answer(InvocationOnMock mock) throws Throwable {
-                        invocation.putPreparedArg(0, "foo");
-                        invocation.putPreparedArg(2, 1);
-                        return invocation;
-                    }
-                });
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         Object actionResult = new Object();
         when(
                 processor.postInvoke("No1 foo with null is anything!!", invocation, metadata,
@@ -220,30 +198,26 @@ public class DefaultInvocationTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testInvokePutArg() {
 
         MockActions instance = new MockActions();
         final String methodName = "doSomething";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
-                methodName, argumentTypes);
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
+                argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
+        invocation.putPreparedArg(0, "foo");
+        invocation.putPreparedArg(0, "baa");
 
-        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
-                .thenAnswer(new Answer<Invocation>() {
-
-                    @Override
-                    public Invocation answer(InvocationOnMock mock) throws Throwable {
-                        invocation.putPreparedArg(0, "foo");
-                        invocation.putPreparedArg(0, "baa");
-                        return invocation;
-                    }
-                });
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         Object actionResult = new Object();
         when(
                 processor.postInvoke("baa is something!!", invocation, metadata, context,
@@ -261,29 +235,25 @@ public class DefaultInvocationTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testInvokePutArgWithIllegalArgument() {
 
         MockActions instance = new MockActions();
         final String methodName = "doSomething";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
-                methodName, argumentTypes);
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
+                argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
+        invocation.putPreparedArg(0, 1L);
 
-        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
-                .thenAnswer(new Answer<Invocation>() {
-
-                    @Override
-                    public Invocation answer(InvocationOnMock mock) throws Throwable {
-                        invocation.putPreparedArg(0, 1L);
-                        return invocation;
-                    }
-                });
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
 
         invocation.invoke();
 
@@ -294,7 +264,7 @@ public class DefaultInvocationTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testInvokeWithException() {
 
         thrown.expect(InvocationFailureException.class);
@@ -307,33 +277,32 @@ public class DefaultInvocationTest {
         MockActions instance = new MockActions();
         final String methodName = "doSomethingWithException";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, Long.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
-                methodName, argumentTypes);
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
+                argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
+        invocation.putPreparedArg(0, "foo");
 
-        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
 
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
-                .thenAnswer(new Answer<Invocation>() {
-                    @Override
-                    public Invocation answer(InvocationOnMock mock) throws Throwable {
-                        invocation.putPreparedArg(0, "foo");
-                        return invocation;
-                    }
-                });
-
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         when(
                 processor2.prepareInvoke(method, invocation, metadata, context, attributes,
-                        converters)).thenAnswer(new Answer<Invocation>() {
-            @Override
-            public Invocation answer(InvocationOnMock mock) throws Throwable {
-                invocation.putPreparedArg(1, 100L);
-                return invocation;
-            }
-        });
+                        converters)).thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor2.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+
+        invocation.putPreparedArg(1, 100L);
+
+        when(
+                processor.processException(isA(InvocationFailureException.class), eq(context),
+                        eq(invocation), eq(metadata))).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
         doThrow(
                 new InvocationFailureException(new NullPointerException(), metadata, ArrayUtils
                         .newArray())).when(processor2).processException(
@@ -350,7 +319,7 @@ public class DefaultInvocationTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testInvokeWithExceptionWithInterraption() {
 
         InvocationProcessor processor2 = mock(InvocationProcessor.class);
@@ -364,29 +333,27 @@ public class DefaultInvocationTest {
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
 
-        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
 
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
-                .thenAnswer(new Answer<Invocation>() {
-                    @Override
-                    public Invocation answer(InvocationOnMock mock) throws Throwable {
-                        invocation.putPreparedArg(0, "foo");
-                        return invocation;
-                    }
-                });
-
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        invocation.putPreparedArg(0, "foo");
         when(
                 processor2.prepareInvoke(method, invocation, metadata, context, attributes,
-                        converters)).thenAnswer(new Answer<Invocation>() {
-            @Override
-            public Invocation answer(InvocationOnMock mock) throws Throwable {
-                invocation.putPreparedArg(1, 100L);
-                return invocation;
-            }
-        });
+                        converters)).thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        invocation.putPreparedArg(1, 100L);
+        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor2.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+
         Object invocationResult = new Object();
+        when(
+                processor.processException(isA(InvocationFailureException.class), eq(context),
+                        eq(invocation), eq(metadata))).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
         when(
                 processor2.processException(isA(InvocationFailureException.class), eq(context),
                         eq(invocation), eq(metadata))).thenReturn(invocationResult);
@@ -400,42 +367,19 @@ public class DefaultInvocationTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked","rawtypes"})
-    public void testInvokeWithoutInvocation() {
-
-        thrown.expect(UnresolvableInvocationException.class);
-        MockActions instance = new MockActions();
-        final String methodName = "doSomething";
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
-                methodName, argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
-                context, converters, processors);
-
-        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
-        when(metadata.getMethodName()).thenReturn(methodName);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
-        // processor returns null invocation
-                .thenReturn(null);
-
-        invocation.invoke();
-    }
-
-    @Test
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testInvokeWithoutInvocationInstance() {
 
         thrown.expect(UnresolvableInvocationException.class);
         MockActions instance = new MockActions();
         final String methodName = "doSomething";
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class,
-                methodName, argumentTypes);
-        invocation = new DefaultInvocation(null, metadata, attributes, resultAttributes,
-                context, converters, processors);
+        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
+                argumentTypes);
+        invocation = new DefaultInvocation(null, metadata, attributes, resultAttributes, context,
+                converters, processors);
 
-        when(metadata.getInvocationClass()).thenReturn((Class)instance.getClass());
+        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))

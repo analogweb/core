@@ -55,7 +55,7 @@ public class DefaultInvocation implements Invocation {
      * @param invocationInstance invocation instance.
      * @param invocation original {@link DefaultInvocation}
      */
-    public DefaultInvocation(Object invocationInstance,DefaultInvocation invocation) {
+    public DefaultInvocation(Object invocationInstance, DefaultInvocation invocation) {
         this.invocationInstance = invocationInstance;
         this.metadata = invocation.metadata;
         this.requestAttributes = invocation.requestAttributes;
@@ -70,43 +70,46 @@ public class DefaultInvocation implements Invocation {
     public Object invoke() throws InvocationFailureException {
         Class<?> actionClass = getMetadata().getInvocationClass();
         Class<?>[] methodArgumentTypes = getMetadata().getArgumentTypes();
-        Method method = ReflectionUtils.getMethodQuietly(actionClass, getMetadata()
-                .getMethodName(), methodArgumentTypes);
-        Invocation invocation = this;
+        Method method = ReflectionUtils.getMethodQuietly(actionClass,
+                getMetadata().getMethodName(), methodArgumentTypes);
+        Object interruption = InvocationProcessor.NO_INTERRUPTION;
         List<InvocationProcessor> processors = getProcessors();
-        for (InvocationProcessor processor : processors) {
-            invocation = processor.prepareInvoke(method, invocation, getMetadata(),
-                    getRequestContext(), getRequestAttributes(), getConverters());
-        }
-        Object instance;
-        if (invocation == null || (instance = invocation.getInvocationInstance()) == null) {
+        Object instance = getInvocationInstance();
+        if (instance == null) {
             throw new UnresolvableInvocationException(getMetadata());
+        }
+        for (InvocationProcessor processor : processors) {
+            interruption = processor.prepareInvoke(method, this, getMetadata(),
+                    getRequestContext(), getRequestAttributes(), getConverters());
+            if (interruption != InvocationProcessor.NO_INTERRUPTION) {
+                return interruption;
+            }
         }
         InvocationArguments argumentList = getArguments(getPreparedArgs(), methodArgumentTypes);
         Object invocationResult = null;
         try {
             for (InvocationProcessor processor : processors) {
-                Object interraption = processor.onInvoke(method, getMetadata(), argumentList);
-                if (interraption != null) {
-                    return interraption;
+                interruption = processor.onInvoke(method, getMetadata(), argumentList);
+                if (interruption != InvocationProcessor.NO_INTERRUPTION) {
+                    return interruption;
                 }
             }
             invocationResult = invoke(method, instance, argumentList.toArray());
             for (InvocationProcessor processor : processors) {
-                invocationResult = processor.postInvoke(invocationResult, invocation,
-                        getMetadata(), getRequestContext(), getRequestAttributes(),
-                        getResultAttributes());
+                invocationResult = processor.postInvoke(invocationResult, this, getMetadata(),
+                        getRequestContext(), getRequestAttributes(), getResultAttributes());
             }
         } catch (Exception e) {
             for (InvocationProcessor processor : processors) {
-                Object interraption = processor.processException(e, getRequestContext(), invocation, getMetadata());
-                if(interraption != null){
-                    return interraption;
+                interruption = processor.processException(e, getRequestContext(), this,
+                        getMetadata());
+                if (interruption != InvocationProcessor.NO_INTERRUPTION) {
+                    return interruption;
                 }
             }
         } finally {
             for (InvocationProcessor processor : processors) {
-                processor.afterCompletion(getRequestContext(), invocation, getMetadata(),
+                processor.afterCompletion(getRequestContext(), this, getMetadata(),
                         invocationResult);
             }
         }
@@ -142,6 +145,7 @@ public class DefaultInvocation implements Invocation {
             public Object[] toArray() {
                 return argumentList.toArray(new Object[argumentList.size()]);
             }
+
             @Override
             public void set(int index, Object value) {
                 if (argumentList.size() > index && argumentList.get(index) == null) {

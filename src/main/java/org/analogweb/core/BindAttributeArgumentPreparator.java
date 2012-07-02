@@ -25,7 +25,7 @@ import org.analogweb.util.StringUtils;
 public class BindAttributeArgumentPreparator extends AbstractInvocationProcessor {
 
     @Override
-    public Invocation prepareInvoke(Method method, Invocation invocation,
+    public Object prepareInvoke(Method method, Invocation invocation,
             InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
             TypeMapperContext converters) {
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
@@ -37,7 +37,7 @@ public class BindAttributeArgumentPreparator extends AbstractInvocationProcessor
                 invocation.putPreparedArg(index, convertedValue);
             }
         }
-        return invocation;
+        return NO_INTERRUPTION;
     }
 
     protected Object convert(RequestAttributes attributes, RequestContext context,

@@ -10,17 +10,26 @@ import java.lang.reflect.Method;
 public interface InvocationProcessor extends MultiModule {
 
     /**
+     * {@link InvocationProcessor}の各ライフサイクルにおいて
+     * 処理の結果、{@link Invocation}及び、後続の{@link InvocationProcessor}
+     * の処理を中断しないことを表すフラグメントです。
+     */
+    Object NO_INTERRUPTION = new Object();
+
+    /**
      * {@link Invocation}の実行前に処理を追加します。<br/>
-     * 通常は引数に指定された{@link Invocation}をそのまま返します。
+     * 通常は、{@link #NO_INTERRUPTION}を返します。それ以外の
+     * 値をかえす場合は、処理の結果その戻り値を以って
+     * {@link Invocation}の処理を終了します。
      * @param method 実行対象の{@link Method}
      * @param invocation {@link Invocation}
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
      * @param attributes {@link RequestAttributes}
      * @param converters {@link TypeMapperContext}
-     * @return 処理された{@link Invocation}
+     * @return 実行処理を中断する結果({@link Direction}など。)
      */
-    Invocation prepareInvoke(Method method, Invocation invocation, InvocationMetadata metadata,
+    Object prepareInvoke(Method method, Invocation invocation, InvocationMetadata metadata,
             RequestContext context, RequestAttributes attributes, TypeMapperContext converters);
 
     /**
@@ -28,9 +37,9 @@ public interface InvocationProcessor extends MultiModule {
      * {@link Invocation#invoke()}が実行される直前に行う処理を追加します。<br/>
      * {@link Invocation}に引き渡される、確定されたパラメータを変更することは
      * できません。未確定(null)であるパラメータに対する値の追加を行うことが
-     * 可能です。{@link Invocation}を引き続き実行する場合はnullを返します。
-     * {@code null}以外の値が返される場合、それを実行結果として処理し、
-     * {@link Invocation}および続く{@link InvocationProcessor}の処理は
+     * 可能です。{@link Invocation}を引き続き実行する場合は{@link #NO_INTERRUPTION}
+     * を返します。{@link #NO_INTERRUPTION}以外の値が返される場合、それを実行結果
+     * として処理し、{@link Invocation}および続く{@link InvocationProcessor}の処理は
      * 中断されます。
      * @param method 実行対象の{@link Method}
      * @param metadata {@link InvocationMetadata}
@@ -40,7 +49,9 @@ public interface InvocationProcessor extends MultiModule {
     Object onInvoke(Method method,InvocationMetadata metadata, InvocationArguments args);
     
     /**
-     * {@link Invocation}実行時に例外が発生した場合に、処理を追加します。
+     * {@link Invocation}実行時に例外が発生した場合に、処理を追加します。<br/>
+     * 通常は、{@link #NO_INTERRUPTION}を返します。それ以外の
+     * 値をかえす場合は、処理の結果その戻り値を以って
      * @param ex {@link Invocation}実行時に発生した例外。
      * @param request {@link RequestContext}
      * @param invocation 例外が発生した対象の{@link Invocation}
@@ -51,7 +62,10 @@ public interface InvocationProcessor extends MultiModule {
             InvocationMetadata metadata);
 
     /**
-     * {@link Invocation}を正常に実行した場合に、処理を追加します。
+     * {@link Invocation}を正常に実行した場合に、処理を追加します。<br/>
+     * 通常は、引数に指定された{@code invocationResult}の値({@link Invocation}
+     * の実行結果)をそのまま返します。それ以外の値を返す(実行結果を挿げ替える)
+     * 事も可能です。
      * @param invocationResult {@link Invocation}の実行結果
      * @param invocation 例外が発生した対象の{@link Invocation}
      * @param metadata {@link InvocationMetadata}
