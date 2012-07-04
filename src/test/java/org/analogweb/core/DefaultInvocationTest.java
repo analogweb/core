@@ -14,7 +14,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestAttributes;
@@ -81,8 +80,8 @@ public class DefaultInvocationTest {
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
         Object actionResult = new Object();
         when(
                 processor.postInvoke("foo is something!!", invocation, metadata, context,
@@ -94,7 +93,7 @@ public class DefaultInvocationTest {
 
         verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
                 converters);
-        verify(processor).onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class));
+        verify(processor).onInvoke(method, invocation, metadata, invocation);
         verify(processor).postInvoke("foo is something!!", invocation, metadata, context,
                 attributes, resultAttributes);
         verify(processor).afterCompletion(context, invocation, metadata, actionResult);
@@ -119,15 +118,14 @@ public class DefaultInvocationTest {
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         Object result = new Object();
-        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
-                .thenReturn(result);
+        when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(result);
 
         Object actual = invocation.invoke();
         assertThat(actual, is(result));
 
         verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
                 converters);
-        verify(processor).onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class));
+        verify(processor).onInvoke(method, invocation, metadata, invocation);
     }
 
     @Test
@@ -147,8 +145,8 @@ public class DefaultInvocationTest {
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
 
         invocation.invoke();
 
@@ -177,8 +175,8 @@ public class DefaultInvocationTest {
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
         Object actionResult = new Object();
         when(
                 processor.postInvoke("No1 foo with null is anything!!", invocation, metadata,
@@ -214,8 +212,8 @@ public class DefaultInvocationTest {
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
         Object actionResult = new Object();
         when(
                 processor.postInvoke("baa is something!!", invocation, metadata, context,
@@ -250,8 +248,8 @@ public class DefaultInvocationTest {
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
 
         invocation.invoke();
 
@@ -290,10 +288,10 @@ public class DefaultInvocationTest {
         when(
                 processor2.prepareInvoke(method, invocation, metadata, context, attributes,
                         converters)).thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor2.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
+        when(processor2.onInvoke(method, invocation, metadata, invocation)).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
 
         invocation.putInvocationArgument(1, 100L);
 
@@ -342,10 +340,10 @@ public class DefaultInvocationTest {
                 processor2.prepareInvoke(method, invocation, metadata, context, attributes,
                         converters)).thenReturn(InvocationProcessor.NO_INTERRUPTION);
         invocation.putInvocationArgument(1, 100L);
-        when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor2.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
+        when(processor2.onInvoke(method, invocation, metadata, invocation)).thenReturn(
+                InvocationProcessor.NO_INTERRUPTION);
 
         Object invocationResult = new Object();
         when(

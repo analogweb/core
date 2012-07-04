@@ -42,11 +42,13 @@ public interface InvocationProcessor extends MultiModule {
      * として処理し、{@link Invocation}および続く{@link InvocationProcessor}の処理は
      * 中断されます。
      * @param method 実行対象の{@link Method}
+     * @param invocation {@link Invocation}
      * @param metadata {@link InvocationMetadata}
      * @param args {@link InvocationArguments}
      * @return 実行処理を中断する結果({@link Direction}など。)
      */
-    Object onInvoke(Method method,InvocationMetadata metadata, InvocationArguments args);
+    Object onInvoke(Method method, Invocation invocation, InvocationMetadata metadata,
+            InvocationArguments args);
     
     /**
      * {@link Invocation}実行時に例外が発生した場合に、処理を追加します。<br/>
