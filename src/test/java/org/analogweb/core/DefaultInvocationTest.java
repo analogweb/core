@@ -14,10 +14,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.analogweb.Invocation;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
-import org.analogweb.InvocationProcessor.InvocationArguments;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
@@ -25,7 +24,6 @@ import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
 import org.analogweb.exception.InvocationFailureException;
-import org.analogweb.exception.UnresolvableInvocationException;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ReflectionUtils;
 import org.hamcrest.BaseMatcher;
@@ -41,7 +39,7 @@ import org.junit.rules.ExpectedException;
  */
 public class DefaultInvocationTest {
 
-    private Invocation invocation;
+    private DefaultInvocation invocation;
 
     private InvocationMetadata metadata;
     private RequestAttributes attributes;
@@ -77,7 +75,7 @@ public class DefaultInvocationTest {
                 argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
-        invocation.putPreparedArg(0, "foo");
+        invocation.putInvocationArgument(0, "foo");
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
@@ -113,7 +111,7 @@ public class DefaultInvocationTest {
                 argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
-        invocation.putPreparedArg(0, "foo");
+        invocation.putInvocationArgument(0, "foo");
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
@@ -171,8 +169,8 @@ public class DefaultInvocationTest {
                 argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
-        invocation.putPreparedArg(0, "foo");
-        invocation.putPreparedArg(2, 1);
+        invocation.putInvocationArgument(0, "foo");
+        invocation.putInvocationArgument(2, 1);
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
@@ -208,8 +206,8 @@ public class DefaultInvocationTest {
                 argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
-        invocation.putPreparedArg(0, "foo");
-        invocation.putPreparedArg(0, "baa");
+        invocation.putInvocationArgument(0, "foo");
+        invocation.putInvocationArgument(0, "baa");
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
@@ -245,7 +243,7 @@ public class DefaultInvocationTest {
                 argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
-        invocation.putPreparedArg(0, 1L);
+        invocation.putInvocationArgument(0, 1L);
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
@@ -281,7 +279,7 @@ public class DefaultInvocationTest {
                 argumentTypes);
         invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
                 context, converters, processors);
-        invocation.putPreparedArg(0, "foo");
+        invocation.putInvocationArgument(0, "foo");
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
@@ -297,7 +295,7 @@ public class DefaultInvocationTest {
         when(processor2.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
 
-        invocation.putPreparedArg(1, 100L);
+        invocation.putInvocationArgument(1, 100L);
 
         when(
                 processor.processException(isA(InvocationFailureException.class), eq(context),
@@ -339,11 +337,11 @@ public class DefaultInvocationTest {
 
         when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        invocation.putPreparedArg(0, "foo");
+        invocation.putInvocationArgument(0, "foo");
         when(
                 processor2.prepareInvoke(method, invocation, metadata, context, attributes,
                         converters)).thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        invocation.putPreparedArg(1, 100L);
+        invocation.putInvocationArgument(1, 100L);
         when(processor.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         when(processor2.onInvoke(eq(method), eq(metadata), isA(InvocationArguments.class)))
@@ -364,28 +362,6 @@ public class DefaultInvocationTest {
 
         verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
                 converters);
-    }
-
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testInvokeWithoutInvocationInstance() {
-
-        thrown.expect(UnresolvableInvocationException.class);
-        MockActions instance = new MockActions();
-        final String methodName = "doSomething";
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
-                argumentTypes);
-        invocation = new DefaultInvocation(null, metadata, attributes, resultAttributes, context,
-                converters, processors);
-
-        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
-        when(metadata.getMethodName()).thenReturn(methodName);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
-                .thenReturn(invocation);
-
-        invocation.invoke();
     }
 
     private Matcher<InvocationFailureException> rootExceptionIs(final Class<? extends Throwable> t) {

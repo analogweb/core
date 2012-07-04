@@ -3,7 +3,7 @@ package org.analogweb.core;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import org.analogweb.Invocation;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
@@ -25,7 +25,7 @@ import org.analogweb.util.StringUtils;
 public class BindAttributeArgumentPreparator extends AbstractInvocationProcessor {
 
     @Override
-    public Object prepareInvoke(Method method, Invocation invocation,
+    public Object prepareInvoke(Method method, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
             TypeMapperContext converters) {
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
@@ -34,7 +34,7 @@ public class BindAttributeArgumentPreparator extends AbstractInvocationProcessor
             Object convertedValue = convert(attributes, context, converters, argTypes[index],
                     parameterAnnotations[index]);
             if (convertedValue != null) {
-                invocation.putPreparedArg(index, convertedValue);
+                args.putInvocationArgument(index, convertedValue);
             }
         }
         return NO_INTERRUPTION;

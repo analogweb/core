@@ -2,8 +2,7 @@ package org.analogweb.core;
 
 import java.util.Map.Entry;
 
-
-import org.analogweb.Invocation;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
@@ -21,7 +20,7 @@ public class DefaultInvocationResultAttributesMapper extends AbstractInvocationP
     private static final String DEFAULT_SCOPE_NAME = "request";
 
     @Override
-    public Object postInvoke(Object invocationResult, Invocation invocation,
+    public Object postInvoke(Object invocationResult, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
             ResultAttributes resultAttributes) {
         if (invocationResult instanceof ResultAttributesHolder) {

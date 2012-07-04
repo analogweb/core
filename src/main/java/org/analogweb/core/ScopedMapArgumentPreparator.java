@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.analogweb.Invocation;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
@@ -17,7 +17,6 @@ import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.To;
 import org.analogweb.util.AnnotationUtils;
 import org.analogweb.util.StringUtils;
-
 
 /**
  * {@link To}注釈が付与された{@link org.analogweb.annotation.On} メソッドの引数に対して、
@@ -30,31 +29,30 @@ import org.analogweb.util.StringUtils;
 public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
 
     @Override
-    public Object prepareInvoke(Method method, Invocation invocation,
+    public Object prepareInvoke(Method method, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
             TypeMapperContext converters) {
         Annotation[][] argumentAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
-        Map<Integer, Object> args = invocation.getPreparedArgs();
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
             To viewAttributes = AnnotationUtils
                     .findAnnotation(To.class, argumentAnnotations[index]);
             if (viewAttributes != null
                     && argTypes[index].getCanonicalName().equals(Map.class.getCanonicalName())) {
-                args.put(index, new ContextExtractor<Object>(viewAttributes.value()));
+                args.putInvocationArgument(index,
+                        new ContextExtractor<Object>(viewAttributes.value()));
             }
         }
         return NO_INTERRUPTION;
     }
 
     @Override
-    public Object postInvoke(Object invocationResult, Invocation invocation,
+    public Object postInvoke(Object invocationResult, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
             ResultAttributes resultAttributes) {
-        Map<Integer, Object> args = invocation.getPreparedArgs();
-        for (Entry<Integer, Object> entry : args.entrySet()) {
-            if (entry.getValue() instanceof ContextExtractor) {
-                ContextExtractor<?> scopedAttributes = (ContextExtractor<?>) entry.getValue();
+        for (Object arg : args.asList()) {
+            if (arg instanceof ContextExtractor) {
+                ContextExtractor<?> scopedAttributes = (ContextExtractor<?>) arg;
                 scopedAttributes.extract(context, resultAttributes);
             }
         }

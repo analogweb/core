@@ -2,9 +2,10 @@ package org.analogweb.core;
 
 import java.lang.reflect.Method;
 
-import org.analogweb.Invocation;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
+import org.analogweb.PreparedInvocationArguments;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
@@ -18,7 +19,7 @@ import org.analogweb.util.ArrayUtils;
 public abstract class AbstractInvocationProcessor implements InvocationProcessor {
 
     @Override
-    public Object prepareInvoke(Method method, Invocation invocation,
+    public Object prepareInvoke(Method method, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
             TypeMapperContext converters) {
         return NO_INTERRUPTION;
@@ -30,8 +31,8 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
     }
 
     @Override
-    public Object processException(Exception ex, RequestContext request, Invocation invocation,
-            InvocationMetadata metadata) {
+    public Object processException(Exception ex, RequestContext request,
+            PreparedInvocationArguments args, InvocationMetadata metadata) {
         if (ex instanceof InvocationFailureException) {
             throw (InvocationFailureException) ex;
         }
@@ -39,14 +40,14 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
     }
 
     @Override
-    public Object postInvoke(Object invocationResult, Invocation invocation,
+    public Object postInvoke(Object invocationResult, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
             ResultAttributes resultAttributes) {
         return invocationResult;
     }
 
     @Override
-    public void afterCompletion(RequestContext request, Invocation invocation,
+    public void afterCompletion(RequestContext request, InvocationArguments args,
             InvocationMetadata metadata, Object invocationResult) {
     }
 

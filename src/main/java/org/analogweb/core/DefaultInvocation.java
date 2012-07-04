@@ -8,15 +8,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.analogweb.Invocation;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
-import org.analogweb.InvocationProcessor.InvocationArguments;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.InvocationFailureException;
-import org.analogweb.exception.UnresolvableInvocationException;
 import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
 
@@ -24,9 +23,9 @@ import org.analogweb.util.ReflectionUtils;
  * {@link Invocation}のデフォルトの実装です。
  * @author snowgoose
  */
-public class DefaultInvocation implements Invocation {
+public class DefaultInvocation implements Invocation, InvocationArguments {
 
-    private final Object invocationInstance;
+    private Object invocationInstance;
     private final InvocationMetadata metadata;
     private final RequestAttributes requestAttributes;
     private final ResultAttributes resultAttributes;
@@ -34,6 +33,7 @@ public class DefaultInvocation implements Invocation {
     private final TreeMap<Integer, Object> preparedArgsMap;
     private final TypeMapperContext converters;
     private final List<InvocationProcessor> processors;
+    private List<Object> argumentList;
 
     public DefaultInvocation(Object invocationInstance, InvocationMetadata metadata,
             RequestAttributes attributes, ResultAttributes resultAttributes,
@@ -49,23 +49,6 @@ public class DefaultInvocation implements Invocation {
         this.preparedArgsMap = Maps.newTreeMap();
     }
 
-    /**
-     * Copy constractor.
-     * switch invocation instance.
-     * @param invocationInstance invocation instance.
-     * @param invocation original {@link DefaultInvocation}
-     */
-    public DefaultInvocation(Object invocationInstance, DefaultInvocation invocation) {
-        this.invocationInstance = invocationInstance;
-        this.metadata = invocation.metadata;
-        this.requestAttributes = invocation.requestAttributes;
-        this.resultAttributes = invocation.resultAttributes;
-        this.requestContext = invocation.requestContext;
-        this.converters = invocation.converters;
-        this.processors = invocation.processors;
-        this.preparedArgsMap = invocation.preparedArgsMap;
-    }
-
     @Override
     public Object invoke() throws InvocationFailureException {
         Class<?> actionClass = getMetadata().getInvocationClass();
@@ -74,10 +57,6 @@ public class DefaultInvocation implements Invocation {
                 getMetadata().getMethodName(), methodArgumentTypes);
         Object interruption = InvocationProcessor.NO_INTERRUPTION;
         List<InvocationProcessor> processors = getProcessors();
-        Object instance = getInvocationInstance();
-        if (instance == null) {
-            throw new UnresolvableInvocationException(getMetadata());
-        }
         for (InvocationProcessor processor : processors) {
             interruption = processor.prepareInvoke(method, this, getMetadata(),
                     getRequestContext(), getRequestAttributes(), getConverters());
@@ -85,16 +64,17 @@ public class DefaultInvocation implements Invocation {
                 return interruption;
             }
         }
-        InvocationArguments argumentList = getArguments(getPreparedArgs(), methodArgumentTypes);
         Object invocationResult = null;
         try {
             for (InvocationProcessor processor : processors) {
-                interruption = processor.onInvoke(method, getMetadata(), argumentList);
+                interruption = processor.onInvoke(method, getMetadata(), this);
                 if (interruption != InvocationProcessor.NO_INTERRUPTION) {
                     return interruption;
                 }
             }
-            invocationResult = invoke(method, instance, argumentList.toArray());
+            List<Object> args = asList();
+            invocationResult = invoke(getMetadata(), method, getInvocationInstance(),
+                    args.toArray(new Object[args.size()]));
             for (InvocationProcessor processor : processors) {
                 invocationResult = processor.postInvoke(invocationResult, this, getMetadata(),
                         getRequestContext(), getRequestAttributes(), getResultAttributes());
@@ -116,8 +96,8 @@ public class DefaultInvocation implements Invocation {
         return invocationResult;
     }
 
-    protected Object invoke(Method method, Object instance, Object[] args)
-            throws InvocationFailureException {
+    protected Object invoke(InvocationMetadata metadata, Method method, Object instance,
+            Object[] args) throws InvocationFailureException {
         try {
             return method.invoke(instance, args);
         } catch (IllegalArgumentException e) {
@@ -130,43 +110,22 @@ public class DefaultInvocation implements Invocation {
         }
     }
 
-    protected InvocationArguments getArguments(Map<Integer, Object> preparedArgs,
-            Class<?>[] methodArgumentTypes) {
-        final List<Object> argumentList = new ArrayList<Object>();
-        for (int argumentIndex = 0; argumentIndex < methodArgumentTypes.length; argumentIndex++) {
-            if (preparedArgs.containsKey(argumentIndex)) {
-                argumentList.add(preparedArgs.get(argumentIndex));
-            } else {
-                argumentList.add((Object) null);
-            }
-        }
-        return new InvocationArguments() {
-            @Override
-            public Object[] toArray() {
-                return argumentList.toArray(new Object[argumentList.size()]);
-            }
-
-            @Override
-            public void set(int index, Object value) {
-                if (argumentList.size() > index && argumentList.get(index) == null) {
-                    argumentList.set(index, value);
-                }
-            }
-        };
-    }
-
     @Override
     public Object getInvocationInstance() {
         return invocationInstance;
     }
 
-    @Override
-    public Map<Integer, Object> getPreparedArgs() {
+    /**
+     * エンドポイントとなるメソッドに適用される引数を取得します。<br/>
+     * キーは引数の索引であり、値は引数となるインスタンスです。
+     * @return エンドポイントとなるメソッドに適用される引数を保持する{@link Map}
+     */
+    protected Map<Integer, Object> getPreparedArgs() {
         return this.preparedArgsMap;
     }
 
     @Override
-    public void putPreparedArg(int index, Object arg) {
+    public void putInvocationArgument(int index, Object arg) {
         this.preparedArgsMap.put(index, arg);
     }
 
@@ -192,6 +151,27 @@ public class DefaultInvocation implements Invocation {
 
     protected final List<InvocationProcessor> getProcessors() {
         return processors;
+    }
+
+    @Override
+    public List<Object> asList() {
+        if (this.argumentList == null) {
+            this.argumentList = new ArrayList<Object>();
+            Map<Integer, Object> preparedArgs = getPreparedArgs();
+            for (int argumentIndex = 0; argumentIndex < getMetadata().getArgumentTypes().length; argumentIndex++) {
+                if (preparedArgs.containsKey(argumentIndex)) {
+                    argumentList.add(preparedArgs.get(argumentIndex));
+                } else {
+                    argumentList.add((Object) null);
+                }
+            }
+        }
+        return argumentList;
+    }
+
+    @Override
+    public void replace(Object newInvocationInstance) {
+        this.invocationInstance = newInvocationInstance;
     }
 
 }

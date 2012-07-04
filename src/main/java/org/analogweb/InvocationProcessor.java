@@ -22,14 +22,14 @@ public interface InvocationProcessor extends MultiModule {
      * 値をかえす場合は、処理の結果その戻り値を以って
      * {@link Invocation}の処理を終了します。
      * @param method 実行対象の{@link Method}
-     * @param invocation {@link Invocation}
+     * @param args {@link InvocationArguments}
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
      * @param attributes {@link RequestAttributes}
      * @param converters {@link TypeMapperContext}
      * @return 実行処理を中断する結果({@link Direction}など。)
      */
-    Object prepareInvoke(Method method, Invocation invocation, InvocationMetadata metadata,
+    Object prepareInvoke(Method method, InvocationArguments args, InvocationMetadata metadata,
             RequestContext context, RequestAttributes attributes, TypeMapperContext converters);
 
     /**
@@ -54,11 +54,11 @@ public interface InvocationProcessor extends MultiModule {
      * 値をかえす場合は、処理の結果その戻り値を以って
      * @param ex {@link Invocation}実行時に発生した例外。
      * @param request {@link RequestContext}
-     * @param invocation 例外が発生した対象の{@link Invocation}
+     * @param args 例外が発生した対象の{@link InvocationArguments}
      * @param metadata {@link InvocationMetadata}
      * @return 実行処理を中断する結果({@link Direction}など。)
      */
-    Object processException(Exception ex, RequestContext request, Invocation invocation,
+    Object processException(Exception ex, RequestContext request, PreparedInvocationArguments args,
             InvocationMetadata metadata);
 
     /**
@@ -67,27 +67,27 @@ public interface InvocationProcessor extends MultiModule {
      * の実行結果)をそのまま返します。それ以外の値を返す(実行結果を挿げ替える)
      * 事も可能です。
      * @param invocationResult {@link Invocation}の実行結果
-     * @param invocation 例外が発生した対象の{@link Invocation}
+     * @param args 例外が発生した対象の{@link InvocationArguments}
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
      * @param attributes {@link RequestAttributes}
      * @param resultAttributes {@link ResultAttributes}
      * @return {@link Invocation}の実行結果
      */
-    Object postInvoke(Object invocationResult, Invocation invocation, InvocationMetadata metadata,
+    Object postInvoke(Object invocationResult, InvocationArguments args, InvocationMetadata metadata,
             RequestContext context, RequestAttributes attributes, ResultAttributes resultAttributes);
 
     /**
      * {@link Invocation}実行後に処理を追加します。<br/>
      * このメソッドは{@link Invocation}の実行において例外が発生した場合でも
-     * {@link #processException(Exception, RequestContext, Invocation, InvocationMetadata)}
+     * {@link #processException(Exception, RequestContext, PreparedInvocationArguments, InvocationMetadata)}
      * で結果が買えされない場合実行されます。
      * @param request {@link RequestContext}
-     * @param invocation {@link Invocation}
+     * @param args {@link InvocationArguments}
      * @param metadata {@link InvocationMetadata}
      * @param invocationResult {@link Invocation}の実行結果(例外が発生するなどして実行結果が存在しない場合はnull)
      */
-    void afterCompletion(RequestContext request, Invocation invocation,
+    void afterCompletion(RequestContext request, InvocationArguments args,
             InvocationMetadata metadata, Object invocationResult);
 
     /**
@@ -95,7 +95,7 @@ public interface InvocationProcessor extends MultiModule {
      * を保持します。
      * @author snowgoose
      */
-    public static interface InvocationArguments {
+//    public static interface InvocationArguments {
         /**
          * {@link Invocation}に引き渡すパラメータのうち、指定した
          * 索引に一致するパラメータの値を更新します。
@@ -104,12 +104,14 @@ public interface InvocationProcessor extends MultiModule {
          * @param index (0から始まる)パラメータの索引
          * @param value 更新する値
          */
-        void set(int index,Object value);
+//        void set(int index,Object value);
         /**
          * 実行時に必要なパラメータの配列を生成します。
          * @return パラメータの配列
          */
+    /*
         Object[] toArray();
     }
+    */
 
 }

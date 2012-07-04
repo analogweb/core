@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.analogweb.Invocation;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestAttributes;
@@ -30,8 +30,8 @@ public class AbstractActionInvocationProcessorTest {
 
     private final AbstractInvocationProcessor processor = new AbstractInvocationProcessor() {
     };
-    private Invocation invocation;
     private InvocationMetadata metadata;
+    private InvocationArguments args;
     private RequestContext context;
     private RequestAttributes attributes;
     private TypeMapperContext converters;
@@ -44,8 +44,8 @@ public class AbstractActionInvocationProcessorTest {
      */
     @Before
     public void setUp() throws Exception {
-        invocation = mock(Invocation.class);
         metadata = mock(InvocationMetadata.class);
+        args = mock(InvocationArguments.class);
         context = mock(RequestContext.class);
         attributes = mock(RequestAttributes.class);
         converters = mock(TypeMapperContext.class);
@@ -53,8 +53,8 @@ public class AbstractActionInvocationProcessorTest {
 
     @Test
     public void testPrepareInvoke() {
-        Object actual = processor.prepareInvoke((Method) null, invocation, metadata, context,
-                attributes, converters);
+        Object actual = processor.prepareInvoke((Method) null, args, metadata, context, attributes,
+                converters);
         assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
     }
 
@@ -62,8 +62,8 @@ public class AbstractActionInvocationProcessorTest {
     public void testPostInvoke() {
         ResultAttributes resultAttributes = mock(ResultAttributes.class);
         Object invocationResult = new Object();
-        Object actual = processor.postInvoke(invocationResult, invocation, metadata, context,
-                attributes, resultAttributes);
+        Object actual = processor.postInvoke(invocationResult, args, metadata, context, attributes,
+                resultAttributes);
         assertSame(actual, invocationResult);
     }
 
@@ -71,14 +71,14 @@ public class AbstractActionInvocationProcessorTest {
     public void testAfterCompletion() {
         // do nothing.
         Object invocationResult = new Object();
-        processor.afterCompletion(context, invocation, metadata, invocationResult);
+        processor.afterCompletion(context, args, metadata, invocationResult);
     }
 
     @Test
     public void testProcessExceptionWithActionInvocationFailureException() {
         final Throwable th = new Throwable();
-        final Object[] args = { "action invocation failure." };
-        InvocationFailureException ex = new InvocationFailureException(th, metadata, args);
+        final Object[] messages = { "action invocation failure." };
+        InvocationFailureException ex = new InvocationFailureException(th, metadata, messages);
 
         thrown.expect(is(sameInstance(ex)));
         thrown.expect(new NoDescribeMatcher<InvocationFailureException>() {
@@ -86,7 +86,7 @@ public class AbstractActionInvocationProcessorTest {
             public boolean matches(Object arg0) {
                 if (arg0 instanceof InvocationFailureException) {
                     InvocationFailureException ex = (InvocationFailureException) arg0;
-                    assertThat(ex.getArgs(), is(args));
+                    assertThat(ex.getArgs(), is(messages));
                     assertThat(ex.getMetadata(), is(metadata));
                     assertThat(ex.getCause(), is(th));
                     return true;
@@ -95,15 +95,15 @@ public class AbstractActionInvocationProcessorTest {
             }
         });
 
-        processor.processException(ex, context, invocation, metadata);
+        processor.processException(ex, context, args, metadata);
     }
 
     @Test
     public void testProcessExceptionWithActionInvocationFailureExceptionCausedInvocationTargetException() {
         final NullPointerException cause = new NullPointerException();
         final InvocationTargetException th = new InvocationTargetException(cause);
-        final Object[] args = { "action invocation failure." };
-        InvocationFailureException ex = new InvocationFailureException(th, metadata, args);
+        final Object[] messages = { "action invocation failure." };
+        InvocationFailureException ex = new InvocationFailureException(th, metadata, messages);
 
         thrown.expect(is(sameInstance(ex)));
         thrown.expect(new NoDescribeMatcher<InvocationFailureException>() {
@@ -111,7 +111,7 @@ public class AbstractActionInvocationProcessorTest {
             public boolean matches(Object arg0) {
                 if (arg0 instanceof InvocationFailureException) {
                     InvocationFailureException ex = (InvocationFailureException) arg0;
-                    assertThat(ex.getArgs(), is(args));
+                    assertThat(ex.getArgs(), is(messages));
                     assertThat(ex.getMetadata(), is(metadata));
                     assertThat(ex.getCause(), is((Throwable) cause));
                     return true;
@@ -120,7 +120,7 @@ public class AbstractActionInvocationProcessorTest {
             }
         });
 
-        processor.processException(ex, context, invocation, metadata);
+        processor.processException(ex, context, args, metadata);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class AbstractActionInvocationProcessorTest {
 
         Exception ex = new Exception();
 
-        processor.processException(ex, context, invocation, metadata);
+        processor.processException(ex, context, args, metadata);
     }
 
 }

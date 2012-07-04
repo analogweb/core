@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.analogweb.Invocation;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestAttributes;
@@ -41,8 +41,8 @@ import org.junit.Test;
 public class BindAttributeArgumentPreparatorTest {
 
     private BindAttributeArgumentPreparator preparator;
-    private Invocation invocation;
     private InvocationMetadata metadata;
+    private InvocationArguments args;
     private RequestAttributes attributes;
     private RequestContext context;
     private TypeMapperContext typeMapper;
@@ -53,8 +53,8 @@ public class BindAttributeArgumentPreparatorTest {
     @Before
     public void setUp() {
         preparator = new BindAttributeArgumentPreparator();
-        invocation = mock(Invocation.class);
         metadata = mock(InvocationMetadata.class);
+        args = mock(InvocationArguments.class);
         attributes = mock(RequestAttributes.class);
         context = mock(RequestContext.class);
         typeMapper = mock(TypeMapperContext.class);
@@ -81,12 +81,12 @@ public class BindAttributeArgumentPreparatorTest {
                 typeMapper.mapToType(TypeMapper.class, context, attributes, "baa!", String.class,
                         new String[0])).thenReturn("baa!");
 
-        Object actual = preparator.prepareInvoke(method, invocation, metadata, context,
+        Object actual = preparator.prepareInvoke(method, args, metadata, context,
                 attributes, typeMapper);
         assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
 
-        verify(invocation).putPreparedArg(0, "foo!");
-        verify(invocation).putPreparedArg(1, "baa!");
+        verify(args).putInvocationArgument(0, "foo!");
+        verify(args).putInvocationArgument(1, "baa!");
     }
 
     @Test
@@ -108,12 +108,12 @@ public class BindAttributeArgumentPreparatorTest {
                 typeMapper.mapToType(TypeMapper.class, context, attributes, "baz!", String.class,
                         new String[0])).thenReturn("baz!");
 
-        Object actual = preparator.prepareInvoke(method, invocation, metadata, context,
+        Object actual = preparator.prepareInvoke(method, args, metadata, context,
                 attributes, typeMapper);
         assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
 
-        verify(invocation).putPreparedArg(0, "foo!");
-        verify(invocation).putPreparedArg(2, "baz!");
+        verify(args).putInvocationArgument(0, "foo!");
+        verify(args).putInvocationArgument(2, "baz!");
     }
 
     @Test
@@ -132,11 +132,11 @@ public class BindAttributeArgumentPreparatorTest {
                 typeMapper.mapToType(TypeMapper.class, context, attributes, "baz!", String.class,
                         new String[0])).thenReturn("baz!");
 
-        Object actual = preparator.prepareInvoke(method, invocation, metadata, context,
+        Object actual = preparator.prepareInvoke(method, args, metadata, context,
                 attributes, typeMapper);
         assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
 
-        verify(invocation).putPreparedArg(2, "baz!");
+        verify(args).putInvocationArgument(2, "baz!");
     }
 
     @Test
@@ -160,12 +160,12 @@ public class BindAttributeArgumentPreparatorTest {
                 typeMapper.mapToType(TypeMapper.class, context, attributes, "2010/11/11",
                         Date.class, new String[0])).thenReturn(now);
 
-        Object actual = preparator.prepareInvoke(method, invocation, metadata, context,
+        Object actual = preparator.prepareInvoke(method, args, metadata, context,
                 attributes, typeMapper);
         assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
 
-        verify(invocation).putPreparedArg(2, now);
-        verify(invocation).putPreparedArg(3, "baz!");
+        verify(args).putInvocationArgument(2, now);
+        verify(args).putInvocationArgument(3, "baz!");
     }
 
     @Test
@@ -183,11 +183,11 @@ public class BindAttributeArgumentPreparatorTest {
                 typeMapper.mapToType(TypeMapper.class, context, attributes, "baz!", String.class,
                         new String[0])).thenReturn("baz!");
 
-        Object actual = preparator.prepareInvoke(method, invocation, metadata, context,
+        Object actual = preparator.prepareInvoke(method, args, metadata, context,
                 attributes, typeMapper);
         assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
 
-        verify(invocation).putPreparedArg(0, "baz!");
+        verify(args).putInvocationArgument(0, "baz!");
     }
 
     @Test
@@ -204,11 +204,11 @@ public class BindAttributeArgumentPreparatorTest {
                 typeMapper.mapToType(SomeTypeMapper.class, context, attributes, "boo!",
                         String.class, new String[0])).thenReturn("booz!");
 
-        Object actual = preparator.prepareInvoke(method, invocation, metadata, context,
+        Object actual = preparator.prepareInvoke(method, args, metadata, context,
                 attributes, typeMapper);
         assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
 
-        verify(invocation).putPreparedArg(0, "booz!");
+        verify(args).putInvocationArgument(0, "booz!");
     }
 
     @Test
@@ -234,12 +234,12 @@ public class BindAttributeArgumentPreparatorTest {
                 typeMapper.mapToType(TypeMapper.class, context, attributes, "100", Integer.class,
                         new String[0])).thenReturn(100);
 
-        Object actual = preparator.prepareInvoke(method, invocation, metadata, context,
+        Object actual = preparator.prepareInvoke(method, args, metadata, context,
                 attributes, typeMapper);
         assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
 
-        verify(invocation).putPreparedArg(0, "foo");
-        verify(invocation).putPreparedArg(3, 100);
+        verify(args).putInvocationArgument(0, "foo");
+        verify(args).putInvocationArgument(3, 100);
     }
 
     @Test
@@ -257,11 +257,11 @@ public class BindAttributeArgumentPreparatorTest {
                 typeMapper.mapToType(TypeMapper.class, context, attributes, "100,000",
                         BigDecimal.class, new String[] { "###,###" })).thenReturn(expected);
 
-        Object actual = preparator.prepareInvoke(method, invocation, metadata, context,
+        Object actual = preparator.prepareInvoke(method, args, metadata, context,
                 attributes, typeMapper);
         assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
 
-        verify(invocation).putPreparedArg(0, expected);
+        verify(args).putInvocationArgument(0, expected);
     }
 
     @On

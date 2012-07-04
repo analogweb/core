@@ -1,20 +1,18 @@
 package org.analogweb.core;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
-import org.analogweb.Invocation;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
@@ -23,8 +21,7 @@ import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
 import org.analogweb.annotation.To;
-import org.analogweb.core.ScopedMapArgumentPreparator;
-import org.analogweb.util.Maps;
+import org.analogweb.core.ScopedMapArgumentPreparator.ContextExtractor;
 import org.analogweb.util.ReflectionUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +33,8 @@ import org.junit.Test;
 public class ScopedMapArgumentPreparatorTest {
 
     private ScopedMapArgumentPreparator preparator;
-    private Invocation invocation;
     private InvocationMetadata metadata;
+    private InvocationArguments args;
     private RequestContext context;
     private RequestAttributes attributes;
     private TypeMapperContext typeMapper;
@@ -49,8 +46,8 @@ public class ScopedMapArgumentPreparatorTest {
     @Before
     public void setUp() {
         preparator = new ScopedMapArgumentPreparator();
-        invocation = mock(Invocation.class);
         metadata = mock(InvocationMetadata.class);
+        args = mock(InvocationArguments.class);
         context = mock(RequestContext.class);
         attributes = mock(RequestAttributes.class);
         typeMapper = mock(TypeMapperContext.class);
@@ -60,65 +57,49 @@ public class ScopedMapArgumentPreparatorTest {
     @Test
     public void testMapToFirstArgument() {
         Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
-        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class,
-                "doSomething", parameterTypes);
-        Map<Integer, Object> arguments = Maps.newEmptyHashMap();
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doSomething",
+                parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-        when(invocation.getPreparedArgs()).thenReturn(arguments);
 
-        preparator
-                .prepareInvoke(doSomething, invocation, metadata, context, attributes, typeMapper);
+        preparator.prepareInvoke(doSomething, args, metadata, context, attributes, typeMapper);
 
-        assertThat(arguments.get(0), instanceOf(Map.class));
-
-        Map<?, ?> newMap = (Map<?, ?>) arguments.get(0);
-        assertTrue(newMap.isEmpty());
+        verify(args).putInvocationArgument(eq(0), isA(ContextExtractor.class));
     }
 
     @Test
     public void testMapToFirstArgumentNotAssignableFromMap() {
         Class<?>[] parameterTypes = new Class[] { String.class, String.class };
-        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class,
-                "doAnything", parameterTypes);
-        Map<Integer, Object> arguments = Maps.newEmptyHashMap();
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doAnything",
+                parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-        when(invocation.getPreparedArgs()).thenReturn(arguments);
 
-        preparator
-                .prepareInvoke(doSomething, invocation, metadata, context, attributes, typeMapper);
-
-        assertNull(arguments.get(0));
+        preparator.prepareInvoke(doSomething, args, metadata, context, attributes, typeMapper);
     }
 
     @Test
     public void testMapToFirstArgumentNotEqualsMap() {
         Class<?>[] parameterTypes = new Class[] { HashMap.class, String.class };
-        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class,
-                "doNothing", parameterTypes);
-        Map<Integer, Object> arguments = Maps.newEmptyHashMap();
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doNothing",
+                parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-        when(invocation.getPreparedArgs()).thenReturn(arguments);
 
-        preparator
-                .prepareInvoke(doSomething, invocation, metadata, context, attributes, typeMapper);
-
-        assertNull(arguments.get(0));
+        preparator.prepareInvoke(doSomething, args, metadata, context, attributes, typeMapper);
     }
 
     @Test
     public void testExtractToSpecifiedScopeFirstArgument() {
-        Map<Integer, Object> arguments = Maps.newEmptyHashMap();
         Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(
                 "session");
         BigDecimal amount = new BigDecimal("1000");
         scopedMap.put("amount", amount);
-        arguments.put(0, scopedMap);
 
-        when(invocation.getPreparedArgs()).thenReturn(arguments);
+        ArrayList<Object> list = new ArrayList<Object>();
+        list.add(scopedMap);
+        when(args.asList()).thenReturn(list);
 
         Object invocationResult = new Object();
 
-        preparator.postInvoke(invocationResult, invocation, metadata, context, attributes,
+        preparator.postInvoke(invocationResult, args, metadata, context, attributes,
                 resultAttributes);
 
         verify(resultAttributes).setValueOfQuery(context, "session", "amount", amount);
@@ -127,21 +108,21 @@ public class ScopedMapArgumentPreparatorTest {
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testExtractToScopeFirstArgument() {
-        Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
-        Map<Integer, Object> arguments = Maps.newEmptyHashMap();
-        Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>("");
-        BigDecimal amount = new BigDecimal("1000");
-        scopedMap.put("amount", amount);
-        arguments.put(0, scopedMap);
 
         when(metadata.getInvocationClass()).thenReturn((Class) MockAction.class);
         when(metadata.getMethodName()).thenReturn("doSomething");
+        Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-        when(invocation.getPreparedArgs()).thenReturn(arguments);
+        ArrayList<Object> list = new ArrayList<Object>();
+        Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>("");
+        BigDecimal amount = new BigDecimal("1000");
+        scopedMap.put("amount", amount);
+        list.add(scopedMap);
+        when(args.asList()).thenReturn(list);
 
         Object invocationResult = new Object();
 
-        preparator.postInvoke(invocationResult, invocation, metadata, context, attributes,
+        preparator.postInvoke(invocationResult, args, metadata, context, attributes,
                 resultAttributes);
 
         verify(resultAttributes).setValueOfQuery(context, "request", "amount", amount);
@@ -149,18 +130,18 @@ public class ScopedMapArgumentPreparatorTest {
 
     @Test
     public void testExtractAndRemoveToScopeFirstArgument() {
-        Map<Integer, Object> arguments = Maps.newEmptyHashMap();
         Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(
                 "session");
         scopedMap.remove("amount");
-        arguments.put(0, "boobaa");
-        arguments.put(1, scopedMap);
 
-        when(invocation.getPreparedArgs()).thenReturn(arguments);
+        ArrayList<Object> list = new ArrayList<Object>();
+        list.add("boobaa");
+        list.add(scopedMap);
+        when(args.asList()).thenReturn(list);
 
         Object invocationResult = new Object();
 
-        preparator.postInvoke(invocationResult, invocation, metadata, context, attributes,
+        preparator.postInvoke(invocationResult, args, metadata, context, attributes,
                 resultAttributes);
 
         verify(resultAttributes).removeValueOfQuery(context, "session", "amount");

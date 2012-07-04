@@ -1,7 +1,6 @@
 package org.analogweb.core;
 
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +36,7 @@ public class DefaultInvocationFactoryTest {
     private TypeMapperContext converters;
     private List<InvocationProcessor> processors;
     private InvocationProcessor processor;
-    
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -61,24 +60,27 @@ public class DefaultInvocationFactoryTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testCreate() {
         DefaultActionInvocationFactoryTestMockActions actionInstance = new DefaultActionInvocationFactoryTestMockActions();
-        when(provider.getInstanceOfType(DefaultActionInvocationFactoryTestMockActions.class)).thenReturn(actionInstance);
-        when(metadata.getInvocationClass()).thenReturn((Class)DefaultActionInvocationFactoryTestMockActions.class);
+        when(provider.getInstanceOfType(DefaultActionInvocationFactoryTestMockActions.class))
+                .thenReturn(actionInstance);
+        when(metadata.getInvocationClass()).thenReturn(
+                (Class) DefaultActionInvocationFactoryTestMockActions.class);
         DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        Invocation invocation = factory.createInvocation(provider, metadata,
-                attributes, resultAttributes, context, converters, processors);
+        Invocation invocation = factory.createInvocation(provider, metadata, attributes,
+                resultAttributes, context, converters, processors);
         assertSame(invocation.getInvocationInstance(), actionInstance);
-        assertTrue(invocation.getPreparedArgs().isEmpty());
     }
 
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testCreateWithNullInstance() {
         thrown.expect(UnresolvableInvocationException.class);
-        when(provider.getInstanceOfType(DefaultActionInvocationFactoryTestMockActions.class)).thenReturn(null);
-        when(metadata.getInvocationClass()).thenReturn((Class)DefaultActionInvocationFactoryTestMockActions.class);
+        when(provider.getInstanceOfType(DefaultActionInvocationFactoryTestMockActions.class))
+                .thenReturn(null);
+        when(metadata.getInvocationClass()).thenReturn(
+                (Class) DefaultActionInvocationFactoryTestMockActions.class);
         DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        factory.createInvocation(provider, metadata,
-                attributes, resultAttributes, context, converters, processors);
+        factory.createInvocation(provider, metadata, attributes, resultAttributes, context,
+                converters, processors);
     }
 
     @On
