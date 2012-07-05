@@ -74,7 +74,7 @@ public class WebApplicationTest {
         RequestPath pathAnyThing = mock(RequestPath.class);
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
         when(pathAnyThing.getMethod()).thenReturn("POST");
-        InvocationMetadata metadataAnyThing = mapping.getActionMethodMetadata(pathAnyThing);
+        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(pathAnyThing);
         log.debug(metadataAnyThing.toString());
 
         ApplicationProperties props = ApplicationPropertiesHolder.current();

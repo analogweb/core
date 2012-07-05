@@ -12,7 +12,7 @@ public interface RequestPathMapping extends Disposable {
      * @param requestPath {@link RequestPathMetadata}
      * @return キーにより特定された{@link InvocationMetadata}
      */
-    InvocationMetadata getActionMethodMetadata(RequestPath requestPath);
+    InvocationMetadata findInvocationMetadata(RequestPath requestPath);
 
     /**
      * {@link RequestPathMetadata}をキーとして、{@link InvocationMetadata}をマッピングします。

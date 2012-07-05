@@ -304,9 +304,9 @@ public class AnalogFilterTest {
     private void schenarioFindMetadata(boolean metadataFound) {
         when(application.getRequestPathMapping()).thenReturn(mapping);
         if (metadataFound) {
-            when(mapping.getActionMethodMetadata(servletRequestPath)).thenReturn(metadata);
+            when(mapping.findInvocationMetadata(servletRequestPath)).thenReturn(metadata);
         } else {
-            when(mapping.getActionMethodMetadata(servletRequestPath)).thenReturn(null);
+            when(mapping.findInvocationMetadata(servletRequestPath)).thenReturn(null);
         }
     }
 

@@ -41,9 +41,9 @@ public class DefaultRequestPathMappingTest {
         mapping.mapInvocationMetadata(requestPath2, metadata2);
         mapping.mapInvocationMetadata(requestPath3, metadata3);
 
-        assertThat(mapping.getActionMethodMetadata(requestPath1), is(metadata1));
-        assertThat(mapping.getActionMethodMetadata(requestPath2), is(metadata2));
-        assertThat(mapping.getActionMethodMetadata(requestPath3), is(metadata3));
+        assertThat(mapping.findInvocationMetadata(requestPath1), is(metadata1));
+        assertThat(mapping.findInvocationMetadata(requestPath2), is(metadata2));
+        assertThat(mapping.findInvocationMetadata(requestPath3), is(metadata3));
     }
 
     @Test
@@ -56,8 +56,8 @@ public class DefaultRequestPathMappingTest {
 
         when(requestPath1.match(requestPath1)).thenReturn(true);
 
-        assertThat(mapping.getActionMethodMetadata(requestPath1), is(metadata1));
-        assertNull(mapping.getActionMethodMetadata(requestPath2));
+        assertThat(mapping.findInvocationMetadata(requestPath1), is(metadata1));
+        assertNull(mapping.findInvocationMetadata(requestPath2));
     }
 
     @Test
@@ -71,8 +71,8 @@ public class DefaultRequestPathMappingTest {
         when(requestPath1.match(requestPath1)).thenReturn(true);
 
         mapping.dispose();
-        assertNull(mapping.getActionMethodMetadata(requestPath1));
-        assertNull(mapping.getActionMethodMetadata(requestPath2));
+        assertNull(mapping.findInvocationMetadata(requestPath1));
+        assertNull(mapping.findInvocationMetadata(requestPath2));
     }
 
 }

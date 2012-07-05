@@ -19,7 +19,7 @@ public class DefaultRequestPathMapping implements RequestPathMapping {
             .newConcurrentHashMap();
 
     @Override
-    public InvocationMetadata getActionMethodMetadata(RequestPath requestPath) {
+    public InvocationMetadata findInvocationMetadata(RequestPath requestPath) {
         for (Entry<RequestPathMetadata, InvocationMetadata> pathEntry : actionMetadataMap
                 .entrySet()) {
             if (pathEntry.getKey().match(requestPath)) {

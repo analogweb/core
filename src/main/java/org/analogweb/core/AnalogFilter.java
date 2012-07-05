@@ -73,7 +73,7 @@ public class AnalogFilter implements Filter {
 
         RequestPathMapping mapping = webApplication.getRequestPathMapping();
         log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
-        InvocationMetadata metadata = mapping.getActionMethodMetadata(requestedPath);
+        InvocationMetadata metadata = mapping.findInvocationMetadata(requestedPath);
         if (metadata == null) {
             log.log(Markers.LIFECYCLE, "DL000005", requestedPath);
             chain.doFilter(request, response);
