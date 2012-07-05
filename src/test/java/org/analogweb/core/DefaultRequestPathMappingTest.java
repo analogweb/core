@@ -6,10 +6,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestPathMetadata;
-import org.analogweb.core.DefaultRequestPathMapping;
+import org.analogweb.RequestPath;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,9 +25,9 @@ public class DefaultRequestPathMappingTest {
 
     @Test
     public void testGetActionMethodMetadata() {
-        RequestPathMetadata requestPath1 = mock(RequestPathMetadata.class);
-        RequestPathMetadata requestPath2 = mock(RequestPathMetadata.class);
-        RequestPathMetadata requestPath3 = mock(RequestPathMetadata.class);
+        RequestPath requestPath1 = mock(RequestPath.class);
+        RequestPath requestPath2 = mock(RequestPath.class);
+        RequestPath requestPath3 = mock(RequestPath.class);
 
         InvocationMetadata metadata1 = mock(InvocationMetadata.class);
         InvocationMetadata metadata2 = mock(InvocationMetadata.class);
@@ -50,8 +48,8 @@ public class DefaultRequestPathMappingTest {
 
     @Test
     public void testGetActionMethodMetadataWithNoMatch() {
-        RequestPathMetadata requestPath1 = mock(RequestPathMetadata.class);
-        RequestPathMetadata requestPath2 = mock(RequestPathMetadata.class);
+        RequestPath requestPath1 = mock(RequestPath.class);
+        RequestPath requestPath2 = mock(RequestPath.class);
 
         InvocationMetadata metadata1 = mock(InvocationMetadata.class);
         mapping.mapInvocationMetadata(requestPath1, metadata1);
@@ -64,8 +62,8 @@ public class DefaultRequestPathMappingTest {
 
     @Test
     public void testDisposedGetActionMethodMetadataWithNoMatch() {
-        RequestPathMetadata requestPath1 = mock(RequestPathMetadata.class);
-        RequestPathMetadata requestPath2 = mock(RequestPathMetadata.class);
+        RequestPath requestPath1 = mock(RequestPath.class);
+        RequestPath requestPath2 = mock(RequestPath.class);
 
         InvocationMetadata metadata1 = mock(InvocationMetadata.class);
         mapping.mapInvocationMetadata(requestPath1, metadata1);

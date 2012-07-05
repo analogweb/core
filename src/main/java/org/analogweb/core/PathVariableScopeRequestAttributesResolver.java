@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
@@ -34,7 +34,7 @@ public class PathVariableScopeRequestAttributesResolver extends AbstractAttribut
         }
         RequestPathMetadata definedPath = metadata.getDefinedPath();
         if (hasPlaceHolder(definedPath.getActualPath())) {
-            RequestPathMetadata requestedPath = requestContext.getRequestPath();
+            RequestPath requestedPath = requestContext.getRequestPath();
             if (definedPath.match(requestedPath)) {
                 Map<String, String> pathVariables = extractPathValues(definedPath.getActualPath(),
                         requestedPath.getActualPath());

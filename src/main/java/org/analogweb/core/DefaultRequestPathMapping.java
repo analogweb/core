@@ -3,8 +3,8 @@ package org.analogweb.core;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 import org.analogweb.InvocationMetadata;
+import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.util.Maps;
@@ -19,7 +19,7 @@ public class DefaultRequestPathMapping implements RequestPathMapping {
             .newConcurrentHashMap();
 
     @Override
-    public InvocationMetadata getActionMethodMetadata(RequestPathMetadata requestPath) {
+    public InvocationMetadata getActionMethodMetadata(RequestPath requestPath) {
         for (Entry<RequestPathMetadata, InvocationMetadata> pathEntry : actionMetadataMap
                 .entrySet()) {
             if (pathEntry.getKey().match(requestPath)) {

@@ -11,12 +11,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 import org.analogweb.AttributesHandler;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestAttributesFactory;
 import org.analogweb.RequestPath;
-import org.analogweb.core.DefaultRequestContext;
 import org.analogweb.util.Maps;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,6 +47,7 @@ public class DefaultRequestContextTest {
         context = new DefaultRequestContext(request, response, servletContext);
         when(request.getRequestURI()).thenReturn("/baa/baz.rn");
         when(request.getContextPath()).thenReturn("/foo");
+        when(request.getMethod()).thenReturn("GET");
 
         assertSame(context.getContext(), servletContext);
         assertSame(context.getRequest(), request);

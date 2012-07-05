@@ -7,12 +7,12 @@ package org.analogweb;
 public interface RequestPathMapping extends Disposable {
 
     /**
-     * キーである{@link RequestPathMetadata}に一致する{@link InvocationMetadata}を取得します。<br/>
+     * リクエストされたパス({@link RequestPath})に一致する{@link InvocationMetadata}を取得します。<br/>
      * キーに該当する{@link InvocationMetadata}が存在しない場合はnullを返します。
      * @param requestPath {@link RequestPathMetadata}
      * @return キーにより特定された{@link InvocationMetadata}
      */
-    InvocationMetadata getActionMethodMetadata(RequestPathMetadata requestPath);
+    InvocationMetadata getActionMethodMetadata(RequestPath requestPath);
 
     /**
      * {@link RequestPathMetadata}をキーとして、{@link InvocationMetadata}をマッピングします。

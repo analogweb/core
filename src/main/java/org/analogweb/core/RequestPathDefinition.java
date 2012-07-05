@@ -1,16 +1,16 @@
 package org.analogweb.core;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-
+import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.exception.InvalidRequestPathException;
+import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.StringUtils;
-
 
 /**
  * アクションを起動するリクエストパスを定義します。<br/>
@@ -19,16 +19,18 @@ import org.analogweb.util.StringUtils;
  */
 public class RequestPathDefinition implements RequestPathMetadata {
 
+    private static final List<String> DEFAULT_METHODS = Collections.unmodifiableList(Arrays.asList(
+            "GET", "POST"));
     public static final RequestPathMetadata EMPTY = new EmptyDefinePath();
     protected final String actualPath;
     protected final List<String> requestMethods;
 
     protected RequestPathDefinition(String path, String[] requestMethods) {
         this.actualPath = path;
-        if (requestMethods != null) {
+        if (ArrayUtils.isNotEmpty(requestMethods)) {
             this.requestMethods = Arrays.asList(requestMethods);
         } else {
-            this.requestMethods = new ArrayList<String>();
+            this.requestMethods = DEFAULT_METHODS;
         }
     }
 
@@ -81,13 +83,18 @@ public class RequestPathDefinition implements RequestPathMetadata {
         return this.actualPath;
     }
 
-    @Override
-    public List<String> getRequestMethods() {
+    /**
+     * リクエストパスを実行可能なメソッドのリストを取得します。<br/>
+     * リクエストされたメソッドがこのリストに含まれない場合は、
+     * この{@link RequestPathDefinition}は適合しません。
+     * @return リクエストパスを実行可能なメソッドのリスト
+     */
+    protected List<String> getRequestMethods() {
         return this.requestMethods;
     }
 
     @Override
-    public boolean match(RequestPathMetadata requestPath) {
+    public boolean match(RequestPath requestPath) {
         if (getActualPath().indexOf('*') > 0) {
             return wildCardMatch(requestPath.getActualPath(), getActualPath())
                     && containsRequestMethod(requestPath);
@@ -101,17 +108,8 @@ public class RequestPathDefinition implements RequestPathMetadata {
         }
     }
 
-    private boolean containsRequestMethod(RequestPathMetadata other) {
-        List<String> otherMethods = other.getRequestMethods();
-        if (otherMethods.isEmpty() && getRequestMethods().isEmpty()) {
-            return true;
-        }
-        for (String requestMethod : otherMethods) {
-            if (getRequestMethods().contains(requestMethod)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean containsRequestMethod(RequestPath other) {
+        return getRequestMethods().contains(other.getMethod());
     }
 
     private boolean matchPlaceHolder(String requestedPath) {

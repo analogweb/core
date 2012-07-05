@@ -15,4 +15,10 @@ public interface RequestPath extends RequestPathMetadata {
      */
     boolean pathThrowgh(String specifier);
 
+    /**
+     * リクエストされたパスを実行するメソッドを取得します。
+     * @return リクエストされたパスを実行するメソッド
+     */
+    String getMethod();
+
 }

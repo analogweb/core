@@ -1,13 +1,9 @@
 package org.analogweb.core;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.analogweb.RequestPathMetadata;
 import org.analogweb.RequestPath;
-
+import org.analogweb.util.Assertion;
 
 /**
  * @author snowgoose
@@ -17,12 +13,14 @@ public class DefaultRequestPath implements RequestPath {
     private final ApplicationSpecifier suffix;
 
     private final String actualPath;
-    private final List<String> requestMethod;
+    private final String requestMethod;
 
     public DefaultRequestPath(HttpServletRequest request) {
         String requestUri = request.getRequestURI();
         this.actualPath = getFormattedPath(requestUri, request.getContextPath());
-        this.requestMethod = Arrays.asList(request.getMethod());
+        String method = request.getMethod();
+        Assertion.notNull(method, "Request method.");
+        this.requestMethod = method.toUpperCase();
         this.suffix = extractSuffix(requestUri);
     }
 
@@ -32,7 +30,7 @@ public class DefaultRequestPath implements RequestPath {
     }
 
     @Override
-    public boolean match(RequestPathMetadata requestPath) {
+    public boolean match(RequestPath requestPath) {
         return getActualPath().equals(requestPath.getActualPath());
     }
 
@@ -78,13 +76,13 @@ public class DefaultRequestPath implements RequestPath {
     }
 
     @Override
-    public List<String> getRequestMethods() {
+    public String getMethod() {
         return requestMethod;
     }
-    
-	@Override
-	public String toString() {
-		return getActualPath();
-	}
+
+    @Override
+    public String toString() {
+        return getActualPath();
+    }
 
 }

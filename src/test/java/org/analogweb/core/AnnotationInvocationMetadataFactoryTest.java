@@ -17,7 +17,6 @@ import org.analogweb.annotation.Get;
 import org.analogweb.annotation.On;
 import org.analogweb.annotation.Post;
 import org.analogweb.annotation.Put;
-import org.analogweb.core.AnnotationInvocationMetadataFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,7 +49,7 @@ public class AnnotationInvocationMetadataFactoryTest {
 		assertThat(actionMethodMetadata.getMethodName(), is("doSomething"));
 		assertThat(actionMethodMetadata.getDefinedPath().getActualPath(),
 				is("/foo/something/done"));
-		List<String> requestMethods = actionMethodMetadata.getDefinedPath()
+		List<String> requestMethods = ((RequestPathDefinition)actionMethodMetadata.getDefinedPath())
 				.getRequestMethods();
 		assertThat(requestMethods.size(), is(2));
 		assertTrue(requestMethods.contains("GET"));
@@ -89,7 +88,7 @@ public class AnnotationInvocationMetadataFactoryTest {
 				is("doSomethingWithPostMethod"));
 		assertThat(actionMethodMetadata.getDefinedPath().getActualPath(),
 				is("/baa/something/post"));
-		List<String> requestMethods = actionMethodMetadata.getDefinedPath()
+		List<String> requestMethods = ((RequestPathDefinition)actionMethodMetadata.getDefinedPath())
 				.getRequestMethods();
 		assertThat(requestMethods.size(), is(1));
 		assertTrue(requestMethods.contains("POST"));
@@ -113,8 +112,8 @@ public class AnnotationInvocationMetadataFactoryTest {
 				is("doSomethingWithGetMethod"));
 		assertThat(actionMethodMetadata.getDefinedPath().getActualPath(),
 				is("/baa/something/get"));
-		List<String> requestMethods = actionMethodMetadata.getDefinedPath()
-				.getRequestMethods();
+        List<String> requestMethods = ((RequestPathDefinition)actionMethodMetadata.getDefinedPath())
+                .getRequestMethods();
 		assertThat(requestMethods.size(), is(1));
 		assertTrue(requestMethods.contains("GET"));
 	}
@@ -137,8 +136,8 @@ public class AnnotationInvocationMetadataFactoryTest {
 				is("doSomethingWithPutMethod"));
 		assertThat(actionMethodMetadata.getDefinedPath().getActualPath(),
 				is("/baa/something/put"));
-		List<String> requestMethods = actionMethodMetadata.getDefinedPath()
-				.getRequestMethods();
+        List<String> requestMethods = ((RequestPathDefinition)actionMethodMetadata.getDefinedPath())
+                .getRequestMethods();
 		assertThat(requestMethods.size(), is(1));
 		assertTrue(requestMethods.contains("PUT"));
 	}
@@ -161,8 +160,8 @@ public class AnnotationInvocationMetadataFactoryTest {
 				is("doSomethingWithDeleteMethod"));
 		assertThat(actionMethodMetadata.getDefinedPath().getActualPath(),
 				is("/baa/something/delete"));
-		List<String> requestMethods = actionMethodMetadata.getDefinedPath()
-				.getRequestMethods();
+        List<String> requestMethods = ((RequestPathDefinition)actionMethodMetadata.getDefinedPath())
+                .getRequestMethods();
 		assertThat(requestMethods.size(), is(1));
 		assertTrue(requestMethods.contains("DELETE"));
 	}
@@ -271,8 +270,8 @@ public class AnnotationInvocationMetadataFactoryTest {
 		assertThat(actionMethodMetadata.getMethodName(), is("resolve"));
 		assertThat(actionMethodMetadata.getDefinedPath().getActualPath(),
 				is("/child/resolve"));
-		List<String> requestMethods = actionMethodMetadata.getDefinedPath()
-				.getRequestMethods();
+        List<String> requestMethods = ((RequestPathDefinition)actionMethodMetadata.getDefinedPath())
+                .getRequestMethods();
 		assertThat(requestMethods.size(), is(2));
 		assertTrue(requestMethods.contains("GET"));
 		assertTrue(requestMethods.contains("POST"));

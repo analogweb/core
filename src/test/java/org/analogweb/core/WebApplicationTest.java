@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 
 import javax.servlet.FilterConfig;
@@ -15,9 +14,8 @@ import javax.servlet.FilterConfig;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.Modules;
+import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
-import org.analogweb.RequestPathMetadata;
-import org.analogweb.core.WebApplication;
 import org.analogweb.exception.MissingRequiredParameterException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.analogweb.util.ApplicationPropertiesHolder;
@@ -73,9 +71,9 @@ public class WebApplicationTest {
         application = new WebApplication(filterConfig, classLoader);
 
         RequestPathMapping mapping = application.getRequestPathMapping();
-        RequestPathMetadata pathAnyThing = mock(RequestPathMetadata.class);
+        RequestPath pathAnyThing = mock(RequestPath.class);
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
-        when(pathAnyThing.getRequestMethods()).thenReturn(Arrays.asList("POST"));
+        when(pathAnyThing.getMethod()).thenReturn("POST");
         InvocationMetadata metadataAnyThing = mapping.getActionMethodMetadata(pathAnyThing);
         log.debug(metadataAnyThing.toString());
 
