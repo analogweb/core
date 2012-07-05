@@ -46,4 +46,9 @@ public class DefaultInvocationMetadata implements InvocationMetadata {
         return this.definedPath;
     }
 
+    @Override
+    public String toString() {
+        return String.format(super.toString() + " on %s", getDefinedPath().toString());
+    }
+
 }
