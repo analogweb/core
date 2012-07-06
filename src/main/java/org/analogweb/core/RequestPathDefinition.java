@@ -17,7 +17,7 @@ import org.analogweb.util.StringUtils;
  * リクエストパスはアクションを起動可能なすべてのリクエストのパターンを 定義する事ができます。
  * @author snowgoose
  */
-public class RequestPathDefinition implements RequestPathMetadata {
+public class RequestPathDefinition extends AbstractRequestPathMetadata {
 
     private static final List<String> DEFAULT_METHODS = Collections.unmodifiableList(Arrays.asList(
             "GET", "POST"));

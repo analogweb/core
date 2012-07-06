@@ -8,7 +8,7 @@ import org.analogweb.util.Assertion;
 /**
  * @author snowgoose
  */
-public class DefaultRequestPath implements RequestPath {
+public class DefaultRequestPath extends AbstractRequestPathMetadata implements RequestPath {
 
     private final ApplicationSpecifier suffix;
 
