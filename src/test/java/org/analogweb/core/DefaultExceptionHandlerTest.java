@@ -1,10 +1,17 @@
 package org.analogweb.core;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+
+import java.util.Arrays;
+
 import javax.servlet.ServletException;
 
-
-import org.analogweb.core.DefaultExceptionHandler;
+import org.analogweb.RequestPathMetadata;
+import org.analogweb.core.direction.HttpStatus;
 import org.analogweb.exception.ApplicationRuntimeException;
+import org.analogweb.exception.RequestMethodUnsupportedException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -32,6 +39,14 @@ public class DefaultExceptionHandlerTest {
         thrown.expect(ServletException.class);
         thrown.expect(rootCause(SomeException.class));
         handler.handleException(new SomeException());
+    }
+
+    @Test
+    public void testHandleThrowableWithRequestPathUnsupportedException() throws Exception {
+        RequestPathMetadata metadata = mock(RequestPathMetadata.class);
+        Object actual = handler.handleException(new RequestMethodUnsupportedException(metadata,
+                Arrays.asList("GET"), "POST"));
+        assertThat((HttpStatus) actual, is(HttpStatus.METHOD_NOT_ALLOWED));
     }
 
     public static class SomeException extends ApplicationRuntimeException {

@@ -24,13 +24,12 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.Modules;
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
 import org.analogweb.ResultAttributes;
-import org.analogweb.RequestPath;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
-
 
 /**
  * @author snowgoose
@@ -71,25 +70,27 @@ public class AnalogFilter implements Filter {
             return;
         }
 
-        RequestPathMapping mapping = webApplication.getRequestPathMapping();
-        log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
-        InvocationMetadata metadata = mapping.findInvocationMetadata(requestedPath);
-        if (metadata == null) {
-            log.log(Markers.LIFECYCLE, "DL000005", requestedPath);
-            chain.doFilter(request, response);
-            return;
-        }
-
-        RequestAttributes attributes = context.resolveRequestAttributes(
-                modules.getRequestAttributesFactory(), metadata,
-                modules.getAttributesHandlersMap());
-
-        log.log(Markers.LIFECYCLE, "DL000006", requestedPath, metadata);
+        InvocationMetadata metadata = null;
+        RequestAttributes attributes = null;
         try {
+            RequestPathMapping mapping = webApplication.getRequestPathMapping();
+            log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
+            metadata = mapping.findInvocationMetadata(requestedPath);
+            if (metadata == null) {
+                log.log(Markers.LIFECYCLE, "DL000005", requestedPath);
+                chain.doFilter(request, response);
+                return;
+            }
+
+            attributes = context.resolveRequestAttributes(
+                    modules.getRequestAttributesFactory(), metadata,
+                    modules.getAttributesHandlersMap());
+
+            log.log(Markers.LIFECYCLE, "DL000006", requestedPath, metadata);
             ContainerAdaptor invocationInstances = modules.getInvocationInstanceProvider();
 
             ResultAttributes resultAttributes = modules.getResultAttributes();
-            
+
             Invocation invocation = modules.getInvocationFactory().createInvocation(
                     invocationInstances, metadata, attributes, resultAttributes, context,
                     modules.getTypeMapperContext(), modules.getInvocationProcessors());
@@ -97,12 +98,13 @@ public class AnalogFilter implements Filter {
             Object invocationResult = modules.getInvoker().invoke(invocation, metadata, attributes,
                     resultAttributes, context);
 
-            log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(), invocationResult);
+            log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(),
+                    invocationResult);
 
             handleDirection(modules, invocationResult, metadata, context, attributes);
         } catch (Exception e) {
             ExceptionHandler handler = modules.getExceptionHandler();
-            log.log(Markers.LIFECYCLE, "DL000009", e, handler);
+            log.log(Markers.LIFECYCLE, "DL000009", (Object) e, handler);
             Object exceptionResult = handler.handleException(e);
             if (exceptionResult != null) {
                 handleDirection(modules, exceptionResult, metadata, context, attributes);
@@ -110,7 +112,7 @@ public class AnalogFilter implements Filter {
             chain.doFilter(request, response);
         }
     }
-    
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         this.servletContext = filterConfig.getServletContext();
@@ -129,9 +131,9 @@ public class AnalogFilter implements Filter {
         return this.servletContext;
     }
 
-    protected void handleDirection(Modules modules, Object result,
-            InvocationMetadata metadata, RequestContext context, RequestAttributes attributes)
-            throws IOException, ServletException {
+    protected void handleDirection(Modules modules, Object result, InvocationMetadata metadata,
+            RequestContext context, RequestAttributes attributes) throws IOException,
+            ServletException {
         DirectionResolver resultResolver = modules.getDirectionResolver();
         Direction resolved = resultResolver.resolve(result, metadata, context);
         log.log(Markers.LIFECYCLE, "DL000008", result, result);

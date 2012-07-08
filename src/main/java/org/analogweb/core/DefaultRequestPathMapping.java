@@ -9,7 +9,6 @@ import org.analogweb.RequestPathMapping;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.util.Maps;
 
-
 /**
  * @author snowgoose
  */
@@ -20,10 +19,19 @@ public class DefaultRequestPathMapping implements RequestPathMapping {
 
     @Override
     public InvocationMetadata findInvocationMetadata(RequestPath requestPath) {
+        // direct match
+        InvocationMetadata found = actionMetadataMap.get(requestPath);
+        if (found != null) {
+            found.getDefinedPath().fulfill(requestPath);
+            return found;
+        }
+        // pattern match
         for (Entry<RequestPathMetadata, InvocationMetadata> pathEntry : actionMetadataMap
                 .entrySet()) {
             if (pathEntry.getKey().match(requestPath)) {
-                return pathEntry.getValue();
+                found = pathEntry.getValue();
+                found.getDefinedPath().fulfill(requestPath);
+                return found;
             }
         }
         return null;

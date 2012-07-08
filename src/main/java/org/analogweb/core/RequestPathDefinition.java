@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.exception.InvalidRequestPathException;
+import org.analogweb.exception.RequestMethodUnsupportedException;
+import org.analogweb.exception.UnsatisfiedRequestPathException;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.StringUtils;
 
@@ -156,6 +158,15 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
             super(StringUtils.EMPTY, new String[0]);
         }
 
+    }
+
+    @Override
+    public void fulfill(RequestPath requestPath) throws UnsatisfiedRequestPathException {
+        if (getRequestMethods().contains(requestPath.getMethod()) == false) {
+            throw new RequestMethodUnsupportedException(this, getRequestMethods(),
+                    requestPath.getActualPath());
+        }
+        super.fulfill(requestPath);
     }
 
 }

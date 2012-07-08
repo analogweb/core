@@ -3,6 +3,7 @@ package org.analogweb.core;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +38,14 @@ public class DefaultRequestPathMappingTest {
         when(requestPath2.match(requestPath2)).thenReturn(true);
         when(requestPath3.match(requestPath3)).thenReturn(true);
 
+        when(metadata1.getDefinedPath()).thenReturn(requestPath1);
+        when(metadata2.getDefinedPath()).thenReturn(requestPath2);
+        when(metadata3.getDefinedPath()).thenReturn(requestPath3);
+        
+        doNothing().when(requestPath1).fulfill(requestPath1);
+        doNothing().when(requestPath2).fulfill(requestPath2);
+        doNothing().when(requestPath3).fulfill(requestPath3);
+
         mapping.mapInvocationMetadata(requestPath1, metadata1);
         mapping.mapInvocationMetadata(requestPath2, metadata2);
         mapping.mapInvocationMetadata(requestPath3, metadata3);
@@ -55,6 +64,10 @@ public class DefaultRequestPathMappingTest {
         mapping.mapInvocationMetadata(requestPath1, metadata1);
 
         when(requestPath1.match(requestPath1)).thenReturn(true);
+
+        when(metadata1.getDefinedPath()).thenReturn(requestPath1);
+        
+        doNothing().when(requestPath1).fulfill(requestPath1);
 
         assertThat(mapping.findInvocationMetadata(requestPath1), is(metadata1));
         assertNull(mapping.findInvocationMetadata(requestPath2));

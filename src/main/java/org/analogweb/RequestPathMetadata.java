@@ -1,5 +1,7 @@
 package org.analogweb;
 
+import org.analogweb.exception.UnsatisfiedRequestPathException;
+
 /**
  * エントリポイントメソッドを起動可能なパスを保持します。
  * @author snowgoose
@@ -14,10 +16,17 @@ public interface RequestPathMetadata {
     String getActualPath();
 
     /**
-     * 指定された{@link RequestPathMetadata}がこのインスタンスと同義のパスを 表す場合は{@code true}を返します。
-     * @param requestPath {@link RequestPathMetadata}
-     * @return 指定した{@link RequestPathMetadata}がこのインスタンスと同義のパスを表す場合は{@code true}
+     * 指定された{@link RequestPath}がこのインスタンスと同義のパスを 表す場合は{@code true}を返します。
+     * @param requestPath {@link RequestPath}
+     * @return 指定した{@link RequestPath}がこのインスタンスと同義のパスを表す場合は{@code true}
      */
     boolean match(RequestPath requestPath);
+
+    /**
+     * 指定された{@link RequestPath}がこのインスタンスの定義を満たすことを検証します。<br/>
+     * @param requestPath {@link RequestPathMetadata}
+     * @throws UnsatisfiedRequestPathException 懸賞の結果、{@link RequestPath}が定義を満たさない場合。
+     */
+    void fulfill(RequestPath requestPath) throws UnsatisfiedRequestPathException ;
 
 }
