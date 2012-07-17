@@ -12,7 +12,6 @@ import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.InvocationFailureException;
-import org.analogweb.util.ArrayUtils;
 
 /**
  * @author snowgoose
@@ -38,7 +37,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
         if (ex instanceof InvocationFailureException) {
             throw (InvocationFailureException) ex;
         }
-        throw new InvocationFailureException(ex, metadata, ArrayUtils.newArray());
+        return NO_INTERRUPTION;
     }
 
     @Override

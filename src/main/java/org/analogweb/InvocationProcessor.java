@@ -53,7 +53,7 @@ public interface InvocationProcessor extends MultiModule {
     /**
      * {@link Invocation}実行時に例外が発生した場合に、処理を追加します。<br/>
      * 通常は、{@link #NO_INTERRUPTION}を返します。それ以外の
-     * 値をかえす場合は、処理の結果その戻り値を以って
+     * 値をかえす場合は、その戻り値が処理結果となります。
      * @param ex {@link Invocation}実行時に発生した例外。
      * @param request {@link RequestContext}
      * @param args 例外が発生した対象の{@link InvocationArguments}
