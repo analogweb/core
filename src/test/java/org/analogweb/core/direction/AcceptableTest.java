@@ -8,10 +8,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
@@ -46,50 +44,45 @@ public class AcceptableTest {
     @Test
     public void testRenderAcceptableXML() throws Exception {
 
-        final Member m = new Member("snowgoose", 34,
-                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/xml", m);
         assertThat(
                 actual,
-                is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age><birthDay>1978-04-20T00:00:00+09:00</birthDay></member>"));
+                is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age></member>"));
     }
 
     @Test
     public void testRenderAcceptableSecondXML() throws Exception {
 
-        final Member m = new Member("snowgoose", 34,
-                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/x-dvi; q=0.8, application/xml, */*", m);
         assertThat(
                 actual,
-                is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age><birthDay>1978-04-20T00:00:00+09:00</birthDay></member>"));
+                is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age></member>"));
     }
 
     @Test
     public void testRenderAcceptableXMLWithQuality() throws Exception {
 
-        final Member m = new Member("snowgoose", 34,
-                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/x-dvi; q=0.8, text/xml; q=6, */*", m);
         assertThat(
                 actual,
-                is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age><birthDay>1978-04-20T00:00:00+09:00</birthDay></member>"));
+                is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age></member>"));
     }
 
     @Test
     public void testRenderAcceptableJSON() throws Exception {
 
-        final Member m = new Member("snowgoose", 34,
-                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" application/json, application/xml", m);
-        assertThat(actual, is("{\"age\": 34,\"birthDay\": 261846000000,\"name\": \"snowgoose\"}"));
+        assertThat(actual, is("{\"age\": 34,\"name\": \"snowgoose\"}"));
     }
 
     @Test
     public void testRenderAcceptableAny() throws Exception {
 
-        final Member m = new Member("snowgoose", 34,
-                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        final Member m = new Member("snowgoose", 34);
         final String accept = " text/x-dvi,image/png, */*";
         when(request.getHeader("Accept")).thenReturn(accept);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -107,18 +100,16 @@ public class AcceptableTest {
     @Test
     public void testRenderSwitAcceptableAny() throws Exception {
 
-        final Member m = new Member("snowgoose", 34,
-                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/x-dvi,image/png, */*", m);
         // mapped json.
-        assertThat(actual, is("{\"age\": 34,\"birthDay\": 261846000000,\"name\": \"snowgoose\"}"));
+        assertThat(actual, is("{\"age\": 34,\"name\": \"snowgoose\"}"));
     }
 
     @Test
     public void testRenderSwitchedAcceptable() throws Exception {
 
-        final Member m = new Member("snowgoose", 34,
-                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        final Member m = new Member("snowgoose", 34);
         final String accept = " text/x-dvi,image/png, application/json";
         when(request.getHeader("Accept")).thenReturn(accept);
         final Direction replaceDirection = mock(Direction.class);
@@ -129,8 +120,7 @@ public class AcceptableTest {
     @Test
     public void testRenderNotAcceptable() throws Exception {
 
-        final Member m = new Member("snowgoose", 34,
-                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/x-dvi,image/png, text/*", m);
         assertThat(actual, is(""));
         verify(response).setStatus(406);
@@ -139,8 +129,7 @@ public class AcceptableTest {
     @Test
     public void testRenderNotAcceptable2() throws Exception {
 
-        final Member m = new Member("snowgoose", 34,
-                new SimpleDateFormat("yyyy-MM-dd").parse("1978-04-20"));
+        final Member m = new Member("snowgoose", 34);
         final String accept = " text/x-dvi,image/png, text/javascript, */*";
         when(request.getHeader("Accept")).thenReturn(accept);
         final Direction replaceDirection = mock(Direction.class);
@@ -183,18 +172,15 @@ public class AcceptableTest {
         private String name;
         @XmlElement
         private int age;
-        @XmlElement
-        private Date birthDay;
 
         public Member() {
             super();
         }
 
-        public Member(final String name, final int age, final Date birthDay) {
+        public Member(final String name, final int age) {
             super();
             this.name = name;
             this.age = age;
-            this.birthDay = birthDay;
         }
 
         public String getName() {
@@ -203,10 +189,6 @@ public class AcceptableTest {
 
         public int getAge() {
             return age;
-        }
-
-        public Date getBirthDay() {
-            return birthDay;
         }
 
     }
