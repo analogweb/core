@@ -8,10 +8,13 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,6 +52,26 @@ public class AcceptableTest {
         assertThat(
                 actual,
                 is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age></member>"));
+    }
+
+    @Test
+    public void testRenderAcceptableXMLWithReplacedFormatter() throws Exception {
+
+        final Member m = new Member("snowgoose", 34);
+        Acceptable a = Acceptable.as(m);
+        a.map(new Direction() {
+            
+            @Override
+            public void render(RequestContext context) throws IOException, ServletException {
+                Writer w = new OutputStreamWriter(context.getResponse().getOutputStream());
+                w.write("write with XML");
+                w.flush();
+            }
+        }, "text/xml");
+        final String actual = schenarioRender(" text/xml", m, a);
+        assertThat(
+                actual,
+                is("write with XML"));
     }
 
     @Test
@@ -107,6 +130,25 @@ public class AcceptableTest {
     }
 
     @Test
+    public void testRenderSwitAcceptableAnyWithReplacedFormatter() throws Exception {
+
+        final Member m = new Member("snowgoose", 34);
+        Acceptable a = Acceptable.as(m);
+        a.mapToAny(new Direction() {
+
+            @Override
+            public void render(RequestContext context) throws IOException, ServletException {
+                Writer w = new OutputStreamWriter(context.getResponse().getOutputStream());
+                w.write("write with ANY");
+                w.flush();
+            }
+        });
+        final String actual = schenarioRender(" text/x-dvi,image/png, */*", m, a);
+        // mapped any.
+        assertThat(actual, is("write with ANY"));
+    }
+
+    @Test
     public void testRenderSwitchedAcceptable() throws Exception {
 
         final Member m = new Member("snowgoose", 34);
@@ -138,6 +180,11 @@ public class AcceptableTest {
     }
 
     private String schenarioRender(final String accept, final Member m) throws Exception {
+        return schenarioRender(accept, m, Acceptable.as(m));
+    }
+
+    private String schenarioRender(final String accept, final Member m, final Acceptable a)
+            throws Exception {
 
         when(request.getHeader("Accept")).thenReturn(accept);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -148,7 +195,7 @@ public class AcceptableTest {
             }
         });
 
-        Acceptable.as(m).render(context);
+        a.render(context);
         return new String(out.toByteArray());
     }
 
