@@ -149,26 +149,22 @@ public class ScopedMapArgumentPreparatorTest {
 
     @On
     private static class MockAction {
-        @SuppressWarnings("unused")
         @On
         public String doSomething(@To Map<String, ?> foo, @As("baa") String baa) {
             return "do something!";
         }
 
-        @SuppressWarnings("unused")
         @On
         public String doSomethingElse(@To("session") Map<String, Object> session,
                 @As("baa") String baa) {
             return "do something!";
         }
 
-        @SuppressWarnings("unused")
         @On
         public String doNothing(@To HashMap<String, ?> foo, @As("baa") String baa) {
             return "do something!";
         }
 
-        @SuppressWarnings("unused")
         @On
         public String doAnything(@To String notMap, @As("baa") String baa) {
             return "do something!";

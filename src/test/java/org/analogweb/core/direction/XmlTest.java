@@ -1,8 +1,10 @@
 package org.analogweb.core.direction;
 
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.annotation.XmlElement;
@@ -65,7 +67,6 @@ public class XmlTest {
     @XmlRootElement
     static class Foo {
         @XmlElement
-        @SuppressWarnings("unused")
         private String baa = "baz!";
     }
 
@@ -73,7 +74,6 @@ public class XmlTest {
     @XmlType
     static class Hoge {
         @XmlElement
-        @SuppressWarnings("unused")
         private String baa = "baz!";
     }
 

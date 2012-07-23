@@ -266,52 +266,44 @@ public class BindAttributeArgumentPreparatorTest {
 
     @On
     private static final class DefaultActionInvocationArgumentPreparatorTestMockActions {
-        @SuppressWarnings("unused")
         @On
         public String doSomething(@As("foo") String foo, @As("baa") String baa) {
             return "do something!";
         }
 
-        @SuppressWarnings("unused")
         @On
         public String doAnything(@As("foo") String foo, HttpServletRequest request,
                 @As("baz") String baz) {
             return "do anything!";
         }
 
-        @SuppressWarnings("unused")
         @On
         public String doNothing(String foo, ServletContext context, @As("baz") String baz) {
             return "do nothing!";
         }
 
-        @SuppressWarnings("unused")
         @On
         public String doTypeMap(String foo, HttpSession session,
                 @As("baa") @MapWith(TypeMapper.class) Date baa, @As("baz") String baz) {
             return "do map!";
         }
 
-        @SuppressWarnings("unused")
         @On
         public String doScope(@As("baz") @Scope("session") String baz) {
             return "do scope!";
         }
 
-        @SuppressWarnings("unused")
         @On
         public String doWithoutArgs(@As("foo") String foo, HttpServletResponse response,
                 @As("baa") String baa, @As("baz") Integer baz) {
             return "do nothing!";
         }
 
-        @SuppressWarnings("unused")
         @On
         public String doWithCustomAnnotation(@As("foo") @Covered String foo) {
             return "do nothing!";
         }
 
-        @SuppressWarnings("unused")
         @On
         public String doWithFormat(@As("foo") @Formats("###,###") BigDecimal amount) {
             return "do nothing!";

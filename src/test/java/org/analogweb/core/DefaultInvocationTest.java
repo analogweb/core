@@ -383,7 +383,6 @@ public class DefaultInvocationTest {
 
     @On
     public static class MockActions {
-        @SuppressWarnings("unused")
         @On
         private String doNothing() {
             return null;
