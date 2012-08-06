@@ -5,4 +5,9 @@ package org.analogweb;
  * @author snowgoose
  */
 public interface MultiModule extends Module {
+    
+    interface Filter {
+        <T extends MultiModule> boolean isAppliciate(T aMultiModule);
+    }
+
 }

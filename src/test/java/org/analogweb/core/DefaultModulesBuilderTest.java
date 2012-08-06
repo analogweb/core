@@ -30,13 +30,13 @@ import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.Modules;
+import org.analogweb.MultiModule;
 import org.analogweb.RequestAttributesFactory;
 import org.analogweb.RequestContextFactory;
 import org.analogweb.ResultAttributes;
 import org.analogweb.ResultAttributesFactory;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.core.DefaultModulesBuilder;
 import org.analogweb.exception.AssertionFailureException;
 import org.analogweb.exception.MissingModuleException;
 import org.analogweb.exception.MissingModulesProviderException;
@@ -335,9 +335,10 @@ public class DefaultModulesBuilderTest {
     }
 
     @Test
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void testIgnoreTypesUndefined() {
         thrown.expect(AssertionFailureException.class);
-        builder.ignore(null);
+        builder.ignore((Class)null);
     }
 
     private static ContainerAdaptor ca;
@@ -350,6 +351,89 @@ public class DefaultModulesBuilderTest {
             return ca;
         }
 
+    }
+
+    @Test
+    public void testIgnoreModulesByFilter() {
+        final ContainerAdaptor defaultAdaptor = mock(ContainerAdaptor.class);
+        
+        ProcessorA a = new ProcessorA();
+        final ProcessorB b = new ProcessorB();
+        ProcessorC c = new ProcessorC();
+
+        List<InvocationProcessor> processors = new ArrayList<InvocationProcessor>();
+        processors.add(a);
+        processors.add(b);
+        processors.add(c);
+
+        when(defaultAdaptor.getInstancesOfType(InvocationProcessor.class)).thenReturn(processors);
+
+        ca = defaultAdaptor;
+        builder.setModulesProviderClass(MockContainerAdaptorFactory.class);
+        builder.addInvocationProcessorClass(InvocationProcessor.class);
+
+        MultiModule.Filter filter = new MultiModule.Filter() {
+            @Override
+            public boolean isAppliciate(MultiModule aMultiModule) {
+                if(aMultiModule == b){
+                    return false;
+                }
+                return true;
+            }
+        };
+        builder.ignore(filter);
+        Modules modules = builder.buildModules(servletContext, defaultAdaptor);
+
+        List<InvocationProcessor> actual = modules.getInvocationProcessors();
+        log.debug(actual.toString());
+        assertThat(actual.size(), is(2));
+    }
+
+    @Test
+    public void testIgnoreModulesByMultiFilter() {
+        final ContainerAdaptor defaultAdaptor = mock(ContainerAdaptor.class);
+
+        final ProcessorA a = new ProcessorA();
+        ProcessorB b = new ProcessorB();
+        final ProcessorC c = new ProcessorC();
+
+        List<InvocationProcessor> processors = new ArrayList<InvocationProcessor>();
+        processors.add(a);
+        processors.add(b);
+        processors.add(c);
+
+        when(defaultAdaptor.getInstancesOfType(InvocationProcessor.class)).thenReturn(processors);
+
+        ca = defaultAdaptor;
+        builder.setModulesProviderClass(MockContainerAdaptorFactory.class);
+        builder.addInvocationProcessorClass(InvocationProcessor.class);
+
+        MultiModule.Filter filtera = new MultiModule.Filter() {
+            @Override
+            public boolean isAppliciate(MultiModule aMultiModule) {
+                if (aMultiModule == a) {
+                    return false;
+                }
+                return true;
+            }
+        };
+        MultiModule.Filter filterc = new MultiModule.Filter() {
+            @Override
+            public boolean isAppliciate(MultiModule aMultiModule) {
+                if (aMultiModule == c) {
+                    return false;
+                }
+                return true;
+            }
+        };
+        builder.ignore(filtera);
+        builder.ignore(filterc);
+        Modules modules = builder.buildModules(servletContext, defaultAdaptor);
+
+        List<InvocationProcessor> actual = modules.getInvocationProcessors();
+        log.debug(actual.toString());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is((InvocationProcessor) b));
     }
 
     private static class ProcessorA extends AbstractInvocationProcessor {

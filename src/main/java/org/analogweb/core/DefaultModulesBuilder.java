@@ -58,6 +58,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
     private final Map<Class<? extends Direction>, Class<? extends DirectionFormatter>> directionFormatterClasses;
     private final List<Class<? extends MultiModule>> ignoreClasses;
+    private final List<MultiModule.Filter> ignoreFilters;
 
     public DefaultModulesBuilder() {
         this.invocationProcessorClasses = new LinkedList<Class<? extends InvocationProcessor>>();
@@ -65,6 +66,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         this.attributesHandlerClasses = new LinkedList<Class<? extends AttributesHandler>>();
         this.directionFormatterClasses = Maps.newConcurrentHashMap();
         this.ignoreClasses = new LinkedList<Class<? extends MultiModule>>();
+        this.ignoreFilters = new LinkedList<MultiModule.Filter>();
     }
 
     @Override
@@ -218,7 +220,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return instance;
             }
 
-            private <T> List<T> getComponentInstances(ContainerAdaptor adaptor,
+            private <T extends MultiModule> List<T> getComponentInstances(ContainerAdaptor adaptor,
                     List<Class<? extends T>> componentClasses) {
                 List<T> instances = new ArrayList<T>();
                 Set<String> instanceFQDNs = new HashSet<String>();
@@ -238,8 +240,8 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 Iterator<T> itr = instances.iterator();
                 while (itr.hasNext()) {
                     T next = itr.next();
-                    for (Class<? extends MultiModule> moduleClass : getIgnoringClasses()) {
-                        if (moduleClass.isInstance(next)) {
+                    for (MultiModule.Filter moduleClass : getIgnoringFilters()) {
+                        if (moduleClass.isAppliciate(next) == false) {
                             itr.remove();
                         }
                     }
@@ -433,6 +435,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         return this.ignoreClasses;
     }
 
+    protected List<MultiModule.Filter> getIgnoringFilters() {
+        return this.ignoreFilters;
+    }
+
     @Override
     public ModulesBuilder setResultAttributesFactoryClass(
             Class<? extends ResultAttributesFactory> resultAttributesFactoryClass) {
@@ -473,9 +479,23 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public ModulesBuilder ignore(Class<? extends MultiModule> multiModuleClass) {
+    public ModulesBuilder ignore(final Class<? extends MultiModule> multiModuleClass) {
         Assertion.notNull(multiModuleClass, MultiModule.class.getCanonicalName());
-        this.ignoreClasses.add(multiModuleClass);
+        return ignore(new MultiModule.Filter() {
+            @Override
+            public <T extends MultiModule> boolean isAppliciate(T aMultiModule) {
+                if (multiModuleClass.isInstance(aMultiModule)) {
+                    return false;
+                }
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public ModulesBuilder ignore(MultiModule.Filter multiModuleFilter) {
+        Assertion.notNull(multiModuleFilter, MultiModule.Filter.class.getCanonicalName());
+        this.ignoreFilters.add(multiModuleFilter);
         return this;
     }
 
