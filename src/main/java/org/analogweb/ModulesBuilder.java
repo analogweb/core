@@ -64,6 +64,6 @@ public interface ModulesBuilder {
 
     ModulesBuilder ignore(Class<? extends MultiModule> multiModuleClass);
 
-    ModulesBuilder ignore(MultiModule.Filter multiModuleFilter);
+    ModulesBuilder filter(MultiModule.Filter multiModuleFilter);
 
 }

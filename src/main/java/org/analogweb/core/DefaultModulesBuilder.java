@@ -481,7 +481,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     @Override
     public ModulesBuilder ignore(final Class<? extends MultiModule> multiModuleClass) {
         Assertion.notNull(multiModuleClass, MultiModule.class.getCanonicalName());
-        return ignore(new MultiModule.Filter() {
+        return filter(new MultiModule.Filter() {
             @Override
             public <T extends MultiModule> boolean isAppreciable(T aMultiModule) {
                 if (multiModuleClass.isInstance(aMultiModule)) {
@@ -493,7 +493,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public ModulesBuilder ignore(MultiModule.Filter multiModuleFilter) {
+    public ModulesBuilder filter(MultiModule.Filter multiModuleFilter) {
         Assertion.notNull(multiModuleFilter, MultiModule.Filter.class.getCanonicalName());
         this.ignoreFilters.add(multiModuleFilter);
         return this;

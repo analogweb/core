@@ -374,14 +374,14 @@ public class DefaultModulesBuilderTest {
 
         MultiModule.Filter filter = new MultiModule.Filter() {
             @Override
-            public boolean isAppliciate(MultiModule aMultiModule) {
+            public boolean isAppreciable(MultiModule aMultiModule) {
                 if(aMultiModule == b){
                     return false;
                 }
                 return true;
             }
         };
-        builder.ignore(filter);
+        builder.filter(filter);
         Modules modules = builder.buildModules(servletContext, defaultAdaptor);
 
         List<InvocationProcessor> actual = modules.getInvocationProcessors();
@@ -410,7 +410,7 @@ public class DefaultModulesBuilderTest {
 
         MultiModule.Filter filtera = new MultiModule.Filter() {
             @Override
-            public boolean isAppliciate(MultiModule aMultiModule) {
+            public boolean isAppreciable(MultiModule aMultiModule) {
                 if (aMultiModule == a) {
                     return false;
                 }
@@ -419,15 +419,15 @@ public class DefaultModulesBuilderTest {
         };
         MultiModule.Filter filterc = new MultiModule.Filter() {
             @Override
-            public boolean isAppliciate(MultiModule aMultiModule) {
+            public boolean isAppreciable(MultiModule aMultiModule) {
                 if (aMultiModule == c) {
                     return false;
                 }
                 return true;
             }
         };
-        builder.ignore(filtera);
-        builder.ignore(filterc);
+        builder.filter(filtera);
+        builder.filter(filterc);
         Modules modules = builder.buildModules(servletContext, defaultAdaptor);
 
         List<InvocationProcessor> actual = modules.getInvocationProcessors();
