@@ -241,7 +241,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 while (itr.hasNext()) {
                     T next = itr.next();
                     for (MultiModule.Filter moduleClass : getIgnoringFilters()) {
-                        if (moduleClass.isAppliciate(next) == false) {
+                        if (moduleClass.isAppreciable(next) == false) {
                             itr.remove();
                         }
                     }
@@ -483,7 +483,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         Assertion.notNull(multiModuleClass, MultiModule.class.getCanonicalName());
         return ignore(new MultiModule.Filter() {
             @Override
-            public <T extends MultiModule> boolean isAppliciate(T aMultiModule) {
+            public <T extends MultiModule> boolean isAppreciable(T aMultiModule) {
                 if (multiModuleClass.isInstance(aMultiModule)) {
                     return false;
                 }

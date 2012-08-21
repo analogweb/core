@@ -7,7 +7,7 @@ package org.analogweb;
 public interface MultiModule extends Module {
     
     interface Filter {
-        <T extends MultiModule> boolean isAppliciate(T aMultiModule);
+        <T extends MultiModule> boolean isAppreciable(T aMultiModule);
     }
 
 }
