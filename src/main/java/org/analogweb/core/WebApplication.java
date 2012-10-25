@@ -30,6 +30,7 @@ import org.analogweb.util.ApplicationPropertiesHolder;
 import org.analogweb.util.ClassCollector;
 import org.analogweb.util.ReflectionUtils;
 import org.analogweb.util.ResourceUtils;
+import org.analogweb.util.StopWatch;
 import org.analogweb.util.StringUtils;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
@@ -52,6 +53,8 @@ public class WebApplication implements Application {
     private ClassLoader classLoader;
 
     public WebApplication(final FilterConfig filterConfig, ClassLoader classLoader) {
+        StopWatch sw = new StopWatch();
+        sw.start();
         this.filterConfig = filterConfig;
         this.classLoader = classLoader;
         log.log(Markers.BOOT_APPLICATION, "IB000001");
@@ -63,7 +66,7 @@ public class WebApplication implements Application {
         modulesPackageNames.add(DEFAULT_PACKAGE_NAME);
         log.log(Markers.BOOT_APPLICATION, "DB000002", modulesPackageNames);
         initApplication(modulesPackageNames, actionPackageNames, props.getApplicationSpecifier());
-        log.log(Markers.BOOT_APPLICATION, "IB000002");
+        log.log(Markers.BOOT_APPLICATION, "IB000002", sw.stop());
     }
 
     private ApplicationProperties configureApplicationProperties(final FilterConfig filterConfig) {
