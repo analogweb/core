@@ -1,7 +1,10 @@
 package org.analogweb.core;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
@@ -20,12 +23,19 @@ public class RequestHeaderScopeRequestAttributesResolver extends AbstractAttribu
     }
 
     @Override
-    public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadatan, String name) {
+    public Object resolveAttributeValue(RequestContext requestContext,
+            InvocationMetadata metadatan, String name) {
         if (StringUtils.isEmpty(name)) {
             return null;
         }
         HttpServletRequest request = requestContext.getRequest();
-        return request.getHeader(name);
+        @SuppressWarnings("unchecked")
+        Enumeration<String> headers = request.getHeaders(name);
+        if (headers == null || headers.hasMoreElements() == false) {
+            return null;
+        }
+        List<String> list = Collections.list(headers);
+        return list.toArray(new String[list.size()]);
     }
 
 }

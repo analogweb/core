@@ -7,12 +7,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Iterator;
 
+import javax.servlet.http.HttpServletRequest;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
-import org.analogweb.core.RequestHeaderScopeRequestAttributesResolver;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -55,11 +57,11 @@ public class RequestHeaderScopeRequestAttributesResolverTest {
     @Test
     public void testResolveAttributeValue() {
         when(requestContext.getRequest()).thenReturn(request);
-        when(request.getHeader("Content-Type")).thenReturn("text/plain");
+        when(request.getHeaders("Content-Type")).thenReturn(new StringArrayEnumeration("text/plain"));
 
         Object actual = resolver.resolveAttributeValue(requestContext, metadata, "Content-Type");
-        assertThat((String) actual, is("text/plain"));
-        verify(request).getHeader("Content-Type");
+        assertThat(((String[]) actual)[0], is("text/plain"));
+        verify(request).getHeaders("Content-Type");
     }
 
     /**
@@ -70,11 +72,11 @@ public class RequestHeaderScopeRequestAttributesResolverTest {
     @Test
     public void testResolveAttributeValueNotAvairable() {
         when(requestContext.getRequest()).thenReturn(request);
-        when(request.getHeader("Foo-Type")).thenReturn(null);
+        when(request.getHeaders("Foo-Type")).thenReturn(null);
 
         Object actual = resolver.resolveAttributeValue(requestContext, metadata, "Foo-Type");
         assertNull(actual);
-        verify(request).getHeader("Foo-Type");
+        verify(request).getHeaders("Foo-Type");
     }
 
     /**
@@ -87,6 +89,24 @@ public class RequestHeaderScopeRequestAttributesResolverTest {
 
         Object actual = resolver.resolveAttributeValue(requestContext, metadata, null);
         assertNull(actual);
+    }
+    
+    static class StringArrayEnumeration implements Enumeration<String> {
+        Iterator<String> strings;
+
+        StringArrayEnumeration(String... strings) {
+            this.strings = Arrays.asList(strings).iterator();
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+            return strings.hasNext();
+        }
+
+        @Override
+        public String nextElement() {
+            return strings.next();
+        }
     }
 
 }
