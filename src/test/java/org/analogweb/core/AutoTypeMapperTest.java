@@ -1,6 +1,7 @@
 package org.analogweb.core;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -11,11 +12,9 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
-import org.analogweb.core.AutoTypeMapper;
 import org.analogweb.core.AutoTypeMapper.ClassPair;
 import org.junit.Before;
 import org.junit.Test;
@@ -271,7 +270,22 @@ public class AutoTypeMapperTest {
 
         actual = (BigDecimal) typeMapper.mapToType(context, attributes, "57,311,001.11",
                 BigDecimal.class, new String[] { "invalid-format" });
-        assertNull(actual);
+        assertThat(actual,is(nullValue()));
+    }
+    
+    @Test
+    public void testMapToTypeArrayToString() throws Exception {
+        String actual = (String) typeMapper.mapToType(context, attributes, new String[]{"a"},
+                String.class, null);
+        assertThat(actual,is("a"));
+
+        actual = (String) typeMapper.mapToType(context, attributes, new String[]{"a","b"},
+                String.class, null);
+        assertThat(actual,is("a"));
+
+        actual = (String) typeMapper.mapToType(context, attributes, new String[0],
+                String.class, null);
+        assertThat(actual,is(nullValue()));
     }
 
     @Test

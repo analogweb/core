@@ -8,17 +8,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-
 import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
+import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
-
 
 /**
  * @author snowgoose
@@ -49,6 +48,7 @@ public class AutoTypeMapper implements TypeMapper {
         putTypeMapper(String.class, long.class, new StringToLong());
         putTypeMapper(String.class, Date.class, new StringToDate());
         putTypeMapper(String.class, BigDecimal.class, new StringToBigDecimal());
+        putTypeMapper(String[].class, String.class, new StringArrayToString());
     }
 
     protected void putTypeMapper(Class<?> convertFrom, Class<?> convertTo, TypeMapper typeMapper) {
@@ -278,6 +278,20 @@ public class AutoTypeMapper implements TypeMapper {
             return null;
         }
 
+    }
+
+    private static final class StringArrayToString implements TypeMapper {
+        @Override
+        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
+                Class<?> requiredType, String[] formats) {
+            if (String[].class.isInstance(from)) {
+                String[] array = (String[]) from;
+                if (ArrayUtils.isNotEmpty(array)) {
+                    return array[0];
+                }
+            }
+            return null;
+        }
     }
 
 }
