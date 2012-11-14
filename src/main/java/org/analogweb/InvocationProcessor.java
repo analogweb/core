@@ -25,12 +25,12 @@ public interface InvocationProcessor extends MultiModule {
      * @param args {@link InvocationArguments}
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
-     * @param attributes {@link RequestAttributes}
      * @param converters {@link TypeMapperContext}
+     * @param handlers {@link AttributesHandlers}
      * @return 実行処理を中断する結果({@link Direction}など。)
      */
     Object prepareInvoke(Method method, InvocationArguments args, InvocationMetadata metadata,
-            RequestContext context, RequestAttributes attributes, TypeMapperContext converters);
+            RequestContext context, TypeMapperContext converters, AttributesHandlers handlers);
 
     /**
      * 全ての{@link InvocationProcessor}の#prepareInvoke実行後、
@@ -72,12 +72,11 @@ public interface InvocationProcessor extends MultiModule {
      * @param args 例外が発生した対象の{@link InvocationArguments}
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
-     * @param attributes {@link RequestAttributes}
      * @param resultAttributes {@link ResultAttributes}
      * @return {@link Invocation}の実行結果
      */
     Object postInvoke(Object invocationResult, InvocationArguments args, InvocationMetadata metadata,
-            RequestContext context, RequestAttributes attributes, ResultAttributes resultAttributes);
+            RequestContext context, ResultAttributes resultAttributes);
 
     /**
      * {@link Invocation}実行後に処理を追加します。<br/>

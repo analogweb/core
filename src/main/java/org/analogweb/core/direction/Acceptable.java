@@ -1,8 +1,6 @@
 package org.analogweb.core.direction;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -10,9 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.analogweb.Direction;
+import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.util.StringUtils;
 
@@ -113,15 +111,8 @@ public class Acceptable implements Direction {
     }
 
     private List<String> getAcceptableMediaType(RequestContext context) {
-        HttpServletRequest request = context.getRequest();
-        String acceptHeader = request.getHeader("Accept");
-        if (StringUtils.isNotEmpty(acceptHeader)) {
-            String[] acceptables = acceptHeader.split(",");
-            List<String> list = Arrays.asList(acceptables);
-            Collections.sort(list, new AcceptHeaderComparator());
-            return list;
-        }
-        return Collections.emptyList();
+        Headers headers = context.getRequestHeaders();
+        return headers.getValues("Accept");
     }
 
     protected Object getSource() {

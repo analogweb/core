@@ -2,9 +2,9 @@ package org.analogweb.core;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.ServletRequestContext;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
@@ -13,7 +13,8 @@ import org.analogweb.util.logging.Markers;
 /**
  * @author snowgoose
  */
-public class RequestScopeRequestAttributesResolver extends AbstractAttributesHandler {
+public class RequestScopeRequestAttributesResolver extends
+        ContextSpecifiedAttributesHandler<ServletRequestContext> {
 
     private static final Log log = Logs.getLog(RequestScopeRequestAttributesResolver.class);
 
@@ -23,22 +24,24 @@ public class RequestScopeRequestAttributesResolver extends AbstractAttributesHan
     }
 
     @Override
-    public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadatan, String name) {
-        HttpServletRequest request = requestContext.getRequest();
+    protected Object resolveAttributeValueOnContext(ServletRequestContext requestContext,
+            InvocationMetadata metadata, String name, Class<?> requiredType) {
+        HttpServletRequest request = requestContext.getServletRequest();
         return request.getAttribute(name);
     }
 
     @Override
-    public void putAttributeValue(RequestContext requestContext, String name, Object value) {
+    public void putAttributeValueOnContext(ServletRequestContext requestContext, String name,
+            Object value) {
         Assertion.notNull(requestContext, RequestContext.class.getName());
-        HttpServletRequest request = requestContext.getRequest();
+        HttpServletRequest request = requestContext.getServletRequest();
         request.setAttribute(name, value);
         log.log(Markers.VARIABLE_ACCESS, "TV000001", getScopeName(), name, value);
     }
 
     @Override
-    public void removeAttribute(RequestContext requestContext, String name) {
-        HttpServletRequest request = requestContext.getRequest();
+    public void removeAttributeOnContext(ServletRequestContext requestContext, String name) {
+        HttpServletRequest request = requestContext.getServletRequest();
         request.removeAttribute(name);
         log.log(Markers.VARIABLE_ACCESS, "TV000002", getScopeName(), name);
     }

@@ -36,7 +36,7 @@ public class Xml extends TextFormattable<Xml> {
                 throws FormatFailureException {
             try {
                 JAXBContext jaxb = JAXBContext.newInstance(source.getClass());
-                jaxb.createMarshaller().marshal(source, writeTo.getResponse().getOutputStream());
+                jaxb.createMarshaller().marshal(source, writeTo.getResponseBody());
             } catch (IOException e) {
                 throw new FormatFailureException(e, source, getClass().getName());
             } catch (JAXBException e) {

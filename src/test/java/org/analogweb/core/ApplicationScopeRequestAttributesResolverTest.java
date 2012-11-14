@@ -10,10 +10,8 @@ import static org.mockito.Mockito.when;
 
 import javax.servlet.ServletContext;
 
-
 import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestContext;
-import org.analogweb.core.ApplicationScopeRequestAttributesResolver;
+import org.analogweb.ServletRequestContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,7 +21,7 @@ import org.junit.Test;
 public class ApplicationScopeRequestAttributesResolverTest {
 
     private ApplicationScopeRequestAttributesResolver resolver;
-    private RequestContext requestContext;
+    private ServletRequestContext requestContext;
     private ServletContext servletContext;
     private InvocationMetadata metadata;
 
@@ -33,7 +31,7 @@ public class ApplicationScopeRequestAttributesResolverTest {
     @Before
     public void setUp() throws Exception {
         resolver = new ApplicationScopeRequestAttributesResolver();
-        requestContext = mock(RequestContext.class);
+        requestContext = mock(ServletRequestContext.class);
         servletContext = mock(ServletContext.class);
         metadata = mock(InvocationMetadata.class);
     }
@@ -56,10 +54,10 @@ public class ApplicationScopeRequestAttributesResolverTest {
     @Test
     public void testResolveAttributeValue() {
         Object expected = new Object();
-        when(requestContext.getContext()).thenReturn(servletContext);
+        when(requestContext.getServletContext()).thenReturn(servletContext);
         when(servletContext.getAttribute("foo")).thenReturn(expected);
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo");
+        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo", String.class);
         assertThat(actual, is(expected));
 
         verify(servletContext).getAttribute("foo");
@@ -72,13 +70,13 @@ public class ApplicationScopeRequestAttributesResolverTest {
      */
     @Test
     public void testResolveAttributeValueWithNullName() {
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, null);
+        Object actual = resolver.resolveAttributeValue(requestContext, metadata, null, String.class);
         assertNull(actual);
     }
 
     @Test
     public void testPutAttributeValue() {
-        when(requestContext.getContext()).thenReturn(servletContext);
+        when(requestContext.getServletContext()).thenReturn(servletContext);
         doNothing().when(servletContext).setAttribute("foo", "baa");
 
         resolver.putAttributeValue(requestContext, "foo", "baa");
@@ -92,7 +90,7 @@ public class ApplicationScopeRequestAttributesResolverTest {
 
     @Test
     public void testRemoveAttributeValue() {
-        when(requestContext.getContext()).thenReturn(servletContext);
+        when(requestContext.getServletContext()).thenReturn(servletContext);
 
         resolver.removeAttribute(requestContext, "foo");
         verify(servletContext).removeAttribute("foo");

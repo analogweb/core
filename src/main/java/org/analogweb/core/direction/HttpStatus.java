@@ -5,10 +5,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 
 import org.analogweb.Direction;
+import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.util.StringUtils;
 
@@ -89,24 +88,23 @@ public enum HttpStatus implements Direction {
 
     @Override
     public void render(RequestContext context) throws IOException, ServletException {
-        HttpServletResponse response = context.getResponse();
-
-        Map<String, String> headers = getResponseHeaders();
-        if (headers != null) {
-            for (Entry<String, String> header : headers.entrySet()) {
-                response.addHeader(header.getKey(), header.getValue());
-            }
-        }
         String reason = getReason();
         if (StringUtils.isNotEmpty(reason)) {
-            response.sendError(getStatusCode(), reason);
+            Text.with(reason).render(context);
         } else {
-            response.setStatus(getStatusCode());
+            Direction preRenderDirection = getPreRenderDirection();
+            if (preRenderDirection != null) {
+                preRenderDirection.render(context);
+            }
         }
-        Direction preRenderDirection = getPreRenderDirection();
-        if (preRenderDirection != null) {
-            preRenderDirection.render(context);
+        Headers headers = context.getResponseHeaders();
+        Map<String, String> headersMap = getResponseHeaders();
+        if(headersMap != null) {
+            for(Entry<String,String> e : headersMap.entrySet()){
+                headers.putValue(e.getKey(), e.getValue());
+            }
         }
+        context.setResponseStatus(getStatusCode());
     }
 
     public static HttpStatus valueOf(int statusCode){

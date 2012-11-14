@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.ResultAttributesHolder;
@@ -28,7 +27,6 @@ public class DefaultInvocationResultAttributesMapperTest {
     private InvocationMetadata metadata;
     private InvocationArguments args;
     private RequestContext context;
-    private RequestAttributes attributes;
     private ResultAttributes resultAttributes;
 
     @Before
@@ -37,7 +35,6 @@ public class DefaultInvocationResultAttributesMapperTest {
         metadata = mock(InvocationMetadata.class);
         args = mock(InvocationArguments.class);
         context = mock(RequestContext.class);
-        attributes = mock(RequestAttributes.class);
         resultAttributes = mock(ResultAttributes.class);
     }
 
@@ -56,7 +53,7 @@ public class DefaultInvocationResultAttributesMapperTest {
         doNothing().when(resultAttributes).setValueOfQuery(context, "request", "foo", "baa");
 
         Object actual = postProcessor.postInvoke(invocationResult, args, metadata, context,
-                attributes, resultAttributes);
+                resultAttributes);
         assertSame(actual, invocationResult);
         verify(resultAttributes).setValueOfQuery(context, "request", "foo", "baa");
     }
@@ -66,7 +63,7 @@ public class DefaultInvocationResultAttributesMapperTest {
 
         String invocationResult = "success";
         Object actual = postProcessor.postInvoke(invocationResult, args, metadata, context,
-                attributes, resultAttributes);
+                resultAttributes);
         assertSame(actual, invocationResult);
     }
 
@@ -85,7 +82,7 @@ public class DefaultInvocationResultAttributesMapperTest {
         doNothing().when(resultAttributes).setValueOfQuery(context, "session", "foo", "baa");
 
         Object actual = postProcessor.postInvoke(invocationResult, args, metadata, context,
-                attributes, resultAttributes);
+                resultAttributes);
         assertSame(actual, invocationResult);
         verify(resultAttributes).setValueOfQuery(context, "session", "foo", "baa");
     }
@@ -104,7 +101,7 @@ public class DefaultInvocationResultAttributesMapperTest {
         doNothing().when(resultAttributes).setValueOfQuery(context, "request", "foo", "baa");
 
         Object actual = postProcessor.postInvoke(invocationResult, args, metadata, context,
-                attributes, resultAttributes);
+                resultAttributes);
         assertSame(actual, invocationResult);
         verify(resultAttributes).setValueOfQuery(context, "request", "foo", "baa");
     }

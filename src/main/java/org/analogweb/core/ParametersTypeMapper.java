@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.annotation.Formats;
 import org.analogweb.util.ReflectionUtils;
@@ -22,22 +21,22 @@ import org.analogweb.util.ReflectionUtils;
 public class ParametersTypeMapper extends AutoTypeMapper {
 
     @Override
-    public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-            Class<?> requiredType, String[] formats) {
+    public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+            String[] formats) {
         if (Map.class.isInstance(from)) {
             @SuppressWarnings("unchecked")
             Map<String, Object> parameters = (Map<String, Object>) from;
             Object instance = ReflectionUtils.getInstanceQuietly(requiredType);
             if (instance != null) {
-                mapToInstance(context, attributes, parameters, instance, formats);
+                mapToInstance(context, parameters, instance, formats);
                 return instance;
             }
         }
         return null;
     }
 
-    protected void mapToInstance(RequestContext context, RequestAttributes attributes,
-            Map<String, Object> parameters, Object instance, String[] formats) {
+    protected void mapToInstance(RequestContext context, Map<String, Object> parameters,
+            Object instance, String[] formats) {
         for (Entry<String, Object> parameter : parameters.entrySet()) {
             Field field = ReflectionUtils.getAccessibleField(instance.getClass(),
                     parameter.getKey());
@@ -46,8 +45,8 @@ public class ParametersTypeMapper extends AutoTypeMapper {
                 Object value = extractParameter(parameter.getValue());
                 if (!value.getClass().isAssignableFrom(fieldType)) {
                     Formats f = field.getAnnotation(Formats.class);
-                    value = super.mapToType(context, attributes, value, fieldType,
-                            (f != null) ? f.value() : formats);
+                    value = super.mapToType(context, value, fieldType, (f != null) ? f.value()
+                            : formats);
                 }
                 ReflectionUtils.writeValueToField(field, instance, value);
             }

@@ -15,7 +15,7 @@ import org.analogweb.RequestContext;
  * @author snowgoose
  */
 public class RequestBodyScopeAttributesResolver extends AbstractAttributesHandler {
-    
+
     public static final String NAME = "body";
 
     @Override
@@ -25,10 +25,9 @@ public class RequestBodyScopeAttributesResolver extends AbstractAttributesHandle
 
     @Override
     public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadata,
-            String query) {
-        HttpServletRequest request = requestContext.getRequest();
+            String query, Class<?> type) {
         try {
-            return request.getInputStream();
+            return requestContext.getRequestBody();
         } catch (IOException e) {
             return null;
         }

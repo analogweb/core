@@ -7,11 +7,11 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
@@ -30,12 +30,12 @@ public class DefaultInvocationFactoryTest {
 
     private ContainerAdaptor provider;
     private InvocationMetadata metadata;
-    private RequestAttributes attributes;
     private ResultAttributes resultAttributes;
     private RequestContext context;
     private TypeMapperContext converters;
     private List<InvocationProcessor> processors;
     private InvocationProcessor processor;
+    private AttributesHandlers handlers;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -47,13 +47,13 @@ public class DefaultInvocationFactoryTest {
     public void setUp() throws Exception {
         provider = mock(ContainerAdaptor.class);
         metadata = mock(InvocationMetadata.class);
-        attributes = mock(RequestAttributes.class);
         resultAttributes = mock(ResultAttributes.class);
         context = mock(RequestContext.class);
         converters = mock(TypeMapperContext.class);
         processors = new ArrayList<InvocationProcessor>();
         processor = mock(InvocationProcessor.class);
         processors.add(processor);
+        handlers = mock(AttributesHandlers.class);
     }
 
     @Test
@@ -65,8 +65,8 @@ public class DefaultInvocationFactoryTest {
         when(metadata.getInvocationClass()).thenReturn(
                 (Class) DefaultActionInvocationFactoryTestMockActions.class);
         DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        Invocation invocation = factory.createInvocation(provider, metadata, attributes,
-                resultAttributes, context, converters, processors);
+        Invocation invocation = factory.createInvocation(provider, metadata, resultAttributes,
+                context, converters, processors, handlers);
         assertSame(invocation.getInvocationInstance(), actionInstance);
     }
 
@@ -79,8 +79,8 @@ public class DefaultInvocationFactoryTest {
         when(metadata.getInvocationClass()).thenReturn(
                 (Class) DefaultActionInvocationFactoryTestMockActions.class);
         DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        factory.createInvocation(provider, metadata, attributes, resultAttributes, context,
-                converters, processors);
+        factory.createInvocation(provider, metadata, resultAttributes, context, converters,
+                processors, handlers);
     }
 
     @On

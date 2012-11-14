@@ -1,7 +1,5 @@
 package org.analogweb.core;
 
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -9,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -19,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.analogweb.Application;
+import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.Direction;
 import org.analogweb.DirectionHandler;
@@ -30,13 +28,11 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.Modules;
-import org.analogweb.RequestAttributes;
-import org.analogweb.RequestAttributesFactory;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestContextFactory;
+import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
 import org.analogweb.ResultAttributes;
-import org.analogweb.RequestPath;
 import org.analogweb.TypeMapperContext;
 import org.junit.Before;
 import org.junit.Rule;
@@ -105,11 +101,6 @@ public class AnalogFilterTest {
         Class targetClass = getClass();
         when(metadata.getInvocationClass()).thenReturn(targetClass);
         when(provider.getInstanceOfType(targetClass)).thenReturn(this);
-        RequestAttributes requestAttributes = mock(RequestAttributes.class);
-        RequestAttributesFactory factory = mock(RequestAttributesFactory.class);
-        when(modules.getRequestAttributesFactory()).thenReturn(factory);
-        when(requestContext.resolveRequestAttributes(eq(factory), eq(metadata),isA(Map.class))).thenReturn(
-                requestAttributes);
         ResultAttributes resultAttributes = mock(ResultAttributes.class);
         when(modules.getResultAttributes()).thenReturn(resultAttributes);
         Invoker invoker = mock(Invoker.class);
@@ -121,10 +112,14 @@ public class AnalogFilterTest {
         when(modules.getInvocationProcessors()).thenReturn(processors);
         Invocation invocation = mock(Invocation.class);
         when(modules.getInvocationFactory()).thenReturn(invocationFactory);
-        when(invocationFactory.createInvocation(provider, metadata, requestAttributes, resultAttributes, requestContext, typeContext, processors)).thenReturn(invocation);
+        AttributesHandlers handlers = mock(AttributesHandlers.class);
+        when(modules.getAttributesHandlers()).thenReturn(handlers);
+        when(
+                invocationFactory.createInvocation(provider, metadata, resultAttributes,
+                        requestContext, typeContext, processors, handlers)).thenReturn(invocation);
         Object result = new Object();
-        when(invoker.invoke(invocation, metadata, requestAttributes, resultAttributes, requestContext))
-                .thenReturn(result);
+        when(invoker.invoke(invocation, metadata, resultAttributes, requestContext)).thenReturn(
+                result);
 
         // direct result.
         DirectionResolver directionResolver = mock(DirectionResolver.class);
@@ -133,13 +128,12 @@ public class AnalogFilterTest {
         when(directionResolver.resolve(result, metadata, requestContext)).thenReturn(direction);
         DirectionHandler directionHandler = mock(DirectionHandler.class);
         when(modules.getDirectionHandler()).thenReturn(directionHandler);
-        doNothing().when(directionHandler).handleResult(direction, null, requestContext,
-                requestAttributes);
+        doNothing().when(directionHandler).handleResult(direction, null, requestContext);
 
         filter.init(filterConfig);
         filter.doFilter(request, response, filterChain);
 
-        verify(directionHandler).handleResult(direction, null,requestContext, requestAttributes);
+        verify(directionHandler).handleResult(direction, null, requestContext);
     }
 
     @Test
@@ -161,11 +155,6 @@ public class AnalogFilterTest {
         Class targetClass = getClass();
         when(metadata.getInvocationClass()).thenReturn(targetClass);
         when(provider.getInstanceOfType(targetClass)).thenReturn(this);
-        RequestAttributes requestAttributes = mock(RequestAttributes.class);
-        RequestAttributesFactory factory = mock(RequestAttributesFactory.class);
-        when(modules.getRequestAttributesFactory()).thenReturn(factory);
-        when(requestContext.resolveRequestAttributes(eq(factory), eq(metadata), isA(Map.class))).thenReturn(
-                requestAttributes);
         ResultAttributes resultAttributes = mock(ResultAttributes.class);
         when(modules.getResultAttributes()).thenReturn(resultAttributes);
         Invoker invoker = mock(Invoker.class);
@@ -178,9 +167,12 @@ public class AnalogFilterTest {
         when(modules.getInvocationProcessors()).thenReturn(processors);
         Invocation invocation = mock(Invocation.class);
         when(modules.getInvocationFactory()).thenReturn(invocationFactory);
-        when(invocationFactory.createInvocation(provider, metadata, requestAttributes, resultAttributes, requestContext, typeContext, processors)).thenReturn(invocation);
-        when(invoker.invoke(invocation, metadata, requestAttributes, resultAttributes, requestContext))
-                .thenThrow(ex);
+        AttributesHandlers handlers = mock(AttributesHandlers.class);
+        when(modules.getAttributesHandlers()).thenReturn(handlers);
+        when(
+                invocationFactory.createInvocation(provider, metadata, resultAttributes,
+                        requestContext, typeContext, processors, handlers)).thenReturn(invocation);
+        when(invoker.invoke(invocation, metadata, resultAttributes, requestContext)).thenThrow(ex);
 
         ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
         when(modules.getExceptionHandler()).thenReturn(exceptionHandler);
@@ -210,11 +202,6 @@ public class AnalogFilterTest {
         Class targetClass = getClass();
         when(metadata.getInvocationClass()).thenReturn(targetClass);
         when(provider.getInstanceOfType(targetClass)).thenReturn(this);
-        RequestAttributes requestAttributes = mock(RequestAttributes.class);
-        RequestAttributesFactory factory = mock(RequestAttributesFactory.class);
-        when(modules.getRequestAttributesFactory()).thenReturn(factory);
-        when(requestContext.resolveRequestAttributes(eq(factory), eq(metadata), isA(Map.class))).thenReturn(
-                requestAttributes);
         ResultAttributes resultAttributes = mock(ResultAttributes.class);
         when(modules.getResultAttributes()).thenReturn(resultAttributes);
         Invoker invoker = mock(Invoker.class);
@@ -227,9 +214,12 @@ public class AnalogFilterTest {
         when(modules.getInvocationProcessors()).thenReturn(processors);
         Invocation invocation = mock(Invocation.class);
         when(modules.getInvocationFactory()).thenReturn(invocationFactory);
-        when(invocationFactory.createInvocation(provider, metadata, requestAttributes, resultAttributes, requestContext, typeContext, processors)).thenReturn(invocation);
-        when(invoker.invoke(invocation, metadata, requestAttributes, resultAttributes, requestContext))
-                .thenThrow(ex);
+        AttributesHandlers handlers = mock(AttributesHandlers.class);
+        when(modules.getAttributesHandlers()).thenReturn(handlers);
+        when(
+                invocationFactory.createInvocation(provider, metadata, resultAttributes,
+                        requestContext, typeContext, processors, handlers)).thenReturn(invocation);
+        when(invoker.invoke(invocation, metadata, resultAttributes, requestContext)).thenThrow(ex);
 
         ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
         when(modules.getExceptionHandler()).thenReturn(exceptionHandler);
@@ -244,15 +234,14 @@ public class AnalogFilterTest {
         DirectionHandler directionHandler = mock(DirectionHandler.class);
         when(modules.getDirectionHandler()).thenReturn(directionHandler);
         doNothing().when(directionHandler).handleResult(exceptionHandlingResult, null,
-                requestContext, requestAttributes);
+                requestContext);
 
         filter.init(filterConfig);
         filter.doFilter(request, response, filterChain);
 
         verify(exceptionHandler).handleException(ex);
         verify(filterChain).doFilter(request, response);
-        verify(directionHandler).handleResult(exceptionHandlingResult, null, requestContext,
-                requestAttributes);
+        verify(directionHandler).handleResult(exceptionHandlingResult, null, requestContext);
     }
 
     @Test

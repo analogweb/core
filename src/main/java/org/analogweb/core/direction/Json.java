@@ -58,7 +58,7 @@ public class Json extends TextFormattable<Json> {
             OutputStreamWriter output;
             try {
                 format(buffer, source);
-                output = new OutputStreamWriter(writeTo.getResponse().getOutputStream(), charset);
+                output = new OutputStreamWriter(writeTo.getResponseBody(), charset);
                 output.write(buffer.toString());
                 output.flush();
             } catch (IOException e) {

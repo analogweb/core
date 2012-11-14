@@ -20,7 +20,7 @@ public class AbstractAttributesHandler implements AttributesHandler {
 
     @Override
     public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadata,
-            String query) {
+            String key, Class<?> requiredType) {
         // nop
         return null;
     }

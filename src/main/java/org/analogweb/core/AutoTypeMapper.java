@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
 import org.analogweb.util.ArrayUtils;
@@ -56,8 +55,8 @@ public class AutoTypeMapper implements TypeMapper {
     }
 
     @Override
-    public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-            Class<?> requiredType, String[] formats) {
+    public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+            String[] formats) {
         if (from == null) {
             return nullSafePrimitive(requiredType);
         }
@@ -66,7 +65,7 @@ public class AutoTypeMapper implements TypeMapper {
         }
         TypeMapper mapper = mappers.get(ClassPair.valueOf(from.getClass(), requiredType));
         if (mapper != null) {
-            return mapper.mapToType(context, attributes, from, requiredType, formats);
+            return mapper.mapToType(context, from, requiredType, formats);
         }
         return null;
     }
@@ -131,8 +130,8 @@ public class AutoTypeMapper implements TypeMapper {
 
     private static final class StringToCharactor implements TypeMapper {
         @Override
-        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-                Class<?> requiredType, String[] formats) {
+        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+                String[] formats) {
             if (StringUtils.isNotEmpty(from.toString())) {
                 return from.toString().toCharArray()[0];
             }
@@ -143,8 +142,8 @@ public class AutoTypeMapper implements TypeMapper {
     private static final class StringToBoolean implements TypeMapper {
 
         @Override
-        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-                Class<?> requiredType, String[] formats) {
+        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+                String[] formats) {
             String fromText = (String) from;
             return ((fromText.equalsIgnoreCase("true") || fromText.equalsIgnoreCase("yes") || fromText
                     .equalsIgnoreCase("on")));
@@ -154,8 +153,8 @@ public class AutoTypeMapper implements TypeMapper {
 
     private static final class StringToShort implements TypeMapper {
         @Override
-        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-                Class<?> requiredType, String[] formats) {
+        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+                String[] formats) {
             if (StringUtils.isNotEmpty(from.toString())) {
                 try {
                     return Short.valueOf(from.toString());
@@ -170,8 +169,8 @@ public class AutoTypeMapper implements TypeMapper {
 
     private static final class StringToFloat implements TypeMapper {
         @Override
-        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-                Class<?> requiredType, String[] formats) {
+        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+                String[] formats) {
             if (StringUtils.isNotEmpty(from.toString())) {
                 try {
                     return Float.valueOf(from.toString());
@@ -186,8 +185,8 @@ public class AutoTypeMapper implements TypeMapper {
 
     private static final class StringToDouble implements TypeMapper {
         @Override
-        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-                Class<?> requiredType, String[] formats) {
+        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+                String[] formats) {
             if (StringUtils.isNotEmpty(from.toString())) {
                 try {
                     return Double.valueOf(from.toString());
@@ -202,8 +201,8 @@ public class AutoTypeMapper implements TypeMapper {
 
     private static final class StringToInteger implements TypeMapper {
         @Override
-        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-                Class<?> requiredType, String[] formats) {
+        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+                String[] formats) {
             if (StringUtils.isNotEmpty(from.toString())) {
                 try {
                     return Integer.valueOf(from.toString());
@@ -218,8 +217,8 @@ public class AutoTypeMapper implements TypeMapper {
 
     private static final class StringToLong implements TypeMapper {
         @Override
-        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-                Class<?> requiredType, String[] formats) {
+        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+                String[] formats) {
             if (StringUtils.isNotEmpty(from.toString())) {
                 try {
                     return Long.valueOf(from.toString());
@@ -234,8 +233,8 @@ public class AutoTypeMapper implements TypeMapper {
 
     private static final class StringToBigDecimal implements TypeMapper {
         @Override
-        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-                Class<?> requiredType, String[] formats) {
+        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+                String[] formats) {
             if (formats != null && formats.length > 0) {
                 DecimalFormat formatter = new DecimalFormat();
                 for (String formatPattern : formats) {
@@ -259,8 +258,8 @@ public class AutoTypeMapper implements TypeMapper {
                 "yyyy-MM-dd", "yyyy/MM/dd hh:mm:ss" };
 
         @Override
-        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-                Class<?> requiredType, String[] formats) {
+        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+                String[] formats) {
             SimpleDateFormat formatter = new SimpleDateFormat();
             if (formats == null || formats.length == 0) {
                 formats = DEFAULT_FORMAT_PATTERNS;
@@ -282,8 +281,8 @@ public class AutoTypeMapper implements TypeMapper {
 
     private static final class StringArrayToString implements TypeMapper {
         @Override
-        public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-                Class<?> requiredType, String[] formats) {
+        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+                String[] formats) {
             if (String[].class.isInstance(from)) {
                 String[] array = (String[]) from;
                 if (ArrayUtils.isNotEmpty(array)) {

@@ -16,12 +16,11 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.analogweb.Direction;
+import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,16 +31,12 @@ import org.junit.Test;
 public class AcceptableTest {
 
     private RequestContext context;
-    private HttpServletRequest request;
-    private HttpServletResponse response;
+    private Headers headers;
 
     @Before
     public void setUp() throws Exception {
         context = mock(RequestContext.class);
-        request = mock(HttpServletRequest.class);
-        response = mock(HttpServletResponse.class);
-        when(context.getRequest()).thenReturn(request);
-        when(context.getResponse()).thenReturn(response);
+        headers = mock(Headers.class);
     }
 
     @Test
@@ -60,18 +55,16 @@ public class AcceptableTest {
         final Member m = new Member("snowgoose", 34);
         Acceptable a = Acceptable.as(m);
         a.map(new Direction() {
-            
+
             @Override
             public void render(RequestContext context) throws IOException, ServletException {
-                Writer w = new OutputStreamWriter(context.getResponse().getOutputStream());
+                Writer w = new OutputStreamWriter(context.getResponseBody());
                 w.write("write with XML");
                 w.flush();
             }
         }, "text/xml");
         final String actual = schenarioRender(" text/xml", m, a);
-        assertThat(
-                actual,
-                is("write with XML"));
+        assertThat(actual, is("write with XML"));
     }
 
     @Test
@@ -106,10 +99,13 @@ public class AcceptableTest {
     public void testRenderAcceptableAny() throws Exception {
 
         final Member m = new Member("snowgoose", 34);
-        final String accept = " text/x-dvi,image/png, */*";
-        when(request.getHeader("Accept")).thenReturn(accept);
+        //        final String accept = " text/x-dvi,image/png, */*";
+        when(context.getRequestHeaders()).thenReturn(headers);
+        when(headers.getValues("Accept")).thenReturn(
+                Arrays.asList("text/x-dvi", "image/png", "*/*"));
+        //        when(request.getHeader("Accept")).thenReturn(accept);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
+        when(context.getResponseBody()).thenReturn(new ServletOutputStream() {
             @Override
             public void write(final int arg0) throws IOException {
                 out.write(arg0);
@@ -138,7 +134,7 @@ public class AcceptableTest {
 
             @Override
             public void render(RequestContext context) throws IOException, ServletException {
-                Writer w = new OutputStreamWriter(context.getResponse().getOutputStream());
+                Writer w = new OutputStreamWriter(context.getResponseBody());
                 w.write("write with ANY");
                 w.flush();
             }
@@ -152,8 +148,16 @@ public class AcceptableTest {
     public void testRenderSwitchedAcceptable() throws Exception {
 
         final Member m = new Member("snowgoose", 34);
-        final String accept = " text/x-dvi,image/png, application/json";
-        when(request.getHeader("Accept")).thenReturn(accept);
+        when(context.getRequestHeaders()).thenReturn(headers);
+        when(headers.getValues("Accept")).thenReturn(
+                Arrays.asList("text/x-dvi", "image/png", "application/json"));
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        when(context.getResponseBody()).thenReturn(new ServletOutputStream() {
+            @Override
+            public void write(final int arg0) throws IOException {
+                out.write(arg0);
+            }
+        });
         final Direction replaceDirection = mock(Direction.class);
         Acceptable.as(m).map(replaceDirection, "application/json").render(context);
         verify(replaceDirection).render(context);
@@ -165,15 +169,16 @@ public class AcceptableTest {
         final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/x-dvi,image/png, text/*", m);
         assertThat(actual, is(""));
-        verify(response).setStatus(406);
+        verify(context).setResponseStatus(406);
     }
 
     @Test
     public void testRenderNotAcceptable2() throws Exception {
 
         final Member m = new Member("snowgoose", 34);
-        final String accept = " text/x-dvi,image/png, text/javascript, */*";
-        when(request.getHeader("Accept")).thenReturn(accept);
+        when(context.getRequestHeaders()).thenReturn(headers);
+        when(headers.getValues("Accept")).thenReturn(
+                Arrays.asList("text/x-dvi", "image/png", "*/*"));
         final Direction replaceDirection = mock(Direction.class);
         Acceptable.as(m).mapToAny(replaceDirection).render(context);
         verify(replaceDirection).render(context);
@@ -186,9 +191,12 @@ public class AcceptableTest {
     private String schenarioRender(final String accept, final Member m, final Acceptable a)
             throws Exception {
 
-        when(request.getHeader("Accept")).thenReturn(accept);
+        when(context.getRequestHeaders()).thenReturn(headers);
+        Headers responseHeaders = mock(Headers.class);
+        when(context.getResponseHeaders()).thenReturn(responseHeaders);
+        when(headers.getValues("Accept")).thenReturn(Arrays.asList(accept.split(",")));
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
+        when(context.getResponseBody()).thenReturn(new ServletOutputStream() {
             @Override
             public void write(final int arg0) throws IOException {
                 out.write(arg0);

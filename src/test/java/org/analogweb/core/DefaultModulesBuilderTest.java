@@ -31,7 +31,6 @@ import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.Modules;
 import org.analogweb.MultiModule;
-import org.analogweb.RequestAttributesFactory;
 import org.analogweb.RequestContextFactory;
 import org.analogweb.ResultAttributes;
 import org.analogweb.ResultAttributesFactory;
@@ -73,7 +72,6 @@ public class DefaultModulesBuilderTest {
     private DirectionHandler directiontHandler;
     private InvocationProcessor invocationProcessor;
     private RequestContextFactory requestContextFactory;
-    private RequestAttributesFactory requestAttributesFactory;
     private AttributesHandler attributesHandler;
     private ResultAttributesFactory resultAttributesFactory;
     private ExceptionHandler exceptionHandler;
@@ -99,7 +97,6 @@ public class DefaultModulesBuilderTest {
         directiontHandler = mock(DirectionHandler.class);
         invocationProcessor = mock(InvocationProcessor.class);
         requestContextFactory = mock(RequestContextFactory.class);
-        requestAttributesFactory = mock(RequestAttributesFactory.class);
         attributesHandler = mock(AttributesHandler.class);
         resultAttributesFactory = mock(ResultAttributesFactory.class);
         exceptionHandler = mock(ExceptionHandler.class);
@@ -115,7 +112,6 @@ public class DefaultModulesBuilderTest {
         adaptor.register(directiontHandler.getClass(), directiontHandler);
         adaptor.register(invocationProcessor.getClass(), invocationProcessor);
         adaptor.register(requestContextFactory.getClass(), requestContextFactory);
-        adaptor.register(requestAttributesFactory.getClass(), requestAttributesFactory);
         adaptor.register(attributesHandler.getClass(), attributesHandler);
         adaptor.register(resultAttributesFactory.getClass(), resultAttributesFactory);
         adaptor.register(exceptionHandler.getClass(), exceptionHandler);
@@ -137,7 +133,6 @@ public class DefaultModulesBuilderTest {
         builder.setRequestContextFactoryClass(requestContextFactory.getClass());
         builder.addInvocationProcessorClass(invocationProcessor.getClass());
         builder.addInvocationMetadataFactoriesClass(invocationMetadataFactory.getClass());
-        builder.setRequestAttributesFactoryClass(requestAttributesFactory.getClass());
         builder.addAttributesHandlerClass(attributesHandler.getClass());
         builder.setResultAttributesFactoryClass(resultAttributesFactory.getClass());
         builder.setExceptionHandlerClass(exceptionHandler.getClass());
@@ -157,8 +152,6 @@ public class DefaultModulesBuilderTest {
         assertSame(modules.getDirectionHandler(), directiontHandler);
         assertSame(modules.getInvocationProcessors().get(0), invocationProcessor);
         assertSame(modules.getRequestContextFactory(), requestContextFactory);
-        assertSame(modules.getRequestAttributesFactory(), requestAttributesFactory);
-        assertSame(modules.getAttributesHandlers().get(0), attributesHandler);
         assertSame(modules.getResultAttributesFactory(), resultAttributesFactory);
         assertSame(modules.getExceptionHandler(), exceptionHandler);
         assertSame(modules.getTypeMapperContext(), typeMapperContext);
@@ -166,8 +159,6 @@ public class DefaultModulesBuilderTest {
         assertSame(modules.findDirectionFormatter(mapToDirection.getClass()), directionFormatter);
 
         when(attributesHandler.getScopeName()).thenReturn("request");
-        assertSame(modules.getAttributesHandlersMap().get("request"), attributesHandler);
-        assertSame(modules.getAttributesHandlersMap().get("request"), attributesHandler);
     }
 
     @Test
@@ -338,7 +329,7 @@ public class DefaultModulesBuilderTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void testIgnoreTypesUndefined() {
         thrown.expect(AssertionFailureException.class);
-        builder.ignore((Class)null);
+        builder.ignore((Class) null);
     }
 
     private static ContainerAdaptor ca;
@@ -356,7 +347,7 @@ public class DefaultModulesBuilderTest {
     @Test
     public void testIgnoreModulesByFilter() {
         final ContainerAdaptor defaultAdaptor = mock(ContainerAdaptor.class);
-        
+
         ProcessorA a = new ProcessorA();
         final ProcessorB b = new ProcessorB();
         ProcessorC c = new ProcessorC();
@@ -375,7 +366,7 @@ public class DefaultModulesBuilderTest {
         MultiModule.Filter filter = new MultiModule.Filter() {
             @Override
             public boolean isAppreciable(MultiModule aMultiModule) {
-                if(aMultiModule == b){
+                if (aMultiModule == b) {
                     return false;
                 }
                 return true;

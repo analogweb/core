@@ -14,9 +14,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
@@ -41,12 +41,12 @@ public class DefaultInvocationTest {
     private DefaultInvocation invocation;
 
     private InvocationMetadata metadata;
-    private RequestAttributes attributes;
     private ResultAttributes resultAttributes;
     private RequestContext context;
     private TypeMapperContext converters;
     private List<InvocationProcessor> processors;
     private InvocationProcessor processor;
+    private AttributesHandlers handlers;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -54,13 +54,13 @@ public class DefaultInvocationTest {
     @Before
     public void setUp() {
         metadata = mock(InvocationMetadata.class);
-        attributes = mock(RequestAttributes.class);
         resultAttributes = mock(ResultAttributes.class);
         context = mock(RequestContext.class);
         converters = mock(TypeMapperContext.class);
         processors = new ArrayList<InvocationProcessor>();
         processor = mock(InvocationProcessor.class);
         processors.add(processor);
+        handlers = mock(AttributesHandlers.class);
     }
 
     @Test
@@ -72,30 +72,30 @@ public class DefaultInvocationTest {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
                 argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
-                context, converters, processors);
+        invocation = new DefaultInvocation(instance, metadata, resultAttributes, context,
+                converters, processors, handlers);
         invocation.putInvocationArgument(0, "foo");
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
                 InvocationProcessor.NO_INTERRUPTION);
         Object actionResult = new Object();
         when(
                 processor.postInvoke("foo is something!!", invocation, metadata, context,
-                        attributes, resultAttributes)).thenReturn(actionResult);
+                        resultAttributes)).thenReturn(actionResult);
         doNothing().when(processor).afterCompletion(context, invocation, metadata, actionResult);
 
         Object actual = invocation.invoke();
         assertThat(actual, is(actionResult));
 
-        verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
-                converters);
+        verify(processor)
+                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
         verify(processor).onInvoke(method, invocation, metadata, invocation);
         verify(processor).postInvoke("foo is something!!", invocation, metadata, context,
-                attributes, resultAttributes);
+                resultAttributes);
         verify(processor).afterCompletion(context, invocation, metadata, actionResult);
     }
 
@@ -108,14 +108,14 @@ public class DefaultInvocationTest {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
                 argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
-                context, converters, processors);
+        invocation = new DefaultInvocation(instance, metadata, resultAttributes, context,
+                converters, processors, handlers);
         invocation.putInvocationArgument(0, "foo");
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         Object result = new Object();
         when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(result);
@@ -123,8 +123,8 @@ public class DefaultInvocationTest {
         Object actual = invocation.invoke();
         assertThat(actual, is(result));
 
-        verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
-                converters);
+        verify(processor)
+                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
         verify(processor).onInvoke(method, invocation, metadata, invocation);
     }
 
@@ -137,21 +137,21 @@ public class DefaultInvocationTest {
         final Class<?>[] argumentTypes = new Class<?>[0];
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
                 argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
-                context, converters, processors);
+        invocation = new DefaultInvocation(instance, metadata, resultAttributes, context,
+                converters, processors, handlers);
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
                 InvocationProcessor.NO_INTERRUPTION);
 
         invocation.invoke();
 
-        verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
-                converters);
+        verify(processor)
+                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
         verify(processor).processException(isA(InvocationFailureException.class), eq(context),
                 eq(invocation), eq(metadata));
     }
@@ -165,31 +165,31 @@ public class DefaultInvocationTest {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class, Integer.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
                 argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
-                context, converters, processors);
+        invocation = new DefaultInvocation(instance, metadata, resultAttributes, context,
+                converters, processors, handlers);
         invocation.putInvocationArgument(0, "foo");
         invocation.putInvocationArgument(2, 1);
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
                 InvocationProcessor.NO_INTERRUPTION);
         Object actionResult = new Object();
         when(
                 processor.postInvoke("No1 foo with null is anything!!", invocation, metadata,
-                        context, attributes, resultAttributes)).thenReturn(actionResult);
+                        context, resultAttributes)).thenReturn(actionResult);
         doNothing().when(processor).afterCompletion(context, invocation, metadata, actionResult);
 
         Object actual = invocation.invoke();
         assertThat(actual, is(actionResult));
 
-        verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
-                converters);
+        verify(processor)
+                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
         verify(processor).postInvoke("No1 foo with null is anything!!", invocation, metadata,
-                context, attributes, resultAttributes);
+                context, resultAttributes);
         verify(processor).afterCompletion(context, invocation, metadata, actionResult);
     }
 
@@ -202,31 +202,31 @@ public class DefaultInvocationTest {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
                 argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
-                context, converters, processors);
+        invocation = new DefaultInvocation(instance, metadata, resultAttributes, context,
+                converters, processors, handlers);
         invocation.putInvocationArgument(0, "foo");
         invocation.putInvocationArgument(0, "baa");
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
                 InvocationProcessor.NO_INTERRUPTION);
         Object actionResult = new Object();
         when(
                 processor.postInvoke("baa is something!!", invocation, metadata, context,
-                        attributes, resultAttributes)).thenReturn(actionResult);
+                        resultAttributes)).thenReturn(actionResult);
         doNothing().when(processor).afterCompletion(context, invocation, metadata, actionResult);
 
         Object actual = invocation.invoke();
         assertThat(actual, is(actionResult));
 
-        verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
-                converters);
+        verify(processor)
+                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
         verify(processor).postInvoke("baa is something!!", invocation, metadata, context,
-                attributes, resultAttributes);
+                resultAttributes);
         verify(processor).afterCompletion(context, invocation, metadata, actionResult);
     }
 
@@ -239,22 +239,22 @@ public class DefaultInvocationTest {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
                 argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
-                context, converters, processors);
+        invocation = new DefaultInvocation(instance, metadata, resultAttributes, context,
+                converters, processors, handlers);
         invocation.putInvocationArgument(0, 1L);
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
                 InvocationProcessor.NO_INTERRUPTION);
 
         invocation.invoke();
 
-        verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
-                converters);
+        verify(processor)
+                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
         verify(processor).processException(isA(InvocationFailureException.class), eq(context),
                 eq(invocation), eq(metadata));
     }
@@ -275,19 +275,18 @@ public class DefaultInvocationTest {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, Long.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
                 argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
-                context, converters, processors);
+        invocation = new DefaultInvocation(instance, metadata, resultAttributes, context,
+                converters, processors, handlers);
         invocation.putInvocationArgument(0, "foo");
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
 
-        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(
-                processor2.prepareInvoke(method, invocation, metadata, context, attributes,
-                        converters)).thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor2.prepareInvoke(method, invocation, metadata, context, converters, handlers))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
                 InvocationProcessor.NO_INTERRUPTION);
         when(processor2.onInvoke(method, invocation, metadata, invocation)).thenReturn(
@@ -307,10 +306,10 @@ public class DefaultInvocationTest {
 
         invocation.invoke();
 
-        verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
-                converters);
+        verify(processor)
+                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
         verify(processor).postInvoke("baa is something!!", invocation, metadata, context,
-                attributes, resultAttributes);
+                resultAttributes);
         verify(processor).afterCompletion(context, invocation, metadata, null);
     }
 
@@ -326,19 +325,18 @@ public class DefaultInvocationTest {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, Long.class };
         final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
                 argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, attributes, resultAttributes,
-                context, converters, processors);
+        invocation = new DefaultInvocation(instance, metadata, resultAttributes, context,
+                converters, processors, handlers);
 
         when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
         when(metadata.getMethodName()).thenReturn(methodName);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
 
-        when(processor.prepareInvoke(method, invocation, metadata, context, attributes, converters))
+        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
                 .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         invocation.putInvocationArgument(0, "foo");
-        when(
-                processor2.prepareInvoke(method, invocation, metadata, context, attributes,
-                        converters)).thenReturn(InvocationProcessor.NO_INTERRUPTION);
+        when(processor2.prepareInvoke(method, invocation, metadata, context, converters, handlers))
+                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
         invocation.putInvocationArgument(1, 100L);
         when(processor.onInvoke(method, invocation, metadata, invocation)).thenReturn(
                 InvocationProcessor.NO_INTERRUPTION);
@@ -358,8 +356,8 @@ public class DefaultInvocationTest {
 
         assertThat(actual, is(invocationResult));
 
-        verify(processor).prepareInvoke(method, invocation, metadata, context, attributes,
-                converters);
+        verify(processor)
+                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
     }
 
     private Matcher<InvocationFailureException> rootExceptionIs(final Class<? extends Throwable> t) {

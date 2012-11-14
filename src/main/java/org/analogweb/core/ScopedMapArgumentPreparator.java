@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
@@ -30,8 +30,8 @@ public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
 
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
-            TypeMapperContext converters) {
+            InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
+            AttributesHandlers handlers) {
         Annotation[][] argumentAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
@@ -48,8 +48,7 @@ public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
 
     @Override
     public Object postInvoke(Object invocationResult, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
-            ResultAttributes resultAttributes) {
+            InvocationMetadata metadata, RequestContext context, ResultAttributes resultAttributes) {
         for (Object arg : args.asList()) {
             if (arg instanceof ContextExtractor) {
                 ContextExtractor<?> scopedAttributes = (ContextExtractor<?>) arg;

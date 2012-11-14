@@ -3,10 +3,10 @@ package org.analogweb.core.direction;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 
 import org.analogweb.DirectionFormatter;
 import org.analogweb.DirectionFormatterAware;
+import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 
 /**
@@ -50,17 +50,17 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
 
     @Override
     public void render(RequestContext context) throws IOException, ServletException {
-        HttpServletResponse response = context.getResponse();
-        response.setContentType(getContentType());
         Object toXml = getSource();
         if (toXml == null) {
-            super.writeToStream(response.getOutputStream());
+            super.writeToStream(context.getResponseBody());
             return;
         }
         DirectionFormatter formatter = getFormatter();
         if (formatter == null) {
             formatter = getDefaultFormatter();
         }
+        Headers headers = context.getResponseHeaders();
+        headers.putValue("Content-Type", getContentType());
         formatter.formatAndWriteInto(context, getCharset(), toXml);
     }
 

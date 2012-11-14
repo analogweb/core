@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.analogweb.AttributesHandlers;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
@@ -28,26 +28,26 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
 
     private Object invocationInstance;
     private final InvocationMetadata metadata;
-    private final RequestAttributes requestAttributes;
     private final ResultAttributes resultAttributes;
     private final RequestContext requestContext;
     private final TreeMap<Integer, Object> preparedArgsMap;
     private final TypeMapperContext converters;
     private final List<InvocationProcessor> processors;
+    private final AttributesHandlers handlers;
     private List<Object> argumentList;
 
     public DefaultInvocation(Object invocationInstance, InvocationMetadata metadata,
-            RequestAttributes attributes, ResultAttributes resultAttributes,
-            RequestContext context, TypeMapperContext converters,
-            List<InvocationProcessor> processors) {
+            ResultAttributes resultAttributes, RequestContext context,
+            TypeMapperContext converters, List<InvocationProcessor> processors,
+            AttributesHandlers handlers) {
         this.invocationInstance = invocationInstance;
         this.metadata = metadata;
-        this.requestAttributes = attributes;
         this.resultAttributes = resultAttributes;
         this.requestContext = context;
         this.converters = converters;
         this.processors = processors;
         this.preparedArgsMap = Maps.newTreeMap();
+        this.handlers = handlers;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
         List<InvocationProcessor> processors = getProcessors();
         for (InvocationProcessor processor : processors) {
             interruption = processor.prepareInvoke(method, this, getMetadata(),
-                    getRequestContext(), getRequestAttributes(), getConverters());
+                    getRequestContext(), getConverters(), getAttributesHandlers());
             if (interruption != InvocationProcessor.NO_INTERRUPTION) {
                 return interruption;
             }
@@ -78,7 +78,7 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
                     args.toArray(new Object[args.size()]));
             for (InvocationProcessor processor : processors) {
                 invocationResult = processor.postInvoke(invocationResult, this, getMetadata(),
-                        getRequestContext(), getRequestAttributes(), getResultAttributes());
+                        getRequestContext(), getResultAttributes());
             }
         } catch (Exception e) {
             for (InvocationProcessor processor : processors) {
@@ -137,10 +137,6 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
         return metadata;
     }
 
-    protected RequestAttributes getRequestAttributes() {
-        return requestAttributes;
-    }
-
     protected ResultAttributes getResultAttributes() {
         return this.resultAttributes;
     }
@@ -155,6 +151,10 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
 
     protected final List<InvocationProcessor> getProcessors() {
         return processors;
+    }
+
+    protected final AttributesHandlers getAttributesHandlers() {
+        return this.handlers;
     }
 
     @Override

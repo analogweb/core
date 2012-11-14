@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.analogweb.Direction;
 import org.analogweb.RequestContext;
+import org.analogweb.ServletRequestContext;
 import org.analogweb.exception.MissingRequirmentsException;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.Maps;
@@ -21,7 +22,7 @@ import org.analogweb.util.StringUtils;
  * @see RequestDispatcher#forward(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
  * @author snowgoose
  */
-public class Forward implements Direction {
+public class Forward extends ContextSpecifiedDirection<ServletRequestContext> {
 
     private final String forwardTo;
     private final Map<String, Object> extractContext;
@@ -32,14 +33,14 @@ public class Forward implements Direction {
     }
 
     @Override
-    public void render(RequestContext context) throws IOException, ServletException {
+    protected void renderInternal(ServletRequestContext context) throws IOException, ServletException {
         Assertion.notNull(context, RequestContext.class.getCanonicalName());
 
         String to = getForwardTo();
-        HttpServletRequest request = context.getRequest();
+        HttpServletRequest request = context.getServletRequest();
         extractContextToRequest(request);
         RequestDispatcher dispatcher = request.getRequestDispatcher(to);
-        dispatcher.forward(request, context.getResponse());
+        dispatcher.forward(request, context.getServletResponse());
     }
 
     protected void extractContextToRequest(HttpServletRequest request) {

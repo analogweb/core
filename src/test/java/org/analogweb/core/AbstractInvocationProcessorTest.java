@@ -12,7 +12,6 @@ import java.lang.reflect.Method;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
@@ -33,7 +32,6 @@ public class AbstractInvocationProcessorTest {
     private InvocationMetadata metadata;
     private InvocationArguments args;
     private RequestContext context;
-    private RequestAttributes attributes;
     private TypeMapperContext converters;
 
     @Rule
@@ -47,14 +45,13 @@ public class AbstractInvocationProcessorTest {
         metadata = mock(InvocationMetadata.class);
         args = mock(InvocationArguments.class);
         context = mock(RequestContext.class);
-        attributes = mock(RequestAttributes.class);
         converters = mock(TypeMapperContext.class);
     }
 
     @Test
     public void testPrepareInvoke() {
-        Object actual = processor.prepareInvoke((Method) null, args, metadata, context, attributes,
-                converters);
+        Object actual = processor.prepareInvoke((Method) null, args, metadata, context, converters,
+                null);
         assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
     }
 
@@ -62,7 +59,7 @@ public class AbstractInvocationProcessorTest {
     public void testPostInvoke() {
         ResultAttributes resultAttributes = mock(ResultAttributes.class);
         Object invocationResult = new Object();
-        Object actual = processor.postInvoke(invocationResult, args, metadata, context, attributes,
+        Object actual = processor.postInvoke(invocationResult, args, metadata, context,
                 resultAttributes);
         assertSame(actual, invocationResult);
     }
@@ -128,7 +125,7 @@ public class AbstractInvocationProcessorTest {
         Exception ex = new Exception();
 
         Object actual = processor.processException(ex, context, args, metadata);
-        assertThat(actual,is(InvocationProcessor.NO_INTERRUPTION));
+        assertThat(actual, is(InvocationProcessor.NO_INTERRUPTION));
     }
 
 }

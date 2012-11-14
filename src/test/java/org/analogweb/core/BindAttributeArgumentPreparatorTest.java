@@ -18,10 +18,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.analogweb.AttributesHandler;
+import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
@@ -43,24 +44,18 @@ public class BindAttributeArgumentPreparatorTest {
     private BindAttributeArgumentPreparator preparator;
     private InvocationMetadata metadata;
     private InvocationArguments args;
-    private RequestAttributes attributes;
     private RequestContext context;
     private TypeMapperContext typeMapper;
-    private HttpServletRequest request;
-    private HttpSession session;
-    private ServletContext servletContext;
+    private AttributesHandlers handlers;
 
     @Before
     public void setUp() {
         preparator = new BindAttributeArgumentPreparator();
         metadata = mock(InvocationMetadata.class);
         args = mock(InvocationArguments.class);
-        attributes = mock(RequestAttributes.class);
         context = mock(RequestContext.class);
         typeMapper = mock(TypeMapperContext.class);
-        request = mock(HttpServletRequest.class);
-        session = mock(HttpSession.class);
-        servletContext = mock(ServletContext.class);
+        handlers = mock(AttributesHandlers.class);
     }
 
     @Test
@@ -70,19 +65,20 @@ public class BindAttributeArgumentPreparatorTest {
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doSomething",
                 argumentTypes);
 
-        when(context.getRequest()).thenReturn(request);
+        AttributesHandler handler = mock(AttributesHandler.class);
+        when(handlers.get("")).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(attributes.getValueOfQuery(context, "", "foo")).thenReturn("foo!");
-        when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "foo!", String.class,
-                        new String[0])).thenReturn("foo!");
-        when(attributes.getValueOfQuery(context, "", "baa")).thenReturn("baa!");
-        when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "baa!", String.class,
-                        new String[0])).thenReturn("baa!");
+        when(handler.resolveAttributeValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
+                "foo!");
+        when(typeMapper.mapToType(TypeMapper.class, context, "foo!", String.class, new String[0]))
+                .thenReturn("foo!");
+        when(handler.resolveAttributeValue(context, metadata, "baa", argumentTypes[1])).thenReturn(
+                "baa!");
+        when(typeMapper.mapToType(TypeMapper.class, context, "baa!", String.class, new String[0]))
+                .thenReturn("baa!");
 
-        Object actual = preparator.prepareInvoke(method, args, metadata, context,
-                attributes, typeMapper);
+        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
+                handlers);
         assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
 
         verify(args).putInvocationArgument(0, "foo!");
@@ -97,97 +93,24 @@ public class BindAttributeArgumentPreparatorTest {
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doAnything",
                 argumentTypes);
 
-        when(context.getRequest()).thenReturn(request);
+        AttributesHandler handler = mock(AttributesHandler.class);
+        when(handlers.get("")).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(attributes.getValueOfQuery(context, "", "foo")).thenReturn("foo!");
-        when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "foo!", String.class,
-                        new String[0])).thenReturn("foo!");
-        when(attributes.getValueOfQuery(context, "", "baz")).thenReturn("baz!");
-        when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "baz!", String.class,
-                        new String[0])).thenReturn("baz!");
+        when(handler.resolveAttributeValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
+                "foo!");
+        when(typeMapper.mapToType(TypeMapper.class, context, "foo!", String.class, new String[0]))
+                .thenReturn("foo!");
+        when(handler.resolveAttributeValue(context, metadata, "baz", argumentTypes[2])).thenReturn(
+                "baz!");
+        when(typeMapper.mapToType(TypeMapper.class, context, "baz!", String.class, new String[0]))
+                .thenReturn("baz!");
 
-        Object actual = preparator.prepareInvoke(method, args, metadata, context,
-                attributes, typeMapper);
-        assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
+        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
+                handlers);
+        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
 
         verify(args).putInvocationArgument(0, "foo!");
         verify(args).putInvocationArgument(2, "baz!");
-    }
-
-    @Test
-    public void testPrepareWithSrecialArgsAndNoBindArg() {
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class, ServletContext.class,
-                String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(
-                DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doNothing",
-                argumentTypes);
-
-        when(context.getRequest()).thenReturn(request);
-        when(context.getContext()).thenReturn(servletContext);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(attributes.getValueOfQuery(context, "", "baz")).thenReturn("baz!");
-        when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "baz!", String.class,
-                        new String[0])).thenReturn("baz!");
-
-        Object actual = preparator.prepareInvoke(method, args, metadata, context,
-                attributes, typeMapper);
-        assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
-
-        verify(args).putInvocationArgument(2, "baz!");
-    }
-
-    @Test
-    public void testPrepareWithSrecialArgsAndTypeMapping() {
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class, HttpSession.class,
-                Date.class, String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(
-                DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doTypeMap",
-                argumentTypes);
-
-        Date now = new Date();
-
-        when(context.getRequest()).thenReturn(request);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(attributes.getValueOfQuery(context, "", "baz")).thenReturn("baz!");
-        when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "baz!", String.class,
-                        new String[0])).thenReturn("baz!");
-        when(attributes.getValueOfQuery(context, "", "baa")).thenReturn("2010/11/11");
-        when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "2010/11/11",
-                        Date.class, new String[0])).thenReturn(now);
-
-        Object actual = preparator.prepareInvoke(method, args, metadata, context,
-                attributes, typeMapper);
-        assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
-
-        verify(args).putInvocationArgument(2, now);
-        verify(args).putInvocationArgument(3, "baz!");
-    }
-
-    @Test
-    public void testPrepareWithSrecialArgsAndScope() {
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(
-                DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doScope",
-                argumentTypes);
-
-        when(context.getRequest()).thenReturn(request);
-        when(request.getSession(true)).thenReturn(session);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(attributes.getValueOfQuery(context, "session", "baz")).thenReturn("baz!");
-        when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "baz!", String.class,
-                        new String[0])).thenReturn("baz!");
-
-        Object actual = preparator.prepareInvoke(method, args, metadata, context,
-                attributes, typeMapper);
-        assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
-
-        verify(args).putInvocationArgument(0, "baz!");
     }
 
     @Test
@@ -197,16 +120,18 @@ public class BindAttributeArgumentPreparatorTest {
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class,
                 "doWithCustomAnnotation", argumentTypes);
 
-        when(context.getRequest()).thenReturn(request);
+        AttributesHandler handler = mock(AttributesHandler.class);
+        when(handlers.get("boo")).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(attributes.getValueOfQuery(context, "boo", "foo")).thenReturn("boo!");
+        when(handler.resolveAttributeValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
+                "boo!");
         when(
-                typeMapper.mapToType(SomeTypeMapper.class, context, attributes, "boo!",
+                typeMapper.mapToType(SomeTypeMapper.class, context, "boo!",
                         String.class, new String[0])).thenReturn("booz!");
 
         Object actual = preparator.prepareInvoke(method, args, metadata, context,
-                attributes, typeMapper);
-        assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
+                typeMapper, handlers);
+        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
 
         verify(args).putInvocationArgument(0, "booz!");
     }
@@ -219,24 +144,26 @@ public class BindAttributeArgumentPreparatorTest {
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doWithoutArgs",
                 argumentTypes);
 
-        when(context.getRequest()).thenReturn(request);
-        when(request.getSession(true)).thenReturn(session);
-        when(context.getContext()).thenReturn(servletContext);
+        AttributesHandler handler = mock(AttributesHandler.class);
+        when(handlers.get("")).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(attributes.getValueOfQuery(context, "", "foo")).thenReturn("foo");
+        when(handler.resolveAttributeValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
+                "foo");
         when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "foo", String.class,
+                typeMapper.mapToType(TypeMapper.class, context, "foo", String.class,
                         new String[0])).thenReturn("foo");
         // baa attribute ignored.
-        when(attributes.getValueOfQuery(context, "", "baa")).thenReturn(null);
-        when(attributes.getValueOfQuery(context, "", "baz")).thenReturn("100");
+        when(handler.resolveAttributeValue(context, metadata, "baa", argumentTypes[1])).thenReturn(
+                null);
+        when(handler.resolveAttributeValue(context, metadata, "baz", argumentTypes[3])).thenReturn(
+                "100");
         when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "100", Integer.class,
+                typeMapper.mapToType(TypeMapper.class, context, "100", Integer.class,
                         new String[0])).thenReturn(100);
 
-        Object actual = preparator.prepareInvoke(method, args, metadata, context,
-                attributes, typeMapper);
-        assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
+        Object actual = preparator.prepareInvoke(method, args, metadata, context, 
+                typeMapper,handlers);
+        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
 
         verify(args).putInvocationArgument(0, "foo");
         verify(args).putInvocationArgument(3, 100);
@@ -249,17 +176,19 @@ public class BindAttributeArgumentPreparatorTest {
                 DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doWithFormat",
                 argumentTypes);
 
-        when(context.getRequest()).thenReturn(request);
+        AttributesHandler handler = mock(AttributesHandler.class);
+        when(handlers.get("")).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(attributes.getValueOfQuery(context, "", "foo")).thenReturn("100,000");
+        when(handler.resolveAttributeValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
+                "100,000");
         BigDecimal expected = new BigDecimal(100000L);
         when(
-                typeMapper.mapToType(TypeMapper.class, context, attributes, "100,000",
+                typeMapper.mapToType(TypeMapper.class, context, "100,000",
                         BigDecimal.class, new String[] { "###,###" })).thenReturn(expected);
 
         Object actual = preparator.prepareInvoke(method, args, metadata, context,
-                attributes, typeMapper);
-        assertSame(actual,InvocationProcessor.NO_INTERRUPTION);
+                typeMapper,handlers);
+        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
 
         verify(args).putInvocationArgument(0, expected);
     }

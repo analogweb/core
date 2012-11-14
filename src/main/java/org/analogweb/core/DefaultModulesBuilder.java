@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import org.analogweb.AttributesHandler;
+import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
 import org.analogweb.Direction;
@@ -25,7 +26,6 @@ import org.analogweb.Invoker;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.MultiModule;
-import org.analogweb.RequestAttributesFactory;
 import org.analogweb.RequestContextFactory;
 import org.analogweb.ResultAttributes;
 import org.analogweb.ResultAttributesFactory;
@@ -51,7 +51,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private Class<? extends ExceptionHandler> exceptionHandlerClass;
     private Class<? extends TypeMapperContext> typeMapperContextClass;
     private Class<? extends RequestContextFactory> requestContextFactoryClass;
-    private Class<? extends RequestAttributesFactory> requestAttributesFactoryClass;
     private Class<? extends ResultAttributesFactory> resultAttributesFactoryClass;
     private final List<Class<? extends InvocationProcessor>> invocationProcessorClasses;
     private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
@@ -143,9 +142,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
             @Override
             public TypeMapperContext getTypeMapperContext() {
-                if(this.typeMapperContext == null){
-                    typeMapperContext = moduleContainerAdaptor.getInstanceOfType(getTypeMapperContextClass());
-                    if(typeMapperContext == null){
+                if (this.typeMapperContext == null) {
+                    typeMapperContext = moduleContainerAdaptor
+                            .getInstanceOfType(getTypeMapperContextClass());
+                    if (typeMapperContext == null) {
                         typeMapperContext = new DefaultTypeMapperContext(moduleContainerAdaptor);
                     }
                 }
@@ -162,15 +162,19 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return getComponentInstance(moduleContainerAdaptor, getRequestContextFactoryClass());
             }
 
-            @Override
-            public RequestAttributesFactory getRequestAttributesFactory() {
-                return getComponentInstance(moduleContainerAdaptor,
-                        getRequestAttributesFactoryClass());
+            //TODO remove
+            List<AttributesHandler> getAttributesHandlerList() {
+                return getComponentInstances(moduleContainerAdaptor, getAttributesHandlerClasses());
             }
 
+            private DefaultAttributesHandlers handlers;
+
             @Override
-            public List<AttributesHandler> getAttributesHandlers() {
-                return getComponentInstances(moduleContainerAdaptor, getAttributesHandlerClasses());
+            public AttributesHandlers getAttributesHandlers() {
+                if(this.handlers == null){
+                    this.handlers = new DefaultAttributesHandlers(getAttributesHandlerList());
+                }
+                return this.handlers;
             }
 
             @Override
@@ -185,13 +189,14 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                         getAttributesHandlersMap());
             }
 
+            //TODO remove
             private Map<String, AttributesHandler> attributesHandlerMap;
 
-            @Override
-            public Map<String, AttributesHandler> getAttributesHandlersMap() {
+            //TODO remove
+            protected Map<String, AttributesHandler> getAttributesHandlersMap() {
                 if (this.attributesHandlerMap == null) {
                     this.attributesHandlerMap = Maps.newConcurrentHashMap();
-                    for (AttributesHandler resolver : getAttributesHandlers()) {
+                    for (AttributesHandler resolver : getAttributesHandlerList()) {
                         attributesHandlerMap.put(resolver.getScopeName(), resolver);
                     }
                 }
@@ -202,7 +207,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
             public DirectionFormatter findDirectionFormatter(
                     Class<? extends Direction> mapToDirection) {
                 Class<? extends DirectionFormatter> formatterClass = getDirectionFormatterClass(mapToDirection);
-                if(formatterClass != null){
+                if (formatterClass != null) {
                     return getComponentInstance(moduleContainerAdaptor, formatterClass);
                 }
                 return null;
@@ -258,7 +263,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 setInvocationInstanceProviderClass(null);
                 setInvokerClass(null);
                 setModulesProviderClass(null);
-                setRequestAttributesFactoryClass(null);
                 setRequestContextFactoryClass(null);
                 setResultAttributesFactoryClass(null);
                 setTypeMapperContextClass(null);
@@ -357,13 +361,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public ModulesBuilder setRequestAttributesFactoryClass(
-            Class<? extends RequestAttributesFactory> requestAttributesFactoryClass) {
-        this.requestAttributesFactoryClass = requestAttributesFactoryClass;
-        return this;
-    }
-
-    @Override
     public ModulesBuilder addAttributesHandlerClass(
             Class<? extends AttributesHandler> requestAttributesResolverClass) {
         this.attributesHandlerClasses.add(requestAttributesResolverClass);
@@ -412,10 +409,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
     protected List<Class<? extends InvocationProcessor>> getInvocationProcessorClasses() {
         return this.invocationProcessorClasses;
-    }
-
-    protected Class<? extends RequestAttributesFactory> getRequestAttributesFactoryClass() {
-        return requestAttributesFactoryClass;
     }
 
     protected List<Class<? extends AttributesHandler>> getAttributesHandlerClasses() {

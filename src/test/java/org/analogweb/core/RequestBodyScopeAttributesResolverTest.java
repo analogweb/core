@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 
 import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
@@ -21,14 +20,12 @@ public class RequestBodyScopeAttributesResolverTest extends RequestBodyScopeAttr
     private RequestBodyScopeAttributesResolver resolver;
     private RequestContext requestContext;
     private InvocationMetadata metadata;
-    private HttpServletRequest request;
 
     @Before
     public void setUp() throws Exception {
         resolver = new RequestBodyScopeAttributesResolver();
         requestContext = mock(RequestContext.class);
         metadata = mock(InvocationMetadata.class);
-        request = mock(HttpServletRequest.class);
     }
 
     @Test
@@ -39,20 +36,18 @@ public class RequestBodyScopeAttributesResolverTest extends RequestBodyScopeAttr
                 return 0;
             }
         };
-        when(requestContext.getRequest()).thenReturn(request);
-        when(request.getInputStream()).thenReturn(expected);
+        when(requestContext.getRequestBody()).thenReturn(expected);
         ServletInputStream actual = (ServletInputStream) resolver.resolveAttributeValue(
-                requestContext, metadata, "");
+                requestContext, metadata, "", null);
         assertThat(actual, is(expected));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testResolveAttributeValueWithException() throws Exception {
-        when(requestContext.getRequest()).thenReturn(request);
-        when(request.getInputStream()).thenThrow(IOException.class);
+        when(requestContext.getRequestBody()).thenThrow(IOException.class);
         ServletInputStream actual = (ServletInputStream) resolver.resolveAttributeValue(
-                requestContext, metadata, "");
+                requestContext, metadata, "", null);
         assertThat(actual, is(nullValue()));
     }
 

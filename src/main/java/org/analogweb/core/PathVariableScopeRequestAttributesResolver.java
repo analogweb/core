@@ -15,7 +15,7 @@ import org.analogweb.util.StringUtils;
  * @author snowgoose
  */
 public class PathVariableScopeRequestAttributesResolver extends AbstractAttributesHandler {
-    
+
     static final String VALIABLES_CACHE_KEY = PathVariableScopeRequestAttributesResolver.class
             .getCanonicalName() + "_VALIABLES_CACHE";
 
@@ -25,27 +25,18 @@ public class PathVariableScopeRequestAttributesResolver extends AbstractAttribut
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadata,
-            String name) {
-        Object variables = requestContext.getRequest().getAttribute(VALIABLES_CACHE_KEY);
-        if(variables instanceof Map){
-            return ((Map<String,String>)variables).get(name);
-        }
+            String name, Class<?> requiredType) {
         RequestPathMetadata definedPath = metadata.getDefinedPath();
         if (hasPlaceHolder(definedPath.getActualPath())) {
             RequestPath requestedPath = requestContext.getRequestPath();
             if (definedPath.match(requestedPath)) {
                 Map<String, String> pathVariables = extractPathValues(definedPath.getActualPath(),
                         requestedPath.getActualPath());
-                requestContext.getRequest().setAttribute(VALIABLES_CACHE_KEY, pathVariables);
                 return pathVariables.get(name);
             }
         }
-        // nothing path variables on this request.
-        requestContext.getRequest().setAttribute(VALIABLES_CACHE_KEY,
-                Maps.newHashMap(String.class, String.class));
-       return null;
+        return null;
     }
 
     private Map<String, String> extractPathValues(String definedPath, String requestedPath) {

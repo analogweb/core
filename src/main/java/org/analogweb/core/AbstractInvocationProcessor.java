@@ -2,12 +2,12 @@ package org.analogweb.core;
 
 import java.lang.reflect.Method;
 
+import org.analogweb.AttributesHandlers;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.PreparedInvocationArguments;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
@@ -20,8 +20,8 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
 
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
-            TypeMapperContext converters) {
+            InvocationMetadata metadata, RequestContext context,
+            TypeMapperContext converters, AttributesHandlers handlers) {
         return NO_INTERRUPTION;
     }
 
@@ -42,7 +42,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
 
     @Override
     public Object postInvoke(Object invocationResult, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
+            InvocationMetadata metadata, RequestContext context,
             ResultAttributes resultAttributes) {
         return invocationResult;
     }

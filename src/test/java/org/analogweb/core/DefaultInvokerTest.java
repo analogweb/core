@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationFactory;
@@ -15,12 +15,10 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.Modules;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
-import org.analogweb.core.DefaultInvoker;
 import org.analogweb.exception.AssertionFailureException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,7 +31,6 @@ import org.junit.rules.ExpectedException;
 public class DefaultInvokerTest {
 
     private InvocationMetadata metadata;
-    private RequestAttributes attributes;
     private ResultAttributes resultAttributes;
     private RequestContext context;
     private List<InvocationProcessor> processors;
@@ -42,6 +39,7 @@ public class DefaultInvokerTest {
     private Invocation invocation;
     private Modules modules;
     private ContainerAdaptor adaptor;
+    private AttributesHandlers handlers;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -52,7 +50,6 @@ public class DefaultInvokerTest {
     @Before
     public void setUp() throws Exception {
         metadata = mock(InvocationMetadata.class);
-        attributes = mock(RequestAttributes.class);
         resultAttributes = mock(ResultAttributes.class);
         context = mock(RequestContext.class);
         processors = new ArrayList<InvocationProcessor>();
@@ -62,6 +59,7 @@ public class DefaultInvokerTest {
         invocation = mock(Invocation.class);
         modules = mock(Modules.class);
         adaptor = mock(ContainerAdaptor.class);
+        handlers = mock(AttributesHandlers.class);
     }
 
     @Test
@@ -73,14 +71,14 @@ public class DefaultInvokerTest {
         Invoker invoker = new DefaultInvoker();
 
         when(adaptor.getInstanceOfType(MockActions.class)).thenReturn(actionInstance);
-        when(metadata.getInvocationClass()).thenReturn((Class)MockActions.class);
+        when(metadata.getInvocationClass()).thenReturn((Class) MockActions.class);
         when(
-                factory.createInvocation(adaptor, metadata, attributes,
-                        resultAttributes, context, null, processors)).thenReturn(invocation);
+                factory.createInvocation(adaptor, metadata, resultAttributes, context, null,
+                        processors, handlers)).thenReturn(invocation);
 
         Invocation invocation = mock(Invocation.class);
         // delegate to Invocation#invoke only.
-        invoker.invoke(invocation, metadata, attributes, resultAttributes, context);
+        invoker.invoke(invocation, metadata, resultAttributes, context);
 
         verify(invocation).invoke();
     }
@@ -90,14 +88,14 @@ public class DefaultInvokerTest {
 
         thrown.expect(AssertionFailureException.class);
 
-         Invoker invoker = new DefaultInvoker();
+        Invoker invoker = new DefaultInvoker();
 
         when(modules.getInvocationFactory()).thenReturn(null);
         when(modules.getInvocationProcessors()).thenReturn(processors);
 
         Invocation invocation = mock(Invocation.class);
         // delegate to invocation only.
-        invoker.invoke(invocation, null, attributes, resultAttributes, context);
+        invoker.invoke(invocation, null, resultAttributes, context);
     }
 
     @Test
@@ -105,13 +103,13 @@ public class DefaultInvokerTest {
 
         thrown.expect(AssertionFailureException.class);
 
-         Invoker invoker = new DefaultInvoker();
+        Invoker invoker = new DefaultInvoker();
 
         when(modules.getInvocationFactory()).thenReturn(null);
         when(modules.getInvocationProcessors()).thenReturn(processors);
 
         // delegate to invocation only.
-        invoker.invoke(null, metadata, attributes, resultAttributes, context);
+        invoker.invoke(null, metadata, resultAttributes, context);
     }
 
     @On

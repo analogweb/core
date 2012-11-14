@@ -1,13 +1,14 @@
 package org.analogweb.core;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 
 import org.analogweb.Direction;
 import org.analogweb.DirectionFormatter;
 import org.analogweb.DirectionFormatterAware;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.exception.DirectionEvaluationException;
 import org.hamcrest.BaseMatcher;
@@ -20,12 +21,11 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class DefaultDirectionHandlerTest {
-    
+
     private DefaultDirectionHandler handler;
-    
+
     private RequestContext context;
-    private RequestAttributes attributes;
-    
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -33,7 +33,6 @@ public class DefaultDirectionHandlerTest {
     public void setUp() throws Exception {
         handler = new DefaultDirectionHandler();
         context = mock(RequestContext.class);
-        attributes = mock(RequestAttributes.class);
     }
 
     @After
@@ -43,9 +42,9 @@ public class DefaultDirectionHandlerTest {
     @Test
     public void testHandleResult() throws Exception {
         Direction result = mock(Direction.class);
-        
-        handler.handleResult(result, null,context, attributes);
-        
+
+        handler.handleResult(result, null, context);
+
         verify(result).render(context);
 
     }
@@ -53,17 +52,17 @@ public class DefaultDirectionHandlerTest {
     @Test
     public void testHandleResultWithoutDirectionResult() throws Exception {
         thrown.expect(DirectionEvaluationException.class);
-        
-        handler.handleResult(null, null,context, attributes);
+
+        handler.handleResult(null, null, context);
     }
 
     @Test
     public void testHandleResultWithDirectionFormatterAware() throws Exception {
         DirectionFormatterAware<?> result = mock(DirectionFormatterAware.class);
         DirectionFormatter formatter = mock(DirectionFormatter.class);
-        
-        handler.handleResult(result, formatter,context, attributes);
-        
+
+        handler.handleResult(result, formatter, context);
+
         verify(result).attach(formatter);
         verify(result).render(context);
     }
@@ -77,7 +76,7 @@ public class DefaultDirectionHandlerTest {
 
         doThrow(new IOException()).when(result).render(context);
 
-        handler.handleResult(result, null,context, attributes);
+        handler.handleResult(result, null, context);
     }
 
     private static Matcher<?> hasDirection(final Direction actionResult) {

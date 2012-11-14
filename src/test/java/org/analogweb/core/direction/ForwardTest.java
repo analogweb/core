@@ -15,7 +15,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.analogweb.RequestContext;
+import org.analogweb.ServletRequestContext;
 import org.analogweb.exception.AssertionFailureException;
 import org.analogweb.exception.MissingRequirmentsException;
 import org.analogweb.junit.NoDescribeMatcher;
@@ -30,7 +30,7 @@ import org.junit.rules.ExpectedException;
  */
 public class ForwardTest {
 
-    private RequestContext context;
+    private ServletRequestContext context;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private RequestDispatcher dispatcher;
@@ -43,7 +43,7 @@ public class ForwardTest {
      */
     @Before
     public void setUp() throws Exception {
-        context = mock(RequestContext.class);
+        context = mock(ServletRequestContext.class);
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
         dispatcher = mock(RequestDispatcher.class);
@@ -52,9 +52,9 @@ public class ForwardTest {
     @Test
     public void testRender() throws Exception {
         String path = "/foo/baa.rn";
-        when(context.getRequest()).thenReturn(request);
+        when(context.getServletRequest()).thenReturn(request);
         when(request.getRequestDispatcher(path)).thenReturn(dispatcher);
-        when(context.getResponse()).thenReturn(response);
+        when(context.getServletResponse()).thenReturn(response);
 
         doNothing().when(dispatcher).forward(request, response);
 
@@ -115,9 +115,9 @@ public class ForwardTest {
     @Test
     public void testRenderWithContextObject() throws Exception {
         String path = "/foo/baz";
-        when(context.getRequest()).thenReturn(request);
+        when(context.getServletRequest()).thenReturn(request);
         when(request.getRequestDispatcher(path)).thenReturn(dispatcher);
-        when(context.getResponse()).thenReturn(response);
+        when(context.getServletResponse()).thenReturn(response);
 
         doNothing().when(dispatcher).forward(request, response);
 
@@ -132,14 +132,14 @@ public class ForwardTest {
     @Test
     public void testRenderWithContextNullObject() throws Exception {
         String path = "/foo/baz";
-        when(context.getRequest()).thenReturn(request);
+        when(context.getServletRequest()).thenReturn(request);
         when(request.getRequestDispatcher(path)).thenReturn(dispatcher);
-        when(context.getResponse()).thenReturn(response);
+        when(context.getServletResponse()).thenReturn(response);
 
         doNothing().when(dispatcher).forward(request, response);
 
         Serializable extractToRequest = null;
-//        doNothing().when(request).setAttribute("serializeable", extractToRequest);
+        //        doNothing().when(request).setAttribute("serializeable", extractToRequest);
 
         Forward.to(path).with(extractToRequest).render(context);
 
@@ -149,14 +149,14 @@ public class ForwardTest {
     @Test
     public void testRenderWithContextMap() throws Exception {
         String path = "/foo/baz";
-        when(context.getRequest()).thenReturn(request);
+        when(context.getServletRequest()).thenReturn(request);
         when(request.getRequestDispatcher(path)).thenReturn(dispatcher);
-        when(context.getResponse()).thenReturn(response);
+        when(context.getServletResponse()).thenReturn(response);
 
         doNothing().when(dispatcher).forward(request, response);
 
         Object foo = new Object();
-        Map<String,Object> extractToRequest = Maps.newHashMap("foo", foo);
+        Map<String, Object> extractToRequest = Maps.newHashMap("foo", foo);
         doNothing().when(request).setAttribute("foo", foo);
 
         Forward.to(path).with(extractToRequest).render(context);
@@ -167,14 +167,14 @@ public class ForwardTest {
     @Test
     public void testRenderWithNulContextMap() throws Exception {
         String path = "/foo/baz";
-        when(context.getRequest()).thenReturn(request);
+        when(context.getServletRequest()).thenReturn(request);
         when(request.getRequestDispatcher(path)).thenReturn(dispatcher);
-        when(context.getResponse()).thenReturn(response);
+        when(context.getServletResponse()).thenReturn(response);
 
         doNothing().when(dispatcher).forward(request, response);
 
-        Map<String,Object> extractToRequest = null;
-//        doNothing().when(request).setAttribute("foo", foo);
+        Map<String, Object> extractToRequest = null;
+        //        doNothing().when(request).setAttribute("foo", foo);
 
         Forward.to(path).with(extractToRequest).render(context);
 

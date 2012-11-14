@@ -4,13 +4,11 @@ import java.util.Map.Entry;
 
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.ResultAttributesHolder;
 import org.analogweb.ScopedAttributeName;
 import org.analogweb.util.StringUtils;
-
 
 /**
  * @author snowgoose
@@ -21,8 +19,7 @@ public class DefaultInvocationResultAttributesMapper extends AbstractInvocationP
 
     @Override
     public Object postInvoke(Object invocationResult, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
-            ResultAttributes resultAttributes) {
+            InvocationMetadata metadata, RequestContext context, ResultAttributes resultAttributes) {
         if (invocationResult instanceof ResultAttributesHolder) {
             ResultAttributesHolder attributesHolder = ResultAttributesHolder.class
                     .cast(invocationResult);

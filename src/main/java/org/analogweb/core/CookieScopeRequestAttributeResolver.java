@@ -1,10 +1,6 @@
 package org.analogweb.core;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-
+import org.analogweb.Cookies;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.util.logging.Log;
@@ -25,14 +21,14 @@ public class CookieScopeRequestAttributeResolver extends AbstractAttributesHandl
     }
 
     @Override
-    public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadatan, String name) {
-        HttpServletRequest request = requestContext.getRequest();
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return null;
-        }
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(name)) {
+    public Object resolveAttributeValue(RequestContext requestContext,
+            InvocationMetadata metadatan, String key, Class<?> requiredType) {
+        Cookies cookies = requestContext.getCookies();
+        if (cookies != null) {
+            Cookies.Cookie cookie = cookies.getCookie(key);
+            if (requiredType != null && requiredType.equals(Cookies.Cookie.class)) {
+                return cookie;
+            } else if (cookie != null) {
                 return cookie.getValue();
             }
         }
@@ -41,9 +37,8 @@ public class CookieScopeRequestAttributeResolver extends AbstractAttributesHandl
 
     @Override
     public void putAttributeValue(RequestContext requestContext, String name, Object value) {
-        HttpServletResponse response = requestContext.getResponse();
-        Cookie cookie = new Cookie(name, value.toString());
-        response.addCookie(cookie);
+        Cookies cookies = requestContext.getCookies();
+        cookies.putCookie(name,value.toString());
         log.log(Markers.VARIABLE_ACCESS, "TV000001", getScopeName(), name, value);
     }
 

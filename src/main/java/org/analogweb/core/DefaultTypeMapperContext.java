@@ -4,7 +4,6 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 
 import org.analogweb.ContainerAdaptor;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
@@ -22,16 +21,15 @@ public class DefaultTypeMapperContext implements TypeMapperContext {
     private static final Log log = Logs.getLog(DefaultTypeMapperContext.class);
     private TypeMapper defaultTypeMapper = new AutoTypeMapper();
     private ContainerAdaptor containerAdapter;
-    
-    public DefaultTypeMapperContext(ContainerAdaptor containerAdapter){
+
+    public DefaultTypeMapperContext(ContainerAdaptor containerAdapter) {
         this.containerAdapter = containerAdapter;
     }
 
     @Override
     public Object mapToType(Class<? extends TypeMapper> typeMapperClass, RequestContext context,
-            RequestAttributes attributes, Object from, Class<?> requiredType, String[] formats) {
+            Object from, Class<?> requiredType, String[] formats) {
 
-        Assertion.notNull(attributes, "RequestAttributes");
         Assertion.notNull(requiredType, "RequiredType");
 
         log.log(Markers.VARIABLE_ACCESS, "DC000001", from, requiredType, formats);
@@ -49,10 +47,9 @@ public class DefaultTypeMapperContext implements TypeMapperContext {
         }
         TypeMapper typeMapper = findTypeMapper(typeMapperClass);
         if (typeMapper != null) {
-            return typeMapper.mapToType(context, attributes, from, requiredType, formats);
+            return typeMapper.mapToType(context, from, requiredType, formats);
         } else {
-            return getDefaultTypeMapper().mapToType(context, attributes, from, requiredType,
-                    formats);
+            return getDefaultTypeMapper().mapToType(context, from, requiredType, formats);
         }
     }
 
@@ -99,7 +96,7 @@ public class DefaultTypeMapperContext implements TypeMapperContext {
         return getContainerAdaptor().getInstanceOfType(clazz);
     }
 
-    protected ContainerAdaptor getContainerAdaptor(){
+    protected ContainerAdaptor getContainerAdaptor() {
         return this.containerAdapter;
     }
 

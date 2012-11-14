@@ -12,13 +12,9 @@ import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.ModulesBuilder;
-import org.analogweb.RequestAttributesFactory;
 import org.analogweb.RequestContextFactory;
 import org.analogweb.ResultAttributesFactory;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.core.RootModulesConfig;
-import org.analogweb.core.SingletonInstanceContainerAdaptorFactory;
-import org.analogweb.core.StaticMappingContainerAdaptorFactory;
 import org.analogweb.exception.AssertionFailureException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,8 +58,6 @@ public class DefaultModulesConfigTest {
                 modulesBuilder);
         when(modulesBuilder.setRequestContextFactoryClass(RequestContextFactory.class)).thenReturn(
                 modulesBuilder);
-        when(modulesBuilder.setRequestAttributesFactoryClass(RequestAttributesFactory.class))
-                .thenReturn(modulesBuilder);
         when(modulesBuilder.setResultAttributesFactoryClass(ResultAttributesFactory.class))
                 .thenReturn(modulesBuilder);
         when(modulesBuilder.addInvocationProcessorClass(InvocationProcessor.class)).thenReturn(

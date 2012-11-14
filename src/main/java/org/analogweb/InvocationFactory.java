@@ -14,16 +14,16 @@ public interface InvocationFactory extends Module {
      * 新しい{@link Invocation}のインスタンスを生成します。
      * @param instanceProvider リクエストに一致する実行対象のインスタンスプロバイダ
      * @param metadata {@link InvocationMetadata}
-     * @param attributes {@link RequestAttributes}
      * @param resultAttributes {@link ResultAttributes}
      * @param context {@link RequestContext}
      * @param converters {@link TypeMapperContext}
      * @param processors 生成される{@link Invocation}に適用される全ての{@link InvocationProcessor}
+     * @param handlers {@link AttributesHandlers}
      * @return　生成された{@link Invocation}
      */
     Invocation createInvocation(ContainerAdaptor instanceProvider, InvocationMetadata metadata,
-            RequestAttributes attributes, ResultAttributes resultAttributes,
+            ResultAttributes resultAttributes,
             RequestContext context, TypeMapperContext converters,
-            List<InvocationProcessor> processors);
+            List<InvocationProcessor> processors, AttributesHandlers handlers);
 
 }

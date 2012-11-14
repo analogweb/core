@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
@@ -36,9 +36,9 @@ public class ScopedMapArgumentPreparatorTest {
     private InvocationMetadata metadata;
     private InvocationArguments args;
     private RequestContext context;
-    private RequestAttributes attributes;
     private TypeMapperContext typeMapper;
     private ResultAttributes resultAttributes;
+    private AttributesHandlers handlers;
 
     /**
      * テストの事前準備を行います。
@@ -49,9 +49,9 @@ public class ScopedMapArgumentPreparatorTest {
         metadata = mock(InvocationMetadata.class);
         args = mock(InvocationArguments.class);
         context = mock(RequestContext.class);
-        attributes = mock(RequestAttributes.class);
         typeMapper = mock(TypeMapperContext.class);
         resultAttributes = mock(ResultAttributes.class);
+        handlers = mock(AttributesHandlers.class);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class ScopedMapArgumentPreparatorTest {
                 parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
 
-        preparator.prepareInvoke(doSomething, args, metadata, context, attributes, typeMapper);
+        preparator.prepareInvoke(doSomething, args, metadata, context, typeMapper, handlers);
 
         verify(args).putInvocationArgument(eq(0), isA(ContextExtractor.class));
     }
@@ -73,7 +73,7 @@ public class ScopedMapArgumentPreparatorTest {
                 parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
 
-        preparator.prepareInvoke(doSomething, args, metadata, context, attributes, typeMapper);
+        preparator.prepareInvoke(doSomething, args, metadata, context, typeMapper, handlers);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class ScopedMapArgumentPreparatorTest {
                 parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
 
-        preparator.prepareInvoke(doSomething, args, metadata, context, attributes, typeMapper);
+        preparator.prepareInvoke(doSomething, args, metadata, context, typeMapper, handlers);
     }
 
     @Test
@@ -99,8 +99,7 @@ public class ScopedMapArgumentPreparatorTest {
 
         Object invocationResult = new Object();
 
-        preparator.postInvoke(invocationResult, args, metadata, context, attributes,
-                resultAttributes);
+        preparator.postInvoke(invocationResult, args, metadata, context, resultAttributes);
 
         verify(resultAttributes).setValueOfQuery(context, "session", "amount", amount);
     }
@@ -122,8 +121,7 @@ public class ScopedMapArgumentPreparatorTest {
 
         Object invocationResult = new Object();
 
-        preparator.postInvoke(invocationResult, args, metadata, context, attributes,
-                resultAttributes);
+        preparator.postInvoke(invocationResult, args, metadata, context, resultAttributes);
 
         verify(resultAttributes).setValueOfQuery(context, "request", "amount", amount);
     }
@@ -141,8 +139,7 @@ public class ScopedMapArgumentPreparatorTest {
 
         Object invocationResult = new Object();
 
-        preparator.postInvoke(invocationResult, args, metadata, context, attributes,
-                resultAttributes);
+        preparator.postInvoke(invocationResult, args, metadata, context, resultAttributes);
 
         verify(resultAttributes).removeValueOfQuery(context, "session", "amount");
     }

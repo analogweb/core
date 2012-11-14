@@ -11,10 +11,8 @@ import static org.mockito.Mockito.when;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-
 import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestContext;
-import org.analogweb.core.SessionScopeRequestAttributesResolver;
+import org.analogweb.ServletRequestContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +22,7 @@ import org.junit.Test;
 public class SessionScopeRequestAttributesResolverTest {
 
     private SessionScopeRequestAttributesResolver resolver;
-    private RequestContext requestContext;
+    private ServletRequestContext requestContext;
     private HttpServletRequest request;
     private HttpSession session;
     private InvocationMetadata metadata;
@@ -35,7 +33,7 @@ public class SessionScopeRequestAttributesResolverTest {
     @Before
     public void setUp() throws Exception {
         resolver = new SessionScopeRequestAttributesResolver();
-        requestContext = mock(RequestContext.class);
+        requestContext = mock(ServletRequestContext.class);
         request = mock(HttpServletRequest.class);
         session = mock(HttpSession.class);
         metadata = mock(InvocationMetadata.class);
@@ -58,11 +56,11 @@ public class SessionScopeRequestAttributesResolverTest {
      */
     @Test
     public void testResolveAttributeValue() {
-        when(requestContext.getRequest()).thenReturn(request);
+        when(requestContext.getServletRequest()).thenReturn(request);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("foo")).thenReturn("baa");
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo");
+        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo", null);
         assertThat((String) actual, is("baa"));
 
         verify(session).getAttribute("foo");
@@ -75,11 +73,11 @@ public class SessionScopeRequestAttributesResolverTest {
      */
     @Test
     public void testResolveAttributeValueAttributeNotAvairable() {
-        when(requestContext.getRequest()).thenReturn(request);
+        when(requestContext.getServletRequest()).thenReturn(request);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("foo")).thenReturn(null);
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo");
+        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo", null);
         assertNull(actual);
 
         verify(session).getAttribute("foo");
@@ -92,16 +90,16 @@ public class SessionScopeRequestAttributesResolverTest {
      */
     @Test
     public void testResolveAttributeValueSessionNotAvairable() {
-        when(requestContext.getRequest()).thenReturn(request);
+        when(requestContext.getServletRequest()).thenReturn(request);
         when(request.getSession(false)).thenReturn(null);
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo");
+        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo", null);
         assertNull(actual);
     }
 
     @Test
     public void testPutAttributeValue() {
-        when(requestContext.getRequest()).thenReturn(request);
+        when(requestContext.getServletRequest()).thenReturn(request);
         when(request.getSession(true)).thenReturn(session);
         doNothing().when(session).setAttribute("foo", "baa");
 
@@ -116,7 +114,7 @@ public class SessionScopeRequestAttributesResolverTest {
 
     @Test
     public void testRemoveAttribute() {
-        when(requestContext.getRequest()).thenReturn(request);
+        when(requestContext.getServletRequest()).thenReturn(request);
         when(request.getSession(true)).thenReturn(session);
         doNothing().when(session).removeAttribute("baa");
 

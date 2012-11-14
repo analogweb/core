@@ -10,13 +10,12 @@ public interface TypeMapper extends Module {
     /**
      * 指定された型に変換を行います。
      * @param context {@link RequestContext}
-     * @param attributes {@link RequestAttributes}
      * @param from 変換される以前の型(存在しない場合はnull)
      * @param requiredType 変換を行う型
      * @param formats 変換を行う際にしていされるフォーマット
      * @return 変換された型の新しいインスタンス
      */
-    Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
+    Object mapToType(RequestContext context, Object from,
             Class<?> requiredType, String[] formats);
 
 }

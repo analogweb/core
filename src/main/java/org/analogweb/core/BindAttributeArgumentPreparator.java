@@ -3,9 +3,10 @@ package org.analogweb.core;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import org.analogweb.AttributesHandler;
+import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
@@ -26,13 +27,13 @@ public class BindAttributeArgumentPreparator extends AbstractInvocationProcessor
 
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context, RequestAttributes attributes,
-            TypeMapperContext converters) {
+            InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
+            AttributesHandlers handlers) {
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
-            Object convertedValue = convert(attributes, context, converters, argTypes[index],
-                    parameterAnnotations[index]);
+            Object convertedValue = convert(context, metadata, converters, argTypes[index],
+                    parameterAnnotations[index], handlers);
             if (convertedValue != null) {
                 args.putInvocationArgument(index, convertedValue);
             }
@@ -40,8 +41,9 @@ public class BindAttributeArgumentPreparator extends AbstractInvocationProcessor
         return NO_INTERRUPTION;
     }
 
-    protected Object convert(RequestAttributes attributes, RequestContext context,
-            TypeMapperContext converters, Class<?> argType, Annotation[] parameterAnnotations) {
+    protected Object convert(RequestContext context, InvocationMetadata metadata,
+            TypeMapperContext converters, Class<?> argType, Annotation[] parameterAnnotations,
+            AttributesHandlers handlers) {
         As bindAttribute = AnnotationUtils.findAnnotation(As.class, parameterAnnotations);
         if (bindAttribute != null) {
             Scope scope = AnnotationUtils.findAnnotation(Scope.class, parameterAnnotations);
@@ -49,18 +51,22 @@ public class BindAttributeArgumentPreparator extends AbstractInvocationProcessor
             if (scope != null) {
                 scopeValue = scope.value();
             }
-            Object value = attributes.getValueOfQuery(context, scopeValue, bindAttribute.value());
-            if (value != null) {
-                MapWith mapWith = AnnotationUtils.findAnnotation(MapWith.class,
-                        parameterAnnotations);
-                Class<? extends TypeMapper> mapperType = TypeMapper.class;
-                if (mapWith != null) {
-                    mapperType = mapWith.value();
+            AttributesHandler handler = handlers.get(scopeValue);
+            if (handler != null) {
+                Object value = handler.resolveAttributeValue(context, metadata,
+                        bindAttribute.value(), argType);
+                if (value != null) {
+                    MapWith mapWith = AnnotationUtils.findAnnotation(MapWith.class,
+                            parameterAnnotations);
+                    Class<? extends TypeMapper> mapperType = TypeMapper.class;
+                    if (mapWith != null) {
+                        mapperType = mapWith.value();
+                    }
+                    Formats f = AnnotationUtils.findAnnotation(Formats.class, parameterAnnotations);
+                    Object convertedValue = converters.mapToType(mapperType, context, value,
+                            argType, (f != null) ? f.value() : new String[0]);
+                    return convertedValue;
                 }
-                Formats f = AnnotationUtils.findAnnotation(Formats.class, parameterAnnotations);
-                Object convertedValue = converters.mapToType(mapperType, context, attributes,
-                        value, argType, (f != null) ? f.value() : new String[0]);
-                return convertedValue;
             }
         }
         return null;

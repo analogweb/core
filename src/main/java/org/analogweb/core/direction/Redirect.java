@@ -13,9 +13,9 @@ import java.util.TreeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-
 import org.analogweb.Direction;
 import org.analogweb.RequestContext;
+import org.analogweb.ServletRequestContext;
 import org.analogweb.exception.DirectionEvaluationException;
 import org.analogweb.exception.MissingRequirmentsException;
 import org.analogweb.util.Assertion;
@@ -30,7 +30,7 @@ import org.analogweb.util.logging.Logs;
  * @see HttpServletResponse#sendRedirect(String)
  * @author snowgoose
  */
-public class Redirect implements Direction {
+public class Redirect extends ContextSpecifiedDirection<ServletRequestContext> {
 
     private static final Log log = Logs.getLog(Redirect.class);
     protected static final String DEFAULT_ENCODING_CHARSET = "UTF-8";
@@ -45,10 +45,11 @@ public class Redirect implements Direction {
     }
 
     @Override
-    public void render(RequestContext context) throws IOException, ServletException {
+    protected void renderInternal(ServletRequestContext context) throws IOException,
+            ServletException {
         Assertion.notNull(context, RequestContext.class.getCanonicalName());
 
-        HttpServletResponse response = context.getResponse();
+        HttpServletResponse response = context.getServletResponse();
         String path = getParametarizedPath();
         path = response.encodeRedirectURL(path);
         sendRedirect(response, path, responseCode);
@@ -59,7 +60,8 @@ public class Redirect implements Direction {
         return this;
     }
 
-    protected void sendRedirect(HttpServletResponse response, String encodedPath, int responseCode) throws IOException {
+    protected void sendRedirect(HttpServletResponse response, String encodedPath, int responseCode)
+            throws IOException {
         if (responseCode > 299 && responseCode < 400) {
             response.setStatus(getResponseCode());
             response.setHeader("Location", encodedPath);
@@ -87,11 +89,14 @@ public class Redirect implements Direction {
             Iterator<Entry<String, String>> entriesIterator = entries.iterator();
             Entry<String, String> entry = entriesIterator.next();
             try {
-                buffer.append('?').append(URLEncoder.encode(entry.getKey(), getEncodingCharset())).append('=')
+                buffer.append('?').append(URLEncoder.encode(entry.getKey(), getEncodingCharset()))
+                        .append('=')
                         .append(URLEncoder.encode(entry.getValue(), getEncodingCharset()));
                 while (entriesIterator.hasNext()) {
                     Entry<String, String> param = entriesIterator.next();
-                    buffer.append('&').append(URLEncoder.encode(param.getKey(), getEncodingCharset())).append('=')
+                    buffer.append('&')
+                            .append(URLEncoder.encode(param.getKey(), getEncodingCharset()))
+                            .append('=')
                             .append(URLEncoder.encode(param.getValue(), getEncodingCharset()));
                 }
             } catch (UnsupportedEncodingException e) {

@@ -1,6 +1,5 @@
 package org.analogweb.core;
 
-
 import org.analogweb.AttributesHandler;
 import org.analogweb.DirectionHandler;
 import org.analogweb.DirectionResolver;
@@ -11,12 +10,10 @@ import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.ModulesConfig;
-import org.analogweb.RequestAttributesFactory;
 import org.analogweb.RequestContextFactory;
 import org.analogweb.ResultAttributesFactory;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.util.Assertion;
-
 
 /**
  * default implementation of {@link ModulesConfig}
@@ -35,7 +32,6 @@ public final class RootModulesConfig implements ModulesConfig {
                 .setExceptionHandlerClass(ExceptionHandler.class)
                 .setTypeMapperContextClass(TypeMapperContext.class)
                 .setRequestContextFactoryClass(RequestContextFactory.class)
-                .setRequestAttributesFactoryClass(RequestAttributesFactory.class)
                 .setResultAttributesFactoryClass(ResultAttributesFactory.class)
                 .addInvocationProcessorClass(InvocationProcessor.class)
                 .addInvocationMetadataFactoriesClass(InvocationMetadataFactory.class)

@@ -2,16 +2,14 @@ package org.analogweb.core;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
-import org.analogweb.util.StringUtils;
 
 /**
  * JAXBによる変換により、リクエストされたXMLを任意のオブジェクト
@@ -23,8 +21,8 @@ import org.analogweb.util.StringUtils;
 public class XmlTypeMapper implements TypeMapper {
 
     @Override
-    public Object mapToType(RequestContext context, RequestAttributes attributes, Object from,
-            Class<?> requiredType, String[] formats) {
+    public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+            String[] formats) {
         if (isXmlType(context)) {
             if (InputStream.class.isInstance(from)) {
                 return unmershall(createUnmarshaller(requiredType), (InputStream) from);
@@ -35,13 +33,11 @@ public class XmlTypeMapper implements TypeMapper {
         return null;
     }
 
-	private boolean isXmlType(RequestContext context) {
-		HttpServletRequest request = context.getRequest();
-		String contentType = request.getContentType();
-		return StringUtils.isNotEmpty(contentType)
-				&& (contentType.startsWith("text/xml") || contentType
-						.startsWith("application/xml"));
-	}
+    private boolean isXmlType(RequestContext context) {
+        List<String> contentTypes = context.getRequestHeaders().getValues("Content-Type");
+        return contentTypes.isEmpty() == false
+                && (contentTypes.contains("text/xml") || contentTypes.contains("application/xml"));
+    }
 
     private Unmarshaller createUnmarshaller(Class<?> requiredType) {
         try {

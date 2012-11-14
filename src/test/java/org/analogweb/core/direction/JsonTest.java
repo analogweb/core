@@ -15,9 +15,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.analogweb.DirectionFormatter;
+import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.exception.FormatFailureException;
 import org.analogweb.mock.MockServletOutputStream;
@@ -33,7 +32,6 @@ import org.junit.rules.ExpectedException;
 public class JsonTest {
 
     private RequestContext context;
-    private HttpServletResponse response;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -41,7 +39,6 @@ public class JsonTest {
     @Before
     public void setUp() throws Exception {
         context = mock(RequestContext.class);
-        response = mock(HttpServletResponse.class);
     }
 
     @After
@@ -57,12 +54,14 @@ public class JsonTest {
         Simple bean = new Simple("foo", 33, birthDay);
         Json json = Json.as(bean);
 
-        when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream();
-        when(response.getOutputStream()).thenReturn(out);
+        when(context.getResponseBody()).thenReturn(out);
 
         assertThat(json.getContentType(), is("application/json; charset=" + charset));
         assertThat(json.getCharset(), is(charset));
+
+        Headers headers = mock(Headers.class);
+        when(context.getResponseHeaders()).thenReturn(headers);
 
         json.render(context);
 
@@ -70,6 +69,7 @@ public class JsonTest {
 
         assertThat(actual, is("{\"age\": 33,\"birthDay\": " + birthDay.getTime()
                 + ",\"name\": \"foo\"}"));
+        verify(headers).putValue("Content-Type", "application/json; charset=UTF-8");
     }
 
     @Test
@@ -81,17 +81,19 @@ public class JsonTest {
         Simple bean = new Simple("foo", 33, birthDay);
         Json json = Json.as(bean);
 
-        when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
                 throw new IOException();
             }
         };
-        when(response.getOutputStream()).thenReturn(out);
+        when(context.getResponseBody()).thenReturn(out);
 
         assertThat(json.getContentType(), is("application/json; charset=" + charset));
         assertThat(json.getCharset(), is(charset));
+
+        Headers headers = mock(Headers.class);
+        when(context.getResponseHeaders()).thenReturn(headers);
 
         json.render(context);
     }
@@ -122,9 +124,8 @@ public class JsonTest {
 
         Json json = Json.with("{\"value\": \"foo!\"}");
 
-        when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream();
-        when(response.getOutputStream()).thenReturn(out);
+        when(context.getResponseBody()).thenReturn(out);
 
         json.render(context);
 
@@ -143,12 +144,14 @@ public class JsonTest {
                 birthDay2));
         Json json = Json.as(beans);
 
-        when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream();
-        when(response.getOutputStream()).thenReturn(out);
+        when(context.getResponseBody()).thenReturn(out);
 
         assertThat(json.getContentType(), is("application/json; charset=" + charset));
         assertThat(json.getCharset(), is(charset));
+
+        Headers headers = mock(Headers.class);
+        when(context.getResponseHeaders()).thenReturn(headers);
 
         json.render(context);
 
@@ -169,12 +172,14 @@ public class JsonTest {
                 new Simple("baa", 32, birthDay2) };
         Json json = Json.as(beans);
 
-        when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream();
-        when(response.getOutputStream()).thenReturn(out);
+        when(context.getResponseBody()).thenReturn(out);
 
         assertThat(json.getContentType(), is("application/json; charset=" + charset));
         assertThat(json.getCharset(), is(charset));
+
+        Headers headers = mock(Headers.class);
+        when(context.getResponseHeaders()).thenReturn(headers);
 
         json.render(context);
 
@@ -192,9 +197,11 @@ public class JsonTest {
         Date birthDay2 = new SimpleDateFormat("yyyyMMdd").parse("20100712");
         Json json = Json.as(new ManyList());
 
-        when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream();
-        when(response.getOutputStream()).thenReturn(out);
+        when(context.getResponseBody()).thenReturn(out);
+
+        Headers headers = mock(Headers.class);
+        when(context.getResponseHeaders()).thenReturn(headers);
 
         json.render(context);
 
@@ -212,9 +219,11 @@ public class JsonTest {
         Date birthDay2 = new SimpleDateFormat("yyyyMMdd").parse("20100712");
         Json jsons = Json.as(new ManyArray());
 
-        when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream();
-        when(response.getOutputStream()).thenReturn(out);
+        when(context.getResponseBody()).thenReturn(out);
+
+        Headers headers = mock(Headers.class);
+        when(context.getResponseHeaders()).thenReturn(headers);
 
         jsons.render(context);
 
@@ -232,9 +241,11 @@ public class JsonTest {
         Simple bean = new Simple("foo", 33, null);
         Json json = Json.as(bean);
 
-        when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream();
-        when(response.getOutputStream()).thenReturn(out);
+        when(context.getResponseBody()).thenReturn(out);
+
+        Headers headers = mock(Headers.class);
+        when(context.getResponseHeaders()).thenReturn(headers);
 
         json.render(context);
 
@@ -250,9 +261,11 @@ public class JsonTest {
         Simple bean = new Simple("foo", 33, null);
         Json json = Json.as(bean).withCharset("Shift-JIS").attach(formatter);
 
-        when(context.getResponse()).thenReturn(response);
         final MockServletOutputStream out = new MockServletOutputStream();
-        when(response.getOutputStream()).thenReturn(out);
+        when(context.getResponseBody()).thenReturn(out);
+
+        Headers headers = mock(Headers.class);
+        when(context.getResponseHeaders()).thenReturn(headers);
 
         json.render(context);
 

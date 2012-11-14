@@ -9,10 +9,8 @@ import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestContext;
-import org.analogweb.core.RequestScopeRequestAttributesResolver;
+import org.analogweb.ServletRequestContext;
 import org.analogweb.exception.AssertionFailureException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,7 +23,7 @@ import org.junit.rules.ExpectedException;
 public class RequestScopeRequestAttributesResolverTest {
 
     private RequestScopeRequestAttributesResolver resolver;
-    private RequestContext requestContext;
+    private ServletRequestContext requestContext;
     private HttpServletRequest request;
     private InvocationMetadata metadata;
 
@@ -35,7 +33,7 @@ public class RequestScopeRequestAttributesResolverTest {
     @Before
     public void setUp() throws Exception {
         resolver = new RequestScopeRequestAttributesResolver();
-        requestContext = mock(RequestContext.class);
+        requestContext = mock(ServletRequestContext.class);
         request = mock(HttpServletRequest.class);
         metadata = mock(InvocationMetadata.class);
     }
@@ -47,16 +45,16 @@ public class RequestScopeRequestAttributesResolverTest {
 
     @Test
     public void testResolveAttributeValue() {
-        when(requestContext.getRequest()).thenReturn(request);
+        when(requestContext.getServletRequest()).thenReturn(request);
         when(request.getAttribute("foo")).thenReturn(1L);
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo");
+        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo", null);
         assertThat((Long) actual, is(1L));
     }
 
     @Test
     public void testPutAttributeValue() {
-        when(requestContext.getRequest()).thenReturn(request);
+        when(requestContext.getServletRequest()).thenReturn(request);
         doNothing().when(request).setAttribute("foo", 1L);
 
         resolver.putAttributeValue(requestContext, "foo", 1L);
@@ -73,7 +71,7 @@ public class RequestScopeRequestAttributesResolverTest {
 
     @Test
     public void testRemoveAttribute() {
-        when(requestContext.getRequest()).thenReturn(request);
+        when(requestContext.getServletRequest()).thenReturn(request);
         doNothing().when(request).removeAttribute("boo");
 
         resolver.removeAttribute(requestContext, "boo");

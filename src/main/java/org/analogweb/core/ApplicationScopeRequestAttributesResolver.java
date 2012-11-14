@@ -2,9 +2,8 @@ package org.analogweb.core;
 
 import javax.servlet.ServletContext;
 
-
 import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestContext;
+import org.analogweb.ServletRequestContext;
 import org.analogweb.util.StringUtils;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
@@ -13,7 +12,7 @@ import org.analogweb.util.logging.Markers;
 /**
  * @author snowgoose
  */
-public class ApplicationScopeRequestAttributesResolver extends AbstractAttributesHandler {
+public class ApplicationScopeRequestAttributesResolver extends ContextSpecifiedAttributesHandler<ServletRequestContext> {
 
     private static final Log log = Logs.getLog(ApplicationScopeRequestAttributesResolver.class);
     private static final String NAME = "application";
@@ -24,30 +23,31 @@ public class ApplicationScopeRequestAttributesResolver extends AbstractAttribute
     }
 
     @Override
-    public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadatan, String name) {
-        if (StringUtils.isEmpty(name)) {
+    protected Object resolveAttributeValueOnContext(ServletRequestContext requestContext, InvocationMetadata metadata,
+            String key, Class<?> requiredType) {
+        if (StringUtils.isEmpty(key)) {
             return null;
         }
-        ServletContext servletContext = requestContext.getContext();
-        return servletContext.getAttribute(name);
+        ServletContext servletContext = requestContext.getServletContext();
+        return servletContext.getAttribute(key);
     }
 
     @Override
-    public void putAttributeValue(RequestContext requestContext, String name, Object value) {
+    protected void putAttributeValueOnContext(ServletRequestContext requestContext, String name, Object value) {
         if (StringUtils.isEmpty(name)) {
             return;
         }
-        ServletContext servletContext = requestContext.getContext();
+        ServletContext servletContext = requestContext.getServletContext();
         servletContext.setAttribute(name, value);
         log.log(Markers.VARIABLE_ACCESS, "TV000001", getScopeName(), name, value);
     }
 
     @Override
-    public void removeAttribute(RequestContext requestContext, String name) {
+    protected void removeAttributeOnContext(ServletRequestContext requestContext, String name) {
         if (StringUtils.isEmpty(name)) {
             return;
         }
-        ServletContext servletContext = requestContext.getContext();
+        ServletContext servletContext = requestContext.getServletContext();
         servletContext.removeAttribute(name);
         log.log(Markers.VARIABLE_ACCESS, "TV000002", getScopeName(), name);
     }

@@ -1,21 +1,27 @@
 package org.analogweb.core;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collections;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.analogweb.AttributesHandler;
-import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestAttributesFactory;
-import org.analogweb.RequestPath;
-import org.analogweb.util.Maps;
+import org.analogweb.Cookies;
+import org.analogweb.Headers;
+import org.analogweb.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +35,6 @@ public class DefaultRequestContextTest {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletContext servletContext;
-    private InvocationMetadata metadata;
 
     /**
      * @throws java.lang.Exception
@@ -39,30 +44,85 @@ public class DefaultRequestContextTest {
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
         servletContext = mock(ServletContext.class);
-        metadata = mock(InvocationMetadata.class);
     }
 
     @Test
-    public void testContext() {
+    public void testGetCookies() {
         context = new DefaultRequestContext(request, response, servletContext);
         when(request.getRequestURI()).thenReturn("/baa/baz.rn");
         when(request.getContextPath()).thenReturn("/foo");
         when(request.getMethod()).thenReturn("GET");
+        when(request.getCookies()).thenReturn(new Cookie[] { new Cookie("foo", "baa") });
 
-        assertSame(context.getContext(), servletContext);
-        assertSame(context.getRequest(), request);
-        assertSame(context.getResponse(), response);
-        assertTrue(context.getRequestPath() instanceof RequestPath);
+        Cookies.Cookie actual = context.getCookies().getCookie("foo");
+        assertThat(actual.getValue(), is("baa"));
     }
 
     @Test
-    public void testResolveRequestAttributes() {
+    public void testGetParameters() {
         context = new DefaultRequestContext(request, response, servletContext);
-        RequestAttributesFactory factory = mock(RequestAttributesFactory.class);
-        AttributesHandler resolver = mock(AttributesHandler.class);
-        Map<String, AttributesHandler> resolversMap = Maps.newHashMap("scope", resolver);
+        when(request.getParameterValues("foo")).thenReturn(new String[] { "baa" });
 
-        context.resolveRequestAttributes(factory, metadata, resolversMap);
+        Parameters actual = context.getParameters();
+        assertThat(actual.getValues("foo").get(0), is("baa"));
+    }
+
+    @Test
+    public void testRequestHeaders() {
+        context = new DefaultRequestContext(request, response, servletContext);
+        when(request.getHeaders("foo")).thenReturn(Collections.enumeration(Arrays.asList("baa")));
+
+        Headers actual = context.getRequestHeaders();
+        assertThat(actual.getValues("foo").get(0), is("baa"));
+    }
+
+    @Test
+    public void testRequestBody() throws IOException {
+        context = new DefaultRequestContext(request, response, servletContext);
+        ServletInputStream expected = new ServletInputStream() {
+            @Override
+            public int read() throws IOException {
+                return 0;
+            }
+        };
+        when(request.getInputStream()).thenReturn(expected);
+
+        InputStream actual = context.getRequestBody();
+        assertThat((ServletInputStream) actual, is(expected));
+    }
+
+    @Test
+    public void testGetResponseHeaders() {
+        context = new DefaultRequestContext(request, response, servletContext);
+        when(request.getHeaders("foo")).thenReturn(Collections.enumeration(Arrays.asList("baa")));
+
+        Headers actual = context.getResponseHeaders();
+        assertThat(actual.getValues("foo").get(0), is("baa"));
+
+        actual.putValue("baa", "baz");
+        verify(response).addHeader("baa", "baz");
+    }
+
+    @Test
+    public void testGetResponseBody() throws IOException {
+        context = new DefaultRequestContext(request, response, servletContext);
+
+        ServletOutputStream expected = new ServletOutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+            }
+        };
+        when(response.getOutputStream()).thenReturn(expected);
+        OutputStream actual = context.getResponseBody();
+        assertThat((ServletOutputStream) actual, is(expected));
+    }
+
+    @Test
+    public void testSetResponseCode() {
+        context = new DefaultRequestContext(request, response, servletContext);
+
+        context.setResponseStatus(404);
+        verify(response).setStatus(404);
     }
 
 }

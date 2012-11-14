@@ -1,8 +1,8 @@
 package org.analogweb.core;
 
-import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.math.BigDecimal;
@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import org.analogweb.RequestAttributes;
 import org.analogweb.RequestContext;
 import org.analogweb.annotation.Formats;
 import org.analogweb.util.Maps;
@@ -23,13 +22,11 @@ import org.junit.Test;
 public class ParametersTypeMapperTest {
 
     private ParametersTypeMapper mapper;
-    private RequestAttributes attributes;
     private RequestContext context;
 
     @Before
     public void setUp() throws Exception {
         mapper = new ParametersTypeMapper();
-        attributes = mock(RequestAttributes.class);
         context = mock(RequestContext.class);
     }
 
@@ -43,7 +40,7 @@ public class ParametersTypeMapperTest {
         BigDecimal expectedDecimal = new BigDecimal("123456");
         parameters.put("fuga", new String[] { "123,456" });
         Date expectedDate = new SimpleDateFormat("yyyy/MM/dd").parse("2011/11/11");
-        Bean actual = (Bean) mapper.mapToType(context, attributes, parameters, Bean.class, null);
+        Bean actual = (Bean) mapper.mapToType(context, parameters, Bean.class, null);
         assertThat(actual.getFoo(), is("baa!"));
         assertThat(actual.getBaa(), is(11));
         assertThat(actual.getBaz(), is(expectedDate));
@@ -55,7 +52,7 @@ public class ParametersTypeMapperTest {
     @Test
     public void testMapToTypeNotRequestParameterMap() throws Exception {
 
-        Bean actual = (Bean) mapper.mapToType(context, attributes, new Object(), Bean.class, null);
+        Bean actual = (Bean) mapper.mapToType(context, new Object(), Bean.class, null);
 
         assertThat(actual, is(nullValue()));
     }
@@ -67,7 +64,7 @@ public class ParametersTypeMapperTest {
         parameters.put("baz", "2011/11/11");
 
         BeanNotInstanticatable actual = (BeanNotInstanticatable) mapper.mapToType(context,
-                attributes, parameters, BeanNotInstanticatable.class, null);
+                parameters, BeanNotInstanticatable.class, null);
 
         assertThat(actual, is(nullValue()));
     }
