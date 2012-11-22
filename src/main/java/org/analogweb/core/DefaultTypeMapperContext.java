@@ -4,7 +4,6 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 
 import org.analogweb.ContainerAdaptor;
-import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.util.ArrayUtils;
@@ -27,17 +26,18 @@ public class DefaultTypeMapperContext implements TypeMapperContext {
     }
 
     @Override
-    public Object mapToType(Class<? extends TypeMapper> typeMapperClass, RequestContext context,
-            Object from, Class<?> requiredType, String[] formats) {
+    @SuppressWarnings("unchecked")
+    public <T> T mapToType(Class<? extends TypeMapper> typeMapperClass, Object from,
+            Class<T> requiredType, String[] formats) {
 
         Assertion.notNull(requiredType, "RequiredType");
 
         log.log(Markers.VARIABLE_ACCESS, "DC000001", from, requiredType, formats);
 
         if (requiredType.isAssignableFrom((from.getClass()))) {
-            return from;
+            return (T) from;
         }
-        Object result = handleCollection(requiredType, from);
+        T result = handleCollection(requiredType, from);
         if (result != null) {
             return result;
         }
@@ -47,13 +47,14 @@ public class DefaultTypeMapperContext implements TypeMapperContext {
         }
         TypeMapper typeMapper = findTypeMapper(typeMapperClass);
         if (typeMapper != null) {
-            return typeMapper.mapToType(context, from, requiredType, formats);
+            return (T) typeMapper.mapToType(from, requiredType, formats);
         } else {
-            return getDefaultTypeMapper().mapToType(context, from, requiredType, formats);
+            return (T) getDefaultTypeMapper().mapToType(from, requiredType, formats);
         }
     }
 
-    protected Object handleArray(Class<?> requiredType, Object from) {
+    @SuppressWarnings("unchecked")
+    protected <T> T handleArray(Class<T> requiredType, Object from) {
         if (from == null) {
             return null;
         }
@@ -61,29 +62,30 @@ public class DefaultTypeMapperContext implements TypeMapperContext {
         if (from.getClass().isArray() && ArrayUtils.isNotEmpty((Object[]) from)
                 && (result = Array.get(from, 0)) != null) {
             if (requiredType.isAssignableFrom(result.getClass())) {
-                return result;
+                return (T) result;
             } else if (requiredType.isArray()
                     && requiredType.getComponentType().isAssignableFrom(result.getClass())) {
-                return from;
+                return (T) from;
             }
         }
         return null;
     }
 
-    protected Object handleCollection(Class<?> requiredType, Object from) {
+    @SuppressWarnings("unchecked")
+    protected <T> T handleCollection(Class<?> requiredType, Object from) {
         if (from == null) {
             return null;
         }
         if (from instanceof Collection) {
             Collection<?> fromCollection = (Collection<?>) from;
             if (Collection.class.isAssignableFrom(requiredType)) {
-                return fromCollection;
+                return (T) fromCollection;
             }
             Object result = null;
             if (fromCollection.isEmpty() == false
                     && requiredType.isAssignableFrom((result = fromCollection.iterator().next())
                             .getClass())) {
-                return result;
+                return (T) result;
             }
         }
         return null;

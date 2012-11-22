@@ -63,8 +63,8 @@ public class BindAttributeArgumentPreparator extends AbstractInvocationProcessor
                         mapperType = mapWith.value();
                     }
                     Formats f = AnnotationUtils.findAnnotation(Formats.class, parameterAnnotations);
-                    Object convertedValue = converters.mapToType(mapperType, context, value,
-                            argType, (f != null) ? f.value() : new String[0]);
+                    Object convertedValue = converters.mapToType(mapperType, value, argType,
+                            (f != null) ? f.value() : new String[0]);
                     return convertedValue;
                 }
             }

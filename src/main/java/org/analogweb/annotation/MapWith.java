@@ -22,6 +22,7 @@ public @interface MapWith {
      * 取得した値を特定の型に変換するルール({@link TypeMapper})を設定します。
      * @return {@link TypeMapper}
      */
+    @SuppressWarnings("rawtypes")
     Class<? extends TypeMapper> value() default TypeMapper.class;
 
 }

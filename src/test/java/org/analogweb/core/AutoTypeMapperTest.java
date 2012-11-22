@@ -6,13 +6,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
 import org.analogweb.core.AutoTypeMapper.ClassPair;
 import org.junit.Before;
@@ -24,241 +22,235 @@ import org.junit.Test;
 public class AutoTypeMapperTest {
 
     private AutoTypeMapper typeMapper;
-    private RequestContext context;
 
     @Before
     public void setUp() throws Exception {
         typeMapper = new AutoTypeMapper();
-        context = mock(RequestContext.class);
     }
 
     @Test
     public void testMapToType() {
-        String actual = (String) typeMapper.mapToType(context, "foo", String.class, null);
+        String actual = (String) typeMapper.mapToType("foo", String.class, null);
         assertThat(actual, is("foo"));
     }
 
     @Test
     public void testMapToTypeMapperNotFound() {
-        Object actual = typeMapper.mapToType(context, "foo", TypeMapper.class, null);
+        Object actual = typeMapper.mapToType("foo", TypeMapper.class, null);
         assertNull(actual);
     }
 
     @Test
     public void testMapToTypeToByte() {
-        byte actual = (Byte) typeMapper.mapToType(context, null, byte.class, null);
+        byte actual = (Byte) typeMapper.mapToType(null, byte.class, null);
         assertThat(actual, is((byte) 0));
     }
 
     @Test
     public void testMapToTypeToBoolean() {
-        Boolean actual = (Boolean) typeMapper.mapToType(context, "true", Boolean.class, null);
+        Boolean actual = (Boolean) typeMapper.mapToType("true", Boolean.class, null);
         assertTrue(actual);
-        boolean nativeActual = (Boolean) typeMapper.mapToType(context, "true", boolean.class, null);
+        boolean nativeActual = (Boolean) typeMapper.mapToType("true", boolean.class, null);
         assertTrue(nativeActual);
-        actual = (Boolean) typeMapper.mapToType(context, "on", Boolean.class, null);
+        actual = (Boolean) typeMapper.mapToType("on", Boolean.class, null);
         assertTrue(actual);
-        nativeActual = (Boolean) typeMapper.mapToType(context, "on", boolean.class, null);
+        nativeActual = (Boolean) typeMapper.mapToType("on", boolean.class, null);
         assertTrue(nativeActual);
-        actual = (Boolean) typeMapper.mapToType(context, "yes", Boolean.class, null);
+        actual = (Boolean) typeMapper.mapToType("yes", Boolean.class, null);
         assertTrue(actual);
-        nativeActual = (Boolean) typeMapper.mapToType(context, "yes", boolean.class, null);
+        nativeActual = (Boolean) typeMapper.mapToType("yes", boolean.class, null);
         assertTrue(nativeActual);
-        actual = (Boolean) typeMapper.mapToType(context, "false", Boolean.class, null);
+        actual = (Boolean) typeMapper.mapToType("false", Boolean.class, null);
         assertFalse(actual);
-        nativeActual = (Boolean) typeMapper.mapToType(context, "false", boolean.class, null);
+        nativeActual = (Boolean) typeMapper.mapToType("false", boolean.class, null);
         assertFalse(nativeActual);
-        actual = (Boolean) typeMapper.mapToType(context, "no", Boolean.class, null);
+        actual = (Boolean) typeMapper.mapToType("no", Boolean.class, null);
         assertFalse(actual);
-        nativeActual = (Boolean) typeMapper.mapToType(context, "no", boolean.class, null);
+        nativeActual = (Boolean) typeMapper.mapToType("no", boolean.class, null);
         assertFalse(nativeActual);
-        actual = (Boolean) typeMapper.mapToType(context, "", Boolean.class, null);
+        actual = (Boolean) typeMapper.mapToType("", Boolean.class, null);
         assertFalse(actual);
-        nativeActual = (Boolean) typeMapper.mapToType(context, "", boolean.class, null);
+        nativeActual = (Boolean) typeMapper.mapToType("", boolean.class, null);
         assertFalse(nativeActual);
-        boolean nativeBool = (Boolean) typeMapper.mapToType(context, null, boolean.class, null);
+        boolean nativeBool = (Boolean) typeMapper.mapToType(null, boolean.class, null);
         assertFalse(nativeBool);
     }
 
     @Test
     public void testMapToTypeToCharactor() throws Exception {
-        Character actual = (Character) typeMapper.mapToType(context, "ab", Character.class, null);
+        Character actual = (Character) typeMapper.mapToType("ab", Character.class, null);
         assertThat(actual, is('a'));
-        actual = (Character) typeMapper.mapToType(context, "ab", char.class, null);
+        actual = (Character) typeMapper.mapToType("ab", char.class, null);
         assertThat(actual, is('a'));
-        actual = (Character) typeMapper.mapToType(context, "b", Character.class, null);
+        actual = (Character) typeMapper.mapToType("b", Character.class, null);
         assertThat(actual, is('b'));
-        actual = (Character) typeMapper.mapToType(context, "b", char.class, null);
+        actual = (Character) typeMapper.mapToType("b", char.class, null);
         assertThat(actual, is('b'));
-        actual = (Character) typeMapper.mapToType(context, "A", Character.class, null);
+        actual = (Character) typeMapper.mapToType("A", Character.class, null);
         assertThat(actual, is('A'));
-        actual = (Character) typeMapper.mapToType(context, "ABC", Character.class, null);
+        actual = (Character) typeMapper.mapToType("ABC", Character.class, null);
         assertThat(actual, is('A'));
-        assertNull(typeMapper.mapToType(context, "", Character.class, null));
-        assertNull(typeMapper.mapToType(context, null, Character.class, null));
-        char actualChar = (Character) typeMapper.mapToType(context, null, char.class, null);
+        assertNull(typeMapper.mapToType("", Character.class, null));
+        assertNull(typeMapper.mapToType(null, Character.class, null));
+        char actualChar = (Character) typeMapper.mapToType(null, char.class, null);
         assertThat(actualChar, is(Character.MIN_VALUE));
     }
 
     @Test
     public void testMapToTypeToShort() throws Exception {
-        Short actual = (Short) typeMapper.mapToType(context, "1", Short.class, null);
+        Short actual = (Short) typeMapper.mapToType("1", Short.class, null);
         assertThat(actual, is((short) 1));
-        actual = (Short) typeMapper.mapToType(context, "1", short.class, null);
+        actual = (Short) typeMapper.mapToType("1", short.class, null);
         assertThat(actual, is((short) 1));
-        actual = (Short) typeMapper.mapToType(context, null, Short.class, null);
+        actual = (Short) typeMapper.mapToType(null, Short.class, null);
         assertNull(actual);
-        short actualShort = (Short) typeMapper.mapToType(context, null, short.class, null);
+        short actualShort = (Short) typeMapper.mapToType(null, short.class, null);
         assertThat(actualShort, is((short) 0));
-        actual = (Short) typeMapper.mapToType(context, "", Short.class, null);
+        actual = (Short) typeMapper.mapToType("", Short.class, null);
         assertNull(actual);
-        actual = (Short) typeMapper.mapToType(context, "", short.class, null);
+        actual = (Short) typeMapper.mapToType("", short.class, null);
         assertNull(actual);
-        actual = (Short) typeMapper.mapToType(context, "Nan", Short.class, null);
+        actual = (Short) typeMapper.mapToType("Nan", Short.class, null);
         assertNull(actual);
-        actual = (Short) typeMapper.mapToType(context, "Not-A-Number", short.class, null);
+        actual = (Short) typeMapper.mapToType("Not-A-Number", short.class, null);
         assertNull(actual);
     }
 
     @Test
     public void testMapToTypeToDouble() throws Exception {
-        Double actual = (Double) typeMapper.mapToType(context, "1.0", Double.class, null);
+        Double actual = (Double) typeMapper.mapToType("1.0", Double.class, null);
         assertThat(actual, is(1.0));
-        actual = (Double) typeMapper.mapToType(context, "2.2", double.class, null);
+        actual = (Double) typeMapper.mapToType("2.2", double.class, null);
         assertThat(actual, is(2.2));
-        actual = (Double) typeMapper.mapToType(context, null, Double.class, null);
+        actual = (Double) typeMapper.mapToType(null, Double.class, null);
         assertNull(actual);
-        double actualDouble = (Double) typeMapper.mapToType(context, null, double.class, null);
+        double actualDouble = (Double) typeMapper.mapToType(null, double.class, null);
         assertThat(actualDouble, is(0.0d));
-        actual = (Double) typeMapper.mapToType(context, "", Double.class, null);
+        actual = (Double) typeMapper.mapToType("", Double.class, null);
         assertNull(actual);
-        actual = (Double) typeMapper.mapToType(context, "", double.class, null);
+        actual = (Double) typeMapper.mapToType("", double.class, null);
         assertNull(actual);
-        actual = (Double) typeMapper.mapToType(context, "Nan", Double.class, null);
+        actual = (Double) typeMapper.mapToType("Nan", Double.class, null);
         assertNull(actual);
-        actual = (Double) typeMapper.mapToType(context, "Not-A-Number", double.class, null);
+        actual = (Double) typeMapper.mapToType("Not-A-Number", double.class, null);
         assertNull(actual);
     }
 
     @Test
     public void testMapToTypeToFloat() throws Exception {
-        Float actual = (Float) typeMapper.mapToType(context, "1.0", Float.class, null);
+        Float actual = (Float) typeMapper.mapToType("1.0", Float.class, null);
         assertThat(actual, is(1.0f));
-        actual = (Float) typeMapper.mapToType(context, "2.2", float.class, null);
+        actual = (Float) typeMapper.mapToType("2.2", float.class, null);
         assertThat(actual, is(2.2f));
-        actual = (Float) typeMapper.mapToType(context, null, Float.class, null);
+        actual = (Float) typeMapper.mapToType(null, Float.class, null);
         assertNull(actual);
-        float actualFloat = (Float) typeMapper.mapToType(context, null, float.class, null);
+        float actualFloat = (Float) typeMapper.mapToType(null, float.class, null);
         assertThat(actualFloat, is(0.0f));
-        actual = (Float) typeMapper.mapToType(context, "", Float.class, null);
+        actual = (Float) typeMapper.mapToType("", Float.class, null);
         assertNull(actual);
-        actual = (Float) typeMapper.mapToType(context, "", float.class, null);
+        actual = (Float) typeMapper.mapToType("", float.class, null);
         assertNull(actual);
-        actual = (Float) typeMapper.mapToType(context, "Nan", Float.class, null);
+        actual = (Float) typeMapper.mapToType("Nan", Float.class, null);
         assertNull(actual);
-        actual = (Float) typeMapper.mapToType(context, "Not-A-Number", float.class, null);
+        actual = (Float) typeMapper.mapToType("Not-A-Number", float.class, null);
         assertNull(actual);
     }
 
     @Test
     public void testMapToTypeToInteger() throws Exception {
-        Integer actual = (Integer) typeMapper.mapToType(context, "1", Integer.class, null);
+        Integer actual = (Integer) typeMapper.mapToType("1", Integer.class, null);
         assertThat(actual, is(1));
-        actual = (Integer) typeMapper.mapToType(context, "1", int.class, null);
+        actual = (Integer) typeMapper.mapToType("1", int.class, null);
         assertThat(actual, is(1));
-        actual = (Integer) typeMapper.mapToType(context, null, Integer.class, null);
+        actual = (Integer) typeMapper.mapToType(null, Integer.class, null);
         assertNull(actual);
-        int actualInt = (Integer) typeMapper.mapToType(context, null, int.class, null);
+        int actualInt = (Integer) typeMapper.mapToType(null, int.class, null);
         assertThat(actualInt, is(0));
-        actual = (Integer) typeMapper.mapToType(context, "", Integer.class, null);
+        actual = (Integer) typeMapper.mapToType("", Integer.class, null);
         assertNull(actual);
-        actual = (Integer) typeMapper.mapToType(context, "", int.class, null);
+        actual = (Integer) typeMapper.mapToType("", int.class, null);
         assertNull(actual);
-        actual = (Integer) typeMapper.mapToType(context, "Nan", Integer.class, null);
+        actual = (Integer) typeMapper.mapToType("Nan", Integer.class, null);
         assertNull(actual);
-        actual = (Integer) typeMapper.mapToType(context, "Not-A-Number", int.class, null);
+        actual = (Integer) typeMapper.mapToType("Not-A-Number", int.class, null);
         assertNull(actual);
     }
 
     @Test
     public void testMapToTypeToLong() throws Exception {
-        Long actual = (Long) typeMapper.mapToType(context, "55590", Long.class, null);
+        Long actual = (Long) typeMapper.mapToType("55590", Long.class, null);
         assertThat(actual, is(55590L));
-        actual = (Long) typeMapper.mapToType(context, "1000", long.class, null);
+        actual = (Long) typeMapper.mapToType("1000", long.class, null);
         assertThat(actual, is(1000L));
-        actual = (Long) typeMapper.mapToType(context, null, Long.class, null);
+        actual = (Long) typeMapper.mapToType(null, Long.class, null);
         assertNull(actual);
-        long actualLong = (Long) typeMapper.mapToType(context, null, long.class, null);
+        long actualLong = (Long) typeMapper.mapToType(null, long.class, null);
         assertThat(actualLong, is(0L));
-        actual = (Long) typeMapper.mapToType(context, "", Long.class, null);
+        actual = (Long) typeMapper.mapToType("", Long.class, null);
         assertNull(actual);
-        actual = (Long) typeMapper.mapToType(context, "", long.class, null);
+        actual = (Long) typeMapper.mapToType("", long.class, null);
         assertNull(actual);
-        actual = (Long) typeMapper.mapToType(context, "Nan", Long.class, null);
+        actual = (Long) typeMapper.mapToType("Nan", Long.class, null);
         assertNull(actual);
-        actual = (Long) typeMapper.mapToType(context, "Not-A-Number", long.class, null);
+        actual = (Long) typeMapper.mapToType("Not-A-Number", long.class, null);
         assertNull(actual);
     }
 
     @Test
     public void testMapToTypeToDate() throws Exception {
         Date expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/09");
-        Date actual = (Date) typeMapper.mapToType(context, "2010-12-09", Date.class, null);
+        Date actual = (Date) typeMapper.mapToType("2010-12-09", Date.class, null);
         assertThat(actual, is(expected));
 
-        actual = (Date) typeMapper.mapToType(context, "2010-12-09", Date.class, new String[0]);
-        assertThat(actual, is(expected));
-
-        expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/10");
-        actual = (Date) typeMapper.mapToType(context, "2010/12/10", Date.class, null);
+        actual = (Date) typeMapper.mapToType("2010-12-09", Date.class, new String[0]);
         assertThat(actual, is(expected));
 
         expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/10");
-        actual = (Date) typeMapper.mapToType(context, "2010_12_10", Date.class, null);
+        actual = (Date) typeMapper.mapToType("2010/12/10", Date.class, null);
+        assertThat(actual, is(expected));
+
+        expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/10");
+        actual = (Date) typeMapper.mapToType("2010_12_10", Date.class, null);
         assertNull(actual);
 
         expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/11");
-        actual = (Date) typeMapper.mapToType(context, "2010/12/11", Date.class,
+        actual = (Date) typeMapper.mapToType("2010/12/11", Date.class,
                 new String[] { "yyyy/MM/dd" });
         assertThat(actual, is(expected));
 
         expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/11");
-        actual = (Date) typeMapper.mapToType(context, "2010/12/11", Date.class, new String[] {
-                "yyyy-MM-dd", "yyyy=MM=dd" });
+        actual = (Date) typeMapper.mapToType("2010/12/11", Date.class, new String[] { "yyyy-MM-dd",
+                "yyyy=MM=dd" });
         assertNull(actual);
 
     }
 
     @Test
     public void testMapToTypeToBigDecimal() throws Exception {
-        BigDecimal actual = (BigDecimal) typeMapper.mapToType(context, "1001.1", BigDecimal.class,
-                null);
+        BigDecimal actual = (BigDecimal) typeMapper.mapToType("1001.1", BigDecimal.class, null);
         assertThat(actual, is(new BigDecimal("1001.1")));
 
-        actual = (BigDecimal) typeMapper.mapToType(context, "1001.1", BigDecimal.class,
-                new String[0]);
+        actual = (BigDecimal) typeMapper.mapToType("1001.1", BigDecimal.class, new String[0]);
         assertThat(actual, is(new BigDecimal("1001.1")));
 
-        actual = (BigDecimal) typeMapper.mapToType(context, "57,311,001.11", BigDecimal.class,
+        actual = (BigDecimal) typeMapper.mapToType("57,311,001.11", BigDecimal.class,
                 new String[] { "#,###,###" });
         assertThat(actual, is(new BigDecimal("57311001.11")));
 
-        actual = (BigDecimal) typeMapper.mapToType(context, "57,311,001.11", BigDecimal.class,
+        actual = (BigDecimal) typeMapper.mapToType("57,311,001.11", BigDecimal.class,
                 new String[] { "invalid-format" });
         assertThat(actual, is(nullValue()));
     }
 
     @Test
     public void testMapToTypeArrayToString() throws Exception {
-        String actual = (String) typeMapper.mapToType(context, new String[] { "a" }, String.class,
-                null);
+        String actual = (String) typeMapper.mapToType(new String[] { "a" }, String.class, null);
         assertThat(actual, is("a"));
 
-        actual = (String) typeMapper.mapToType(context, new String[] { "a", "b" }, String.class,
-                null);
+        actual = (String) typeMapper.mapToType(new String[] { "a", "b" }, String.class, null);
         assertThat(actual, is("a"));
 
-        actual = (String) typeMapper.mapToType(context, new String[0], String.class, null);
+        actual = (String) typeMapper.mapToType(new String[0], String.class, null);
         assertThat(actual, is(nullValue()));
     }
 

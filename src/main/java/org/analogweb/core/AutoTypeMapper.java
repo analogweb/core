@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.Assertion;
@@ -55,8 +54,7 @@ public class AutoTypeMapper implements TypeMapper {
     }
 
     @Override
-    public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
-            String[] formats) {
+    public Object mapToType(Object from, Class<?> requiredType, String[] formats) {
         if (from == null) {
             return nullSafePrimitive(requiredType);
         }
@@ -65,7 +63,7 @@ public class AutoTypeMapper implements TypeMapper {
         }
         TypeMapper mapper = mappers.get(ClassPair.valueOf(from.getClass(), requiredType));
         if (mapper != null) {
-            return mapper.mapToType(context, from, requiredType, formats);
+            return mapper.mapToType(from, requiredType, formats);
         }
         return null;
     }
@@ -128,36 +126,33 @@ public class AutoTypeMapper implements TypeMapper {
         }
     }
 
-    private static final class StringToCharactor implements TypeMapper {
+    private static final class StringToCharactor extends TypeSafeTypeMapper<String, Character> {
         @Override
-        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+        public Character mapToTypeInternal(String from, Class<Character> requiredType,
                 String[] formats) {
-            if (StringUtils.isNotEmpty(from.toString())) {
-                return from.toString().toCharArray()[0];
+            if (StringUtils.isNotEmpty(from)) {
+                return from.toCharArray()[0];
             }
             return null;
         }
     }
 
-    private static final class StringToBoolean implements TypeMapper {
+    private static final class StringToBoolean extends TypeSafeTypeMapper<String, Boolean> {
 
         @Override
-        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
-                String[] formats) {
-            String fromText = (String) from;
-            return ((fromText.equalsIgnoreCase("true") || fromText.equalsIgnoreCase("yes") || fromText
+        public Boolean mapToTypeInternal(String from, Class<Boolean> requiredType, String[] formats) {
+            return ((from.equalsIgnoreCase("true") || from.equalsIgnoreCase("yes") || from
                     .equalsIgnoreCase("on")));
         }
 
     }
 
-    private static final class StringToShort implements TypeMapper {
+    private static final class StringToShort extends TypeSafeTypeMapper<String, Short> {
         @Override
-        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
-                String[] formats) {
-            if (StringUtils.isNotEmpty(from.toString())) {
+        public Short mapToTypeInternal(String from, Class<Short> requiredType, String[] formats) {
+            if (StringUtils.isNotEmpty(from)) {
                 try {
-                    return Short.valueOf(from.toString());
+                    return Short.valueOf(from);
                 } catch (NumberFormatException e) {
                     // nop.
                     log.log(Markers.VARIABLE_ACCESS, "TV000004", e, from, requiredType);
@@ -167,13 +162,12 @@ public class AutoTypeMapper implements TypeMapper {
         }
     }
 
-    private static final class StringToFloat implements TypeMapper {
+    private static final class StringToFloat extends TypeSafeTypeMapper<String, Float> {
         @Override
-        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
-                String[] formats) {
-            if (StringUtils.isNotEmpty(from.toString())) {
+        public Float mapToTypeInternal(String from, Class<Float> requiredType, String[] formats) {
+            if (StringUtils.isNotEmpty(from)) {
                 try {
-                    return Float.valueOf(from.toString());
+                    return Float.valueOf(from);
                 } catch (NumberFormatException e) {
                     // nop.
                     log.log(Markers.VARIABLE_ACCESS, "TV000004", e, from, requiredType);
@@ -183,13 +177,12 @@ public class AutoTypeMapper implements TypeMapper {
         }
     }
 
-    private static final class StringToDouble implements TypeMapper {
+    private static final class StringToDouble extends TypeSafeTypeMapper<String, Double> {
         @Override
-        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
-                String[] formats) {
-            if (StringUtils.isNotEmpty(from.toString())) {
+        public Double mapToTypeInternal(String from, Class<Double> requiredType, String[] formats) {
+            if (StringUtils.isNotEmpty(from)) {
                 try {
-                    return Double.valueOf(from.toString());
+                    return Double.valueOf(from);
                 } catch (NumberFormatException e) {
                     // nop.
                     log.log(Markers.VARIABLE_ACCESS, "TV000004", e, from, requiredType);
@@ -199,13 +192,12 @@ public class AutoTypeMapper implements TypeMapper {
         }
     }
 
-    private static final class StringToInteger implements TypeMapper {
+    private static final class StringToInteger extends TypeSafeTypeMapper<String, Integer> {
         @Override
-        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
-                String[] formats) {
-            if (StringUtils.isNotEmpty(from.toString())) {
+        public Integer mapToTypeInternal(String from, Class<Integer> requiredType, String[] formats) {
+            if (StringUtils.isNotEmpty(from)) {
                 try {
-                    return Integer.valueOf(from.toString());
+                    return Integer.valueOf(from);
                 } catch (NumberFormatException e) {
                     // nop.
                     log.log(Markers.VARIABLE_ACCESS, "TV000004", e, from, requiredType);
@@ -215,13 +207,12 @@ public class AutoTypeMapper implements TypeMapper {
         }
     }
 
-    private static final class StringToLong implements TypeMapper {
+    private static final class StringToLong extends TypeSafeTypeMapper<String, Long> {
         @Override
-        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
-                String[] formats) {
-            if (StringUtils.isNotEmpty(from.toString())) {
+        public Long mapToTypeInternal(String from, Class<Long> requiredType, String[] formats) {
+            if (StringUtils.isNotEmpty(from)) {
                 try {
-                    return Long.valueOf(from.toString());
+                    return Long.valueOf(from);
                 } catch (NumberFormatException e) {
                     // nop.
                     log.log(Markers.VARIABLE_ACCESS, "TV000004", e, from, requiredType);
@@ -231,44 +222,42 @@ public class AutoTypeMapper implements TypeMapper {
         }
     }
 
-    private static final class StringToBigDecimal implements TypeMapper {
+    private static final class StringToBigDecimal extends TypeSafeTypeMapper<String, BigDecimal> {
         @Override
-        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
+        public BigDecimal mapToTypeInternal(String from, Class<BigDecimal> requiredType,
                 String[] formats) {
             if (formats != null && formats.length > 0) {
                 DecimalFormat formatter = new DecimalFormat();
                 for (String formatPattern : formats) {
                     formatter.applyPattern(formatPattern);
                     formatter.setParseBigDecimal(true);
-                    Object number = formatter.parse(from.toString(), new ParsePosition(0));
+                    Number number = formatter.parse(from, new ParsePosition(0));
                     if (number != null) {
-                        return number;
+                        return (BigDecimal) number;
                     }
                 }
             } else {
-                return new BigDecimal(from.toString());
+                return new BigDecimal(from);
             }
             return null;
         }
     }
 
-    private static final class StringToDate implements TypeMapper {
+    private static final class StringToDate extends TypeSafeTypeMapper<String, Date> {
 
         private static final String[] DEFAULT_FORMAT_PATTERNS = new String[] { "yyyy/MM/dd",
                 "yyyy-MM-dd", "yyyy/MM/dd hh:mm:ss" };
 
         @Override
-        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
-                String[] formats) {
+        public Date mapToTypeInternal(String from, Class<Date> requiredType, String[] formats) {
             SimpleDateFormat formatter = new SimpleDateFormat();
             if (formats == null || formats.length == 0) {
                 formats = DEFAULT_FORMAT_PATTERNS;
             }
-            String fromText = (String) from;
             for (String pattern : formats) {
                 formatter.applyPattern(pattern);
                 try {
-                    return formatter.parse(fromText);
+                    return formatter.parse(from);
                 } catch (ParseException e) {
                     // ignore.
                     log.log(Markers.VARIABLE_ACCESS, "TV000004", e, from, requiredType);
@@ -279,15 +268,11 @@ public class AutoTypeMapper implements TypeMapper {
 
     }
 
-    private static final class StringArrayToString implements TypeMapper {
+    private static final class StringArrayToString extends TypeSafeTypeMapper<String[], String> {
         @Override
-        public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
-                String[] formats) {
-            if (String[].class.isInstance(from)) {
-                String[] array = (String[]) from;
-                if (ArrayUtils.isNotEmpty(array)) {
-                    return array[0];
-                }
+        public String mapToTypeInternal(String[] from, Class<String> requiredType, String[] formats) {
+            if (ArrayUtils.isNotEmpty(from)) {
+                return from[0];
             }
             return null;
         }

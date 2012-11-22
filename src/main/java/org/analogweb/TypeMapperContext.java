@@ -11,14 +11,12 @@ public interface TypeMapperContext extends Module {
      * 指定された型に変換を行います。<br/>
      * 変換には指定された{@link TypeMapper}の型を持つインスタンスが使用されます。
      * @param typeMapperClass 変換を行う{@link TypeMapper}の型
-     * @param context {@link RequestContext}
      * @param from 変換する前のインスタンス
      * @param requiredType 変換する対象の型
      * @param mappingFormats 変換を行う際に使用されるフォーマット
      * @return 変換後の新しいインスタンス
      */
-    Object mapToType(Class<? extends TypeMapper> typeMapperClass, RequestContext context,
-            Object from, Class<?> requiredType,
-            String[] mappingFormats);
+    <T> T mapToType(Class<? extends TypeMapper> typeMapperClass, Object from,
+            Class<T> requiredType, String[] mappingFormats);
 
 }

@@ -1,13 +1,14 @@
 package org.analogweb.core;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
 
@@ -18,16 +19,22 @@ import org.analogweb.TypeMapper;
  * (リクエストボディ)が指定されている必要があります。
  * @author snowgoose
  */
-public class XmlTypeMapper implements TypeMapper {
+// TODO move to another module.
+public class XmlTypeMapper extends AbstractAttributesHandler {
 
     @Override
-    public Object mapToType(RequestContext context, Object from, Class<?> requiredType,
-            String[] formats) {
+    public String getScopeName() {
+        return "xml";
+    }
+
+    @Override
+    public Object resolveAttributeValue(RequestContext context, InvocationMetadata metadata,
+            String key, Class<?> requiredType) {
         if (isXmlType(context)) {
-            if (InputStream.class.isInstance(from)) {
-                return unmershall(createUnmarshaller(requiredType), (InputStream) from);
-            } else if (Reader.class.isInstance(from)) {
-                return unmershall(createUnmarshaller(requiredType), (Reader) from);
+            try {
+                return unmershall(createUnmarshaller(requiredType), context.getRequestBody());
+            } catch (IOException e) {
+                return null;
             }
         }
         return null;
@@ -50,14 +57,6 @@ public class XmlTypeMapper implements TypeMapper {
     }
 
     private Object unmershall(Unmarshaller unmarshaller, InputStream in) {
-        try {
-            return unmarshaller.unmarshal(in);
-        } catch (JAXBException e) {
-            return null;
-        }
-    }
-
-    private Object unmershall(Unmarshaller unmarshaller, Reader in) {
         try {
             return unmarshaller.unmarshal(in);
         } catch (JAXBException e) {

@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -35,65 +34,49 @@ public class XmlTypeMapperTest {
     }
 
     @Test
-    public void testMapToTypeByStream() {
+    public void testMapToTypeByStream() throws Exception {
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("text/xml"));
         byte[] xmlBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><hello><world>snowgoose</world></hello>"
                 .getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        Hello actual = (Hello) mapper.mapToType(context, xmlBody, Hello.class, new String[0]);
+        when(context.getRequestBody()).thenReturn(xmlBody);
+        Hello actual = (Hello) mapper.resolveAttributeValue(context, null, null, Hello.class);
         assertThat(actual.getWorld(), is("snowgoose"));
     }
 
     @Test
-    public void testMapToTypeByReader() {
-        when(context.getRequestHeaders()).thenReturn(headers);
-        when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("application/xml"));
-        StringReader xmlBody = new StringReader(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><hello><world>snowgoose</world></hello>");
-        Hello actual = (Hello) mapper.mapToType(context, xmlBody, Hello.class, new String[0]);
-        assertThat(actual.getWorld(), is("snowgoose"));
-    }
-
-    @Test
-    public void testMapToTypeBytes() {
-        when(context.getRequestHeaders()).thenReturn(headers);
-        when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("text/xml"));
-        byte[] xmlBody = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><hello><world>snowgoose</world></hello>"
-                .getBytes();
-        Hello actual = (Hello) mapper.mapToType(context, xmlBody, Hello.class, new String[0]);
-        assertThat(actual, is(nullValue()));
-    }
-
-    @Test
-    public void testMapToTypeIllegalClassType() {
+    public void testMapToTypeIllegalClassType() throws Exception {
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("text/xml"));
         byte[] xmlBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><hello><world>snowgoose</world></hello>"
                 .getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        Hello actual = (Hello) mapper.mapToType(context, xmlBody, UnHello.class, new String[0]);
+        when(context.getRequestBody()).thenReturn(xmlBody);
+        UnHello actual = (UnHello) mapper.resolveAttributeValue(context, null, null, UnHello.class);
         assertThat(actual, is(nullValue()));
     }
 
     @Test
-    public void testMapToTypeIllegalContentType() {
+    public void testMapToTypeIllegalContentType() throws Exception {
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("application/json"));
         byte[] xmlBytes = "{\"hello\":\"world\"}".getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        Hello actual = (Hello) mapper.mapToType(context, xmlBody, UnHello.class, new String[0]);
+        when(context.getRequestBody()).thenReturn(xmlBody);
+        UnHello actual = (UnHello) mapper.resolveAttributeValue(context, null, null, UnHello.class);
         assertThat(actual, is(nullValue()));
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testMapToTypeWithoutContentType() {
+    public void testMapToTypeWithoutContentType() throws Exception {
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Content-Type")).thenReturn(Collections.EMPTY_LIST);
         byte[] xmlBytes = "plain text".getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        Hello actual = (Hello) mapper.mapToType(context, xmlBody, UnHello.class, new String[0]);
+        when(context.getRequestBody()).thenReturn(xmlBody);
+        UnHello actual = (UnHello) mapper.resolveAttributeValue(context, null, null, UnHello.class);
         assertThat(actual, is(nullValue()));
     }
 

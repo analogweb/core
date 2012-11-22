@@ -213,6 +213,12 @@ public class DefaultRequestContext implements ServletRequestContext {
             return Arrays.asList(request.getParameterValues(key));
         }
 
+        @Override
+        @SuppressWarnings("unchecked")
+        public Map<String, String[]> asMap() {
+            return request.getParameterMap();
+        }
+
     }
 
     @Override
