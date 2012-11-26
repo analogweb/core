@@ -25,7 +25,6 @@ import org.analogweb.Modules;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
-import org.analogweb.ResultAttributes;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
@@ -83,15 +82,11 @@ public class AnalogFilter implements Filter {
             log.log(Markers.LIFECYCLE, "DL000006", requestedPath, metadata);
             ContainerAdaptor invocationInstances = modules.getInvocationInstanceProvider();
 
-            ResultAttributes resultAttributes = modules.getResultAttributes();
-
             Invocation invocation = modules.getInvocationFactory().createInvocation(
-                    invocationInstances, metadata, resultAttributes, context,
-                    modules.getTypeMapperContext(), modules.getInvocationProcessors(),
-                    modules.getAttributesHandlers());
+                    invocationInstances, metadata, context, modules.getTypeMapperContext(),
+                    modules.getInvocationProcessors(), modules.getAttributesHandlers());
 
-            Object invocationResult = modules.getInvoker().invoke(invocation, metadata,
-                    resultAttributes, context);
+            Object invocationResult = modules.getInvoker().invoke(invocation, metadata, context);
 
             log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(),
                     invocationResult);

@@ -32,7 +32,6 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestContextFactory;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
-import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.junit.Before;
 import org.junit.Rule;
@@ -101,8 +100,6 @@ public class AnalogFilterTest {
         Class targetClass = getClass();
         when(metadata.getInvocationClass()).thenReturn(targetClass);
         when(provider.getInstanceOfType(targetClass)).thenReturn(this);
-        ResultAttributes resultAttributes = mock(ResultAttributes.class);
-        when(modules.getResultAttributes()).thenReturn(resultAttributes);
         Invoker invoker = mock(Invoker.class);
         when(modules.getInvoker()).thenReturn(invoker);
         TypeMapperContext typeContext = mock(TypeMapperContext.class);
@@ -115,11 +112,10 @@ public class AnalogFilterTest {
         AttributesHandlers handlers = mock(AttributesHandlers.class);
         when(modules.getAttributesHandlers()).thenReturn(handlers);
         when(
-                invocationFactory.createInvocation(provider, metadata, resultAttributes,
-                        requestContext, typeContext, processors, handlers)).thenReturn(invocation);
+                invocationFactory.createInvocation(provider, metadata, requestContext, typeContext,
+                        processors, handlers)).thenReturn(invocation);
         Object result = new Object();
-        when(invoker.invoke(invocation, metadata, resultAttributes, requestContext)).thenReturn(
-                result);
+        when(invoker.invoke(invocation, metadata, requestContext)).thenReturn(result);
 
         // direct result.
         DirectionResolver directionResolver = mock(DirectionResolver.class);
@@ -155,8 +151,6 @@ public class AnalogFilterTest {
         Class targetClass = getClass();
         when(metadata.getInvocationClass()).thenReturn(targetClass);
         when(provider.getInstanceOfType(targetClass)).thenReturn(this);
-        ResultAttributes resultAttributes = mock(ResultAttributes.class);
-        when(modules.getResultAttributes()).thenReturn(resultAttributes);
         Invoker invoker = mock(Invoker.class);
         when(modules.getInvoker()).thenReturn(invoker);
         IllegalStateException ex = new IllegalStateException();
@@ -170,9 +164,9 @@ public class AnalogFilterTest {
         AttributesHandlers handlers = mock(AttributesHandlers.class);
         when(modules.getAttributesHandlers()).thenReturn(handlers);
         when(
-                invocationFactory.createInvocation(provider, metadata, resultAttributes,
-                        requestContext, typeContext, processors, handlers)).thenReturn(invocation);
-        when(invoker.invoke(invocation, metadata, resultAttributes, requestContext)).thenThrow(ex);
+                invocationFactory.createInvocation(provider, metadata, requestContext, typeContext,
+                        processors, handlers)).thenReturn(invocation);
+        when(invoker.invoke(invocation, metadata, requestContext)).thenThrow(ex);
 
         ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
         when(modules.getExceptionHandler()).thenReturn(exceptionHandler);
@@ -202,8 +196,6 @@ public class AnalogFilterTest {
         Class targetClass = getClass();
         when(metadata.getInvocationClass()).thenReturn(targetClass);
         when(provider.getInstanceOfType(targetClass)).thenReturn(this);
-        ResultAttributes resultAttributes = mock(ResultAttributes.class);
-        when(modules.getResultAttributes()).thenReturn(resultAttributes);
         Invoker invoker = mock(Invoker.class);
         when(modules.getInvoker()).thenReturn(invoker);
         IllegalStateException ex = new IllegalStateException();
@@ -217,9 +209,9 @@ public class AnalogFilterTest {
         AttributesHandlers handlers = mock(AttributesHandlers.class);
         when(modules.getAttributesHandlers()).thenReturn(handlers);
         when(
-                invocationFactory.createInvocation(provider, metadata, resultAttributes,
-                        requestContext, typeContext, processors, handlers)).thenReturn(invocation);
-        when(invoker.invoke(invocation, metadata, resultAttributes, requestContext)).thenThrow(ex);
+                invocationFactory.createInvocation(provider, metadata, requestContext, typeContext,
+                        processors, handlers)).thenReturn(invocation);
+        when(invoker.invoke(invocation, metadata, requestContext)).thenThrow(ex);
 
         ExceptionHandler exceptionHandler = mock(ExceptionHandler.class);
         when(modules.getExceptionHandler()).thenReturn(exceptionHandler);

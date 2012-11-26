@@ -22,7 +22,6 @@ public interface InvocationFactory extends Module {
      * @return　生成された{@link Invocation}
      */
     Invocation createInvocation(ContainerAdaptor instanceProvider, InvocationMetadata metadata,
-            ResultAttributes resultAttributes,
             RequestContext context, TypeMapperContext converters,
             List<InvocationProcessor> processors, AttributesHandlers handlers);
 

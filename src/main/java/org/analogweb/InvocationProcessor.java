@@ -49,7 +49,7 @@ public interface InvocationProcessor extends MultiModule {
      */
     Object onInvoke(Method method, Invocation invocation, InvocationMetadata metadata,
             InvocationArguments args);
-    
+
     /**
      * {@link Invocation}実行時に例外が発生した場合に、処理を追加します。<br/>
      * 通常は、{@link #NO_INTERRUPTION}を返します。それ以外の
@@ -72,11 +72,11 @@ public interface InvocationProcessor extends MultiModule {
      * @param args 例外が発生した対象の{@link InvocationArguments}
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
-     * @param resultAttributes {@link ResultAttributes}
+     * @param handlers {@link AttributesHandlers}
      * @return {@link Invocation}の実行結果
      */
-    Object postInvoke(Object invocationResult, InvocationArguments args, InvocationMetadata metadata,
-            RequestContext context, ResultAttributes resultAttributes);
+    Object postInvoke(Object invocationResult, InvocationArguments args,
+            InvocationMetadata metadata, RequestContext context, AttributesHandlers handlers);
 
     /**
      * {@link Invocation}実行後に処理を追加します。<br/>
@@ -96,20 +96,20 @@ public interface InvocationProcessor extends MultiModule {
      * を保持します。
      * @author snowgoose
      */
-//    public static interface InvocationArguments {
-        /**
-         * {@link Invocation}に引き渡すパラメータのうち、指定した
-         * 索引に一致するパラメータの値を更新します。
-         * 確定した(nullでない)パラメータに対する値の更新を行うことは
-         * できません。
-         * @param index (0から始まる)パラメータの索引
-         * @param value 更新する値
-         */
-//        void set(int index,Object value);
-        /**
-         * 実行時に必要なパラメータの配列を生成します。
-         * @return パラメータの配列
-         */
+    //    public static interface InvocationArguments {
+    /**
+     * {@link Invocation}に引き渡すパラメータのうち、指定した
+     * 索引に一致するパラメータの値を更新します。
+     * 確定した(nullでない)パラメータに対する値の更新を行うことは
+     * できません。
+     * @param index (0から始まる)パラメータの索引
+     * @param value 更新する値
+     */
+    //        void set(int index,Object value);
+    /**
+     * 実行時に必要なパラメータの配列を生成します。
+     * @return パラメータの配列
+     */
     /*
         Object[] toArray();
     }

@@ -4,7 +4,6 @@ import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.Invoker;
 import org.analogweb.RequestContext;
-import org.analogweb.ResultAttributes;
 import org.analogweb.util.Assertion;
 
 /**
@@ -13,9 +12,7 @@ import org.analogweb.util.Assertion;
 public class DefaultInvoker implements Invoker {
 
     @Override
-    public Object invoke(Invocation invocation, InvocationMetadata metadata,
-            ResultAttributes resultAttributes, RequestContext context) {
-
+    public Object invoke(Invocation invocation, InvocationMetadata metadata, RequestContext context) {
         Assertion.notNull(metadata, InvocationMetadata.class.getSimpleName());
         Assertion.notNull(invocation, Invocation.class.getSimpleName());
 

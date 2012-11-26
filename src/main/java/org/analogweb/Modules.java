@@ -34,10 +34,6 @@ public interface Modules extends Disposable {
 
     AttributesHandlers getAttributesHandlers();
 
-    ResultAttributesFactory getResultAttributesFactory();
-
-    ResultAttributes getResultAttributes();
-
     DirectionFormatter findDirectionFormatter(Class<? extends Direction> mapToDirection);
     
 }

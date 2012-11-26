@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.analogweb.AttributesHandler;
 import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
-import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
@@ -37,8 +37,8 @@ public class ScopedMapArgumentPreparatorTest {
     private InvocationArguments args;
     private RequestContext context;
     private TypeMapperContext typeMapper;
-    private ResultAttributes resultAttributes;
     private AttributesHandlers handlers;
+    private AttributesHandler handler;
 
     /**
      * テストの事前準備を行います。
@@ -50,8 +50,8 @@ public class ScopedMapArgumentPreparatorTest {
         args = mock(InvocationArguments.class);
         context = mock(RequestContext.class);
         typeMapper = mock(TypeMapperContext.class);
-        resultAttributes = mock(ResultAttributes.class);
         handlers = mock(AttributesHandlers.class);
+        handler = mock(AttributesHandler.class);
     }
 
     @Test
@@ -93,15 +93,17 @@ public class ScopedMapArgumentPreparatorTest {
         BigDecimal amount = new BigDecimal("1000");
         scopedMap.put("amount", amount);
 
+        when(handlers.get("session")).thenReturn(handler);
+
         ArrayList<Object> list = new ArrayList<Object>();
         list.add(scopedMap);
         when(args.asList()).thenReturn(list);
 
         Object invocationResult = new Object();
 
-        preparator.postInvoke(invocationResult, args, metadata, context, resultAttributes);
+        preparator.postInvoke(invocationResult, args, metadata, context, handlers);
 
-        verify(resultAttributes).setValueOfQuery(context, "session", "amount", amount);
+        verify(handler).putAttributeValue(context, "amount", amount);
     }
 
     @Test
@@ -118,12 +120,13 @@ public class ScopedMapArgumentPreparatorTest {
         scopedMap.put("amount", amount);
         list.add(scopedMap);
         when(args.asList()).thenReturn(list);
+        when(handlers.get("request")).thenReturn(handler);
 
         Object invocationResult = new Object();
 
-        preparator.postInvoke(invocationResult, args, metadata, context, resultAttributes);
+        preparator.postInvoke(invocationResult, args, metadata, context, handlers);
 
-        verify(resultAttributes).setValueOfQuery(context, "request", "amount", amount);
+        verify(handler).putAttributeValue(context, "amount", amount);
     }
 
     @Test
@@ -132,6 +135,8 @@ public class ScopedMapArgumentPreparatorTest {
                 "session");
         scopedMap.remove("amount");
 
+        when(handlers.get("session")).thenReturn(handler);
+
         ArrayList<Object> list = new ArrayList<Object>();
         list.add("boobaa");
         list.add(scopedMap);
@@ -139,9 +144,9 @@ public class ScopedMapArgumentPreparatorTest {
 
         Object invocationResult = new Object();
 
-        preparator.postInvoke(invocationResult, args, metadata, context, resultAttributes);
+        preparator.postInvoke(invocationResult, args, metadata, context, handlers);
 
-        verify(resultAttributes).removeValueOfQuery(context, "session", "amount");
+        verify(handler).removeAttribute(context, "amount");
     }
 
     @On

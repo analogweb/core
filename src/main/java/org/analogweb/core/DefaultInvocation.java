@@ -14,7 +14,6 @@ import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
-import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.InvocationFailureException;
 import org.analogweb.util.Maps;
@@ -28,7 +27,6 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
 
     private Object invocationInstance;
     private final InvocationMetadata metadata;
-    private final ResultAttributes resultAttributes;
     private final RequestContext requestContext;
     private final TreeMap<Integer, Object> preparedArgsMap;
     private final TypeMapperContext converters;
@@ -37,12 +35,10 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
     private List<Object> argumentList;
 
     public DefaultInvocation(Object invocationInstance, InvocationMetadata metadata,
-            ResultAttributes resultAttributes, RequestContext context,
-            TypeMapperContext converters, List<InvocationProcessor> processors,
-            AttributesHandlers handlers) {
+            RequestContext context, TypeMapperContext converters,
+            List<InvocationProcessor> processors, AttributesHandlers handlers) {
         this.invocationInstance = invocationInstance;
         this.metadata = metadata;
-        this.resultAttributes = resultAttributes;
         this.requestContext = context;
         this.converters = converters;
         this.processors = processors;
@@ -58,9 +54,10 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
                 getMetadata().getMethodName(), methodArgumentTypes);
         Object interruption = InvocationProcessor.NO_INTERRUPTION;
         List<InvocationProcessor> processors = getProcessors();
+        AttributesHandlers attributesHandlers = getAttributesHandlers();
         for (InvocationProcessor processor : processors) {
             interruption = processor.prepareInvoke(method, this, getMetadata(),
-                    getRequestContext(), getConverters(), getAttributesHandlers());
+                    getRequestContext(), getConverters(), attributesHandlers);
             if (interruption != InvocationProcessor.NO_INTERRUPTION) {
                 return interruption;
             }
@@ -78,7 +75,7 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
                     args.toArray(new Object[args.size()]));
             for (InvocationProcessor processor : processors) {
                 invocationResult = processor.postInvoke(invocationResult, this, getMetadata(),
-                        getRequestContext(), getResultAttributes());
+                        getRequestContext(), attributesHandlers);
             }
         } catch (Exception e) {
             for (InvocationProcessor processor : processors) {
@@ -135,10 +132,6 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
 
     protected InvocationMetadata getMetadata() {
         return metadata;
-    }
-
-    protected ResultAttributes getResultAttributes() {
-        return this.resultAttributes;
     }
 
     protected RequestContext getRequestContext() {

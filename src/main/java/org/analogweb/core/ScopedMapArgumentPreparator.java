@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.analogweb.AttributesHandler;
 import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
-import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.To;
 import org.analogweb.util.AnnotationUtils;
@@ -48,11 +48,11 @@ public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
 
     @Override
     public Object postInvoke(Object invocationResult, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context, ResultAttributes resultAttributes) {
+            InvocationMetadata metadata, RequestContext context, AttributesHandlers handlers) {
         for (Object arg : args.asList()) {
             if (arg instanceof ContextExtractor) {
                 ContextExtractor<?> scopedAttributes = (ContextExtractor<?>) arg;
-                scopedAttributes.extract(context, resultAttributes);
+                scopedAttributes.extract(context, handlers);
             }
         }
         return invocationResult;
@@ -80,13 +80,15 @@ public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
             return removed;
         }
 
-        void extract(RequestContext context, ResultAttributes resultAttributes) {
-            for (Entry<String, ?> entry : entrySet()) {
-                resultAttributes.setValueOfQuery(context, scopeName, entry.getKey(),
-                        entry.getValue());
-            }
-            for (String removedKey : removedKeys) {
-                resultAttributes.removeValueOfQuery(context, getScopeName(), removedKey);
+        void extract(RequestContext context, AttributesHandlers handlers) {
+            AttributesHandler handler = handlers.get(getScopeName());
+            if (handler != null) {
+                for (Entry<String, ?> entry : entrySet()) {
+                    handler.putAttributeValue(context, entry.getKey(), entry.getValue());
+                }
+                for (String removedKey : removedKeys) {
+                    handler.removeAttribute(context, removedKey);
+                }
             }
         }
 

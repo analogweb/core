@@ -9,7 +9,6 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.PreparedInvocationArguments;
 import org.analogweb.RequestContext;
-import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.InvocationFailureException;
 
@@ -20,8 +19,8 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
 
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context,
-            TypeMapperContext converters, AttributesHandlers handlers) {
+            InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
+            AttributesHandlers handlers) {
         return NO_INTERRUPTION;
     }
 
@@ -42,8 +41,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
 
     @Override
     public Object postInvoke(Object invocationResult, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context,
-            ResultAttributes resultAttributes) {
+            InvocationMetadata metadata, RequestContext context, AttributesHandlers handlers) {
         return invocationResult;
     }
 

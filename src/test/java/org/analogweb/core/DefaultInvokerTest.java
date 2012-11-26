@@ -16,7 +16,6 @@ import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.Modules;
 import org.analogweb.RequestContext;
-import org.analogweb.ResultAttributes;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
 import org.analogweb.exception.AssertionFailureException;
@@ -31,7 +30,6 @@ import org.junit.rules.ExpectedException;
 public class DefaultInvokerTest {
 
     private InvocationMetadata metadata;
-    private ResultAttributes resultAttributes;
     private RequestContext context;
     private List<InvocationProcessor> processors;
     private InvocationProcessor processor;
@@ -50,7 +48,6 @@ public class DefaultInvokerTest {
     @Before
     public void setUp() throws Exception {
         metadata = mock(InvocationMetadata.class);
-        resultAttributes = mock(ResultAttributes.class);
         context = mock(RequestContext.class);
         processors = new ArrayList<InvocationProcessor>();
         processor = mock(InvocationProcessor.class);
@@ -72,13 +69,12 @@ public class DefaultInvokerTest {
 
         when(adaptor.getInstanceOfType(MockActions.class)).thenReturn(actionInstance);
         when(metadata.getInvocationClass()).thenReturn((Class) MockActions.class);
-        when(
-                factory.createInvocation(adaptor, metadata, resultAttributes, context, null,
-                        processors, handlers)).thenReturn(invocation);
+        when(factory.createInvocation(adaptor, metadata, context, null, processors, handlers))
+                .thenReturn(invocation);
 
         Invocation invocation = mock(Invocation.class);
         // delegate to Invocation#invoke only.
-        invoker.invoke(invocation, metadata, resultAttributes, context);
+        invoker.invoke(invocation, metadata, context);
 
         verify(invocation).invoke();
     }
@@ -95,7 +91,7 @@ public class DefaultInvokerTest {
 
         Invocation invocation = mock(Invocation.class);
         // delegate to invocation only.
-        invoker.invoke(invocation, null, resultAttributes, context);
+        invoker.invoke(invocation, null, context);
     }
 
     @Test
@@ -109,7 +105,7 @@ public class DefaultInvokerTest {
         when(modules.getInvocationProcessors()).thenReturn(processors);
 
         // delegate to invocation only.
-        invoker.invoke(null, metadata, resultAttributes, context);
+        invoker.invoke(null, metadata, context);
     }
 
     @On

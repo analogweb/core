@@ -4,8 +4,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,8 +30,6 @@ import org.analogweb.Invoker;
 import org.analogweb.Modules;
 import org.analogweb.MultiModule;
 import org.analogweb.RequestContextFactory;
-import org.analogweb.ResultAttributes;
-import org.analogweb.ResultAttributesFactory;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.AssertionFailureException;
@@ -46,8 +42,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 /**
  * @author snowgoose
@@ -73,7 +67,6 @@ public class DefaultModulesBuilderTest {
     private InvocationProcessor invocationProcessor;
     private RequestContextFactory requestContextFactory;
     private AttributesHandler attributesHandler;
-    private ResultAttributesFactory resultAttributesFactory;
     private ExceptionHandler exceptionHandler;
     private TypeMapperContext typeMapperContext;
     private TypeMapper typeMapper;
@@ -98,7 +91,6 @@ public class DefaultModulesBuilderTest {
         invocationProcessor = mock(InvocationProcessor.class);
         requestContextFactory = mock(RequestContextFactory.class);
         attributesHandler = mock(AttributesHandler.class);
-        resultAttributesFactory = mock(ResultAttributesFactory.class);
         exceptionHandler = mock(ExceptionHandler.class);
         typeMapperContext = mock(TypeMapperContext.class);
         typeMapper = mock(TypeMapper.class);
@@ -113,7 +105,6 @@ public class DefaultModulesBuilderTest {
         adaptor.register(invocationProcessor.getClass(), invocationProcessor);
         adaptor.register(requestContextFactory.getClass(), requestContextFactory);
         adaptor.register(attributesHandler.getClass(), attributesHandler);
-        adaptor.register(resultAttributesFactory.getClass(), resultAttributesFactory);
         adaptor.register(exceptionHandler.getClass(), exceptionHandler);
         adaptor.register(typeMapperContext.getClass(), typeMapperContext);
         adaptor.register(typeMapper.getClass(), typeMapper);
@@ -134,7 +125,6 @@ public class DefaultModulesBuilderTest {
         builder.addInvocationProcessorClass(invocationProcessor.getClass());
         builder.addInvocationMetadataFactoriesClass(invocationMetadataFactory.getClass());
         builder.addAttributesHandlerClass(attributesHandler.getClass());
-        builder.setResultAttributesFactoryClass(resultAttributesFactory.getClass());
         builder.setExceptionHandlerClass(exceptionHandler.getClass());
         builder.setTypeMapperContextClass(typeMapperContext.getClass());
         Direction mapToDirection = mock(Direction.class);
@@ -152,7 +142,6 @@ public class DefaultModulesBuilderTest {
         assertSame(modules.getDirectionHandler(), directiontHandler);
         assertSame(modules.getInvocationProcessors().get(0), invocationProcessor);
         assertSame(modules.getRequestContextFactory(), requestContextFactory);
-        assertSame(modules.getResultAttributesFactory(), resultAttributesFactory);
         assertSame(modules.getExceptionHandler(), exceptionHandler);
         assertSame(modules.getTypeMapperContext(), typeMapperContext);
         assertSame(modules.findTypeMapper(typeMapper.getClass()), typeMapper);
@@ -246,34 +235,6 @@ public class DefaultModulesBuilderTest {
         builder.setModulesProviderClass(MockModulesProvidingContainerAdaptorFactory.class);
         Modules modules = builder.buildModules(servletContext, adaptor);
         modules.getInvoker();
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testBuildResultAttribute() {
-        builder.setResultAttributesFactoryClass(resultAttributesFactory.getClass());
-        final ResultAttributes resultAttributes = mock(ResultAttributes.class);
-        doAnswer(new Answer<ResultAttributes>() {
-            @Override
-            public ResultAttributes answer(InvocationOnMock invocation) throws Throwable {
-                Map<String, AttributesHandler> placers = (Map<String, AttributesHandler>) invocation
-                        .getArguments()[0];
-                AttributesHandler placer = placers.get("someScope");
-                assertSame(placer, attributesHandler);
-                return resultAttributes;
-            }
-        }).when(resultAttributesFactory).createResultAttributes(isA(Map.class));
-        builder.setModulesProviderClass(MockModulesProvidingContainerAdaptorFactory.class);
-        builder.addAttributesHandlerClass(attributesHandler.getClass());
-        when(attributesHandler.getScopeName()).thenReturn("someScope");
-        Modules modules = builder.buildModules(servletContext, adaptor);
-        ResultAttributes actual = modules.getResultAttributes();
-
-        assertSame(actual, resultAttributes);
-        actual = modules.getResultAttributes();
-
-        // returns same instance again.
-        assertSame(actual, resultAttributes);
     }
 
     @Test

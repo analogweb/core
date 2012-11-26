@@ -36,9 +36,6 @@ public interface ModulesBuilder {
     ModulesBuilder setRequestContextFactoryClass(
             Class<? extends RequestContextFactory> requestContextFactoryClass);
 
-    ModulesBuilder setResultAttributesFactoryClass(
-            Class<? extends ResultAttributesFactory> resultAttributesFactoryClass);
-
     ModulesBuilder addInvocationMetadataFactoriesClass(
             Class<? extends InvocationMetadataFactory> invocationMetadataFactoryClass);
 

@@ -27,8 +27,6 @@ import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.MultiModule;
 import org.analogweb.RequestContextFactory;
-import org.analogweb.ResultAttributes;
-import org.analogweb.ResultAttributesFactory;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.MissingModuleException;
@@ -51,7 +49,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private Class<? extends ExceptionHandler> exceptionHandlerClass;
     private Class<? extends TypeMapperContext> typeMapperContextClass;
     private Class<? extends RequestContextFactory> requestContextFactoryClass;
-    private Class<? extends ResultAttributesFactory> resultAttributesFactoryClass;
     private final List<Class<? extends InvocationProcessor>> invocationProcessorClasses;
     private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
     private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
@@ -171,36 +168,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
             @Override
             public AttributesHandlers getAttributesHandlers() {
-                if(this.handlers == null){
+                if (this.handlers == null) {
                     this.handlers = new DefaultAttributesHandlers(getAttributesHandlerList());
                 }
                 return this.handlers;
-            }
-
-            @Override
-            public ResultAttributesFactory getResultAttributesFactory() {
-                return getComponentInstance(moduleContainerAdaptor,
-                        getResultAttributesFactoryClass());
-            }
-
-            @Override
-            public ResultAttributes getResultAttributes() {
-                return getResultAttributesFactory().createResultAttributes(
-                        getAttributesHandlersMap());
-            }
-
-            //TODO remove
-            private Map<String, AttributesHandler> attributesHandlerMap;
-
-            //TODO remove
-            protected Map<String, AttributesHandler> getAttributesHandlersMap() {
-                if (this.attributesHandlerMap == null) {
-                    this.attributesHandlerMap = Maps.newConcurrentHashMap();
-                    for (AttributesHandler resolver : getAttributesHandlerList()) {
-                        attributesHandlerMap.put(resolver.getScopeName(), resolver);
-                    }
-                }
-                return this.attributesHandlerMap;
             }
 
             @Override
@@ -264,9 +235,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 setInvokerClass(null);
                 setModulesProviderClass(null);
                 setRequestContextFactoryClass(null);
-                setResultAttributesFactoryClass(null);
                 setTypeMapperContextClass(null);
-                this.attributesHandlerMap = null;
                 this.typeMapperContext = null;
             }
 
@@ -415,10 +384,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         return attributesHandlerClasses;
     }
 
-    protected Class<? extends ResultAttributesFactory> getResultAttributesFactoryClass() {
-        return resultAttributesFactoryClass;
-    }
-
     protected Class<? extends DirectionFormatter> getDirectionFormatterClass(
             Class<? extends Direction> mapToDirection) {
         return this.directionFormatterClasses.get(mapToDirection);
@@ -430,13 +395,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
     protected List<MultiModule.Filter> getIgnoringFilters() {
         return this.ignoreFilters;
-    }
-
-    @Override
-    public ModulesBuilder setResultAttributesFactoryClass(
-            Class<? extends ResultAttributesFactory> resultAttributesFactoryClass) {
-        this.resultAttributesFactoryClass = resultAttributesFactoryClass;
-        return this;
     }
 
     @Override

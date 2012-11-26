@@ -9,11 +9,11 @@ import static org.mockito.Mockito.mock;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
-import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.InvocationFailureException;
 import org.analogweb.junit.NoDescribeMatcher;
@@ -57,10 +57,9 @@ public class AbstractInvocationProcessorTest {
 
     @Test
     public void testPostInvoke() {
-        ResultAttributes resultAttributes = mock(ResultAttributes.class);
+        AttributesHandlers handlers = mock(AttributesHandlers.class);
         Object invocationResult = new Object();
-        Object actual = processor.postInvoke(invocationResult, args, metadata, context,
-                resultAttributes);
+        Object actual = processor.postInvoke(invocationResult, args, metadata, context, handlers);
         assertSame(actual, invocationResult);
     }
 

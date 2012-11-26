@@ -9,7 +9,6 @@ import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
-import org.analogweb.ResultAttributes;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.UnresolvableInvocationException;
 import org.analogweb.util.logging.Log;
@@ -25,13 +24,12 @@ public class DefaultInvocationFactory implements InvocationFactory {
     private static final Log log = Logs.getLog(DefaultInvocationFactory.class);
 
     public Invocation createInvocation(ContainerAdaptor instanceProvider,
-            InvocationMetadata metadata, ResultAttributes resultAttributes, RequestContext context,
-            TypeMapperContext converters, List<InvocationProcessor> processors,
-            AttributesHandlers handlers) {
+            InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
+            List<InvocationProcessor> processors, AttributesHandlers handlers) {
         Object invocationInstance = resolveInvocationInstance(instanceProvider, metadata, context);
         log.log(Markers.LIFECYCLE, "DL000001", invocationInstance, instanceProvider);
-        return new DefaultInvocation(invocationInstance, metadata, resultAttributes, context,
-                converters, processors, handlers);
+        return new DefaultInvocation(invocationInstance, metadata, context, converters, processors,
+                handlers);
     }
 
     protected Object resolveInvocationInstance(ContainerAdaptor instanceProvider,
