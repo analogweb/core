@@ -65,7 +65,7 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
         Object invocationResult = null;
         try {
             for (InvocationProcessor processor : processors) {
-                interruption = processor.onInvoke(method, this, getMetadata(), this);
+                interruption = processor.onInvoke(method, getMetadata(), this);
                 if (interruption != InvocationProcessor.NO_INTERRUPTION) {
                     return interruption;
                 }

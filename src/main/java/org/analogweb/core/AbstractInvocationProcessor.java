@@ -3,7 +3,6 @@ package org.analogweb.core;
 import java.lang.reflect.Method;
 
 import org.analogweb.AttributesHandlers;
-import org.analogweb.Invocation;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
@@ -25,8 +24,7 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
     }
 
     @Override
-    public Object onInvoke(Method method, Invocation invocation, InvocationMetadata metadata,
-            InvocationArguments args) {
+    public Object onInvoke(Method method, InvocationMetadata metadata, InvocationArguments args) {
         return NO_INTERRUPTION;
     }
 

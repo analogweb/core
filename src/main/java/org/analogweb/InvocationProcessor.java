@@ -42,13 +42,11 @@ public interface InvocationProcessor extends MultiModule {
      * として処理し、{@link Invocation}および続く{@link InvocationProcessor}の処理は
      * 中断されます。
      * @param method 実行対象の{@link Method}
-     * @param invocation {@link Invocation}
      * @param metadata {@link InvocationMetadata}
      * @param args {@link InvocationArguments}
      * @return 実行処理を中断する結果({@link Direction}など。)
      */
-    Object onInvoke(Method method, Invocation invocation, InvocationMetadata metadata,
-            InvocationArguments args);
+    Object onInvoke(Method method, InvocationMetadata metadata, InvocationArguments args);
 
     /**
      * {@link Invocation}実行時に例外が発生した場合に、処理を追加します。<br/>
@@ -90,29 +88,5 @@ public interface InvocationProcessor extends MultiModule {
      */
     void afterCompletion(RequestContext request, InvocationArguments args,
             InvocationMetadata metadata, Object invocationResult);
-
-    /**
-     * {@link Invocation#invoke()}実行前に確定したパラメータ
-     * を保持します。
-     * @author snowgoose
-     */
-    //    public static interface InvocationArguments {
-    /**
-     * {@link Invocation}に引き渡すパラメータのうち、指定した
-     * 索引に一致するパラメータの値を更新します。
-     * 確定した(nullでない)パラメータに対する値の更新を行うことは
-     * できません。
-     * @param index (0から始まる)パラメータの索引
-     * @param value 更新する値
-     */
-    //        void set(int index,Object value);
-    /**
-     * 実行時に必要なパラメータの配列を生成します。
-     * @return パラメータの配列
-     */
-    /*
-        Object[] toArray();
-    }
-    */
 
 }
