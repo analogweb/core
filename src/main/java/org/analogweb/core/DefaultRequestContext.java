@@ -17,6 +17,7 @@ import org.analogweb.Headers;
 import org.analogweb.Parameters;
 import org.analogweb.RequestPath;
 import org.analogweb.ServletRequestContext;
+import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.Maps;
 
 /**
@@ -210,7 +211,11 @@ public class DefaultRequestContext implements ServletRequestContext {
 
         @Override
         public List<String> getValues(String key) {
-            return Arrays.asList(request.getParameterValues(key));
+            String[] values = request.getParameterValues(key);
+            if (ArrayUtils.isEmpty(values)) {
+                return Arrays.asList(request.getParameter(key));
+            }
+            return Arrays.asList(values);
         }
 
         @Override
