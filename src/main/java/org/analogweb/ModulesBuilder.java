@@ -1,6 +1,5 @@
 package org.analogweb;
 
-import javax.servlet.ServletContext;
 
 /**
  * アプリケーションにおける{@link Modules}を構成するビルダです。<br/>
@@ -9,7 +8,7 @@ import javax.servlet.ServletContext;
  */
 public interface ModulesBuilder {
 
-    Modules buildModules(ServletContext servletContext, ContainerAdaptor defaultContainer);
+    Modules buildModules(ApplicationContextResolver resolver, ContainerAdaptor defaultContainer);
 
     ModulesBuilder setModulesProviderClass(
             Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> modulesProviderClass);

@@ -13,8 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-
+import org.analogweb.ApplicationContextResolver;
 import org.analogweb.AttributesHandler;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
@@ -53,7 +52,7 @@ public class DefaultModulesBuilderTest {
     private static final Log log = Logs.getLog(DefaultModulesBuilderTest.class);
 
     private DefaultModulesBuilder builder;
-    private ServletContext servletContext;
+    private ApplicationContextResolver resolver;
     // relative mocks.
     private static MockModulesProvidingContainerAdaptor adaptor = new MockModulesProvidingContainerAdaptor();
     private InvocationMetadataFactory invocationMetadataFactory;
@@ -77,14 +76,13 @@ public class DefaultModulesBuilderTest {
 
         builder = new DefaultModulesBuilder();
 
-        servletContext = mock(ServletContext.class);
+        resolver = mock(ApplicationContextResolver.class);
 
         invocationMetadataFactory = mock(InvocationMetadataFactory.class);
         invoker = mock(Invoker.class);
         containerAdaptorFactory = mock(ContainerAdaptorFactory.class);
         containerAdaptor = mock(ContainerAdaptor.class);
-        when(containerAdaptorFactory.createContainerAdaptor(servletContext)).thenReturn(
-                containerAdaptor);
+        when(containerAdaptorFactory.createContainerAdaptor(resolver)).thenReturn(containerAdaptor);
         invocationFactory = mock(InvocationFactory.class);
         directionResolver = mock(DirectionResolver.class);
         directiontHandler = mock(DirectionHandler.class);
@@ -130,7 +128,7 @@ public class DefaultModulesBuilderTest {
         Direction mapToDirection = mock(Direction.class);
         builder.addDirectionFormatterClass(mapToDirection.getClass(), directionFormatter.getClass());
 
-        Modules modules = builder.buildModules(servletContext, adaptor);
+        Modules modules = builder.buildModules(resolver, adaptor);
 
         assertSame(modules.getInvocationMetadataFactories().get(0), invocationMetadataFactory);
         assertSame(modules.getInvocationInstanceProvider(), containerAdaptor);
@@ -154,7 +152,7 @@ public class DefaultModulesBuilderTest {
     public void testBuildModulesWithNullContainerAdaptorFactory() {
         thrown.expect(MissingModulesProviderException.class);
         builder.setModulesProviderClass(MockNullContainerAdaptorFactory.class);
-        builder.buildModules(servletContext, adaptor);
+        builder.buildModules(resolver, adaptor);
 
     }
 
@@ -174,7 +172,7 @@ public class DefaultModulesBuilderTest {
         });
         builder.setModulesProviderClass(MockModulesProvidingContainerAdaptorFactory.class);
         builder.setInvokerClass(Invoker.class);
-        Modules modules = builder.buildModules(servletContext, adaptor);
+        Modules modules = builder.buildModules(resolver, adaptor);
         modules.getInvoker();
     }
 
@@ -186,7 +184,7 @@ public class DefaultModulesBuilderTest {
 
         builder.setInvokerClass(Invoker.class);
         builder.setModulesProviderClass(MockModulesProvidingContainerAdaptorFactory.class);
-        Modules modules = builder.buildModules(servletContext, defaultAdaptor);
+        Modules modules = builder.buildModules(resolver, defaultAdaptor);
         adaptor.unregister(Invoker.class);
 
         Invoker actual = modules.getInvoker();
@@ -202,7 +200,7 @@ public class DefaultModulesBuilderTest {
         when(defaultAdaptor.getInstancesOfType(InvocationProcessor.class)).thenReturn(processors);
         builder.addInvocationProcessorClass(InvocationProcessor.class);
         builder.setModulesProviderClass(MockModulesProvidingContainerAdaptorFactory.class);
-        Modules modules = builder.buildModules(servletContext, defaultAdaptor);
+        Modules modules = builder.buildModules(resolver, defaultAdaptor);
         adaptor.unregister(InvocationProcessor.class);
 
         List<InvocationProcessor> actual = modules.getInvocationProcessors();
@@ -220,7 +218,7 @@ public class DefaultModulesBuilderTest {
         when(defaultAdaptor.getInstancesOfType(InvocationProcessor.class)).thenReturn(processors);
         builder.addInvocationProcessorClass(InvocationProcessor.class);
         builder.setModulesProviderClass(MockModulesProvidingContainerAdaptorFactory.class);
-        Modules modules = builder.buildModules(servletContext, defaultAdaptor);
+        Modules modules = builder.buildModules(resolver, defaultAdaptor);
         adaptor.unregister(InvocationProcessor.class);
 
         List<InvocationProcessor> actual = modules.getInvocationProcessors();
@@ -233,7 +231,7 @@ public class DefaultModulesBuilderTest {
     public void testModuleClassUndefined() {
         thrown.expect(AssertionFailureException.class);
         builder.setModulesProviderClass(MockModulesProvidingContainerAdaptorFactory.class);
-        Modules modules = builder.buildModules(servletContext, adaptor);
+        Modules modules = builder.buildModules(resolver, adaptor);
         modules.getInvoker();
     }
 
@@ -273,14 +271,14 @@ public class DefaultModulesBuilderTest {
         builder.setModulesProviderClass(MockContainerAdaptorFactory.class);
         builder.addInvocationProcessorClass(InvocationProcessor.class);
 
-        Modules modules = builder.buildModules(servletContext, defaultAdaptor);
+        Modules modules = builder.buildModules(resolver, defaultAdaptor);
 
         List<InvocationProcessor> actual = modules.getInvocationProcessors();
         log.debug(actual.toString());
         assertThat(actual.size(), is(3));
 
         builder.ignore(ProcessorB.class);
-        modules = builder.buildModules(servletContext, defaultAdaptor);
+        modules = builder.buildModules(resolver, defaultAdaptor);
         actual = modules.getInvocationProcessors();
         log.debug(actual.toString());
         assertThat(actual.size(), is(1));
@@ -299,7 +297,7 @@ public class DefaultModulesBuilderTest {
             ContainerAdaptorFactory<ContainerAdaptor> {
 
         @Override
-        public ContainerAdaptor createContainerAdaptor(ServletContext servletContext) {
+        public ContainerAdaptor createContainerAdaptor(ApplicationContextResolver resolver) {
             return ca;
         }
 
@@ -334,7 +332,7 @@ public class DefaultModulesBuilderTest {
             }
         };
         builder.filter(filter);
-        Modules modules = builder.buildModules(servletContext, defaultAdaptor);
+        Modules modules = builder.buildModules(resolver, defaultAdaptor);
 
         List<InvocationProcessor> actual = modules.getInvocationProcessors();
         log.debug(actual.toString());
@@ -380,7 +378,7 @@ public class DefaultModulesBuilderTest {
         };
         builder.filter(filtera);
         builder.filter(filterc);
-        Modules modules = builder.buildModules(servletContext, defaultAdaptor);
+        Modules modules = builder.buildModules(resolver, defaultAdaptor);
 
         List<InvocationProcessor> actual = modules.getInvocationProcessors();
         log.debug(actual.toString());
@@ -433,7 +431,7 @@ public class DefaultModulesBuilderTest {
 
         @Override
         public MockModulesProvidingContainerAdaptor createContainerAdaptor(
-                ServletContext servletContext) {
+                ApplicationContextResolver resolver) {
             return adaptor;
         }
 
@@ -444,7 +442,7 @@ public class DefaultModulesBuilderTest {
 
         @Override
         public MockModulesProvidingContainerAdaptor createContainerAdaptor(
-                ServletContext servletContext) {
+                ApplicationContextResolver resolver) {
             return null;
         }
 

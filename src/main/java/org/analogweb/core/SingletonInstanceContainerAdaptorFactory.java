@@ -1,9 +1,7 @@
 package org.analogweb.core;
 
-import javax.servlet.ServletContext;
-
+import org.analogweb.ApplicationContextResolver;
 import org.analogweb.ContainerAdaptorFactory;
-
 
 /**
  * @author snowgoose
@@ -12,7 +10,8 @@ public class SingletonInstanceContainerAdaptorFactory implements
         ContainerAdaptorFactory<SingletonInstanceContainerAdaptor> {
 
     @Override
-    public SingletonInstanceContainerAdaptor createContainerAdaptor(ServletContext servletContext) {
+    public SingletonInstanceContainerAdaptor createContainerAdaptor(
+            ApplicationContextResolver resolver) {
         return new SingletonInstanceContainerAdaptor();
     }
 

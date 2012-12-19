@@ -13,9 +13,9 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 
 import org.analogweb.Application;
+import org.analogweb.ApplicationContextResolver;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.InvocationMetadata;
@@ -51,11 +51,14 @@ public class WebApplication implements Application {
     private RequestPathMapping requestPathMapping;
     private String applicationSpecifier;
     private ClassLoader classLoader;
+    private ApplicationContextResolver resolver;
 
     public WebApplication(final FilterConfig filterConfig, ClassLoader classLoader) {
         StopWatch sw = new StopWatch();
         sw.start();
         this.filterConfig = filterConfig;
+        this.resolver = new ServletContextApplicationContextResolver(
+                filterConfig.getServletContext());
         this.classLoader = classLoader;
         log.log(Markers.BOOT_APPLICATION, "IB000001");
         ApplicationProperties props = configureApplicationProperties(filterConfig);
@@ -153,10 +156,10 @@ public class WebApplication implements Application {
         ModulesBuilder modulesBuilder = processConfigPreparation(ReflectionUtils
                 .filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses));
 
-        ServletContext servletContext = getFilterConfig().getServletContext();
+        ApplicationContextResolver resolver = getApplicationContextResolver();
 
-        ContainerAdaptor defaultContainer = setUpDefaultContainer(servletContext, moduleClasses);
-        Modules modules = modulesBuilder.buildModules(servletContext, defaultContainer);
+        ContainerAdaptor defaultContainer = setUpDefaultContainer(resolver, moduleClasses);
+        Modules modules = modulesBuilder.buildModules(resolver, defaultContainer);
         setModules(modules);
         log.log(Markers.BOOT_APPLICATION, "DB000003", modules);
         Collection<Class<?>> collectedActionClasses = collectClasses(invocationPackageNames
@@ -187,10 +190,10 @@ public class WebApplication implements Application {
         return new ModulesConfigComparator();
     }
 
-    protected ContainerAdaptor setUpDefaultContainer(ServletContext servletContext,
+    protected ContainerAdaptor setUpDefaultContainer(ApplicationContextResolver resolver,
             Collection<Class<?>> rootModuleClasses) {
         StaticMappingContainerAdaptorFactory factory = new StaticMappingContainerAdaptorFactory();
-        StaticMappingContainerAdaptor adaptor = factory.createContainerAdaptor(servletContext);
+        StaticMappingContainerAdaptor adaptor = factory.createContainerAdaptor(resolver);
         for (Class<?> moduleClass : rootModuleClasses) {
             if (Module.class.isAssignableFrom(moduleClass)) {
                 adaptor.register(moduleClass);
@@ -266,6 +269,10 @@ public class WebApplication implements Application {
 
     protected final FilterConfig getFilterConfig() {
         return this.filterConfig;
+    }
+    
+    protected final ApplicationContextResolver getApplicationContextResolver(){
+        return this.resolver;
     }
 
     @Override

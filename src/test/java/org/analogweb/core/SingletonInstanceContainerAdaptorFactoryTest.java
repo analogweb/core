@@ -4,11 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.mockito.Mockito.mock;
 
-import javax.servlet.ServletContext;
-
-
-import org.analogweb.core.SingletonInstanceContainerAdaptor;
-import org.analogweb.core.SingletonInstanceContainerAdaptorFactory;
+import org.analogweb.ApplicationContextResolver;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,20 +13,19 @@ import org.junit.Test;
  */
 public class SingletonInstanceContainerAdaptorFactoryTest {
 
-    private ServletContext servletContext;
+    private ApplicationContextResolver resolver;
 
     @Before
     public void setUp() {
-        servletContext = mock(ServletContext.class);
+        resolver = mock(ApplicationContextResolver.class);
     }
 
     @Test
     public void testCreateContainerAdaptor() {
         SingletonInstanceContainerAdaptorFactory factory = new SingletonInstanceContainerAdaptorFactory();
-        SingletonInstanceContainerAdaptor adaptor = factory.createContainerAdaptor(servletContext);
+        SingletonInstanceContainerAdaptor adaptor = factory.createContainerAdaptor(resolver);
         assertNotNull(adaptor);
-        SingletonInstanceContainerAdaptor otherAdaptor = factory
-                .createContainerAdaptor(servletContext);
+        SingletonInstanceContainerAdaptor otherAdaptor = factory.createContainerAdaptor(resolver);
         assertNotSame(adaptor, otherAdaptor);
     }
 

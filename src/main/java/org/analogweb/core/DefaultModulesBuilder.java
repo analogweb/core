@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-
+import org.analogweb.ApplicationContextResolver;
 import org.analogweb.AttributesHandler;
 import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
@@ -66,13 +65,13 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public Modules buildModules(final ServletContext servletContext,
+    public Modules buildModules(final ApplicationContextResolver resolver,
             final ContainerAdaptor defaultContainer) {
 
         Assertion.notNull(getModulesProviderClass(), "ModulesProviderClass");
 
-        final ContainerAdaptor moduleContainerAdaptor = createModuleContainerAdaptor(
-                servletContext, defaultContainer);
+        final ContainerAdaptor moduleContainerAdaptor = createModuleContainerAdaptor(resolver,
+                defaultContainer);
 
         if (moduleContainerAdaptor == null) {
             throw new MissingModulesProviderException();
@@ -98,8 +97,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 if (this.invocationInstanceProvider == null) {
                     ContainerAdaptorFactory<?> factory = moduleContainerAdaptor
                             .getInstanceOfType(getInvocationInstanceProviderClass());
-                    this.invocationInstanceProvider = factory
-                            .createContainerAdaptor(servletContext);
+                    this.invocationInstanceProvider = factory.createContainerAdaptor(resolver);
                 }
                 return this.invocationInstanceProvider;
             }
@@ -242,14 +240,14 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         };
     }
 
-    protected ContainerAdaptor createModuleContainerAdaptor(final ServletContext servletContext,
-            final ContainerAdaptor defaultContainer) {
+    protected ContainerAdaptor createModuleContainerAdaptor(
+            final ApplicationContextResolver resolver, final ContainerAdaptor defaultContainer) {
         if (getModulesProviderClass().equals(StaticMappingContainerAdaptorFactory.class)) {
             return defaultContainer;
         } else {
             ContainerAdaptorFactory<? extends ContainerAdaptor> factory = ReflectionUtils
                     .getInstanceQuietly(getModulesProviderClass());
-            return factory.createContainerAdaptor(servletContext);
+            return factory.createContainerAdaptor(resolver);
         }
     }
 
