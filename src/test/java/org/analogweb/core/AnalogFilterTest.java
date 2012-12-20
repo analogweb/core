@@ -33,6 +33,8 @@ import org.analogweb.RequestContextFactory;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
 import org.analogweb.TypeMapperContext;
+import org.analogweb.util.ApplicationPropertiesHolder;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,6 +65,7 @@ public class AnalogFilterTest {
     @Before
     public void setUp() {
         application = mock(Application.class);
+        ApplicationPropertiesHolder.dispose(application);
         filter = new AnalogFilter() {
             @Override
             protected Application createApplication(FilterConfig config, ClassLoader loader) {
@@ -81,6 +84,11 @@ public class AnalogFilterTest {
         mapping = mock(RequestPathMapping.class);
         modules = mock(Modules.class);
         requestContextFactory = mock(RequestContextFactory.class);
+    }
+    
+    @After
+    public void tearDown(){
+        ApplicationPropertiesHolder.dispose(application);
     }
 
     @Test

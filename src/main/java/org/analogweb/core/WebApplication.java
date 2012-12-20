@@ -1,6 +1,5 @@
 package org.analogweb.core;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -10,9 +9,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.servlet.FilterConfig;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationContextResolver;
@@ -25,13 +21,11 @@ import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.ModulesConfig;
 import org.analogweb.RequestPathMapping;
-import org.analogweb.exception.MissingRequiredParameterException;
 import org.analogweb.util.ApplicationPropertiesHolder;
 import org.analogweb.util.ClassCollector;
 import org.analogweb.util.ReflectionUtils;
 import org.analogweb.util.ResourceUtils;
 import org.analogweb.util.StopWatch;
-import org.analogweb.util.StringUtils;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
@@ -42,7 +36,7 @@ import org.analogweb.util.logging.Markers;
 public class WebApplication implements Application {
 
     private static final Log log = Logs.getLog(WebApplication.class);
-    private FilterConfig filterConfig;
+//    private FilterConfig filterConfig;
     protected static final String INIT_PARAMETER_ROOT_COMPONENT_PACKAGES = "application.packages";
     protected static final String INIT_PARAMETER_APPLICATION_SPECIFIER = "application.specifier";
     protected static final String INIT_PARAMETER_APPLICATION_TEMPORARY_DIR = "application.tmpdir";
@@ -53,15 +47,18 @@ public class WebApplication implements Application {
     private ClassLoader classLoader;
     private ApplicationContextResolver resolver;
 
-    public WebApplication(final FilterConfig filterConfig, ClassLoader classLoader) {
+    public void run(ApplicationContextResolver resolver,ApplicationProperties props,ClassLoader classLoader){
         StopWatch sw = new StopWatch();
         sw.start();
-        this.filterConfig = filterConfig;
+//        this.filterConfig = filterConfig;
+        /*
         this.resolver = new ServletContextApplicationContextResolver(
                 filterConfig.getServletContext());
+                */
+        this.resolver = resolver;
         this.classLoader = classLoader;
         log.log(Markers.BOOT_APPLICATION, "IB000001");
-        ApplicationProperties props = configureApplicationProperties(filterConfig);
+//        ApplicationProperties props = configureApplicationProperties(filterConfig);
         Collection<String> actionPackageNames = props.getComponentPackageNames();
         log.log(Markers.BOOT_APPLICATION, "DB000001", actionPackageNames);
         Set<String> modulesPackageNames = new HashSet<String>();
@@ -71,7 +68,7 @@ public class WebApplication implements Application {
         initApplication(modulesPackageNames, actionPackageNames, props.getApplicationSpecifier());
         log.log(Markers.BOOT_APPLICATION, "IB000002", sw.stop());
     }
-
+/*
     private ApplicationProperties configureApplicationProperties(final FilterConfig filterConfig) {
         ApplicationPropertiesHolder.configure(this, new ApplicationPropertiesHolder.Creator() {
             @Override
@@ -148,7 +145,7 @@ public class WebApplication implements Application {
         });
         return ApplicationPropertiesHolder.current();
     }
-
+*/
     protected void initApplication(Set<String> modulePackageNames,
             Collection<String> invocationPackageNames, String specifier) {
         Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames
@@ -267,9 +264,11 @@ public class WebApplication implements Application {
         this.applicationSpecifier = suffix;
     }
 
+    /*
     protected final FilterConfig getFilterConfig() {
         return this.filterConfig;
     }
+    */
     
     protected final ApplicationContextResolver getApplicationContextResolver(){
         return this.resolver;
@@ -278,7 +277,8 @@ public class WebApplication implements Application {
     @Override
     public void dispose() {
         this.classLoader = null;
-        this.filterConfig = null;
+        this.resolver = null;
+//        this.filterConfig = null;
         this.applicationSpecifier = null;
         this.modules.dispose();
         this.modules = null;
