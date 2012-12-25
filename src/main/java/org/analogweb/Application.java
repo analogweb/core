@@ -1,5 +1,9 @@
 package org.analogweb;
 
+import java.io.IOException;
+
+import org.analogweb.exception.WebApplicationException;
+
 /**
  * アプリケーションを表します。
  * @author snowgoose
@@ -34,6 +38,9 @@ public interface Application extends Disposable {
      */
     void run(ApplicationContextResolver resolver, ApplicationProperties props,
             ClassLoader classLoader);
+
+    void processRequest(RequestPath path, RequestContext context) throws IOException,
+            WebApplicationException;
 
     /**
      * アプリケーションを構成している{@link Modules}を取得します。

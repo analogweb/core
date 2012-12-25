@@ -1,5 +1,6 @@
 package org.analogweb.core;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -14,15 +15,26 @@ import org.analogweb.Application;
 import org.analogweb.ApplicationContextResolver;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.ContainerAdaptor;
+import org.analogweb.Direction;
+import org.analogweb.DirectionFormatter;
+import org.analogweb.DirectionHandler;
+import org.analogweb.DirectionResolver;
+import org.analogweb.ExceptionHandler;
+import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.Module;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.ModulesConfig;
+import org.analogweb.RequestContext;
+import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
+import org.analogweb.exception.MissingRequiredParameterException;
+import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.ApplicationPropertiesHolder;
 import org.analogweb.util.ClassCollector;
+import org.analogweb.util.CollectionUtils;
 import org.analogweb.util.ReflectionUtils;
 import org.analogweb.util.ResourceUtils;
 import org.analogweb.util.StopWatch;
@@ -36,7 +48,6 @@ import org.analogweb.util.logging.Markers;
 public class WebApplication implements Application {
 
     private static final Log log = Logs.getLog(WebApplication.class);
-//    private FilterConfig filterConfig;
     protected static final String INIT_PARAMETER_ROOT_COMPONENT_PACKAGES = "application.packages";
     protected static final String INIT_PARAMETER_APPLICATION_SPECIFIER = "application.specifier";
     protected static final String INIT_PARAMETER_APPLICATION_TEMPORARY_DIR = "application.tmpdir";
@@ -50,16 +61,13 @@ public class WebApplication implements Application {
     public void run(ApplicationContextResolver resolver,ApplicationProperties props,ClassLoader classLoader){
         StopWatch sw = new StopWatch();
         sw.start();
-//        this.filterConfig = filterConfig;
-        /*
-        this.resolver = new ServletContextApplicationContextResolver(
-                filterConfig.getServletContext());
-                */
         this.resolver = resolver;
         this.classLoader = classLoader;
         log.log(Markers.BOOT_APPLICATION, "IB000001");
-//        ApplicationProperties props = configureApplicationProperties(filterConfig);
         Collection<String> actionPackageNames = props.getComponentPackageNames();
+        if(CollectionUtils.isEmpty(actionPackageNames)){
+            throw new MissingRequiredParameterException(INIT_PARAMETER_ROOT_COMPONENT_PACKAGES);
+        }
         log.log(Markers.BOOT_APPLICATION, "DB000001", actionPackageNames);
         Set<String> modulesPackageNames = new HashSet<String>();
         modulesPackageNames.addAll(actionPackageNames);
@@ -68,84 +76,62 @@ public class WebApplication implements Application {
         initApplication(modulesPackageNames, actionPackageNames, props.getApplicationSpecifier());
         log.log(Markers.BOOT_APPLICATION, "IB000002", sw.stop());
     }
-/*
-    private ApplicationProperties configureApplicationProperties(final FilterConfig filterConfig) {
-        ApplicationPropertiesHolder.configure(this, new ApplicationPropertiesHolder.Creator() {
-            @Override
-            public ApplicationProperties create() {
-                return new ApplicationProperties() {
-
-                    private Collection<String> packageNames;
-                    private String applicationSpecifier;
-                    private String tempDirectoryPath;
-
-                    @Override
-                    public File getTempDir() {
-                        if (this.tempDirectoryPath == null) {
-                            this.tempDirectoryPath = createTempDirPath(filterConfig);
-
-                        }
-                        return new File(tempDirectoryPath);
-                    }
-
-                    @Override
-                    public Collection<String> getComponentPackageNames() {
-                        if (this.packageNames == null) {
-                            this.packageNames = createUserDefinedPackageNames(filterConfig);
-                        }
-                        return this.packageNames;
-                    }
-
-                    @Override
-                    public String getApplicationSpecifier() {
-                        if (this.applicationSpecifier == null) {
-                            this.applicationSpecifier = createApplicationSpecifier(filterConfig);
-                        }
-                        return this.applicationSpecifier;
-                    }
-                };
+    
+    public void processRequest(RequestPath requestedPath, RequestContext context)
+            throws IOException, WebApplicationException {
+        InvocationMetadata metadata = null;
+        Modules mod = null;
+        try {
+            RequestPathMapping mapping = getRequestPathMapping();
+            log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
+            metadata = mapping.findInvocationMetadata(requestedPath);
+            if (metadata == null) {
+                log.log(Markers.LIFECYCLE, "DL000005", requestedPath);
+                return;
             }
 
-            private Set<String> createUserDefinedPackageNames(FilterConfig filterConfig) {
-                String tokenizedRootPackageNames = filterConfig
-                        .getInitParameter(INIT_PARAMETER_ROOT_COMPONENT_PACKAGES);
-                if (StringUtils.isNotEmpty(tokenizedRootPackageNames)) {
-                    StringTokenizer tokenizer = new StringTokenizer(tokenizedRootPackageNames, ",");
-                    Set<String> packageNames = new HashSet<String>();
-                    while (tokenizer.hasMoreTokens()) {
-                        packageNames.add(tokenizer.nextToken());
-                    }
-                    return packageNames;
-                } else {
-                    throw new MissingRequiredParameterException(
-                            INIT_PARAMETER_ROOT_COMPONENT_PACKAGES);
-                }
-            }
+            log.log(Markers.LIFECYCLE, "DL000006", requestedPath, metadata);
+            mod = getModules();
+            ContainerAdaptor invocationInstances = mod.getInvocationInstanceProvider();
 
-            private String createApplicationSpecifier(FilterConfig filterConfig) {
-                String specifier = filterConfig
-                        .getInitParameter(INIT_PARAMETER_APPLICATION_SPECIFIER);
-                if (StringUtils.isEmpty(specifier)) {
-                    return StringUtils.EMPTY;
-                } else {
-                    return specifier;
-                }
-            }
+            Invocation invocation = mod.getInvocationFactory().createInvocation(
+                    invocationInstances, metadata, context, mod.getTypeMapperContext(),
+                    mod.getInvocationProcessors(), mod.getAttributesHandlers());
 
-            private String createTempDirPath(FilterConfig filterConfig) {
-                String tmpDirPath = filterConfig
-                        .getInitParameter(INIT_PARAMETER_APPLICATION_TEMPORARY_DIR);
-                if (StringUtils.isEmpty(tmpDirPath)) {
-                    return System.getProperty("java.io.tmpdir") + "/"
-                            + WebApplication.class.getCanonicalName();
-                } else {
-                    return tmpDirPath + "/" + WebApplication.class.getCanonicalName();
-                }
+            Object invocationResult = mod.getInvoker().invoke(invocation, metadata, context);
+
+            log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(),
+                    invocationResult);
+
+            handleDirection(mod, invocationResult, metadata, context);
+        } catch (Exception e) {
+            ExceptionHandler handler = mod.getExceptionHandler();
+            log.log(Markers.LIFECYCLE, "DL000009", (Object) e, handler);
+            Object exceptionResult = handler.handleException(e);
+            if (exceptionResult != null) {
+                handleDirection(mod, exceptionResult, metadata, context);
             }
-        });
-        return ApplicationPropertiesHolder.current();
+        }
     }
-*/
+
+    protected void handleDirection(Modules modules, Object result, InvocationMetadata metadata,
+            RequestContext context) throws IOException, WebApplicationException {
+        DirectionResolver resultResolver = modules.getDirectionResolver();
+        Direction resolved = resultResolver.resolve(result, metadata, context);
+        log.log(Markers.LIFECYCLE, "DL000008", result, result);
+
+        DirectionFormatter resultFormatter = modules.findDirectionFormatter(resolved.getClass());
+
+        if (resultFormatter != null) {
+            log.log(Markers.LIFECYCLE, "DL000010", result, resultFormatter);
+        } else {
+            log.log(Markers.LIFECYCLE, "DL000011", result);
+        }
+
+        DirectionHandler resultHandler = modules.getDirectionHandler();
+        resultHandler.handleResult(resolved, resultFormatter, context);
+    }
+
     protected void initApplication(Set<String> modulePackageNames,
             Collection<String> invocationPackageNames, String specifier) {
         Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames
@@ -264,12 +250,6 @@ public class WebApplication implements Application {
         this.applicationSpecifier = suffix;
     }
 
-    /*
-    protected final FilterConfig getFilterConfig() {
-        return this.filterConfig;
-    }
-    */
-    
     protected final ApplicationContextResolver getApplicationContextResolver(){
         return this.resolver;
     }
@@ -278,7 +258,6 @@ public class WebApplication implements Application {
     public void dispose() {
         this.classLoader = null;
         this.resolver = null;
-//        this.filterConfig = null;
         this.applicationSpecifier = null;
         this.modules.dispose();
         this.modules = null;

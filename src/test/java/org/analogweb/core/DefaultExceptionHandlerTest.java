@@ -6,12 +6,11 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 
-import javax.servlet.ServletException;
-
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.core.direction.HttpStatus;
 import org.analogweb.exception.ApplicationRuntimeException;
 import org.analogweb.exception.RequestMethodUnsupportedException;
+import org.analogweb.exception.WebApplicationException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -36,7 +35,7 @@ public class DefaultExceptionHandlerTest {
 
     @Test
     public void testHandleThrowableWithApplicationRuntimeException() throws Exception {
-        thrown.expect(ServletException.class);
+        thrown.expect(WebApplicationException.class);
         thrown.expect(rootCause(SomeException.class));
         handler.handleException(new SomeException());
     }
@@ -58,8 +57,8 @@ public class DefaultExceptionHandlerTest {
 
             @Override
             public boolean matches(Object arg0) {
-                if (arg0 instanceof ServletException) {
-                    Throwable raised = ((ServletException) arg0).getRootCause();
+                if (arg0 instanceof WebApplicationException) {
+                    Throwable raised = ((WebApplicationException) arg0).getCause();
                     return throwable.equals(raised.getClass());
                 } else {
                     return false;
