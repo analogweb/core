@@ -8,12 +8,11 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import javax.servlet.ServletException;
-
 import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.exception.ApplicationRuntimeException;
+import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.IOUtils;
 import org.analogweb.util.StringUtils;
@@ -70,7 +69,7 @@ public class Resource implements Direction {
     }
 
     @Override
-    public void render(RequestContext context) throws IOException, ServletException {
+    public void render(RequestContext context) throws IOException, WebApplicationException {
         Headers headers = context.getResponseHeaders();
         headers.putValue("Content-Type", getContentType());
         headers.putValue(CONTENT_DISPOSITION, createContentDisposition());

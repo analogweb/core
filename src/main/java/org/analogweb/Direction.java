@@ -2,7 +2,7 @@ package org.analogweb;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
+import org.analogweb.exception.WebApplicationException;
 
 /**
  * リクエストによって起動されたエントリポイントを実行した結果とその振る舞いを定義します。<br/>
@@ -18,8 +18,8 @@ public interface Direction {
      * エントリポイントを実行したの結果を、レスポンスにレンダリングします。
      * @param context {@link RequestContext}
      * @throws IOException レスポンスへのレンダリング時にI/Oエラーが発生した場合。
-     * @throws ServletException  レスポンスへのレンダリング時に任意の例外が発生した場合。
+     * @throws WebApplicationException レスポンスへのレンダリング時に任意の例外が発生した場合。
      */
-    void render(RequestContext context) throws IOException, ServletException;
+    void render(RequestContext context) throws IOException, WebApplicationException;
 
 }

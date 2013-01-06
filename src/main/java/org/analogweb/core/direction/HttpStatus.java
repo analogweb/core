@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.ServletException;
-
 import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.StringUtils;
 
 /**
@@ -87,7 +86,7 @@ public enum HttpStatus implements Direction {
     }
 
     @Override
-    public void render(RequestContext context) throws IOException, ServletException {
+    public void render(RequestContext context) throws IOException, WebApplicationException {
         String reason = getReason();
         if (StringUtils.isNotEmpty(reason)) {
             Text.with(reason).render(context);

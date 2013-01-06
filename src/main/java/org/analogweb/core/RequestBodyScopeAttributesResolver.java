@@ -2,8 +2,6 @@ package org.analogweb.core;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 

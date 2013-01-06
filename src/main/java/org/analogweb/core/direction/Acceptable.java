@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.ServletException;
-
 import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.StringUtils;
 
 /**
@@ -62,7 +61,7 @@ public class Acceptable implements Direction {
     }
 
     @Override
-    public void render(RequestContext context) throws IOException, ServletException {
+    public void render(RequestContext context) throws IOException, WebApplicationException {
         List<String> mediaTypes = getAcceptableMediaType(context);
         if (mediaTypes.isEmpty()) {
             HttpStatus.NOT_ACCEPTABLE.render(context);

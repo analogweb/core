@@ -2,12 +2,11 @@ package org.analogweb.core.direction;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
-
 import org.analogweb.DirectionFormatter;
 import org.analogweb.DirectionFormatterAware;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.exception.WebApplicationException;
 
 /**
  * テキストフォーマットが可能な{@link org.analogweb.Direction}の実装です。
@@ -49,7 +48,7 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
     }
 
     @Override
-    public void render(RequestContext context) throws IOException, ServletException {
+    public void render(RequestContext context) throws IOException, WebApplicationException {
         Object toXml = getSource();
         if (toXml == null) {
             super.writeToStream(context.getResponseBody());

@@ -10,14 +10,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 import org.analogweb.Direction;
 import org.analogweb.RequestContext;
 import org.analogweb.ServletRequestContext;
 import org.analogweb.exception.DirectionEvaluationException;
 import org.analogweb.exception.MissingRequirmentsException;
+import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
@@ -46,7 +44,7 @@ public class Redirect extends ContextSpecifiedDirection<ServletRequestContext> {
 
     @Override
     protected void renderInternal(ServletRequestContext context) throws IOException,
-            ServletException {
+            WebApplicationException {
         Assertion.notNull(context, RequestContext.class.getCanonicalName());
 
         HttpServletResponse response = context.getServletResponse();
