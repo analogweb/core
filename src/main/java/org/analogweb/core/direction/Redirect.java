@@ -10,6 +10,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.analogweb.Direction;
 import org.analogweb.RequestContext;
 import org.analogweb.ServletRequestContext;

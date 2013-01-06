@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -22,6 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.exception.WebApplicationException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,7 +57,7 @@ public class AcceptableTest {
         a.map(new Direction() {
 
             @Override
-            public void render(RequestContext context) throws IOException, ServletException {
+            public void render(RequestContext context) throws IOException, WebApplicationException {
                 Writer w = new OutputStreamWriter(context.getResponseBody());
                 w.write("write with XML");
                 w.flush();
@@ -133,7 +133,7 @@ public class AcceptableTest {
         a.mapToAny(new Direction() {
 
             @Override
-            public void render(RequestContext context) throws IOException, ServletException {
+            public void render(RequestContext context) throws IOException, WebApplicationException {
                 Writer w = new OutputStreamWriter(context.getResponseBody());
                 w.write("write with ANY");
                 w.flush();

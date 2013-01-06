@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+
 import org.analogweb.Direction;
 import org.analogweb.RequestContext;
 import org.analogweb.ServletRequestContext;
@@ -30,14 +34,19 @@ public class Forward extends ContextSpecifiedDirection<ServletRequestContext> {
     }
 
     @Override
-    protected void renderInternal(ServletRequestContext context) throws IOException, WebApplicationException {
+    protected void renderInternal(ServletRequestContext context) throws IOException,
+            WebApplicationException {
         Assertion.notNull(context, RequestContext.class.getCanonicalName());
 
         String to = getForwardTo();
         HttpServletRequest request = context.getServletRequest();
         extractContextToRequest(request);
         RequestDispatcher dispatcher = request.getRequestDispatcher(to);
-        dispatcher.forward(request, context.getServletResponse());
+        try {
+            dispatcher.forward(request, context.getServletResponse());
+        } catch (ServletException e) {
+            throw new WebApplicationException(e);
+        }
     }
 
     protected void extractContextToRequest(HttpServletRequest request) {
