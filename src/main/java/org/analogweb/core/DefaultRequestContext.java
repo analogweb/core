@@ -68,7 +68,7 @@ public class DefaultRequestContext implements ServletRequestContext {
         return this.cookies;
     }
 
-    class ServletCookies implements Cookies {
+    static class ServletCookies implements Cookies {
         private Map<String, Cookies.Cookie> cookieMap;
         private HttpServletResponse response;
 
@@ -77,6 +77,7 @@ public class DefaultRequestContext implements ServletRequestContext {
             for (javax.servlet.http.Cookie c : request.getCookies()) {
                 this.cookieMap.put(c.getName(), new ServletCookie(c));
             }
+            this.response = response;
         }
 
         @Override
@@ -103,7 +104,7 @@ public class DefaultRequestContext implements ServletRequestContext {
         }
     }
 
-    class ServletCookie implements Cookies.Cookie {
+    static class ServletCookie implements Cookies.Cookie {
 
         private javax.servlet.http.Cookie cookie;
 
@@ -161,7 +162,7 @@ public class DefaultRequestContext implements ServletRequestContext {
         return this.requestHeaders;
     }
 
-    class ServletRequestHeaders implements Headers {
+    static class ServletRequestHeaders implements Headers {
 
         private HttpServletRequest request;
 
@@ -250,7 +251,7 @@ public class DefaultRequestContext implements ServletRequestContext {
         getServletResponse().setStatus(status);
     }
 
-    class ServletResponseHeaders extends ServletRequestHeaders {
+    static class ServletResponseHeaders extends ServletRequestHeaders {
 
         private HttpServletResponse response;
 

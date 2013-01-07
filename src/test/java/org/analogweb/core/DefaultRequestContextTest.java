@@ -2,7 +2,9 @@ package org.analogweb.core;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +58,29 @@ public class DefaultRequestContextTest {
 
         Cookies.Cookie actual = context.getCookies().getCookie("foo");
         assertThat(actual.getValue(), is("baa"));
+    }
+
+    @Test
+    public void testPutCookies() {
+        context = new DefaultRequestContext(request, response, servletContext);
+        when(request.getRequestURI()).thenReturn("/baa/baz.rn");
+        when(request.getContextPath()).thenReturn("/foo");
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getCookies()).thenReturn(new Cookie[] { new Cookie("hoge", "fuga") });
+
+        Cookies cookies = context.getCookies();
+        cookies.putCookie("foo", "baa");
+        Cookies.Cookie cookie = mock(Cookies.Cookie.class);
+        when(cookie.getComment()).thenReturn("aComment");
+        when(cookie.getDomain()).thenReturn("aDomain");
+        when(cookie.getMaxAge()).thenReturn(3600);
+        when(cookie.getName()).thenReturn("name");
+        when(cookie.getPath()).thenReturn("/");
+        when(cookie.getValue()).thenReturn("value");
+        when(cookie.getVersion()).thenReturn(1);
+        cookies.putCookie(cookie);
+
+        verify(response, times(2)).addCookie(isA(Cookie.class));
     }
 
     @Test
