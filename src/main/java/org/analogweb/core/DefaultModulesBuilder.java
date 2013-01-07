@@ -25,7 +25,6 @@ import org.analogweb.Invoker;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.MultiModule;
-import org.analogweb.RequestContextFactory;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.MissingModuleException;
@@ -47,7 +46,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private Class<? extends DirectionHandler> directionHandlerClass;
     private Class<? extends ExceptionHandler> exceptionHandlerClass;
     private Class<? extends TypeMapperContext> typeMapperContextClass;
-    private Class<? extends RequestContextFactory> requestContextFactoryClass;
     private final List<Class<? extends InvocationProcessor>> invocationProcessorClasses;
     private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
     private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
@@ -152,11 +150,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return defaultContainer;
             }
 
-            @Override
-            public RequestContextFactory getRequestContextFactory() {
-                return getComponentInstance(moduleContainerAdaptor, getRequestContextFactoryClass());
-            }
-
             //TODO remove
             List<AttributesHandler> getAttributesHandlerList() {
                 return getComponentInstances(moduleContainerAdaptor, getAttributesHandlerClasses());
@@ -232,7 +225,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 setInvocationInstanceProviderClass(null);
                 setInvokerClass(null);
                 setModulesProviderClass(null);
-                setRequestContextFactoryClass(null);
                 setTypeMapperContextClass(null);
                 this.typeMapperContext = null;
             }
@@ -314,13 +306,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public ModulesBuilder setRequestContextFactoryClass(
-            Class<? extends RequestContextFactory> requestContextFactoryClass) {
-        this.requestContextFactoryClass = requestContextFactoryClass;
-        return this;
-    }
-
-    @Override
     public ModulesBuilder addInvocationProcessorClass(
             Class<? extends InvocationProcessor> actionInvocationProcessorClass) {
         this.invocationProcessorClasses.add(actionInvocationProcessorClass);
@@ -368,10 +353,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
     protected Class<? extends TypeMapperContext> getTypeMapperContextClass() {
         return this.typeMapperContextClass;
-    }
-
-    protected Class<? extends RequestContextFactory> getRequestContextFactoryClass() {
-        return this.requestContextFactoryClass;
     }
 
     protected List<Class<? extends InvocationProcessor>> getInvocationProcessorClasses() {

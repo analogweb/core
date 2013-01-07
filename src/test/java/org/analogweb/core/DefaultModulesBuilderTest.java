@@ -28,7 +28,6 @@ import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.Modules;
 import org.analogweb.MultiModule;
-import org.analogweb.RequestContextFactory;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.AssertionFailureException;
@@ -64,7 +63,6 @@ public class DefaultModulesBuilderTest {
     private DirectionResolver directionResolver;
     private DirectionHandler directiontHandler;
     private InvocationProcessor invocationProcessor;
-    private RequestContextFactory requestContextFactory;
     private AttributesHandler attributesHandler;
     private ExceptionHandler exceptionHandler;
     private TypeMapperContext typeMapperContext;
@@ -87,7 +85,6 @@ public class DefaultModulesBuilderTest {
         directionResolver = mock(DirectionResolver.class);
         directiontHandler = mock(DirectionHandler.class);
         invocationProcessor = mock(InvocationProcessor.class);
-        requestContextFactory = mock(RequestContextFactory.class);
         attributesHandler = mock(AttributesHandler.class);
         exceptionHandler = mock(ExceptionHandler.class);
         typeMapperContext = mock(TypeMapperContext.class);
@@ -101,7 +98,6 @@ public class DefaultModulesBuilderTest {
         adaptor.register(directionResolver.getClass(), directionResolver);
         adaptor.register(directiontHandler.getClass(), directiontHandler);
         adaptor.register(invocationProcessor.getClass(), invocationProcessor);
-        adaptor.register(requestContextFactory.getClass(), requestContextFactory);
         adaptor.register(attributesHandler.getClass(), attributesHandler);
         adaptor.register(exceptionHandler.getClass(), exceptionHandler);
         adaptor.register(typeMapperContext.getClass(), typeMapperContext);
@@ -119,7 +115,6 @@ public class DefaultModulesBuilderTest {
         builder.setInvokerClass(invoker.getClass());
         builder.setDirectionHandlerClass(directiontHandler.getClass());
         builder.setDirectionResolverClass(directionResolver.getClass());
-        builder.setRequestContextFactoryClass(requestContextFactory.getClass());
         builder.addInvocationProcessorClass(invocationProcessor.getClass());
         builder.addInvocationMetadataFactoriesClass(invocationMetadataFactory.getClass());
         builder.addAttributesHandlerClass(attributesHandler.getClass());
@@ -139,7 +134,6 @@ public class DefaultModulesBuilderTest {
         assertSame(modules.getDirectionResolver(), directionResolver);
         assertSame(modules.getDirectionHandler(), directiontHandler);
         assertSame(modules.getInvocationProcessors().get(0), invocationProcessor);
-        assertSame(modules.getRequestContextFactory(), requestContextFactory);
         assertSame(modules.getExceptionHandler(), exceptionHandler);
         assertSame(modules.getTypeMapperContext(), typeMapperContext);
         assertSame(modules.findTypeMapper(typeMapper.getClass()), typeMapper);

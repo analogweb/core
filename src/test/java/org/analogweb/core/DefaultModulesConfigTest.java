@@ -12,7 +12,6 @@ import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.ModulesBuilder;
-import org.analogweb.RequestContextFactory;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.AssertionFailureException;
 import org.junit.Before;
@@ -54,8 +53,6 @@ public class DefaultModulesConfigTest {
         when(modulesBuilder.setExceptionHandlerClass(ExceptionHandler.class)).thenReturn(
                 modulesBuilder);
         when(modulesBuilder.setTypeMapperContextClass(TypeMapperContext.class)).thenReturn(
-                modulesBuilder);
-        when(modulesBuilder.setRequestContextFactoryClass(RequestContextFactory.class)).thenReturn(
                 modulesBuilder);
         when(modulesBuilder.addInvocationProcessorClass(InvocationProcessor.class)).thenReturn(
                 modulesBuilder);

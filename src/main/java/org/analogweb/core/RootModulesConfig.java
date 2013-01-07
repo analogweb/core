@@ -10,7 +10,6 @@ import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.ModulesConfig;
-import org.analogweb.RequestContextFactory;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.util.Assertion;
 
@@ -30,7 +29,6 @@ public final class RootModulesConfig implements ModulesConfig {
                 .setDirectionResolverClass(DirectionResolver.class)
                 .setExceptionHandlerClass(ExceptionHandler.class)
                 .setTypeMapperContextClass(TypeMapperContext.class)
-                .setRequestContextFactoryClass(RequestContextFactory.class)
                 .addInvocationProcessorClass(InvocationProcessor.class)
                 .addInvocationMetadataFactoriesClass(InvocationMetadataFactory.class)
                 .addAttributesHandlerClass(AttributesHandler.class);

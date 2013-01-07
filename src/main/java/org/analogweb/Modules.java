@@ -30,8 +30,6 @@ public interface Modules extends Disposable {
 
     ContainerAdaptor getOptionalContainerAdaptor();
 
-    RequestContextFactory getRequestContextFactory();
-
     AttributesHandlers getAttributesHandlers();
 
     DirectionFormatter findDirectionFormatter(Class<? extends Direction> mapToDirection);

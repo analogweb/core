@@ -32,9 +32,6 @@ public interface ModulesBuilder {
     ModulesBuilder setTypeMapperContextClass(
             Class<? extends TypeMapperContext> typeMapperContextClass);
 
-    ModulesBuilder setRequestContextFactoryClass(
-            Class<? extends RequestContextFactory> requestContextFactoryClass);
-
     ModulesBuilder addInvocationMetadataFactoriesClass(
             Class<? extends InvocationMetadataFactory> invocationMetadataFactoryClass);
 
