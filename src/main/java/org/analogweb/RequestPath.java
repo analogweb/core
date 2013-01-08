@@ -1,5 +1,7 @@
 package org.analogweb;
 
+import java.net.URI;
+
 /**
  * リクエストされた{@link RequestPathMetadata}です。
  * @author snowgoose
@@ -20,5 +22,11 @@ public interface RequestPath extends RequestPathMetadata {
      * @return リクエストされたパスを実行するメソッド
      */
     String getMethod();
+
+    /**
+     * リクエストされたパスを表す{@link URL}を取得します。
+     * @return リクエストされたパスを表す{@link URL}
+     */
+    URI getRequestURI();
 
 }

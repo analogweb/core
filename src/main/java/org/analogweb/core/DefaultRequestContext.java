@@ -3,6 +3,8 @@ package org.analogweb.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +19,7 @@ import org.analogweb.Headers;
 import org.analogweb.Parameters;
 import org.analogweb.RequestPath;
 import org.analogweb.ServletRequestContext;
+import org.analogweb.exception.ApplicationRuntimeException;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.Maps;
 
@@ -57,7 +60,22 @@ public class DefaultRequestContext implements ServletRequestContext {
 
     @Override
     public RequestPath getRequestPath() {
-        return new DefaultRequestPath(getServletRequest());
+        HttpServletRequest request = getServletRequest();
+        URI uri = createRequestURI(request);
+        return new DefaultRequestPath(getServletContext().getContextPath(), uri,
+                request.getMethod());
+    }
+
+    protected URI createRequestURI(HttpServletRequest request) {
+        try {
+            return new URI(request.getScheme(), null, request.getServerName(), request.getServerPort(),
+                    request.getRequestURI(), request.getQueryString(), null);
+        } catch (URISyntaxException e) {
+            // TODO better exception.
+            throw new ApplicationRuntimeException(e){
+                private static final long serialVersionUID = 1L;
+            };
+        }
     }
 
     @Override

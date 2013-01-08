@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.analogweb.Cookies;
 import org.analogweb.Headers;
 import org.analogweb.Parameters;
+import org.analogweb.RequestPath;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -81,6 +82,21 @@ public class DefaultRequestContextTest {
         cookies.putCookie(cookie);
 
         verify(response, times(2)).addCookie(isA(Cookie.class));
+    }
+
+    @Test
+    public void testGetRequestPath() {
+        context = new DefaultRequestContext(request, response, servletContext);
+        when(servletContext.getContextPath()).thenReturn("/foo");
+        when(request.getRequestURI()).thenReturn("/foo/baa/baz.rn");
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getProtocol()).thenReturn("http");
+        when(request.getServerName()).thenReturn("somehost");
+        when(request.getServerPort()).thenReturn(80);
+
+        RequestPath actual = context.getRequestPath();
+        assertThat(actual.getActualPath(), is("/baa/baz"));
+        assertThat(actual.getMethod(), is("GET"));
     }
 
     @Test

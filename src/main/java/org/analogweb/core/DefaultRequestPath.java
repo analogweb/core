@@ -1,6 +1,6 @@
 package org.analogweb.core;
 
-import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 
 import org.analogweb.RequestPath;
 import org.analogweb.util.Assertion;
@@ -14,14 +14,15 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
 
     private final String actualPath;
     private final String requestMethod;
+    private final URI requestURI;
 
-    public DefaultRequestPath(HttpServletRequest request) {
-        String requestUri = request.getRequestURI();
-        this.actualPath = getFormattedPath(requestUri, request.getContextPath());
-        String method = request.getMethod();
-        Assertion.notNull(method, "Request method.");
-        this.requestMethod = method.toUpperCase();
-        this.suffix = extractSuffix(requestUri);
+    public DefaultRequestPath(String basePath, URI requestedUri, String requestMethod) {
+        this.requestURI = requestedUri;
+        String path = requestURI.getRawPath();
+        this.actualPath = getFormattedPath(path, basePath);
+        Assertion.notNull(requestMethod, "Request method.");
+        this.requestMethod = requestMethod.toUpperCase();
+        this.suffix = extractSuffix(path);
     }
 
     @Override
@@ -78,6 +79,11 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
     @Override
     public String getMethod() {
         return requestMethod;
+    }
+
+    @Override
+    public URI getRequestURI() {
+        return this.requestURI;
     }
 
     @Override
