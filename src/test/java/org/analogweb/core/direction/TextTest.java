@@ -6,12 +6,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
-import org.analogweb.mock.MockServletOutputStream;
 import org.analogweb.util.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,7 +36,7 @@ public class TextTest {
         final String responseText = "this is test!";
         final Text actual = Text.with(responseText);
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         assertThat(actual.getContentType(), is("text/plain; charset=" + charset));
@@ -47,7 +47,7 @@ public class TextTest {
 
         actual.render(context);
 
-        assertThat(out.toString(), is(responseText));
+        assertThat(new String(out.toByteArray()), is(responseText));
         assertThat(actual.toString(), is(responseText));
 
         verify(headers).putValue("Content-Type", "text/plain; charset=" + charset);
@@ -59,7 +59,7 @@ public class TextTest {
         final String responseText = "this is test!";
         final Text actual = Text.with(responseText).withCharset(charset);
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         assertThat(actual.getContentType(), is("text/plain; charset="
@@ -71,7 +71,7 @@ public class TextTest {
 
         actual.render(context);
 
-        assertThat(out.toString(), is(responseText));
+        assertThat(new String(out.toByteArray()), is(responseText));
 
         verify(headers).putValue("Content-Type",
                 "text/plain; charset=" + Charset.defaultCharset().displayName());
@@ -82,7 +82,7 @@ public class TextTest {
         final String responseText = "this is test!";
         final Text actual = Text.with(responseText).withoutCharset();
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         assertThat(actual.getContentType(), is("text/plain"));
@@ -93,7 +93,7 @@ public class TextTest {
 
         actual.render(context);
 
-        assertThat(out.toString(), is(responseText));
+        assertThat(new String(out.toByteArray()), is(responseText));
 
         verify(headers).putValue("Content-Type", "text/plain");
     }
@@ -104,7 +104,7 @@ public class TextTest {
         final String responseText = "<root/>";
         final Text actual = Text.with(responseText).typeAs("text/xml");
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         assertThat(actual.getContentType(), is("text/xml; charset=" + charset));
@@ -115,7 +115,7 @@ public class TextTest {
 
         actual.render(context);
 
-        assertThat(out.toString(), is(responseText));
+        assertThat(new String(out.toByteArray()), is(responseText));
 
         verify(headers).putValue("Content-Type", "text/xml; charset=" + charset);
     }
@@ -126,7 +126,7 @@ public class TextTest {
         final String responseText = "{\"foo\",\"baa\"}";
         final Text actual = Text.with(responseText).typeAs("application/json").withCharset(charset);
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         assertThat(actual.getContentType(), is("application/json; charset=" + charset));
@@ -136,7 +136,7 @@ public class TextTest {
 
         actual.render(context);
 
-        assertThat(out.toString(), is(responseText));
+        assertThat(new String(out.toByteArray()), is(responseText));
 
         verify(headers).putValue("Content-Type", "application/json; charset=" + charset);
     }
@@ -146,7 +146,7 @@ public class TextTest {
         final String responseText = "これはテストです";
         final Text actual = Text.with(responseText).withCharset("Shift-JIS");
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         assertThat(actual.getContentType(), is("text/plain; charset=Shift-JIS"));
@@ -157,7 +157,7 @@ public class TextTest {
 
         actual.render(context);
 
-        assertThat(out.toString("Shift-JIS"), is(responseText));
+        assertThat(new String(out.toByteArray(), "Shift-JIS"), is(responseText));
     }
 
     @Test
@@ -165,7 +165,7 @@ public class TextTest {
         final String responseText = null;
         final Text actual = Text.with(responseText);
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         Headers headers = mock(Headers.class);
@@ -173,7 +173,7 @@ public class TextTest {
 
         actual.render(context);
 
-        assertThat(out.toString(), is(StringUtils.EMPTY));
+        assertThat(new String(out.toByteArray()), is(StringUtils.EMPTY));
     }
 
     @Test
@@ -185,7 +185,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         actual.render(context);

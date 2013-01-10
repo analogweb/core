@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
@@ -19,7 +20,6 @@ import org.analogweb.DirectionFormatter;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.exception.FormatFailureException;
-import org.analogweb.mock.MockServletOutputStream;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -54,7 +54,7 @@ public class JsonTest {
         Simple bean = new Simple("foo", 33, birthDay);
         Json json = Json.as(bean);
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         assertThat(json.getContentType(), is("application/json; charset=" + charset));
@@ -65,7 +65,7 @@ public class JsonTest {
 
         json.render(context);
 
-        String actual = out.toString(charset);
+        String actual = new String(out.toByteArray(), charset);
 
         assertThat(actual, is("{\"age\": 33,\"birthDay\": " + birthDay.getTime()
                 + ",\"name\": \"foo\"}"));
@@ -73,6 +73,7 @@ public class JsonTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testSingleObjectWithIOException() throws Exception {
         thrown.expect(formatFailureExceptionCauseOfIOException());
         String charset = "UTF-8";
@@ -81,13 +82,7 @@ public class JsonTest {
         Simple bean = new Simple("foo", 33, birthDay);
         Json json = Json.as(bean);
 
-        final MockServletOutputStream out = new MockServletOutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                throw new IOException();
-            }
-        };
-        when(context.getResponseBody()).thenReturn(out);
+        when(context.getResponseBody()).thenThrow(IOException.class);
 
         assertThat(json.getContentType(), is("application/json; charset=" + charset));
         assertThat(json.getCharset(), is(charset));
@@ -124,12 +119,12 @@ public class JsonTest {
 
         Json json = Json.with("{\"value\": \"foo!\"}");
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         json.render(context);
 
-        String actual = out.toString(charset);
+        String actual = new String(out.toByteArray(), charset);
 
         assertThat(actual, is("{\"value\": \"foo!\"}"));
     }
@@ -144,7 +139,7 @@ public class JsonTest {
                 birthDay2));
         Json json = Json.as(beans);
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         assertThat(json.getContentType(), is("application/json; charset=" + charset));
@@ -155,7 +150,7 @@ public class JsonTest {
 
         json.render(context);
 
-        String actual = out.toString(charset);
+        String actual = new String(out.toByteArray(), charset);
 
         assertThat(actual, is("{[" + "{\"age\": 33,\"birthDay\": " + birthDay.getTime()
                 + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": " + birthDay2.getTime()
@@ -172,7 +167,7 @@ public class JsonTest {
                 new Simple("baa", 32, birthDay2) };
         Json json = Json.as(beans);
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         assertThat(json.getContentType(), is("application/json; charset=" + charset));
@@ -183,7 +178,7 @@ public class JsonTest {
 
         json.render(context);
 
-        String actual = out.toString(charset);
+        String actual = new String(out.toByteArray(), charset);
 
         assertThat(actual, is("{[" + "{\"age\": 33,\"birthDay\": " + birthDay.getTime()
                 + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": " + birthDay2.getTime()
@@ -197,7 +192,7 @@ public class JsonTest {
         Date birthDay2 = new SimpleDateFormat("yyyyMMdd").parse("20100712");
         Json json = Json.as(new ManyList());
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         Headers headers = mock(Headers.class);
@@ -205,7 +200,7 @@ public class JsonTest {
 
         json.render(context);
 
-        String actual = out.toString("UTF-8");
+        String actual = new String(out.toByteArray(), "UTF-8");
 
         assertThat(actual, is("{\"boo\": true,\"simples\": [" + "{\"age\": 33,\"birthDay\": "
                 + birthDay.getTime() + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": "
@@ -219,7 +214,7 @@ public class JsonTest {
         Date birthDay2 = new SimpleDateFormat("yyyyMMdd").parse("20100712");
         Json jsons = Json.as(new ManyArray());
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         Headers headers = mock(Headers.class);
@@ -227,7 +222,7 @@ public class JsonTest {
 
         jsons.render(context);
 
-        String actual = out.toString("UTF-8");
+        String actual = new String(out.toByteArray(), "UTF-8");
 
         assertThat(actual, is("{\"id\": \"01\",\"simples\": [" + "{\"age\": 33,\"birthDay\": "
                 + birthDay.getTime() + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": "
@@ -241,7 +236,7 @@ public class JsonTest {
         Simple bean = new Simple("foo", 33, null);
         Json json = Json.as(bean);
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         Headers headers = mock(Headers.class);
@@ -249,7 +244,7 @@ public class JsonTest {
 
         json.render(context);
 
-        String actual = out.toString(charset);
+        String actual = new String(out.toByteArray(), charset);
 
         assertThat(actual, is("{\"age\": 33,\"birthDay\": null,\"name\": \"foo\"}"));
     }
@@ -261,7 +256,7 @@ public class JsonTest {
         Simple bean = new Simple("foo", 33, null);
         Json json = Json.as(bean).withCharset("Shift-JIS").attach(formatter);
 
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         Headers headers = mock(Headers.class);

@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.ServletOutputStream;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -105,12 +104,7 @@ public class AcceptableTest {
                 Arrays.asList("text/x-dvi", "image/png", "*/*"));
         //        when(request.getHeader("Accept")).thenReturn(accept);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(new ServletOutputStream() {
-            @Override
-            public void write(final int arg0) throws IOException {
-                out.write(arg0);
-            }
-        });
+        when(context.getResponseBody()).thenReturn(out);
         final Direction anyDirection = mock(Direction.class);
         Acceptable.as(m).mapToAny(anyDirection).render(context);
         verify(anyDirection).render(context);
@@ -152,12 +146,7 @@ public class AcceptableTest {
         when(headers.getValues("Accept")).thenReturn(
                 Arrays.asList("text/x-dvi", "image/png", "application/json"));
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(new ServletOutputStream() {
-            @Override
-            public void write(final int arg0) throws IOException {
-                out.write(arg0);
-            }
-        });
+        when(context.getResponseBody()).thenReturn(out);
         final Direction replaceDirection = mock(Direction.class);
         Acceptable.as(m).map(replaceDirection, "application/json").render(context);
         verify(replaceDirection).render(context);
@@ -196,12 +185,7 @@ public class AcceptableTest {
         when(context.getResponseHeaders()).thenReturn(responseHeaders);
         when(headers.getValues("Accept")).thenReturn(Arrays.asList(accept.split(",")));
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(new ServletOutputStream() {
-            @Override
-            public void write(final int arg0) throws IOException {
-                out.write(arg0);
-            }
-        });
+        when(context.getResponseBody()).thenReturn(out);
 
         a.render(context);
         return new String(out.toByteArray());

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,7 +17,6 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.exception.ApplicationRuntimeException;
 import org.analogweb.exception.AssertionFailureException;
-import org.analogweb.mock.MockServletOutputStream;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,12 +47,12 @@ public class ResourceTest {
         Resource resource = Resource.as(file);
 
         when(context.getResponseHeaders()).thenReturn(headers);
-        MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         resource.render(context);
 
-        assertThat(out.toString(), is("this is test log."));
+        assertThat(new String(out.toByteArray()), is("this is test log."));
 
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "attachment; filename=text.log");
@@ -71,12 +71,12 @@ public class ResourceTest {
         Resource resource = Resource.as(file).inline();
 
         when(context.getResponseHeaders()).thenReturn(headers);
-        MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         resource.render(context);
 
-        assertThat(out.toString(), is("this is test log."));
+        assertThat(new String(out.toByteArray()), is("this is test log."));
 
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "inline; filename=text.log");
@@ -95,12 +95,12 @@ public class ResourceTest {
         Resource resource = Resource.asFilePath(file.getPath());
 
         when(context.getResponseHeaders()).thenReturn(headers);
-        MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         resource.render(context);
 
-        assertThat(out.toString(), is("this is test log."));
+        assertThat(new String(out.toByteArray()), is("this is test log."));
 
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "attachment; filename=text.log");
@@ -119,12 +119,12 @@ public class ResourceTest {
         Resource resource = Resource.as(new FileInputStream(file));
 
         when(context.getResponseHeaders()).thenReturn(headers);
-        MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         resource.render(context);
 
-        assertThat(out.toString(), is("this is test log."));
+        assertThat(new String(out.toByteArray()), is("this is test log."));
 
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "attachment");

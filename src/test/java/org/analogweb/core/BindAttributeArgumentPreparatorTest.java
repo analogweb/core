@@ -11,12 +11,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.Date;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.analogweb.AttributesHandler;
 import org.analogweb.AttributesHandlers;
@@ -86,34 +80,6 @@ public class BindAttributeArgumentPreparatorTest {
     }
 
     @Test
-    public void testPrepareWithSrecialArgs() {
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class, HttpServletRequest.class,
-                String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(
-                DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doAnything",
-                argumentTypes);
-
-        AttributesHandler handler = mock(AttributesHandler.class);
-        when(handlers.get("")).thenReturn(handler);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(handler.resolveAttributeValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
-                "foo!");
-        when(typeMapper.mapToType(TypeMapper.class, "foo!", String.class, new String[0]))
-                .thenReturn("foo!");
-        when(handler.resolveAttributeValue(context, metadata, "baz", argumentTypes[2])).thenReturn(
-                "baz!");
-        when(typeMapper.mapToType(TypeMapper.class, "baz!", String.class, new String[0]))
-                .thenReturn("baz!");
-
-        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
-                handlers);
-        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
-
-        verify(args).putInvocationArgument(0, "foo!");
-        verify(args).putInvocationArgument(2, "baz!");
-    }
-
-    @Test
     public void testPrepareWithCoveredAnnotation() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
         final Method method = ReflectionUtils.getMethodQuietly(
@@ -133,37 +99,6 @@ public class BindAttributeArgumentPreparatorTest {
         assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
 
         verify(args).putInvocationArgument(0, "booz!");
-    }
-
-    @Test
-    public void testPrepareWithNotAvairableValueInContext() {
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class, HttpServletResponse.class,
-                String.class, Integer.class };
-        final Method method = ReflectionUtils.getMethodQuietly(
-                DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doWithoutArgs",
-                argumentTypes);
-
-        AttributesHandler handler = mock(AttributesHandler.class);
-        when(handlers.get("")).thenReturn(handler);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(handler.resolveAttributeValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
-                "foo");
-        when(typeMapper.mapToType(TypeMapper.class, "foo", String.class, new String[0]))
-                .thenReturn("foo");
-        // baa attribute ignored.
-        when(handler.resolveAttributeValue(context, metadata, "baa", argumentTypes[1])).thenReturn(
-                null);
-        when(handler.resolveAttributeValue(context, metadata, "baz", argumentTypes[3])).thenReturn(
-                "100");
-        when(typeMapper.mapToType(TypeMapper.class, "100", Integer.class, new String[0]))
-                .thenReturn(100);
-
-        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
-                handlers);
-        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
-
-        verify(args).putInvocationArgument(0, "foo");
-        verify(args).putInvocationArgument(3, 100);
     }
 
     @Test
@@ -198,31 +133,8 @@ public class BindAttributeArgumentPreparatorTest {
         }
 
         @On
-        public String doAnything(@As("foo") String foo, HttpServletRequest request,
-                @As("baz") String baz) {
-            return "do anything!";
-        }
-
-        @On
-        public String doNothing(String foo, ServletContext context, @As("baz") String baz) {
-            return "do nothing!";
-        }
-
-        @On
-        public String doTypeMap(String foo, HttpSession session,
-                @As("baa") @MapWith(TypeMapper.class) Date baa, @As("baz") String baz) {
-            return "do map!";
-        }
-
-        @On
         public String doScope(@As("baz") @Scope("session") String baz) {
             return "do scope!";
-        }
-
-        @On
-        public String doWithoutArgs(@As("foo") String foo, HttpServletResponse response,
-                @As("baa") String baa, @As("baz") Integer baz) {
-            return "do nothing!";
         }
 
         @On

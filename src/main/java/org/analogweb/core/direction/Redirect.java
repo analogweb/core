@@ -2,6 +2,8 @@ package org.analogweb.core.direction;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,11 +12,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.analogweb.Direction;
+import org.analogweb.Headers;
 import org.analogweb.RequestContext;
-import org.analogweb.ServletRequestContext;
 import org.analogweb.exception.DirectionEvaluationException;
 import org.analogweb.exception.MissingRequirmentsException;
 import org.analogweb.exception.WebApplicationException;
@@ -26,11 +26,9 @@ import org.analogweb.util.logging.Logs;
 
 /**
  * リダイレクトを行う{@link Direction}です。
- * 
- * @see HttpServletResponse#sendRedirect(String)
  * @author snowgoose
  */
-public class Redirect extends ContextSpecifiedDirection<ServletRequestContext> {
+public class Redirect implements Direction {
 
     private static final Log log = Logs.getLog(Redirect.class);
     protected static final String DEFAULT_ENCODING_CHARSET = "UTF-8";
@@ -45,14 +43,12 @@ public class Redirect extends ContextSpecifiedDirection<ServletRequestContext> {
     }
 
     @Override
-    protected void renderInternal(ServletRequestContext context) throws IOException,
+    public void render(RequestContext context) throws IOException,
             WebApplicationException {
         Assertion.notNull(context, RequestContext.class.getCanonicalName());
 
-        HttpServletResponse response = context.getServletResponse();
         String path = getParametarizedPath();
-        path = response.encodeRedirectURL(path);
-        sendRedirect(response, path, responseCode);
+        sendRedirect(context, URI.create(path), getResponseCode());
     }
 
     public Redirect encodeWith(String encodingCharset) {
@@ -60,18 +56,22 @@ public class Redirect extends ContextSpecifiedDirection<ServletRequestContext> {
         return this;
     }
 
-    protected void sendRedirect(HttpServletResponse response, String encodedPath, int responseCode)
+    protected void sendRedirect(RequestContext context, URI encodedPath, int responseCode)
             throws IOException {
         if (responseCode > 299 && responseCode < 400) {
-            response.setStatus(getResponseCode());
-            response.setHeader("Location", encodedPath);
+            context.setResponseStatus(responseCode);
         } else {
             // HTTP 1.0 compatible.
             if (responseCode != UNSET_RESPONSE_CODE) {
                 log.log("WR000001", responseCode);
             }
-            response.sendRedirect(encodedPath);
+            context.setResponseStatus(HttpURLConnection.HTTP_MOVED_TEMP);
         }
+        Headers responseHeader = context.getResponseHeaders();
+        responseHeader.putValue("Location",
+                encodedPath.getPath()
+                        + (StringUtils.isEmpty(encodedPath.getQuery()) ? StringUtils.EMPTY : "?"
+                                + encodedPath.getQuery()));
     }
 
     protected String getTo() {

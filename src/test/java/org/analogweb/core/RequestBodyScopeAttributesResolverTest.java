@@ -6,9 +6,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
-import javax.servlet.ServletInputStream;
+import java.io.InputStream;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
@@ -30,15 +30,10 @@ public class RequestBodyScopeAttributesResolverTest extends RequestBodyScopeAttr
 
     @Test
     public void testResolveAttributeValue() throws Exception {
-        ServletInputStream expected = new ServletInputStream() {
-            @Override
-            public int read() throws IOException {
-                return 0;
-            }
-        };
+        InputStream expected = new ByteArrayInputStream(new byte[0]);
         when(requestContext.getRequestBody()).thenReturn(expected);
-        ServletInputStream actual = (ServletInputStream) resolver.resolveAttributeValue(
-                requestContext, metadata, "", null);
+        InputStream actual = (InputStream) resolver.resolveAttributeValue(requestContext, metadata,
+                "", null);
         assertThat(actual, is(expected));
     }
 
@@ -46,8 +41,8 @@ public class RequestBodyScopeAttributesResolverTest extends RequestBodyScopeAttr
     @SuppressWarnings("unchecked")
     public void testResolveAttributeValueWithException() throws Exception {
         when(requestContext.getRequestBody()).thenThrow(IOException.class);
-        ServletInputStream actual = (ServletInputStream) resolver.resolveAttributeValue(
-                requestContext, metadata, "", null);
+        InputStream actual = (InputStream) resolver.resolveAttributeValue(requestContext, metadata,
+                "", null);
         assertThat(actual, is(nullValue()));
     }
 

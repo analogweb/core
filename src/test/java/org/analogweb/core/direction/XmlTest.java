@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayOutputStream;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -13,7 +15,6 @@ import javax.xml.bind.annotation.XmlType;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.exception.FormatFailureException;
-import org.analogweb.mock.MockServletOutputStream;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +23,6 @@ import org.junit.rules.ExpectedException;
 public class XmlTest {
 
     private RequestContext context;
-//    private HttpServletResponse response;
     private Headers headers;
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -30,7 +30,6 @@ public class XmlTest {
     @Before
     public void setUp() throws Exception {
         context = mock(RequestContext.class);
-//        response = mock(HttpServletResponse.class);
         headers = mock(Headers.class);
     }
 
@@ -40,17 +39,17 @@ public class XmlTest {
         String charset = "UTF-8";
 
         when(context.getResponseHeaders()).thenReturn(headers);
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         Xml xml = Xml.as(new Foo());
         xml.render(context);
 
-        String actual = out.toString(charset);
+        String actual = new String(out.toByteArray(), charset);
         assertThat(
                 actual,
                 is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><foo><baa>baz!</baa></foo>"));
-        verify(headers).putValue("Content-Type","application/xml; charset=UTF-8");
+        verify(headers).putValue("Content-Type", "application/xml; charset=UTF-8");
     }
 
     @Test
@@ -58,7 +57,7 @@ public class XmlTest {
 
         thrown.expect(FormatFailureException.class);
         when(context.getResponseHeaders()).thenReturn(headers);
-        final MockServletOutputStream out = new MockServletOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
         // render miss mapped tppe.
