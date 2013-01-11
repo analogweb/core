@@ -9,7 +9,6 @@ import java.util.StringTokenizer;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationProperties;
-import org.analogweb.core.WebApplication;
 import org.analogweb.exception.ApplicationConfigurationException;
 import org.analogweb.exception.MissingRequiredParameterException;
 
@@ -17,7 +16,11 @@ import org.analogweb.exception.MissingRequiredParameterException;
  * 唯一の{@link ApplicationProperties}のインスタンスを保持、管理します。
  * @author snowgoose
  */
-public class ApplicationPropertiesHolder {
+public final class ApplicationPropertiesHolder {
+
+    private ApplicationPropertiesHolder() {
+        // nop.
+    }
 
     private static ApplicationProperties properties;
 
@@ -65,6 +68,10 @@ public class ApplicationPropertiesHolder {
         private final Collection<String> packageNames;
         private final String applicationSpecifier;
         private final String tempDirectoryPath;
+
+        public DefaultCreator() {
+            this(Application.class.getPackage().getName(), null, null);
+        }
 
         public DefaultCreator(String packageNames, String applicationSpecifier,
                 String tempDirectoryPath) {
@@ -119,9 +126,9 @@ public class ApplicationPropertiesHolder {
         protected String createTempDirPath(String tmpDirPath) {
             if (StringUtils.isEmpty(tmpDirPath)) {
                 return System.getProperty("java.io.tmpdir") + "/"
-                        + WebApplication.class.getCanonicalName();
+                        + Application.class.getCanonicalName();
             } else {
-                return tmpDirPath + "/" + WebApplication.class.getCanonicalName();
+                return tmpDirPath + "/" + Application.class.getCanonicalName();
             }
         }
     }
