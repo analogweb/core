@@ -164,7 +164,7 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
     public void fulfill(RequestPath requestPath) throws UnsatisfiedRequestPathException {
         if (getRequestMethods().contains(requestPath.getMethod()) == false) {
             throw new RequestMethodUnsupportedException(this, getRequestMethods(),
-                    requestPath.getActualPath());
+                    requestPath.getMethod());
         }
         super.fulfill(requestPath);
     }

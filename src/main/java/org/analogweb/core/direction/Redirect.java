@@ -43,8 +43,7 @@ public class Redirect implements Direction {
     }
 
     @Override
-    public void render(RequestContext context) throws IOException,
-            WebApplicationException {
+    public void render(RequestContext context) throws IOException, WebApplicationException {
         Assertion.notNull(context, RequestContext.class.getCanonicalName());
 
         String path = getParametarizedPath();

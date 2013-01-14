@@ -1,6 +1,8 @@
 package org.analogweb.core;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -17,6 +19,7 @@ import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
 import org.analogweb.exception.UnresolvableInvocationException;
+import org.analogweb.junit.NoDescribeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,7 +73,18 @@ public class DefaultInvocationFactoryTest {
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testCreateWithNullInstance() {
-        thrown.expect(UnresolvableInvocationException.class);
+        thrown.expect(new NoDescribeMatcher<UnresolvableInvocationException>() {
+            @Override
+            public boolean matches(Object arg0) {
+                if (arg0 instanceof UnresolvableInvocationException) {
+                    UnresolvableInvocationException ex = (UnresolvableInvocationException) arg0;
+                    InvocationMetadata actual = ex.getSourceMetadata();
+                    assertThat(actual, is(metadata));
+                    return true;
+                }
+                return false;
+            }
+        });
         when(provider.getInstanceOfType(DefaultActionInvocationFactoryTestMockActions.class))
                 .thenReturn(null);
         when(metadata.getInvocationClass()).thenReturn(

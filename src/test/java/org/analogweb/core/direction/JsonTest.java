@@ -20,9 +20,7 @@ import org.analogweb.DirectionFormatter;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.exception.FormatFailureException;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
+import org.analogweb.junit.NoDescribeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -75,11 +73,23 @@ public class JsonTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testSingleObjectWithIOException() throws Exception {
-        thrown.expect(formatFailureExceptionCauseOfIOException());
+        Date birthDay = new SimpleDateFormat("yyyyMMdd").parse("20110420");
+        final Simple bean = new Simple("foo", 33, birthDay);
+        thrown.expect(new NoDescribeMatcher<FormatFailureException>() {
+
+            @Override
+            public boolean matches(Object arg0) {
+                if (arg0 instanceof FormatFailureException) {
+                    FormatFailureException ex = (FormatFailureException) arg0;
+                    assertThat(ex.getFormat(), is("Json"));
+                    assertThat(ex.getFormattingObject(), is((Object) bean));
+                    return IOException.class.isInstance(ex.getCause());
+                }
+                return false;
+            }
+        });
         String charset = "UTF-8";
 
-        Date birthDay = new SimpleDateFormat("yyyyMMdd").parse("20110420");
-        Simple bean = new Simple("foo", 33, birthDay);
         Json json = Json.as(bean);
 
         when(context.getResponseBody()).thenThrow(IOException.class);
@@ -91,26 +101,6 @@ public class JsonTest {
         when(context.getResponseHeaders()).thenReturn(headers);
 
         json.render(context);
-    }
-
-    private Matcher<FormatFailureException> formatFailureExceptionCauseOfIOException() {
-        return new BaseMatcher<FormatFailureException>() {
-            @Override
-            public boolean matches(Object arg0) {
-                if (arg0 instanceof FormatFailureException) {
-                    FormatFailureException ex = (FormatFailureException) arg0;
-                    return IOException.class.isInstance(ex.getCause());
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo(Description arg0) {
-                // nop.
-
-            }
-
-        };
     }
 
     @Test

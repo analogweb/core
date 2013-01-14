@@ -2,6 +2,7 @@ package org.analogweb.core.direction;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -11,6 +12,7 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.exception.AssertionFailureException;
 import org.analogweb.exception.MissingRequirmentsException;
+import org.analogweb.junit.NoDescribeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -87,7 +89,19 @@ public class RedirectTest {
 
     @Test
     public void testRenderWithEmptyPath() throws Exception {
-        thrown.expect(MissingRequirmentsException.class);
+        thrown.expect(new NoDescribeMatcher<MissingRequirmentsException>() {
+            @Override
+            public boolean matches(Object arg0) {
+                if (arg0 instanceof MissingRequirmentsException) {
+                    MissingRequirmentsException ex = (MissingRequirmentsException) arg0;
+                    assertThat(ex.getRequirment(), is("redirect path"));
+                    assertThat(ex.getUnresolvableInvocationResult(), is(nullValue()));
+                    return true;
+                }
+                return false;
+            }
+        });
+
         Redirect.to(null);
     }
 

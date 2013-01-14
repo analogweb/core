@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.exception.InvalidRequestPathException;
@@ -363,7 +365,7 @@ public class RequestPathDefinitionTest {
         String path = "/baa/something";
         RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path,
                 new String[] { "GET" });
-        
+
         RequestPath requestPath = mock(RequestPath.class);
         when(requestPath.getMethod()).thenReturn("GET");
 
@@ -373,12 +375,24 @@ public class RequestPathDefinitionTest {
 
     @Test
     public void testFulFillUnSatisfied() {
-        thrown.expect(RequestMethodUnsupportedException.class);
+        thrown.expect(new NoDescribeMatcher<RequestMethodUnsupportedException>() {
+            @Override
+            public boolean matches(Object arg0) {
+                if (arg0 instanceof RequestMethodUnsupportedException) {
+                    RequestMethodUnsupportedException ex = (RequestMethodUnsupportedException) arg0;
+                    assertThat(ex.getMetadata().getActualPath(), is("/foo/baa/something"));
+                    assertThat(ex.getRequestedMethod(), is("GET"));
+                    assertThat(ex.getDefinedMethods().containsAll(Arrays.asList("POST")), is(true));
+                    return true;
+                }
+                return false;
+            }
+        });
         String root = "/foo";
         String path = "/baa/something";
         RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path,
                 new String[] { "POST" });
-        
+
         RequestPath requestPath = mock(RequestPath.class);
         when(requestPath.getMethod()).thenReturn("GET");
 
