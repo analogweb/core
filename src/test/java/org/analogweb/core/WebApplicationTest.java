@@ -23,7 +23,6 @@ import org.analogweb.exception.MissingRequiredParameterException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,7 +33,6 @@ import org.junit.rules.TemporaryFolder;
  * TODO rename test to ApplicationPropertiesTest!
  * @author snowgoose
  */
-//@Ignore
 public class WebApplicationTest {
 
     private static final Log log = Logs.getLog(WebApplicationTest.class);
@@ -53,16 +51,10 @@ public class WebApplicationTest {
     public void setUp() {
         classLoader = Thread.currentThread().getContextClassLoader();
         resolver = mock(ApplicationContextResolver.class);
-        //        ApplicationPropertiesHolder.dispose(application);
-    }
-
-    @After
-    public void tearDown() {
-        //        ApplicationPropertiesHolder.dispose(application);
     }
 
     @Test
-    public void testInitApplication() {
+    public void testInitApplication() throws Exception {
         ApplicationProperties props = mock(ApplicationProperties.class);
         when(props.getApplicationSpecifier()).thenReturn(".rn");
         when(props.getComponentPackageNames())
@@ -85,7 +77,7 @@ public class WebApplicationTest {
     }
 
     @Test
-    public void testInitApplicationWithoutMetadata() {
+    public void testInitApplicationWithoutMetadata() throws Exception {
         ApplicationProperties props = mock(ApplicationProperties.class);
         when(props.getApplicationSpecifier()).thenReturn(null);
         when(props.getComponentPackageNames())
@@ -108,7 +100,7 @@ public class WebApplicationTest {
     }
 
     @Test
-    public void testInitApplicationWithoutRootComponentPackages() {
+    public void testInitApplicationWithoutRootComponentPackages() throws Exception {
 
         thrown.expect(new NoDescribeMatcher<MissingRequiredParameterException>() {
             @Override
@@ -134,7 +126,7 @@ public class WebApplicationTest {
     }
 
     @Test
-    public void testInitApplicationWithAdditionalComponents() {
+    public void testInitApplicationWithAdditionalComponents() throws Exception {
         ApplicationProperties props = mock(ApplicationProperties.class);
         when(props.getApplicationSpecifier()).thenReturn(null);
         when(props.getComponentPackageNames()).thenReturn(
@@ -165,7 +157,7 @@ public class WebApplicationTest {
     }
 
     @Test
-    public void testDispose() {
+    public void testDispose() throws Exception {
         ApplicationProperties props = mock(ApplicationProperties.class);
         when(props.getApplicationSpecifier()).thenReturn(null);
         when(props.getComponentPackageNames())
