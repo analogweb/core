@@ -20,10 +20,10 @@ public class StopWatchTest {
     public void test() throws Exception {
         StopWatch sw = new StopWatch();
         sw.start();
-        TimeUnit.SECONDS.sleep(1L);
+        TimeUnit.MILLISECONDS.sleep(100L);
         long actual = sw.stop();
-        assertThat(actual, is(over(1000)));
-        assertThat(actual, is(under(2000)));
+        assertThat(actual, is(over(100 - 16)));
+        assertThat(actual, is(under(100 + 16)));
     }
 
     @Test
@@ -39,10 +39,10 @@ public class StopWatchTest {
         sw.start();
         // continues silently.
         sw.start();
-        TimeUnit.SECONDS.sleep(1L);
+        TimeUnit.MILLISECONDS.sleep(100L);
         long actual = sw.stop();
-        assertThat(actual, is(over(1000)));
-        assertThat(actual, is(under(2000)));
+        assertThat(actual, is(over(100 - 16)));
+        assertThat(actual, is(under(100 + 16)));
     }
 
     private BaseMatcher<Long> over(final long overThe) {

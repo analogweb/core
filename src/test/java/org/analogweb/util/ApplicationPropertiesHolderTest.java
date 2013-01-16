@@ -89,7 +89,7 @@ public class ApplicationPropertiesHolderTest {
         Collection<String> actualPackageNames = actual.getComponentPackageNames();
         assertThat(actualPackageNames.size(), is(1));
         assertThat(actualPackageNames.contains(Application.class.getPackage().getName()), is(true));
-        assertThat(actual.getTempDir().getPath(), is(System.getProperty("java.io.tmpdir") + "/"
+        assertThat(actual.getTempDir().getPath(), is(System.getProperty("java.io.tmpdir") + System.getProperty("file.separator")
                 + Application.class.getCanonicalName()));
     }
 
@@ -107,7 +107,7 @@ public class ApplicationPropertiesHolderTest {
         assertThat(actualPackageNames.size(), is(2));
         assertThat(actualPackageNames.containsAll(Arrays.asList("foo.baa", "baz.boo")), is(true));
         assertThat(actual.getTempDir().getPath(),
-                is(dir.getPath() + "/" + Application.class.getCanonicalName()));
+                is(dir.getPath() + System.getProperty("file.separator") + Application.class.getCanonicalName()));
     }
 
     @Test
