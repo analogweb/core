@@ -49,6 +49,14 @@ public interface RequestContext {
     OutputStream getResponseBody() throws IOException;
 
     /**
+     * HTTPリクエストヘッダ Content-Type に含まれるメディアタイプを
+     * {@link MediaType}として取得します。ヘッダが存在しない場合は
+     * nullを返します。
+     * @return {@link MediaType}
+     */
+    MediaType getContentType();
+
+    /**
      * レスポンスするHTTPステータスを指定します。
      * @param status レスポンスするHTTPステータス
      */
