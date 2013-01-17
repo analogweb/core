@@ -5,18 +5,53 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Servlet APIに関連するリクエストモジュールを保持します。<br/>
- * このインスタンスはリクエスト毎に生成されます。
+ * 1つのHTTPリクエストをライフサイクルとする全てのモジュールを保持します。<br/>
  * @author snowgoose
  */
 public interface RequestContext {
 
+    /**
+     * HTTPクッキーを保持する{@link Cookies}を取得します。
+     * @return {@link Cookies}
+     */
     Cookies getCookies();
+
+    /**
+     * HTTPリクエストヘッダを保持する{@link Headers}を取得します。
+     * @return {@link Headers}
+     */
     Headers getRequestHeaders();
+
+    /**
+     * HTTPレスポンスヘッダを保持する{@link Headers}を取得します。
+     * @return {@link Headers}
+     */
     Headers getResponseHeaders();
+
+    /**
+     * HTTPリクエストに含まれるパラメータを保持する{@link Parameters}を取得します。
+     * @return {@link Parameters}
+     */
     Parameters getParameters();
+
+    /**
+     * リクエストボディを保持する{@link InputStream}を取得します。
+     * @return {@link InputStream}
+     * @throws IOException I/Oエラーが発生した場合
+     */
     InputStream getRequestBody() throws IOException;
+
+    /**
+     * レスポンスボディを保持する{@link OutputStream}を取得します。
+     * @return {@link OutputStream}
+     * @throws IOException I/Oエラーが発生した場合
+     */
     OutputStream getResponseBody() throws IOException;
+
+    /**
+     * レスポンスするHTTPステータスを指定します。
+     * @param status レスポンスするHTTPステータス
+     */
     void setResponseStatus(int status);
 
     /**
