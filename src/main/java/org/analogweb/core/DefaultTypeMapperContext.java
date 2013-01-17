@@ -72,7 +72,7 @@ public class DefaultTypeMapperContext implements TypeMapperContext {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T handleCollection(Class<?> requiredType, Object from) {
+    protected <T> T handleCollection(Class<T> requiredType, Object from) {
         if (from == null) {
             return null;
         }
