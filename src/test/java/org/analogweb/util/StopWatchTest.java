@@ -2,83 +2,58 @@ package org.analogweb.util;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.TimeUnit;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
+import org.analogweb.util.StopWatch.Ticker;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class StopWatchTest {
 
+    private StopWatch sw;
+    private Ticker ticker;
+
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
+    @Before
+    public void setUp() {
+        this.ticker = mock(Ticker.class);
+        sw = new StopWatch(ticker);
+    }
+
     @Test
     public void test() throws Exception {
-        StopWatch sw = new StopWatch();
+        when(ticker.now()).thenReturn(nanosec(2), nanosec(3));
         sw.start();
-        TimeUnit.MILLISECONDS.sleep(100L);
         long actual = sw.stop();
-        assertThat(actual, is(over(100 - 16)));
-        assertThat(actual, is(under(100 + 16)));
+        assertThat(actual, is(1L));
     }
 
     @Test
     public void testStopFirst() throws Exception {
         thrown.expect(IllegalStateException.class);
-        StopWatch sw = new StopWatch();
         sw.stop();
     }
 
     @Test
     public void testStartTwice() throws Exception {
-        StopWatch sw = new StopWatch();
+        when(ticker.now()).thenReturn(nanosec(2), nanosec(3));
         sw.start();
         // continues silently.
         sw.start();
         TimeUnit.MILLISECONDS.sleep(100L);
         long actual = sw.stop();
-        assertThat(actual, is(over(100 - 16)));
-        assertThat(actual, is(under(100 + 16)));
+        assertThat(actual, is(1L));
     }
 
-    private BaseMatcher<Long> over(final long overThe) {
-        return new BaseMatcher<Long>() {
-
-            @Override
-            public boolean matches(Object arg0) {
-                if (arg0 instanceof Long) {
-                    return (Long) arg0 >= overThe;
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo(Description arg0) {
-                arg0.appendValue(overThe);
-            }
-        };
-    }
-
-    private BaseMatcher<Long> under(final long underThe) {
-        return new BaseMatcher<Long>() {
-
-            @Override
-            public boolean matches(Object arg0) {
-                if (arg0 instanceof Long) {
-                    return (Long) arg0 < underThe;
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo(Description arg0) {
-                arg0.appendValue(underThe);
-            }
-        };
+    private long nanosec(long millsec) {
+        return millsec * 1000 * 1000;
     }
 
 }

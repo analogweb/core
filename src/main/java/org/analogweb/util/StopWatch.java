@@ -9,10 +9,19 @@ public class StopWatch {
     private long startTime;
     private long stopTime;
     private boolean running;
+    private Ticker ticker = Ticker.SYSTEM;
+
+    public StopWatch() {
+        // nop.
+    }
+
+    public StopWatch(Ticker ticker) {
+        this.ticker = ticker;
+    }
 
     public void start() {
         if (running == false) {
-            this.startTime = System.nanoTime();
+            this.startTime = ticker.now();
             this.running = true;
         }
     }
@@ -21,9 +30,20 @@ public class StopWatch {
         if (running == false) {
             throw new IllegalStateException("not run yet.");
         }
-        this.stopTime = System.nanoTime();
+        this.stopTime = ticker.now();
         this.running = false;
         return (this.stopTime - this.startTime) / DIVISION;
+    }
+
+    public static interface Ticker {
+        Ticker SYSTEM = new Ticker() {
+            @Override
+            public long now() {
+                return System.nanoTime();
+            }
+        };
+
+        long now();
     }
 
 }
