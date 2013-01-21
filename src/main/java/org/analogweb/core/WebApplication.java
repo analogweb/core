@@ -30,6 +30,7 @@ import org.analogweb.ModulesConfig;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.MissingRequiredParameterException;
 import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.ApplicationPropertiesHolder;
@@ -48,10 +49,6 @@ import org.analogweb.util.logging.Markers;
 public class WebApplication implements Application {
 
     private static final Log log = Logs.getLog(WebApplication.class);
-    protected static final String INIT_PARAMETER_ROOT_COMPONENT_PACKAGES = "application.packages";
-    protected static final String INIT_PARAMETER_APPLICATION_SPECIFIER = "application.specifier";
-    protected static final String INIT_PARAMETER_APPLICATION_TEMPORARY_DIR = "application.tmpdir";
-    protected static final String DEFAULT_PACKAGE_NAME = "org.analogweb";
     private Modules modules;
     private RequestPathMapping requestPathMapping;
     private String applicationSpecifier;
@@ -77,7 +74,7 @@ public class WebApplication implements Application {
         log.log(Markers.BOOT_APPLICATION, "IB000002", sw.stop());
     }
     
-    public void processRequest(RequestPath requestedPath, RequestContext context)
+    public void processRequest(RequestPath requestedPath, RequestContext context, ResponseContext responseContext)
             throws IOException, WebApplicationException {
         InvocationMetadata metadata = null;
         Modules mod = null;
@@ -87,6 +84,7 @@ public class WebApplication implements Application {
             metadata = mapping.findInvocationMetadata(requestedPath);
             if (metadata == null) {
                 log.log(Markers.LIFECYCLE, "DL000005", requestedPath);
+                // TODO throws NoMetadataFoundException
                 return;
             }
 
@@ -95,29 +93,30 @@ public class WebApplication implements Application {
             ContainerAdaptor invocationInstances = mod.getInvocationInstanceProvider();
 
             Invocation invocation = mod.getInvocationFactory().createInvocation(
-                    invocationInstances, metadata, context, mod.getTypeMapperContext(),
-                    mod.getInvocationProcessors(), mod.getAttributesHandlers());
+                    invocationInstances, metadata, context, responseContext,
+                    mod.getTypeMapperContext(), mod.getInvocationProcessors(),
+                    mod.getAttributesHandlers());
 
             Object invocationResult = mod.getInvoker().invoke(invocation, metadata, context);
 
             log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(),
                     invocationResult);
 
-            handleDirection(mod, invocationResult, metadata, context);
+            handleDirection(mod, invocationResult, metadata, context, responseContext);
         } catch (Exception e) {
             ExceptionHandler handler = mod.getExceptionHandler();
             log.log(Markers.LIFECYCLE, "DL000009", (Object) e, handler);
             Object exceptionResult = handler.handleException(e);
             if (exceptionResult != null) {
-                handleDirection(mod, exceptionResult, metadata, context);
+                handleDirection(mod, exceptionResult, metadata, context, responseContext);
             }
         }
     }
 
     protected void handleDirection(Modules modules, Object result, InvocationMetadata metadata,
-            RequestContext context) throws IOException, WebApplicationException {
+            RequestContext context, ResponseContext responseContext) throws IOException, WebApplicationException {
         DirectionResolver resultResolver = modules.getDirectionResolver();
-        Direction resolved = resultResolver.resolve(result, metadata, context);
+        Direction resolved = resultResolver.resolve(result, metadata, context, responseContext);
         log.log(Markers.LIFECYCLE, "DL000008", result, result);
 
         DirectionFormatter resultFormatter = modules.findDirectionFormatter(resolved.getClass());
@@ -129,7 +128,7 @@ public class WebApplication implements Application {
         }
 
         DirectionHandler resultHandler = modules.getDirectionHandler();
-        resultHandler.handleResult(resolved, resultFormatter, context);
+        resultHandler.handleResult(resolved, resultFormatter, context, responseContext);
     }
 
     protected void initApplication(Set<String> modulePackageNames,

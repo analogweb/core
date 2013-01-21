@@ -26,6 +26,7 @@ public interface RequestContext {
      * HTTPレスポンスヘッダを保持する{@link Headers}を取得します。
      * @return {@link Headers}
      */
+    @Deprecated
     Headers getResponseHeaders();
 
     /**
@@ -46,6 +47,7 @@ public interface RequestContext {
      * @return {@link OutputStream}
      * @throws IOException I/Oエラーが発生した場合
      */
+    @Deprecated
     OutputStream getResponseBody() throws IOException;
 
     /**
@@ -60,6 +62,7 @@ public interface RequestContext {
      * レスポンスするHTTPステータスを指定します。
      * @param status レスポンスするHTTPステータス
      */
+    @Deprecated
     void setResponseStatus(int status);
 
     /**

@@ -15,6 +15,7 @@ import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
@@ -33,6 +34,7 @@ public class DefaultInvocationFactoryTest {
     private ContainerAdaptor provider;
     private InvocationMetadata metadata;
     private RequestContext context;
+    private ResponseContext response;
     private TypeMapperContext converters;
     private List<InvocationProcessor> processors;
     private InvocationProcessor processor;
@@ -49,6 +51,7 @@ public class DefaultInvocationFactoryTest {
         provider = mock(ContainerAdaptor.class);
         metadata = mock(InvocationMetadata.class);
         context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
         converters = mock(TypeMapperContext.class);
         processors = new ArrayList<InvocationProcessor>();
         processor = mock(InvocationProcessor.class);
@@ -65,8 +68,8 @@ public class DefaultInvocationFactoryTest {
         when(metadata.getInvocationClass()).thenReturn(
                 (Class) DefaultActionInvocationFactoryTestMockActions.class);
         DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        Invocation invocation = factory.createInvocation(provider, metadata, context, converters,
-                processors, handlers);
+        Invocation invocation = factory.createInvocation(provider, metadata, context, response,
+                converters, processors, handlers);
         assertSame(invocation.getInvocationInstance(), actionInstance);
     }
 
@@ -90,7 +93,8 @@ public class DefaultInvocationFactoryTest {
         when(metadata.getInvocationClass()).thenReturn(
                 (Class) DefaultActionInvocationFactoryTestMockActions.class);
         DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        factory.createInvocation(provider, metadata, context, converters, processors, handlers);
+        factory.createInvocation(provider, metadata, context, response, converters, processors,
+                handlers);
     }
 
     @On

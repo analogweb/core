@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.util.Maps;
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,6 +21,7 @@ import org.junit.rules.ExpectedException;
 public class HttpStatusTest {
 
     private RequestContext requestContext;
+    private ResponseContext response;
     private Headers headers;
 
     @Rule
@@ -27,14 +29,15 @@ public class HttpStatusTest {
 
     @Before
     public void setUp() throws Exception {
-        this.requestContext = mock(RequestContext.class);
-        this.headers = mock(Headers.class);
+        requestContext = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
+        headers = mock(Headers.class);
     }
 
     @Test
     public void testRender() throws Exception {
         when(requestContext.getResponseHeaders()).thenReturn(headers);
-        HttpStatus.OK.render(requestContext);
+        HttpStatus.OK.render(requestContext,response);
         verify(requestContext).setResponseStatus(200);
     }
 
@@ -43,7 +46,7 @@ public class HttpStatusTest {
         when(requestContext.getResponseHeaders()).thenReturn(headers);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(requestContext.getResponseBody()).thenReturn(out);
-        HttpStatus.NOT_FOUND.byReasonOf("foo is not found.").render(requestContext);
+        HttpStatus.NOT_FOUND.byReasonOf("foo is not found.").render(requestContext,response);
         assertThat(new String(out.toByteArray()), is("foo is not found."));
         verify(requestContext).setResponseStatus(404);
     }
@@ -53,7 +56,7 @@ public class HttpStatusTest {
         when(requestContext.getResponseHeaders()).thenReturn(headers);
 
         HttpStatus.FOUND.withHeader(Maps.newHashMap("Location", "http://foo.com/baa")).render(
-                requestContext);
+                requestContext,response);
 
         verify(requestContext).setResponseStatus(302);
         verify(headers).putValue("Location", "http://foo.com/baa");
@@ -65,10 +68,10 @@ public class HttpStatusTest {
 
         Direction direction = mock(Direction.class);
 
-        HttpStatus.OK.with(direction).render(requestContext);
+        HttpStatus.OK.with(direction).render(requestContext,response);
 
         verify(requestContext).setResponseStatus(200);
-        verify(direction).render(requestContext);
+        verify(direction).render(requestContext,response);
     }
 
     @Test

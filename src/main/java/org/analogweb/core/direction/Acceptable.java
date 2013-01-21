@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.StringUtils;
 
@@ -61,17 +62,17 @@ public class Acceptable implements Direction {
     }
 
     @Override
-    public void render(RequestContext context) throws IOException, WebApplicationException {
+    public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
         List<String> mediaTypes = getAcceptableMediaType(context);
         if (mediaTypes.isEmpty()) {
-            HttpStatus.NOT_ACCEPTABLE.render(context);
+            HttpStatus.NOT_ACCEPTABLE.render(context,response);
             return;
         }
         Direction d = selectDirection(mediaTypes, getSource());
         if (d != null) {
-            d.render(context);
+            d.render(context,response);
         } else {
-            HttpStatus.NOT_ACCEPTABLE.render(context);
+            HttpStatus.NOT_ACCEPTABLE.render(context,response);
         }
     }
 

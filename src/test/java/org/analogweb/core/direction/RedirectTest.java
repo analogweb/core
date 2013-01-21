@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.AssertionFailureException;
 import org.analogweb.exception.MissingRequirmentsException;
 import org.analogweb.junit.NoDescribeMatcher;
@@ -24,6 +25,7 @@ import org.junit.rules.ExpectedException;
 public class RedirectTest {
 
     private RequestContext context;
+    private ResponseContext response;
     private Headers responseHeader;
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -34,6 +36,7 @@ public class RedirectTest {
     @Before
     public void setUp() throws Exception {
         context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
         responseHeader = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(responseHeader);
     }
@@ -41,7 +44,7 @@ public class RedirectTest {
     @Test
     public void testRender() throws Exception {
 
-        Redirect.to("/some/foo.rn").render(context);
+        Redirect.to("/some/foo.rn").render(context,response);
 
         verify(context).setResponseStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn");
@@ -51,7 +54,7 @@ public class RedirectTest {
     public void testRenderWithNotReturnCode() throws Exception {
 
         // not redirect response code.
-        Redirect.to("/some/foo.rn").resoposeCode(404).render(context);
+        Redirect.to("/some/foo.rn").resoposeCode(404).render(context,response);
 
         verify(context).setResponseStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn");
@@ -62,7 +65,7 @@ public class RedirectTest {
 
         thrown.expect(AssertionFailureException.class);
 
-        Redirect.to("/some/foo.rn").render(null);
+        Redirect.to("/some/foo.rn").render(null,response);
 
     }
 
@@ -70,7 +73,7 @@ public class RedirectTest {
     public void testRenderWithParameter() throws Exception {
 
         Redirect.to("/some/foo.rn").addParameter("foo", "baa").addParameter("hoge", "fuga")
-                .render(context);
+                .render(context,response);
 
         verify(context).setResponseStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn?foo=baa&hoge=fuga");
@@ -80,7 +83,7 @@ public class RedirectTest {
     public void testRenderWithParametarizedURLAndParameter() throws Exception {
         // sort parameter name by natural order.
         Redirect.to("/some/foo.rn?boo=baz").addParameter("hoge", "fuga").addParameter("foo", "baa")
-                .encodeWith("ISO-8859-1").render(context);
+                .encodeWith("ISO-8859-1").render(context,response);
 
         verify(context).setResponseStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn?boo=baz&foo=baa&hoge=fuga");

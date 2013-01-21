@@ -14,6 +14,7 @@ import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.InvocationFailureException;
 import org.analogweb.util.Maps;
@@ -28,6 +29,7 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
     private Object invocationInstance;
     private final InvocationMetadata metadata;
     private final RequestContext requestContext;
+    private final ResponseContext responseContext;
     private final TreeMap<Integer, Object> preparedArgsMap;
     private final TypeMapperContext converters;
     private final List<InvocationProcessor> processors;
@@ -35,11 +37,12 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
     private List<Object> argumentList;
 
     public DefaultInvocation(Object invocationInstance, InvocationMetadata metadata,
-            RequestContext context, TypeMapperContext converters,
+            RequestContext context, ResponseContext responseContext, TypeMapperContext converters,
             List<InvocationProcessor> processors, AttributesHandlers handlers) {
         this.invocationInstance = invocationInstance;
         this.metadata = metadata;
         this.requestContext = context;
+        this.responseContext = responseContext;
         this.converters = converters;
         this.processors = processors;
         this.preparedArgsMap = Maps.newTreeMap();
@@ -136,6 +139,10 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
 
     protected RequestContext getRequestContext() {
         return requestContext;
+    }
+
+    protected ResponseContext getResponseContext() {
+        return this.responseContext;
     }
 
     protected TypeMapperContext getConverters() {

@@ -16,6 +16,7 @@ import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.Modules;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
 import org.analogweb.exception.AssertionFailureException;
@@ -31,6 +32,7 @@ public class DefaultInvokerTest {
 
     private InvocationMetadata metadata;
     private RequestContext context;
+    private ResponseContext response;
     private List<InvocationProcessor> processors;
     private InvocationProcessor processor;
     private InvocationFactory factory;
@@ -49,6 +51,7 @@ public class DefaultInvokerTest {
     public void setUp() throws Exception {
         metadata = mock(InvocationMetadata.class);
         context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
         processors = new ArrayList<InvocationProcessor>();
         processor = mock(InvocationProcessor.class);
         processors.add(processor);
@@ -69,8 +72,9 @@ public class DefaultInvokerTest {
 
         when(adaptor.getInstanceOfType(MockActions.class)).thenReturn(actionInstance);
         when(metadata.getInvocationClass()).thenReturn((Class) MockActions.class);
-        when(factory.createInvocation(adaptor, metadata, context, null, processors, handlers))
-                .thenReturn(invocation);
+        when(
+                factory.createInvocation(adaptor, metadata, context, response, null, processors,
+                        handlers)).thenReturn(invocation);
 
         Invocation invocation = mock(Invocation.class);
         // delegate to Invocation#invoke only.

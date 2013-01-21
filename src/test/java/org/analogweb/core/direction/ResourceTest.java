@@ -15,6 +15,7 @@ import java.io.InputStream;
 
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.ApplicationRuntimeException;
 import org.analogweb.exception.AssertionFailureException;
 import org.junit.Before;
@@ -26,7 +27,7 @@ import org.junit.rules.TemporaryFolder;
 public class ResourceTest {
 
     private RequestContext context;
-    //    private HttpServletResponse response;
+    private ResponseContext response; 
     private Headers headers;
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -36,7 +37,7 @@ public class ResourceTest {
     @Before
     public void setUp() throws Exception {
         context = mock(RequestContext.class);
-        //        response = mock(HttpServletResponse.class);
+        response = mock(ResponseContext.class);
         headers = mock(Headers.class);
     }
 
@@ -50,7 +51,7 @@ public class ResourceTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
-        resource.render(context);
+        resource.render(context,response);
 
         assertThat(new String(out.toByteArray()), is("this is test log."));
 
@@ -74,7 +75,7 @@ public class ResourceTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
-        resource.render(context);
+        resource.render(context,response);
 
         assertThat(new String(out.toByteArray()), is("this is test log."));
 
@@ -98,7 +99,7 @@ public class ResourceTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
-        resource.render(context);
+        resource.render(context,response);
 
         assertThat(new String(out.toByteArray()), is("this is test log."));
 
@@ -122,7 +123,7 @@ public class ResourceTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
-        resource.render(context);
+        resource.render(context,response);
 
         assertThat(new String(out.toByteArray()), is("this is test log."));
 

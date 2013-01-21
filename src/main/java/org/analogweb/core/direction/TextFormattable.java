@@ -6,6 +6,7 @@ import org.analogweb.DirectionFormatter;
 import org.analogweb.DirectionFormatterAware;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.WebApplicationException;
 
 /**
@@ -48,7 +49,7 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
     }
 
     @Override
-    public void render(RequestContext context) throws IOException, WebApplicationException {
+    public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
         Object toXml = getSource();
         if (toXml == null) {
             super.writeToStream(context.getResponseBody());

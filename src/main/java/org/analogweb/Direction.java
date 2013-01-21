@@ -17,9 +17,10 @@ public interface Direction {
     /**
      * エントリポイントを実行したの結果を、レスポンスにレンダリングします。
      * @param context {@link RequestContext}
+     * @param response {@link ResponseContext}
      * @throws IOException レスポンスへのレンダリング時にI/Oエラーが発生した場合。
      * @throws WebApplicationException レスポンスへのレンダリング時に任意の例外が発生した場合。
      */
-    void render(RequestContext context) throws IOException, WebApplicationException;
+    void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException;
 
 }

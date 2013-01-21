@@ -39,8 +39,8 @@ public interface Application extends Disposable {
     void run(ApplicationContextResolver resolver, ApplicationProperties props,
             ClassLoader classLoader);
 
-    void processRequest(RequestPath path, RequestContext context) throws IOException,
-            WebApplicationException;
+    void processRequest(RequestPath path, RequestContext context, ResponseContext responseContext)
+            throws IOException, WebApplicationException;
 
     /**
      * アプリケーションを構成している{@link Modules}を取得します。

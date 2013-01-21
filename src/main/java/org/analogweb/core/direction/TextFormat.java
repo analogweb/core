@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.IOUtils;
 import org.analogweb.util.StringUtils;
@@ -67,7 +68,7 @@ public class TextFormat<T extends TextFormat<T>> implements Direction {
     }
 
     @Override
-    public void render(RequestContext context) throws IOException, WebApplicationException {
+    public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
         OutputStream out = context.getResponseBody();
         Headers headers = context.getResponseHeaders();
         headers.putValue("Content-Type", getContentType());

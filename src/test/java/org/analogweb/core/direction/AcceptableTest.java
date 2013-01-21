@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.WebApplicationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,11 +31,13 @@ import org.junit.Test;
 public class AcceptableTest {
 
     private RequestContext context;
+    private ResponseContext response;
     private Headers headers;
 
     @Before
     public void setUp() throws Exception {
         context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
         headers = mock(Headers.class);
     }
 
@@ -56,7 +59,7 @@ public class AcceptableTest {
         a.map(new Direction() {
 
             @Override
-            public void render(RequestContext context) throws IOException, WebApplicationException {
+            public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
                 Writer w = new OutputStreamWriter(context.getResponseBody());
                 w.write("write with XML");
                 w.flush();
@@ -106,8 +109,8 @@ public class AcceptableTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
         final Direction anyDirection = mock(Direction.class);
-        Acceptable.as(m).mapToAny(anyDirection).render(context);
-        verify(anyDirection).render(context);
+        Acceptable.as(m).mapToAny(anyDirection).render(context,response);
+        verify(anyDirection).render(context,response);
     }
 
     @Test
@@ -127,7 +130,7 @@ public class AcceptableTest {
         a.mapToAny(new Direction() {
 
             @Override
-            public void render(RequestContext context) throws IOException, WebApplicationException {
+            public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
                 Writer w = new OutputStreamWriter(context.getResponseBody());
                 w.write("write with ANY");
                 w.flush();
@@ -148,8 +151,8 @@ public class AcceptableTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
         final Direction replaceDirection = mock(Direction.class);
-        Acceptable.as(m).map(replaceDirection, "application/json").render(context);
-        verify(replaceDirection).render(context);
+        Acceptable.as(m).map(replaceDirection, "application/json").render(context,response);
+        verify(replaceDirection).render(context,response);
     }
 
     @Test
@@ -169,8 +172,8 @@ public class AcceptableTest {
         when(headers.getValues("Accept")).thenReturn(
                 Arrays.asList("text/x-dvi", "image/png", "*/*"));
         final Direction replaceDirection = mock(Direction.class);
-        Acceptable.as(m).mapToAny(replaceDirection).render(context);
-        verify(replaceDirection).render(context);
+        Acceptable.as(m).mapToAny(replaceDirection).render(context,response);
+        verify(replaceDirection).render(context,response);
     }
 
     private String schenarioRender(final String accept, final Member m) throws Exception {
@@ -187,7 +190,7 @@ public class AcceptableTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
-        a.render(context);
+        a.render(context,response);
         return new String(out.toByteArray());
     }
 

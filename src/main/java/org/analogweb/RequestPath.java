@@ -29,4 +29,11 @@ public interface RequestPath extends RequestPathMetadata {
      */
     URI getRequestURI();
 
+    /**
+     * リクエストされたアプリケーションのコンテキストパスを
+     * 表す{@link URI}を取得します。
+     * @return リクエストされたアプリケーションのコンテキストパスを表す{@link URI}
+     */
+    URI getBaseURI();
+
 }

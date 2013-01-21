@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.FormatFailureException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,6 +24,7 @@ import org.junit.rules.ExpectedException;
 public class XmlTest {
 
     private RequestContext context;
+    private ResponseContext response;
     private Headers headers;
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -43,7 +45,7 @@ public class XmlTest {
         when(context.getResponseBody()).thenReturn(out);
 
         Xml xml = Xml.as(new Foo());
-        xml.render(context);
+        xml.render(context,response);
 
         String actual = new String(out.toByteArray(), charset);
         assertThat(
@@ -62,7 +64,7 @@ public class XmlTest {
 
         // render miss mapped tppe.
         Xml xml = Xml.as(new Hoge());
-        xml.render(context);
+        xml.render(context,response);
     }
 
     @XmlRootElement

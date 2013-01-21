@@ -19,6 +19,7 @@ import java.util.List;
 import org.analogweb.DirectionFormatter;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.FormatFailureException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.junit.After;
@@ -30,6 +31,7 @@ import org.junit.rules.ExpectedException;
 public class JsonTest {
 
     private RequestContext context;
+    private ResponseContext response;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -37,6 +39,7 @@ public class JsonTest {
     @Before
     public void setUp() throws Exception {
         context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
     }
 
     @After
@@ -61,7 +64,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        json.render(context);
+        json.render(context,response);
 
         String actual = new String(out.toByteArray(), charset);
 
@@ -100,7 +103,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        json.render(context);
+        json.render(context,response);
     }
 
     @Test
@@ -112,7 +115,7 @@ public class JsonTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
-        json.render(context);
+        json.render(context,response);
 
         String actual = new String(out.toByteArray(), charset);
 
@@ -138,7 +141,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        json.render(context);
+        json.render(context,response);
 
         String actual = new String(out.toByteArray(), charset);
 
@@ -166,7 +169,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        json.render(context);
+        json.render(context,response);
 
         String actual = new String(out.toByteArray(), charset);
 
@@ -188,7 +191,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        json.render(context);
+        json.render(context,response);
 
         String actual = new String(out.toByteArray(), "UTF-8");
 
@@ -210,7 +213,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        jsons.render(context);
+        jsons.render(context,response);
 
         String actual = new String(out.toByteArray(), "UTF-8");
 
@@ -232,7 +235,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        json.render(context);
+        json.render(context,response);
 
         String actual = new String(out.toByteArray(), charset);
 
@@ -252,7 +255,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        json.render(context);
+        json.render(context,response);
 
         verify(formatter).formatAndWriteInto(context, "Shift-JIS", bean);
     }

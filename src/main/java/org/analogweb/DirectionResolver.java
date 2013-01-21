@@ -15,8 +15,9 @@ public interface DirectionResolver extends Module {
      * @param invocationResult エントリポイントの実行結果
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
+     * @param responseContext {@link ResponseContext}
      * @return 実行結果から特定された{@link Direction}
      */
-    Direction resolve(Object invocationResult, InvocationMetadata metadata, RequestContext context);
+    Direction resolve(Object invocationResult, InvocationMetadata metadata, RequestContext context, ResponseContext responseContext);
 
 }

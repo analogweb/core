@@ -17,9 +17,10 @@ public interface DirectionHandler extends Module {
      * @param result 評価する対象の{@link Direction}
      * @param resultFormatter 評価する対象の{@link Direction}をフォーマットする{@link DirectionFormatter}
      * @param context {@link RequestContext}
+     * @param response {@link ResponseContext}
      * @throws IOException {@link Direction}の評価時にI/Oエラーが発生した場合。
      * @throws WebApplicationException {@link Direction}の評価時に任意の例外が発生した場合。
      */
-    void handleResult(Direction result, DirectionFormatter resultFormatter, RequestContext context) throws IOException, WebApplicationException;
+    void handleResult(Direction result, DirectionFormatter resultFormatter, RequestContext context,ResponseContext response) throws IOException, WebApplicationException;
 
 }

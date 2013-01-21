@@ -6,6 +6,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
@@ -55,7 +56,7 @@ public class Json extends TextFormattable<Json> {
         public void formatAndWriteInto(RequestContext writeTo, String charset, Object source)
                 throws FormatFailureException {
             StringBuilder buffer = new StringBuilder();
-            OutputStreamWriter output;
+            Writer output;
             try {
                 format(buffer, source);
                 output = new OutputStreamWriter(writeTo.getResponseBody(), charset);

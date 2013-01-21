@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.util.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,6 +22,7 @@ import org.junit.rules.ExpectedException;
 public class TextTest {
 
     private RequestContext context;
+    private ResponseContext response;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -28,6 +30,7 @@ public class TextTest {
     @Before
     public void setUp() throws Exception {
         context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
     }
 
     @Test
@@ -45,7 +48,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context);
+        actual.render(context,response);
 
         assertThat(new String(out.toByteArray()), is(responseText));
         assertThat(actual.toString(), is(responseText));
@@ -69,7 +72,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context);
+        actual.render(context,response);
 
         assertThat(new String(out.toByteArray()), is(responseText));
 
@@ -91,7 +94,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context);
+        actual.render(context,response);
 
         assertThat(new String(out.toByteArray()), is(responseText));
 
@@ -113,7 +116,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context);
+        actual.render(context,response);
 
         assertThat(new String(out.toByteArray()), is(responseText));
 
@@ -134,7 +137,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context);
+        actual.render(context,response);
 
         assertThat(new String(out.toByteArray()), is(responseText));
 
@@ -155,7 +158,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context);
+        actual.render(context,response);
 
         assertThat(new String(out.toByteArray(), "Shift-JIS"), is(responseText));
     }
@@ -171,7 +174,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(context.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context);
+        actual.render(context,response);
 
         assertThat(new String(out.toByteArray()), is(StringUtils.EMPTY));
     }
@@ -188,7 +191,7 @@ public class TextTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         when(context.getResponseBody()).thenReturn(out);
 
-        actual.render(context);
+        actual.render(context,response);
     }
 
 }

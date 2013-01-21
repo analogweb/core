@@ -15,6 +15,7 @@ import java.util.TreeMap;
 import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.DirectionEvaluationException;
 import org.analogweb.exception.MissingRequirmentsException;
 import org.analogweb.exception.WebApplicationException;
@@ -43,7 +44,7 @@ public class Redirect implements Direction {
     }
 
     @Override
-    public void render(RequestContext context) throws IOException, WebApplicationException {
+    public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
         Assertion.notNull(context, RequestContext.class.getCanonicalName());
 
         String path = getParametarizedPath();

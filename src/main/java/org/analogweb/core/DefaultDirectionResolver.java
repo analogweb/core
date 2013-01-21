@@ -4,6 +4,7 @@ import org.analogweb.Direction;
 import org.analogweb.DirectionResolver;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.core.direction.HttpStatus;
 import org.analogweb.core.direction.Text;
 import org.analogweb.exception.UnresolvableResultException;
@@ -15,7 +16,7 @@ public class DefaultDirectionResolver implements DirectionResolver {
 
     @Override
     public Direction resolve(Object invocationResult, InvocationMetadata metadata,
-            RequestContext context) {
+            RequestContext context, ResponseContext responseContext) {
         if (invocationResult == null) {
             return nullToDirection(metadata, context);
         }
