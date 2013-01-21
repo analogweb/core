@@ -18,8 +18,9 @@ public class DefaultRequestPathTest {
     public void testGetPath() throws Exception {
 
         URI uri = new URI("http://somehost:8080/foo/baa/baz.do");
+        URI baseUri = new URI("http://somehost:8080/foo");
 
-        DefaultRequestPath actual = new DefaultRequestPath("/foo", uri, "GET");
+        DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "GET");
         assertThat(actual.getActualPath(), is("/baa/baz"));
         assertThat(actual.getSuffix(), is(ApplicationSpecifier.valueOf(".do")));
     }
@@ -28,8 +29,9 @@ public class DefaultRequestPathTest {
     public void testGetPathWithRequestMethod() throws Exception {
 
         URI uri = new URI("http://somehost:8080/foo/baa/baz.do?abc=def");
+        URI baseUri = new URI("http://somehost:8080/foo/");
 
-        DefaultRequestPath actual = new DefaultRequestPath("/foo", uri, "GET");
+        DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "GET");
         assertThat(actual.getActualPath(), is("/baa/baz"));
         assertThat(actual.getSuffix(), is(ApplicationSpecifier.valueOf(".do")));
         assertThat(actual.getMethod(), is("GET"));
@@ -39,8 +41,9 @@ public class DefaultRequestPathTest {
     public void testGetPathWithoutSuffix() throws Exception {
 
         URI uri = new URI("http://somehost:8080/foo/baa/baz?hoge=fuga");
+        URI baseUri = new URI("http://somehost:8080/foo");
 
-        DefaultRequestPath actual = new DefaultRequestPath("/foo", uri, "POST");
+        DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "POST");
         assertThat(actual.getActualPath(), is("/baa/baz"));
         assertThat(actual.getSuffix(), is(ApplicationSpecifier.NONE));
     }
@@ -50,8 +53,9 @@ public class DefaultRequestPathTest {
 
         URI uri = new URI(
                 "http://somehost:8080/foo/baa.do;jsessionid=1A26E401D812045AF2D9150891DA01B3");
+        URI baseUri = new URI("http://somehost:8080/foo");
 
-        DefaultRequestPath actual = new DefaultRequestPath("/foo", uri, "POST");
+        DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "POST");
         assertThat(actual.getActualPath(), is("/baa"));
         assertThat(actual.getSuffix(), is(ApplicationSpecifier.valueOf(".do")));
     }
@@ -61,8 +65,9 @@ public class DefaultRequestPathTest {
 
         URI uri = new URI(
                 "http://somehost:8080/foo/baa.do;jsessionid=1A26E401D812045AF2D9150891DA01B3");
+        URI baseUri = new URI("http://somehost:8080/foo");
 
-        DefaultRequestPath actual = new DefaultRequestPath("/foo", uri, "POST");
+        DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "POST");
         assertTrue(actual.pathThrowgh(""));
     }
 
@@ -70,8 +75,9 @@ public class DefaultRequestPathTest {
     public void testPathThrowghAndRequestMethodLowerCase() throws Exception {
         URI uri = new URI(
                 "http://somehost:8080/foo/baa.do;jsessionid=1A26E401D812045AF2D9150891DA01B3");
+        URI baseUri = new URI("http://somehost:8080/foo");
 
-        DefaultRequestPath actual = new DefaultRequestPath("/foo", uri, "Post");
+        DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "Post");
         assertFalse(actual.pathThrowgh(".do"));
     }
 
@@ -79,7 +85,7 @@ public class DefaultRequestPathTest {
     public void testNotPathThrowghWithContextRootPath() throws Exception {
         URI uri = new URI("http://somehost:8080/baa;jsessionid=1A26E401D812045AF2D9150891DA01B3");
 
-        DefaultRequestPath actual = new DefaultRequestPath("", uri, "Post");
+        DefaultRequestPath actual = new DefaultRequestPath(null, uri, "Post");
         assertThat(actual.getActualPath(), is("/baa"));
         assertThat(actual.getSuffix(), is(ApplicationSpecifier.valueOf("")));
     }
@@ -88,9 +94,10 @@ public class DefaultRequestPathTest {
     public void testIdentifiedByActualPath() throws Exception {
         URI uri = new URI(
                 "http://somehost:8080/foo/baa;jsessionid=1A26E401D812045AF2D9150891DA01B3");
+        URI baseUri = new URI("http://somehost:8080/foo");
 
-        DefaultRequestPath pathA = new DefaultRequestPath("/foo", uri, "POST");
-        DefaultRequestPath pathB = new DefaultRequestPath("/foo", uri, "POST");
+        DefaultRequestPath pathA = new DefaultRequestPath(baseUri, uri, "POST");
+        DefaultRequestPath pathB = new DefaultRequestPath(baseUri, uri, "POST");
 
         assertTrue(pathA.match(pathB));
     }

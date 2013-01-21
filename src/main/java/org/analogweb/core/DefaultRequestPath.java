@@ -15,11 +15,14 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
     private final String actualPath;
     private final String requestMethod;
     private final URI requestURI;
+    private final URI baseURI;
 
-    public DefaultRequestPath(String basePath, URI requestedUri, String requestMethod) {
-        this.requestURI = requestedUri;
-        String path = requestURI.getRawPath();
-        this.actualPath = getFormattedPath(path, basePath);
+    public DefaultRequestPath(URI baseURI, URI requestedURI, String requestMethod) {
+        this.requestURI = requestedURI;
+        this.baseURI = (baseURI == null) ? URI.create("/") : baseURI;
+        String path = new StringBuilder().append('/')
+                .append(this.baseURI.relativize(this.requestURI).getPath()).toString();
+        this.actualPath = getFormattedPath(path, this.baseURI.getPath());
         Assertion.notNull(requestMethod, "Request method.");
         this.requestMethod = requestMethod.toUpperCase();
         this.suffix = extractSuffix(path);
@@ -89,6 +92,11 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
     @Override
     public String toString() {
         return getActualPath();
+    }
+
+    @Override
+    public URI getBaseURI() {
+        return this.baseURI;
     }
 
 }
