@@ -44,11 +44,12 @@ public class Redirect implements Direction {
     }
 
     @Override
-    public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
+    public void render(RequestContext context, ResponseContext response) throws IOException,
+            WebApplicationException {
         Assertion.notNull(context, RequestContext.class.getCanonicalName());
 
         String path = getParametarizedPath();
-        sendRedirect(context, URI.create(path), getResponseCode());
+        sendRedirect(context, response, URI.create(path), getResponseCode());
     }
 
     public Redirect encodeWith(String encodingCharset) {
@@ -56,22 +57,19 @@ public class Redirect implements Direction {
         return this;
     }
 
-    protected void sendRedirect(RequestContext context, URI encodedPath, int responseCode)
-            throws IOException {
+    protected void sendRedirect(RequestContext context, ResponseContext response, URI encodedPath,
+            int responseCode) throws IOException {
         if (responseCode > 299 && responseCode < 400) {
-            context.setResponseStatus(responseCode);
+            response.setStatus(responseCode);
         } else {
             // HTTP 1.0 compatible.
             if (responseCode != UNSET_RESPONSE_CODE) {
                 log.log("WR000001", responseCode);
             }
-            context.setResponseStatus(HttpURLConnection.HTTP_MOVED_TEMP);
+            response.setStatus(HttpURLConnection.HTTP_MOVED_TEMP);
         }
-        Headers responseHeader = context.getResponseHeaders();
-        responseHeader.putValue("Location",
-                encodedPath.getPath()
-                        + (StringUtils.isEmpty(encodedPath.getQuery()) ? StringUtils.EMPTY : "?"
-                                + encodedPath.getQuery()));
+        Headers responseHeader = response.getResponseHeaders();
+        responseHeader.putValue("Location", encodedPath.toString());
     }
 
     protected String getTo() {

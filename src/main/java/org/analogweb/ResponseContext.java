@@ -1,5 +1,6 @@
 package org.analogweb;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -77,6 +78,13 @@ public interface ResponseContext {
          * @param entity {@link ResponseEntity}
          */
         void writeEntity(ResponseEntity entity);
+        
+        /**
+         * レスポンスボディに書き込む対象のエンティティ
+         * を取得します。
+         * @return {@link ResponseEntity}
+         */
+        ResponseEntity getEntity();
     }
 
     /**
@@ -89,8 +97,9 @@ public interface ResponseContext {
         /**
          * レスポンスボディにエンティティを書き込みます。
          * @param responseBody {@link OutputStream}
+         * @throws {@link IOException}
          */
-        void writeInto(OutputStream responseBody);
+        void writeInto(OutputStream responseBody) throws IOException ;
     }
 
 }

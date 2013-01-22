@@ -49,19 +49,20 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
     }
 
     @Override
-    public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
+    public void render(RequestContext context, ResponseContext response) throws IOException,
+            WebApplicationException {
         Object toXml = getSource();
+        Headers headers = response.getResponseHeaders();
         if (toXml == null) {
-            super.writeToStream(context.getResponseBody());
+            super.writeEntity(response);
             return;
         }
         DirectionFormatter formatter = getFormatter();
         if (formatter == null) {
             formatter = getDefaultFormatter();
         }
-        Headers headers = context.getResponseHeaders();
         headers.putValue("Content-Type", getContentType());
-        formatter.formatAndWriteInto(context, getCharset(), toXml);
+        formatter.formatAndWriteInto(context, response, getCharset(), toXml);
     }
 
     /**

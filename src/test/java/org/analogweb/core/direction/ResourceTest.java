@@ -16,6 +16,8 @@ import java.io.InputStream;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.ResponseWriter;
+import org.analogweb.core.DefaultResponseWriter;
 import org.analogweb.exception.ApplicationRuntimeException;
 import org.analogweb.exception.AssertionFailureException;
 import org.junit.Before;
@@ -27,7 +29,7 @@ import org.junit.rules.TemporaryFolder;
 public class ResourceTest {
 
     private RequestContext context;
-    private ResponseContext response; 
+    private ResponseContext response;
     private Headers headers;
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -47,12 +49,14 @@ public class ResourceTest {
         writeStringTo(file);
         Resource resource = Resource.as(file);
 
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
-        resource.render(context,response);
+        resource.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is("this is test log."));
 
         verify(headers).putValue("Content-Type", "application/octet-stream");
@@ -71,12 +75,14 @@ public class ResourceTest {
         writeStringTo(file);
         Resource resource = Resource.as(file).inline();
 
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
-        resource.render(context,response);
+        resource.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is("this is test log."));
 
         verify(headers).putValue("Content-Type", "application/octet-stream");
@@ -95,12 +101,14 @@ public class ResourceTest {
         writeStringTo(file);
         Resource resource = Resource.asFilePath(file.getPath());
 
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
-        resource.render(context,response);
+        resource.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is("this is test log."));
 
         verify(headers).putValue("Content-Type", "application/octet-stream");
@@ -119,12 +127,14 @@ public class ResourceTest {
         writeStringTo(file);
         Resource resource = Resource.as(new FileInputStream(file));
 
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
-        resource.render(context,response);
+        resource.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is("this is test log."));
 
         verify(headers).putValue("Content-Type", "application/octet-stream");

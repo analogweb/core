@@ -7,12 +7,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.ResponseWriter;
+import org.analogweb.core.DefaultResponseWriter;
 import org.analogweb.util.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,16 +42,18 @@ public class TextTest {
         final Text actual = Text.with(responseText);
 
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
         assertThat(actual.getContentType(), is("text/plain; charset=" + charset));
         assertThat(actual.getCharset(), is(Charset.defaultCharset().displayName()));
 
         Headers headers = mock(Headers.class);
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context,response);
+        actual.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is(responseText));
         assertThat(actual.toString(), is(responseText));
 
@@ -63,17 +67,19 @@ public class TextTest {
         final Text actual = Text.with(responseText).withCharset(charset);
 
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
         assertThat(actual.getContentType(), is("text/plain; charset="
                 + Charset.defaultCharset().displayName()));
         assertThat(actual.getCharset(), is(Charset.defaultCharset().displayName()));
 
         Headers headers = mock(Headers.class);
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context,response);
+        actual.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is(responseText));
 
         verify(headers).putValue("Content-Type",
@@ -86,16 +92,18 @@ public class TextTest {
         final Text actual = Text.with(responseText).withoutCharset();
 
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
         assertThat(actual.getContentType(), is("text/plain"));
         assertThat(actual.getCharset(), is(StringUtils.EMPTY));
 
         Headers headers = mock(Headers.class);
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context,response);
+        actual.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is(responseText));
 
         verify(headers).putValue("Content-Type", "text/plain");
@@ -108,16 +116,18 @@ public class TextTest {
         final Text actual = Text.with(responseText).typeAs("text/xml");
 
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
         assertThat(actual.getContentType(), is("text/xml; charset=" + charset));
         assertThat(actual.getCharset(), is(charset));
 
         Headers headers = mock(Headers.class);
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context,response);
+        actual.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is(responseText));
 
         verify(headers).putValue("Content-Type", "text/xml; charset=" + charset);
@@ -130,15 +140,17 @@ public class TextTest {
         final Text actual = Text.with(responseText).typeAs("application/json").withCharset(charset);
 
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
         assertThat(actual.getContentType(), is("application/json; charset=" + charset));
 
         Headers headers = mock(Headers.class);
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context,response);
+        actual.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is(responseText));
 
         verify(headers).putValue("Content-Type", "application/json; charset=" + charset);
@@ -150,16 +162,18 @@ public class TextTest {
         final Text actual = Text.with(responseText).withCharset("Shift-JIS");
 
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
         assertThat(actual.getContentType(), is("text/plain; charset=Shift-JIS"));
         assertThat(actual.getCharset(), is("Shift-JIS"));
 
         Headers headers = mock(Headers.class);
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context,response);
+        actual.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray(), "Shift-JIS"), is(responseText));
     }
 
@@ -169,29 +183,28 @@ public class TextTest {
         final Text actual = Text.with(responseText);
 
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
         Headers headers = mock(Headers.class);
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
 
-        actual.render(context,response);
+        actual.render(context, response);
 
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is(StringUtils.EMPTY));
     }
 
     @Test
     public void testTextResponseWithUnknownCharset() throws Exception {
-        thrown.expect(UnsupportedEncodingException.class);
+        thrown.expect(IllegalCharsetNameException.class);
         final String responseText = "this is test!";
         final Text actual = Text.with(responseText).withCharset("*unknown*");
 
         Headers headers = mock(Headers.class);
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
 
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
-
-        actual.render(context,response);
+        actual.render(context, response);
     }
 
 }

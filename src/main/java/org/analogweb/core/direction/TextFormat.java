@@ -2,7 +2,6 @@ package org.analogweb.core.direction;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 import org.analogweb.Direction;
@@ -10,7 +9,6 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.exception.WebApplicationException;
-import org.analogweb.util.IOUtils;
 import org.analogweb.util.StringUtils;
 
 /**
@@ -44,13 +42,13 @@ public class TextFormat<T extends TextFormat<T>> implements Direction {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T extends TextFormat> T with(final String responseText) {
-        return (T)new TextFormat(responseText);
+        return (T) new TextFormat(responseText);
     }
 
     @SuppressWarnings("unchecked")
     public T typeAs(String contentType) {
         this.contentType = contentType;
-        return (T)this;
+        return (T) this;
     }
 
     @SuppressWarnings("unchecked")
@@ -58,28 +56,39 @@ public class TextFormat<T extends TextFormat<T>> implements Direction {
         if (StringUtils.isNotEmpty(charset)) {
             this.charset = charset;
         }
-        return (T)this;
+        return (T) this;
     }
 
     @SuppressWarnings("unchecked")
-    public T  withoutCharset() {
+    public T withoutCharset() {
         this.charset = StringUtils.EMPTY;
-        return (T)this;
+        return (T) this;
     }
 
     @Override
-    public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
-        OutputStream out = context.getResponseBody();
-        Headers headers = context.getResponseHeaders();
+    public void render(RequestContext context, ResponseContext response) throws IOException,
+            WebApplicationException {
+        Headers headers = response.getResponseHeaders();
         headers.putValue("Content-Type", getContentType());
-        writeToStream(out);
+        writeEntity(response);
     }
 
-    protected void writeToStream(OutputStream out) throws IOException {
-        IOUtils.copyQuietly(textToInputStream(getResponseText(), getCharset()), out);
+    protected void writeEntity(ResponseContext response) throws IOException {
+        String text = getResponseText();
+        String charset = getCharset();
+        // TODO too lazy...
+        if (StringUtils.isEmpty(charset)) {
+            response.getResponseWriter().writeEntity(
+                    StringUtils.isEmpty(text) ? StringUtils.EMPTY : text);
+        } else {
+            response.getResponseWriter().writeEntity(
+                    StringUtils.isEmpty(text) ? StringUtils.EMPTY : text,
+                    Charset.forName(getCharset()));
+        }
     }
 
-    protected ByteArrayInputStream textToInputStream(String text, String charset) throws IOException {
+    protected ByteArrayInputStream textToInputStream(String text, String charset)
+            throws IOException {
         if (StringUtils.isEmpty(text)) {
             return new ByteArrayInputStream(StringUtils.EMPTY.getBytes());
         } else if (StringUtils.isEmpty(charset)) {
@@ -102,7 +111,8 @@ public class TextFormat<T extends TextFormat<T>> implements Direction {
         if (StringUtils.isEmpty(charset)) {
             return this.contentType;
         } else {
-            return new StringBuilder(32).append(this.contentType).append("; charset=").append(getCharset()).toString();
+            return new StringBuilder(32).append(this.contentType).append("; charset=")
+                    .append(getCharset()).toString();
         }
     }
 

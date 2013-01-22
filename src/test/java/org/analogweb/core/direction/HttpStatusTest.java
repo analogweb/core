@@ -12,6 +12,7 @@ import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.core.DefaultResponseWriter;
 import org.analogweb.util.Maps;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,42 +37,44 @@ public class HttpStatusTest {
 
     @Test
     public void testRender() throws Exception {
-        when(requestContext.getResponseHeaders()).thenReturn(headers);
-        HttpStatus.OK.render(requestContext,response);
-        verify(requestContext).setResponseStatus(200);
+        when(response.getResponseHeaders()).thenReturn(headers);
+        HttpStatus.OK.render(requestContext, response);
+        verify(response).setStatus(200);
     }
 
     @Test
     public void testRenderWithError() throws Exception {
-        when(requestContext.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(requestContext.getResponseBody()).thenReturn(out);
-        HttpStatus.NOT_FOUND.byReasonOf("foo is not found.").render(requestContext,response);
+        DefaultResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
+        HttpStatus.NOT_FOUND.byReasonOf("foo is not found.").render(requestContext, response);
+        writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is("foo is not found."));
-        verify(requestContext).setResponseStatus(404);
+        verify(response).setStatus(404);
     }
 
     @Test
     public void testRenderWithHeader() throws Exception {
-        when(requestContext.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
 
         HttpStatus.FOUND.withHeader(Maps.newHashMap("Location", "http://foo.com/baa")).render(
-                requestContext,response);
+                requestContext, response);
 
-        verify(requestContext).setResponseStatus(302);
+        verify(response).setStatus(302);
         verify(headers).putValue("Location", "http://foo.com/baa");
     }
 
     @Test
     public void testRenderWithPreRenderDirection() throws Exception {
-        when(requestContext.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
 
         Direction direction = mock(Direction.class);
 
-        HttpStatus.OK.with(direction).render(requestContext,response);
+        HttpStatus.OK.with(direction).render(requestContext, response);
 
-        verify(requestContext).setResponseStatus(200);
-        verify(direction).render(requestContext,response);
+        verify(response).setStatus(200);
+        verify(direction).render(requestContext, response);
     }
 
     @Test

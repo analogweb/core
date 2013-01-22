@@ -15,7 +15,6 @@ import org.analogweb.ResponseContext;
 import org.analogweb.exception.ApplicationRuntimeException;
 import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.Assertion;
-import org.analogweb.util.IOUtils;
 import org.analogweb.util.StringUtils;
 
 /**
@@ -70,11 +69,12 @@ public class Resource implements Direction {
     }
 
     @Override
-    public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
-        Headers headers = context.getResponseHeaders();
+    public void render(RequestContext context, ResponseContext response) throws IOException,
+            WebApplicationException {
+        Headers headers = response.getResponseHeaders();
         headers.putValue("Content-Type", getContentType());
         headers.putValue(CONTENT_DISPOSITION, createContentDisposition());
-        IOUtils.copyQuietly(getInputStream(), context.getResponseBody());
+        response.getResponseWriter().writeEntity(getInputStream());
     }
 
     protected String createContentDisposition() throws UnsupportedEncodingException {

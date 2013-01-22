@@ -15,6 +15,8 @@ import javax.xml.bind.annotation.XmlType;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.ResponseWriter;
+import org.analogweb.core.DefaultResponseWriter;
 import org.analogweb.exception.FormatFailureException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,6 +34,7 @@ public class XmlTest {
     @Before
     public void setUp() throws Exception {
         context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
         headers = mock(Headers.class);
     }
 
@@ -40,13 +43,15 @@ public class XmlTest {
 
         String charset = "UTF-8";
 
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
         Xml xml = Xml.as(new Foo());
-        xml.render(context,response);
+        xml.render(context, response);
 
+        writer.getEntity().writeInto(out);
         String actual = new String(out.toByteArray(), charset);
         assertThat(
                 actual,
@@ -58,13 +63,16 @@ public class XmlTest {
     public void testRenderWithInvalidType() throws Exception {
 
         thrown.expect(FormatFailureException.class);
-        when(context.getResponseHeaders()).thenReturn(headers);
+        when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        when(context.getResponseBody()).thenReturn(out);
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
 
-        // render miss mapped tppe.
+        // render miss mapped type.
         Xml xml = Xml.as(new Hoge());
-        xml.render(context,response);
+        xml.render(context, response);
+
+        writer.getEntity().writeInto(out);
     }
 
     @XmlRootElement

@@ -57,14 +57,14 @@ public enum HttpStatus implements Direction {
                 preRenderDirection.render(context, response);
             }
         }
-        Headers headers = context.getResponseHeaders();
+        Headers headers = response.getResponseHeaders();
         Map<String, String> headersMap = getResponseHeaders();
         if (headersMap != null) {
             for (Entry<String, String> e : headersMap.entrySet()) {
                 headers.putValue(e.getKey(), e.getValue());
             }
         }
-        context.setResponseStatus(getStatusCode());
+        response.setStatus(getStatusCode());
     }
 
     public static HttpStatus valueOf(int statusCode) {

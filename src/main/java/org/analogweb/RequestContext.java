@@ -2,7 +2,6 @@ package org.analogweb;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * 1つのHTTPリクエストをライフサイクルとする全てのモジュールを保持します。<br/>
@@ -23,13 +22,6 @@ public interface RequestContext {
     Headers getRequestHeaders();
 
     /**
-     * HTTPレスポンスヘッダを保持する{@link Headers}を取得します。
-     * @return {@link Headers}
-     */
-    @Deprecated
-    Headers getResponseHeaders();
-
-    /**
      * HTTPリクエストに含まれるパラメータを保持する{@link Parameters}を取得します。
      * @return {@link Parameters}
      */
@@ -43,27 +35,12 @@ public interface RequestContext {
     InputStream getRequestBody() throws IOException;
 
     /**
-     * レスポンスボディを保持する{@link OutputStream}を取得します。
-     * @return {@link OutputStream}
-     * @throws IOException I/Oエラーが発生した場合
-     */
-    @Deprecated
-    OutputStream getResponseBody() throws IOException;
-
-    /**
      * HTTPリクエストヘッダ Content-Type に含まれるメディアタイプを
      * {@link MediaType}として取得します。ヘッダが存在しない場合は
      * nullを返します。
      * @return {@link MediaType}
      */
     MediaType getContentType();
-
-    /**
-     * レスポンスするHTTPステータスを指定します。
-     * @param status レスポンスするHTTPステータス
-     */
-    @Deprecated
-    void setResponseStatus(int status);
 
     /**
      * 現在のリクエストにおける{@link RequestPath}を取得します。

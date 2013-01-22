@@ -38,15 +38,15 @@ public class RedirectTest {
         context = mock(RequestContext.class);
         response = mock(ResponseContext.class);
         responseHeader = mock(Headers.class);
-        when(context.getResponseHeaders()).thenReturn(responseHeader);
+        when(response.getResponseHeaders()).thenReturn(responseHeader);
     }
 
     @Test
     public void testRender() throws Exception {
 
-        Redirect.to("/some/foo.rn").render(context,response);
+        Redirect.to("/some/foo.rn").render(context, response);
 
-        verify(context).setResponseStatus(302);
+        verify(response).setStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn");
     }
 
@@ -54,9 +54,9 @@ public class RedirectTest {
     public void testRenderWithNotReturnCode() throws Exception {
 
         // not redirect response code.
-        Redirect.to("/some/foo.rn").resoposeCode(404).render(context,response);
+        Redirect.to("/some/foo.rn").resoposeCode(404).render(context, response);
 
-        verify(context).setResponseStatus(302);
+        verify(response).setStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn");
     }
 
@@ -65,7 +65,7 @@ public class RedirectTest {
 
         thrown.expect(AssertionFailureException.class);
 
-        Redirect.to("/some/foo.rn").render(null,response);
+        Redirect.to("/some/foo.rn").render(null, response);
 
     }
 
@@ -73,19 +73,28 @@ public class RedirectTest {
     public void testRenderWithParameter() throws Exception {
 
         Redirect.to("/some/foo.rn").addParameter("foo", "baa").addParameter("hoge", "fuga")
-                .render(context,response);
+                .render(context, response);
 
-        verify(context).setResponseStatus(302);
+        verify(response).setStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn?foo=baa&hoge=fuga");
+    }
+
+    @Test
+    public void testRenderWithScheme() throws Exception {
+
+        Redirect.to("https://github.com/").addParameter("foo", "baa").render(context, response);
+
+        verify(response).setStatus(302);
+        verify(responseHeader).putValue("Location", "https://github.com/?foo=baa");
     }
 
     @Test
     public void testRenderWithParametarizedURLAndParameter() throws Exception {
         // sort parameter name by natural order.
         Redirect.to("/some/foo.rn?boo=baz").addParameter("hoge", "fuga").addParameter("foo", "baa")
-                .encodeWith("ISO-8859-1").render(context,response);
+                .encodeWith("ISO-8859-1").render(context, response);
 
-        verify(context).setResponseStatus(302);
+        verify(response).setStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn?boo=baz&foo=baa&hoge=fuga");
 
     }

@@ -1,12 +1,15 @@
 package org.analogweb.core.direction;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import org.analogweb.DirectionFormatter;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.ResponseEntity;
 import org.analogweb.exception.FormatFailureException;
 
 /**
@@ -32,13 +35,20 @@ public class Xml extends TextFormattable<Xml> {
 
     static class DefaultFormatter implements DirectionFormatter {
         @Override
-        public void formatAndWriteInto(RequestContext writeTo, String charset, Object source)
-                throws FormatFailureException {
+        public void formatAndWriteInto(RequestContext context, ResponseContext writeTo,
+                String charset, final Object source) throws FormatFailureException {
             try {
-                JAXBContext jaxb = JAXBContext.newInstance(source.getClass());
-                jaxb.createMarshaller().marshal(source, writeTo.getResponseBody());
-            } catch (IOException e) {
-                throw new FormatFailureException(e, source, getClass().getName());
+                final JAXBContext jaxb = JAXBContext.newInstance(source.getClass());
+                writeTo.getResponseWriter().writeEntity(new ResponseEntity() {
+                    @Override
+                    public void writeInto(OutputStream responseBody) throws IOException {
+                        try {
+                            jaxb.createMarshaller().marshal(source, responseBody);
+                        } catch (JAXBException e) {
+                            throw new FormatFailureException(e, source, getClass().getName());
+                        }
+                    }
+                });
             } catch (JAXBException e) {
                 throw new FormatFailureException(e, source, getClass().getName());
             }

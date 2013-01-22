@@ -4,15 +4,14 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
 import java.util.Date;
 
 import org.analogweb.Direction;
 import org.analogweb.DirectionFormatter;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext;
 import org.analogweb.exception.FormatFailureException;
 import org.analogweb.util.ArrayUtils;
 
@@ -53,22 +52,14 @@ public class Json extends TextFormattable<Json> {
     static class DefaultFormatter implements DirectionFormatter {
 
         @Override
-        public void formatAndWriteInto(RequestContext writeTo, String charset, Object source)
-                throws FormatFailureException {
+        public void formatAndWriteInto(RequestContext context, ResponseContext writeTo,
+                String charset, Object source) throws FormatFailureException {
             StringBuilder buffer = new StringBuilder();
-            Writer output;
-            try {
-                format(buffer, source);
-                output = new OutputStreamWriter(writeTo.getResponseBody(), charset);
-                output.write(buffer.toString());
-                output.flush();
-            } catch (IOException e) {
-                throw new FormatFailureException(e, source, Json.class.getSimpleName());
-            }
+            format(buffer, source);
+            writeTo.getResponseWriter().writeEntity(buffer.toString(), Charset.forName(charset));
         }
 
-        private void format(StringBuilder buffer, Object source) throws FormatFailureException,
-                IOException {
+        private void format(StringBuilder buffer, Object source) throws FormatFailureException {
             Class<?> clazz = source.getClass();
             if (clazz.isArray() || source instanceof Iterable) {
                 buffer.append("{");
@@ -113,15 +104,14 @@ public class Json extends TextFormattable<Json> {
             }
         }
 
-        private void formatNull(StringBuilder buffer, PropertyDescriptor desc) throws IOException {
+        private void formatNull(StringBuilder buffer, PropertyDescriptor desc) {
             buffer.append("\"");
             buffer.append(desc.getDisplayName());
             buffer.append("\"");
             buffer.append(": null,");
         }
 
-        private void formatNotNull(StringBuilder buffer, Object value, PropertyDescriptor desc)
-                throws IOException {
+        private void formatNotNull(StringBuilder buffer, Object value, PropertyDescriptor desc) {
             if (desc != null) {
                 buffer.append("\"");
                 buffer.append(desc.getDisplayName());
