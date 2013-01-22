@@ -4,6 +4,7 @@ import java.net.URI;
 
 import org.analogweb.RequestPath;
 import org.analogweb.util.Assertion;
+import org.analogweb.util.StringUtils;
 
 /**
  * @author snowgoose
@@ -20,8 +21,10 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
     public DefaultRequestPath(URI baseURI, URI requestedURI, String requestMethod) {
         this.requestURI = requestedURI;
         this.baseURI = (baseURI == null) ? URI.create("/") : baseURI;
-        String path = new StringBuilder().append('/')
-                .append(this.baseURI.relativize(this.requestURI).getPath()).toString();
+        String path = this.baseURI.relativize(this.requestURI).getPath();
+        if (StringUtils.charAt(0, path) != '/') {
+            path = '/' + path;
+        }
         this.actualPath = getFormattedPath(path, this.baseURI.getPath());
         Assertion.notNull(requestMethod, "Request method.");
         this.requestMethod = requestMethod.toUpperCase();
@@ -59,7 +62,7 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
 
     private String getFormattedPath(String requestUri, String contextPath) {
         String uri = removeJsessionId(requestUri);
-        return removeSuffix(uri.replaceFirst(contextPath, ""));
+        return removeSuffix(uri);
     }
 
     private String removeJsessionId(String uri) {

@@ -9,8 +9,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-
-import org.analogweb.util.StringUtils;
 import org.junit.Test;
 
 /**
@@ -147,4 +145,14 @@ public class StringUtilsTest {
         assertThat(StringUtils.trimToEmpty(""),is(StringUtils.EMPTY));
     }
 
+    @Test
+    public void testCharAt(){
+        String value = "foo";
+        assertThat(StringUtils.charAt(0, value),is('f'));
+        assertThat(StringUtils.charAt(1, value),is('o'));
+        assertThat(StringUtils.charAt(3, value),is(Character.MIN_VALUE));
+        assertThat(StringUtils.charAt(-1, value),is(Character.MIN_VALUE));
+        assertThat(StringUtils.charAt(0, null),is(Character.MIN_VALUE));
+    }
+        
 }

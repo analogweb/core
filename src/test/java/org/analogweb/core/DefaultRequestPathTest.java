@@ -26,6 +26,17 @@ public class DefaultRequestPathTest {
     }
 
     @Test
+    public void testGetPathOnRootContext() throws Exception {
+
+        URI uri = new URI("http://somehost:8080/baa/baz.do");
+        URI baseUri = new URI("http://somehost:8080/");
+
+        DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "GET");
+        assertThat(actual.getActualPath(), is("/baa/baz"));
+        assertThat(actual.getSuffix(), is(ApplicationSpecifier.valueOf(".do")));
+    }
+
+    @Test
     public void testGetPathWithRequestMethod() throws Exception {
 
         URI uri = new URI("http://somehost:8080/foo/baa/baz.do?abc=def");

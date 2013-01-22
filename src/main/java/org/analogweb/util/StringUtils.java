@@ -13,6 +13,13 @@ public final class StringUtils {
 
     public static final String EMPTY = "";
 
+    public static char charAt(int position, String s) {
+        if (isNotEmpty(s) && -1 < position && s.length() > position) {
+            return s.charAt(position);
+        }
+        return Character.MIN_VALUE;
+    }
+
     public static boolean isNotEmpty(String str) {
         return (str != null && str.trim().length() != 0);
     }
