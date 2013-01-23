@@ -15,7 +15,7 @@ public interface InvocationFactory extends Module {
      * @param instanceProvider リクエストに一致する実行対象のインスタンスプロバイダ
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
-     * @param responseContext {@link ResponseContext]
+     * @param responseContext {@link ResponseContext}
      * @param converters {@link TypeMapperContext}
      * @param processors 生成される{@link Invocation}に適用される全ての{@link InvocationProcessor}
      * @param handlers {@link AttributesHandlers}

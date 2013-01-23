@@ -6,7 +6,7 @@ import org.analogweb.exception.WebApplicationException;
 
 /**
  * {@link Direction}に任意の操作を付与可能なハンドラです。<br/>
- * 通常、このハンドラは{@link Direction#render(RequestContext)}を実行するのみです。
+ * 通常、このハンドラは{@link Direction#render(RequestContext, ResponseContext)}を実行するのみです。
  * @author snowgoose
  */
 public interface DirectionHandler extends Module {
