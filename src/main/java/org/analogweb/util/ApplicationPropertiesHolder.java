@@ -124,12 +124,14 @@ public final class ApplicationPropertiesHolder {
         }
 
         protected String createTempDirPath(String tmpDirPath) {
-            if (StringUtils.isEmpty(tmpDirPath)) {
-                return System.getProperty("java.io.tmpdir") + "/"
-                        + Application.class.getCanonicalName();
-            } else {
-                return tmpDirPath + "/" + Application.class.getCanonicalName();
+            String tmpDir = tmpDirPath;
+            if (StringUtils.isEmpty(tmpDir)) {
+                tmpDir = SystemProperties.tmpDir();
             }
+            if (tmpDir.endsWith(SystemProperties.fileSeparator())) {
+                return tmpDir + Application.class.getCanonicalName();
+            }
+            return tmpDir + SystemProperties.fileSeparator() + Application.class.getCanonicalName();
         }
     }
 }
