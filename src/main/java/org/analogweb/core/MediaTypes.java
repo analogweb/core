@@ -16,9 +16,10 @@ import org.analogweb.util.StringUtils;
  */
 public final class MediaTypes {
 
-    static final String WILDCARD = "*";
     /** "*&#47;*" */
     public final static MediaType WILDCARD_TYPE = new DefaultMediaType();
+    /** "*&#47;*" */
+    public final static String WILDCARD = "*/*";
 
     /** "application/xml" */
     public final static String APPLICATION_XML = "application/xml";
@@ -85,8 +86,8 @@ public final class MediaTypes {
     private static final class DefaultMediaType implements MediaType {
 
         private Map<String, String> parameters;
-        private String type = WILDCARD;
-        private String subType = WILDCARD;
+        private String type = "*";
+        private String subType = "*";
 
         DefaultMediaType() {
             this(null, null);
@@ -98,8 +99,8 @@ public final class MediaTypes {
 
         @SuppressWarnings("unchecked")
         DefaultMediaType(String type, String subType, Map<String, String> parameters) {
-            this.type = (StringUtils.isEmpty(type)) ? WILDCARD : type;
-            this.subType = (StringUtils.isEmpty(subType)) ? WILDCARD : subType;
+            this.type = (StringUtils.isEmpty(type)) ? "*" : type;
+            this.subType = (StringUtils.isEmpty(subType)) ? "*" : subType;
             this.parameters = (Map<String, String>) ((parameters == null) ? Maps.newEmptyHashMap()
                     : initParameters(parameters));
         }

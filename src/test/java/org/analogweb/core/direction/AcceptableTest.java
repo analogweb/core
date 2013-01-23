@@ -19,11 +19,11 @@ import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.ResponseEntity;
 import org.analogweb.ResponseContext.ResponseWriter;
 import org.analogweb.core.DefaultResponseWriter;
 import org.analogweb.exception.WebApplicationException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -155,8 +155,6 @@ public class AcceptableTest {
     }
 
     @Test
-    @Ignore
-    //TODO not ignorble.
     public void testRenderNotAcceptable() throws Exception {
 
         final Member m = new Member("snowgoose", 34);
@@ -193,7 +191,10 @@ public class AcceptableTest {
         when(response.getResponseWriter()).thenReturn(writer);
 
         a.render(context, response);
-        writer.getEntity().writeInto(out);
+        ResponseEntity entity = writer.getEntity();
+        if (entity != null) {
+            entity.writeInto(out);
+        }
         return new String(out.toByteArray());
     }
 

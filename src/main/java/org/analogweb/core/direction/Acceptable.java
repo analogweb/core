@@ -11,6 +11,7 @@ import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.core.MediaTypes;
 import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.StringUtils;
 
@@ -31,14 +32,13 @@ import org.analogweb.util.StringUtils;
 public class Acceptable implements Direction {
 
     private Object source;
-    protected static final String ANY_TYPE = "*/*";
     protected static final Map<String, Creator> DEFAULT_MEDIA_TYPE_MAP = new HashMap<String, Creator>() {
         private static final long serialVersionUID = 1L;
         {
-            put("application/json", Creators.json());
-            put("application/xml", Creators.xml());
-            put("text/xml", Creators.xml());
-            put(ANY_TYPE, Creators.json());
+            put(MediaTypes.APPLICATION_JSON, Creators.json());
+            put(MediaTypes.APPLICATION_XML, Creators.xml());
+            put(MediaTypes.TEXT_XML, Creators.xml());
+            put(MediaTypes.WILDCARD, Creators.json());
         }
     };
     private Map<String, Creator> mediaTypeMap;
@@ -62,18 +62,19 @@ public class Acceptable implements Direction {
     }
 
     @Override
-    public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
+    public void render(RequestContext context, ResponseContext response) throws IOException,
+            WebApplicationException {
         List<String> mediaTypes = getAcceptableMediaType(context);
         if (mediaTypes.isEmpty()) {
-            HttpStatus.NOT_ACCEPTABLE.render(context,response);
+            HttpStatus.NOT_ACCEPTABLE.render(context, response);
             return;
         }
         Direction d = selectDirection(mediaTypes, getSource());
-        if (d != null) {
-            d.render(context,response);
-        } else {
-            HttpStatus.NOT_ACCEPTABLE.render(context,response);
+        if (d == null) {
+            HttpStatus.NOT_ACCEPTABLE.render(context, response);
+            return;
         }
+        d.render(context, response);
     }
 
     /**
@@ -82,7 +83,7 @@ public class Acceptable implements Direction {
      * @return 自身のインスタンス
      */
     public Acceptable mapToAny(Direction matchesAny) {
-        return map(matchesAny, ANY_TYPE);
+        return map(matchesAny, MediaTypes.WILDCARD);
     }
 
     /**
