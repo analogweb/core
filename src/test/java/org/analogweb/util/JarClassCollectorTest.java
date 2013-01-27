@@ -75,6 +75,28 @@ public class JarClassCollectorTest {
         assertThat(scannedClassNames.contains("a.b.e.Baz"), is(true));
     }
 
+    @Test
+    public void testCollectAll() throws Exception {
+        final URL resource = Thread.currentThread().getContextClassLoader()
+                .getResource(getClass().getCanonicalName().replace('.', '/') + ".jar");
+        smallClassLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                return new URLClassLoader(new URL[] { resource });
+            }
+        });
+        Collection<String> scannedClassNames = classNames(collector.collect(ResourceUtils
+                .findPackageResources("a.b.c", smallClassLoader).get(0), smallClassLoader));
+        assertThat(scannedClassNames.size(), is(5));
+        assertThat(scannedClassNames.contains("a.b.c.Foo"), is(true));
+        assertThat(scannedClassNames.contains("a.b.c.Foo.FooBaa"), is(true));
+
+        assertThat(scannedClassNames.contains("a.b.d.Baa"), is(true));
+        assertThat(scannedClassNames.contains("a.b.d.BaaImpl"), is(true));
+
+        assertThat(scannedClassNames.contains("a.b.e.Baz"), is(true));
+    }
+
     private Collection<String> classNames(Collection<Class<?>> classes) {
         List<String> result = new ArrayList<String>();
         for (Class<?> clazz : classes) {
@@ -110,7 +132,7 @@ public class JarClassCollectorTest {
         Collection<Class<?>> result = collector.collect(null,
                 ResourceUtils.findPackageResources("a.b.c", smallClassLoader).get(0),
                 smallClassLoader);
-        assertTrue(result.isEmpty());
+        assertThat(result.size(), is(5));
     }
 
     @Test

@@ -1,8 +1,10 @@
 package org.analogweb;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.analogweb.exception.WebApplicationException;
+import org.analogweb.util.ClassCollector;
 
 /**
  * アプリケーションを表します。
@@ -33,12 +35,24 @@ public interface Application extends Disposable {
     /**
      * このアプリケーションインスタンスを起動します。
      * @param resolver {@link ApplicationContextResolver}
+     * @param collectors {@link ClassCollector}
      * @param props {@link ApplicationProperties}
      * @param classLoader {@link ClassLoader}
      */
     void run(ApplicationContextResolver resolver, ApplicationProperties props,
-            ClassLoader classLoader);
+            Collection<ClassCollector> collectors, ClassLoader classLoader);
 
+    /**
+     * {@link Application}に対する1つのリクエストを処理します。<br/>
+     * このメソッドを実行する前に
+     * {@link #run(ApplicationContextResolver, ApplicationProperties, Collection, ClassLoader)}
+     * が実行され、{@link Application}が起動している必要があります。
+     * @param path {@link Path}
+     * @param context {@link RequestContext}
+     * @param responseContext {@link ResponseContext}
+     * @throws IOException
+     * @throws WebApplicationException
+     */
     void processRequest(RequestPath path, RequestContext context, ResponseContext responseContext)
             throws IOException, WebApplicationException;
 

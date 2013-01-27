@@ -31,7 +31,6 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
 import org.analogweb.ResponseContext;
-import org.analogweb.exception.MissingRequiredParameterException;
 import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.ApplicationPropertiesHolder;
 import org.analogweb.util.ClassCollector;
@@ -39,6 +38,8 @@ import org.analogweb.util.CollectionUtils;
 import org.analogweb.util.ReflectionUtils;
 import org.analogweb.util.ResourceUtils;
 import org.analogweb.util.StopWatch;
+import org.analogweb.util.StringUtils;
+import org.analogweb.util.SystemProperties;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
@@ -55,27 +56,33 @@ public class WebApplication implements Application {
     private ClassLoader classLoader;
     private ApplicationContextResolver resolver;
 
-    public void run(ApplicationContextResolver resolver,ApplicationProperties props,ClassLoader classLoader){
+    public void run(ApplicationContextResolver resolver, ApplicationProperties props,
+            Collection<ClassCollector> collectors, ClassLoader classLoader) {
         StopWatch sw = new StopWatch();
         sw.start();
         this.resolver = resolver;
         this.classLoader = classLoader;
         log.log(Markers.BOOT_APPLICATION, "IB000001");
-        Collection<String> actionPackageNames = props.getComponentPackageNames();
-        if(CollectionUtils.isEmpty(actionPackageNames)){
+        Collection<String> invocationPackageNames = props.getComponentPackageNames();
+        /*
+        if (CollectionUtils.isEmpty(actionPackageNames)) {
             throw new MissingRequiredParameterException(INIT_PARAMETER_ROOT_COMPONENT_PACKAGES);
         }
-        log.log(Markers.BOOT_APPLICATION, "DB000001", actionPackageNames);
+        */
+        log.log(Markers.BOOT_APPLICATION, "DB000001", invocationPackageNames);
         Set<String> modulesPackageNames = new HashSet<String>();
-        modulesPackageNames.addAll(actionPackageNames);
+        if (CollectionUtils.isNotEmpty(invocationPackageNames)) {
+            modulesPackageNames.addAll(invocationPackageNames);
+        }
         modulesPackageNames.add(DEFAULT_PACKAGE_NAME);
         log.log(Markers.BOOT_APPLICATION, "DB000002", modulesPackageNames);
-        initApplication(modulesPackageNames, actionPackageNames, props.getApplicationSpecifier());
+        initApplication(collectors, modulesPackageNames, invocationPackageNames,
+                props.getApplicationSpecifier());
         log.log(Markers.BOOT_APPLICATION, "IB000002", sw.stop());
     }
-    
-    public void processRequest(RequestPath requestedPath, RequestContext context, ResponseContext responseContext)
-            throws IOException, WebApplicationException {
+
+    public void processRequest(RequestPath requestedPath, RequestContext context,
+            ResponseContext responseContext) throws IOException, WebApplicationException {
         InvocationMetadata metadata = null;
         Modules mod = null;
         try {
@@ -114,7 +121,8 @@ public class WebApplication implements Application {
     }
 
     protected void handleDirection(Modules modules, Object result, InvocationMetadata metadata,
-            RequestContext context, ResponseContext responseContext) throws IOException, WebApplicationException {
+            RequestContext context, ResponseContext responseContext) throws IOException,
+            WebApplicationException {
         DirectionResolver resultResolver = modules.getDirectionResolver();
         Direction resolved = resultResolver.resolve(result, metadata, context, responseContext);
         log.log(Markers.LIFECYCLE, "DL000008", result, result);
@@ -131,10 +139,10 @@ public class WebApplication implements Application {
         resultHandler.handleResult(resolved, resultFormatter, context, responseContext);
     }
 
-    protected void initApplication(Set<String> modulePackageNames,
-            Collection<String> invocationPackageNames, String specifier) {
-        Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames
-                .toArray(new String[modulePackageNames.size()]));
+    protected void initApplication(Collection<ClassCollector> collectors,
+            Set<String> modulePackageNames, Collection<String> invocationPackageNames,
+            String specifier) {
+        Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames, collectors);
         ModulesBuilder modulesBuilder = processConfigPreparation(ReflectionUtils
                 .filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses));
 
@@ -144,9 +152,13 @@ public class WebApplication implements Application {
         Modules modules = modulesBuilder.buildModules(resolver, defaultContainer);
         setModules(modules);
         log.log(Markers.BOOT_APPLICATION, "DB000003", modules);
-        Collection<Class<?>> collectedActionClasses = collectClasses(invocationPackageNames
-                .toArray(new String[invocationPackageNames.size()]));
-        setRequestPathMapping(createRequestPathMapping(collectedActionClasses,
+        Collection<Class<?>> collectedInvocationClasses;
+        if (CollectionUtils.isEmpty(invocationPackageNames)) {
+            collectedInvocationClasses = collectAllClasses(collectors);
+        } else {
+            collectedInvocationClasses = collectClasses(invocationPackageNames, collectors);
+        }
+        setRequestPathMapping(createRequestPathMapping(collectedInvocationClasses,
                 modules.getInvocationMetadataFactories()));
         setApplicationSpecifier(specifier);
     }
@@ -209,11 +221,24 @@ public class WebApplication implements Application {
         return mapping;
     }
 
-    protected Collection<Class<?>> collectClasses(String[] rootPackageNames) {
+    protected Collection<Class<?>> collectAllClasses(Collection<ClassCollector> collectors) {
+        Collection<Class<?>> collectedClasses = new HashSet<Class<?>>();
+        for (String resourceName : SystemProperties.classPathes()) {
+            URL resourceURL = ResourceUtils.findResource(resourceName);
+            for (ClassCollector collector : collectors) {
+                collectedClasses.addAll(collector.collect(StringUtils.EMPTY, resourceURL,
+                        classLoader));
+            }
+        }
+        return collectedClasses;
+    }
+
+    protected Collection<Class<?>> collectClasses(Collection<String> rootPackageNames,
+            Collection<ClassCollector> collectors) {
         Collection<Class<?>> collectedClasses = new HashSet<Class<?>>();
         for (String packageName : rootPackageNames) {
             for (URL resourceURL : ResourceUtils.findPackageResources(packageName, classLoader)) {
-                for (ClassCollector collector : ClassCollector.DEFAULT_COLLECTORS) {
+                for (ClassCollector collector : collectors) {
                     collectedClasses.addAll(collector
                             .collect(packageName, resourceURL, classLoader));
                 }
@@ -249,7 +274,7 @@ public class WebApplication implements Application {
         this.applicationSpecifier = suffix;
     }
 
-    protected final ApplicationContextResolver getApplicationContextResolver(){
+    protected final ApplicationContextResolver getApplicationContextResolver() {
         return this.resolver;
     }
 

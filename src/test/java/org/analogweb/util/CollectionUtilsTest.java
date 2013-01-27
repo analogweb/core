@@ -15,7 +15,15 @@ public class CollectionUtilsTest {
         assertTrue(CollectionUtils.isEmpty(Collections.emptyList()));
         assertTrue(CollectionUtils.isEmpty(null));
         assertFalse(CollectionUtils.isEmpty(Arrays.asList("")));
-        assertFalse(CollectionUtils.isEmpty(Arrays.asList("a","b")));
+        assertFalse(CollectionUtils.isEmpty(Arrays.asList("a", "b")));
+    }
+
+    @Test
+    public void testIsNotEmpty() {
+        assertFalse(CollectionUtils.isNotEmpty(Collections.emptyList()));
+        assertFalse(CollectionUtils.isNotEmpty(null));
+        assertTrue(CollectionUtils.isNotEmpty(Arrays.asList("")));
+        assertTrue(CollectionUtils.isNotEmpty(Arrays.asList("a", "b")));
     }
 
 }

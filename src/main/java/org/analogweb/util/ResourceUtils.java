@@ -73,7 +73,7 @@ public final class ResourceUtils {
                     char sep = File.separator.charAt(0);
                     String file = filename.replace(sep, '/');
                     if (file.charAt(0) != '/') {
-                        String dir = System.getProperty("user.dir");
+                        String dir = SystemProperties.userDir();
                         dir = dir.replace(sep, '/') + '/';
                         if (dir.charAt(0) != '/') {
                             dir = "/" + dir;

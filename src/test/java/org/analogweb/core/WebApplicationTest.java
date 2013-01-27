@@ -7,7 +7,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import jp.acme.test.additionalcomponents.StubPreProcessor;
@@ -19,8 +21,10 @@ import org.analogweb.InvocationProcessor;
 import org.analogweb.Modules;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
-import org.analogweb.exception.MissingRequiredParameterException;
 import org.analogweb.junit.NoDescribeMatcher;
+import org.analogweb.util.ClassCollector;
+import org.analogweb.util.FileClassCollector;
+import org.analogweb.util.JarClassCollector;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.junit.Before;
@@ -43,6 +47,7 @@ public class WebApplicationTest {
     private WebApplication application;
     private ClassLoader classLoader;
     private ApplicationContextResolver resolver;
+    private Collection<ClassCollector> collectors;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -51,6 +56,10 @@ public class WebApplicationTest {
     public void setUp() {
         classLoader = Thread.currentThread().getContextClassLoader();
         resolver = mock(ApplicationContextResolver.class);
+        List<ClassCollector> collectors = new ArrayList<ClassCollector>();
+        collectors.add(new JarClassCollector());
+        collectors.add(new FileClassCollector());
+        this.collectors = collectors;
     }
 
     @Test
@@ -64,7 +73,7 @@ public class WebApplicationTest {
         when(props.getTempDir()).thenReturn(tempFolder);
 
         application = new WebApplication();
-        application.run(resolver, props, classLoader);
+        application.run(resolver, props, collectors, classLoader);
 
         RequestPathMapping mapping = application.getRequestPathMapping();
         RequestPath pathAnyThing = mock(RequestPath.class);
@@ -87,7 +96,7 @@ public class WebApplicationTest {
         when(props.getTempDir()).thenReturn(tempFolder);
 
         application = new WebApplication();
-        application.run(resolver, props, classLoader);
+        application.run(resolver, props, collectors, classLoader);
 
         RequestPathMapping mapping = application.getRequestPathMapping();
         RequestPath pathAnyThing = mock(RequestPath.class);
@@ -101,19 +110,6 @@ public class WebApplicationTest {
 
     @Test
     public void testInitApplicationWithoutRootComponentPackages() throws Exception {
-
-        thrown.expect(new NoDescribeMatcher<MissingRequiredParameterException>() {
-            @Override
-            public boolean matches(Object arg0) {
-                if (arg0 instanceof MissingRequiredParameterException) {
-                    MissingRequiredParameterException mrq = (MissingRequiredParameterException) arg0;
-                    assertThat(mrq.getMissedParameterName(),
-                            is(WebApplication.INIT_PARAMETER_ROOT_COMPONENT_PACKAGES));
-                    return true;
-                }
-                return false;
-            }
-        });
         ApplicationProperties props = mock(ApplicationProperties.class);
         when(props.getApplicationSpecifier()).thenReturn(".do");
         when(props.getComponentPackageNames()).thenReturn(null);
@@ -122,7 +118,7 @@ public class WebApplicationTest {
         when(props.getTempDir()).thenReturn(tempFolder);
 
         application = new WebApplication();
-        application.run(resolver, props, classLoader);
+        application.run(resolver, props, collectors, classLoader);
     }
 
     @Test
@@ -136,7 +132,7 @@ public class WebApplicationTest {
         when(props.getTempDir()).thenReturn(tempFolder);
 
         application = new WebApplication();
-        application.run(resolver, props, classLoader);
+        application.run(resolver, props, collectors, classLoader);
 
         Modules modules = application.getModules();
         final List<InvocationProcessor> processors = modules.getInvocationProcessors();
@@ -167,7 +163,7 @@ public class WebApplicationTest {
         when(props.getTempDir()).thenReturn(tempFolder);
 
         application = new WebApplication();
-        application.run(resolver, props, classLoader);
+        application.run(resolver, props, collectors, classLoader);
 
         application.dispose();
 

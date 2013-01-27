@@ -1,5 +1,7 @@
 package org.analogweb.util;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -42,6 +44,14 @@ public class FileClassCollectorTest {
 
         assertContainsInstanceOfTypes(collectedClasses, new Class<?>[] { Foo.class, Baa.class,
                 Baz.class, Boo.class, Bee.class });
+    }
+
+    @Test
+    public void testCollect2() throws Exception {
+        // Unsupported.
+        Collection<Class<?>> collectedClasses = collector.collect(getPackageURL(PACKAGE_NAME),
+                classLoader);
+        assertThat(collectedClasses.isEmpty(), is(true));
     }
 
     @Test

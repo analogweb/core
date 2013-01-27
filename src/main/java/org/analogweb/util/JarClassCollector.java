@@ -18,7 +18,7 @@ import org.analogweb.util.logging.Markers;
 /**
  * @author snowgoose
  */
-public class JarClassCollector implements ClassCollector {
+public class JarClassCollector extends AbstractClassCollector {
 
     private static final Log log = Logs.getLog(JarClassCollector.class);
     private static final String CLASS_SUFFIX = ".class";
@@ -27,7 +27,7 @@ public class JarClassCollector implements ClassCollector {
     @SuppressWarnings("unchecked")
     public Collection<Class<?>> collect(String packageName, URL source, ClassLoader classLoader) {
         Assertion.notNull(classLoader, ClassLoader.class.getName());
-        if (StringUtils.isEmpty(packageName) || source == null || source.getProtocol().equals("jar") == false) {
+        if (source == null || source.getProtocol().equals("jar") == false) {
             return Collections.EMPTY_LIST;
         }
         JarFile jarFile;
@@ -49,7 +49,9 @@ public class JarClassCollector implements ClassCollector {
                 final String detectedPackageName = (pos == -1) ? null : className.substring(0, pos);
                 final String shortClassName = (pos == -1) ? className : className
                         .substring(pos + 1);
-                if (detectedPackageName != null && detectedPackageName.contains(packageName)) {
+                if (detectedPackageName != null
+                        && (StringUtils.isEmpty(packageName) || detectedPackageName
+                                .contains(packageName))) {
                     Class<?> clazz = ClassUtils.forNameQuietly(detectedPackageName + "."
                             + shortClassName, classLoader);
                     log.log(Markers.BOOT_APPLICATION, "TB000001", clazz, this);
