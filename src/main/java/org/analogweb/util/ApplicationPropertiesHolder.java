@@ -5,12 +5,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.exception.ApplicationConfigurationException;
-import org.analogweb.exception.MissingRequiredParameterException;
 
 /**
  * 唯一の{@link ApplicationProperties}のインスタンスを保持、管理します。
@@ -102,17 +100,13 @@ public final class ApplicationPropertiesHolder {
         }
 
         protected Set<String> createUserDefinedPackageNames(String tokenizedRootPackageNames) {
+            Set<String> packageNames = new HashSet<String>();
             if (StringUtils.isNotEmpty(tokenizedRootPackageNames)) {
-                StringTokenizer tokenizer = new StringTokenizer(tokenizedRootPackageNames, ",");
-                Set<String> packageNames = new HashSet<String>();
-                while (tokenizer.hasMoreTokens()) {
-                    packageNames.add(tokenizer.nextToken());
+                for (String packageName : StringUtils.split(tokenizedRootPackageNames, ',')) {
+                    packageNames.add(packageName);
                 }
-                return Collections.unmodifiableSet(packageNames);
-            } else {
-                throw new MissingRequiredParameterException(
-                        Application.INIT_PARAMETER_ROOT_COMPONENT_PACKAGES);
             }
+            return Collections.unmodifiableSet(packageNames);
         }
 
         protected String createApplicationSpecifier(String specifier) {

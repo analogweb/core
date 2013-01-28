@@ -13,7 +13,6 @@ import java.util.Collection;
 import org.analogweb.Application;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.exception.ApplicationConfigurationException;
-import org.analogweb.exception.MissingRequiredParameterException;
 import org.analogweb.util.ApplicationPropertiesHolder.Creator;
 import org.analogweb.util.ApplicationPropertiesHolder.DefaultCreator;
 import org.junit.After;
@@ -115,14 +114,14 @@ public class ApplicationPropertiesHolderTest {
 
     @Test
     public void testUsingConfiguredDefaultCreatorWithEmptyPackageNames() throws IOException {
-        thrown.expect(MissingRequiredParameterException.class);
         File dir = folder.newFolder();
         String packageNames = "";
         String applicationSpecifier = ".do";
         String tempDirectoryPath = dir.getPath();
         DefaultCreator creator = new DefaultCreator(packageNames, applicationSpecifier,
                 tempDirectoryPath);
-        ApplicationPropertiesHolder.configure(app, creator);
+        ApplicationProperties actual = ApplicationPropertiesHolder.configure(app, creator);
+        assertThat(actual.getComponentPackageNames().isEmpty(), is(true));
     }
 
 }
