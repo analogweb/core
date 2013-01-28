@@ -16,6 +16,7 @@ import org.analogweb.util.StringUtils;
  */
 public final class MediaTypes {
 
+    protected final static String WILDCARD_VALUE = "*";
     /** "*&#47;*" */
     public final static MediaType WILDCARD_TYPE = new DefaultMediaType();
     /** "*&#47;*" */
@@ -86,8 +87,9 @@ public final class MediaTypes {
     private static final class DefaultMediaType implements MediaType {
 
         private Map<String, String> parameters;
-        private String type = "*";
-        private String subType = "*";
+        private String type = WILDCARD_VALUE;
+        private String subType = WILDCARD_VALUE;
+        private String value;
 
         DefaultMediaType() {
             this(null, null);
@@ -99,8 +101,8 @@ public final class MediaTypes {
 
         @SuppressWarnings("unchecked")
         DefaultMediaType(String type, String subType, Map<String, String> parameters) {
-            this.type = (StringUtils.isEmpty(type)) ? "*" : type;
-            this.subType = (StringUtils.isEmpty(subType)) ? "*" : subType;
+            this.type = (StringUtils.isEmpty(type)) ? WILDCARD_VALUE : type;
+            this.subType = (StringUtils.isEmpty(subType)) ? WILDCARD_VALUE : subType;
             this.parameters = (Map<String, String>) ((parameters == null) ? Maps.newEmptyHashMap()
                     : initParameters(parameters));
         }
@@ -132,7 +134,15 @@ public final class MediaTypes {
             return this.parameters;
         }
 
-        private String value;
+        @Override
+        public boolean isCompatible(MediaType other) {
+            if (getType().equalsIgnoreCase(WILDCARD_VALUE)
+                    || other.getType().equalsIgnoreCase(getType())) {
+                return getSubType().equalsIgnoreCase(WILDCARD_VALUE)
+                        || other.getSubType().equalsIgnoreCase(getSubType());
+            }
+            return false;
+        }
 
         @Override
         public String toString() {

@@ -47,7 +47,7 @@ public interface Application extends Disposable {
      * このメソッドを実行する前に
      * {@link #run(ApplicationContextResolver, ApplicationProperties, Collection, ClassLoader)}
      * が実行され、{@link Application}が起動している必要があります。
-     * @param path {@link Path}
+     * @param path {@link RequestPath}
      * @param context {@link RequestContext}
      * @param responseContext {@link ResponseContext}
      * @throws IOException

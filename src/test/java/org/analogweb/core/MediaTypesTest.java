@@ -81,6 +81,29 @@ public class MediaTypesTest {
         assertThat(actual, is(MediaTypes.WILDCARD_TYPE));
     }
 
+    @Test
+    public void testIsCompatible() {
+        MediaType a = MediaTypes.APPLICATION_JSON_TYPE;
+        MediaType b = MediaTypes.APPLICATION_JSON_TYPE;
+        assertThat(a.isCompatible(b), is(true));
+
+        a = MediaTypes.valueOf("text/xml; q=0.9");
+        b = MediaTypes.valueOf("text/xml; q=0.8;a=1");
+        assertThat(a.isCompatible(b), is(true));
+
+        a = MediaTypes.valueOf("application/*");
+        b = MediaTypes.valueOf("application/json");
+        assertThat(a.isCompatible(b), is(true));
+
+        a = MediaTypes.valueOf("application/json");
+        b = MediaTypes.valueOf("application/*");
+        assertThat(a.isCompatible(b), is(false));
+
+        a = MediaTypes.APPLICATION_JSON_TYPE;
+        b = MediaTypes.TEXT_XML_TYPE;
+        assertThat(a.isCompatible(b), is(false));
+    }
+
     private Matcher<Map<?, ?>> emptyMap() {
         return new BaseMatcher<Map<?, ?>>() {
             @Override

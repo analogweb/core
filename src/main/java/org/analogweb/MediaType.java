@@ -27,4 +27,12 @@ public interface MediaType {
      */
     Map<String, String> getParameters();
 
+    /**
+     * 指定された{@link MediaType}が、メディアタイプ
+     * において互換性があるかを検証します。
+     * @param other 互換性を検証する対象の{@link MediaType}
+     * @return この{@link MediaType}に対する互換性がある場合は{@code true}
+     */
+    boolean isCompatible(MediaType other);
+
 }
