@@ -22,10 +22,16 @@ public interface RequestContext {
     Headers getRequestHeaders();
 
     /**
-     * HTTPリクエストに含まれるパラメータを保持する{@link Parameters}を取得します。
+     * HTTPリクエストボディに含まれるパラメータを保持する{@link Parameters}を取得します。
      * @return {@link Parameters}
      */
-    Parameters getParameters();
+    Parameters getFormParameters();
+
+    /**
+     * HTTPリクエストURIに含まれるクエリパラメータを保持する{@link Parameters}を取得します。
+     * @return {@link Parameters}
+     */
+    Parameters getQueryParameters();
 
     /**
      * リクエストボディを保持する{@link InputStream}を取得します。

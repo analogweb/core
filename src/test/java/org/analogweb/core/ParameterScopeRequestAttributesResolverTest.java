@@ -43,7 +43,19 @@ public class ParameterScopeRequestAttributesResolverTest {
 
     @Test
     public void testResolveAttributeValue() {
-        when(requestContext.getParameters()).thenReturn(params);
+        when(requestContext.getQueryParameters()).thenReturn(params);
+        when(params.getValues("foo")).thenReturn(Arrays.asList("baa"));
+
+        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",
+                String.class);
+        assertThat(actual.toString(), is("baa"));
+    }
+
+    @Test
+    public void testResolveAttributeValueViaFormParameters() {
+        Parameters empty = mock(Parameters.class);
+        when(requestContext.getQueryParameters()).thenReturn(empty);
+        when(requestContext.getFormParameters()).thenReturn(params);
         when(params.getValues("foo")).thenReturn(Arrays.asList("baa"));
 
         Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",
@@ -60,7 +72,7 @@ public class ParameterScopeRequestAttributesResolverTest {
 
     @Test
     public void testResolveAttributeValueOfParameterArray() {
-        when(requestContext.getParameters()).thenReturn(params);
+        when(requestContext.getQueryParameters()).thenReturn(params);
         when(params.getValues("foo")).thenReturn(Arrays.asList("baa", "baz"));
 
         Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",
@@ -73,7 +85,8 @@ public class ParameterScopeRequestAttributesResolverTest {
 
     @Test
     public void testResolveAttributeNoParameterValue() {
-        when(requestContext.getParameters()).thenReturn(params);
+        when(requestContext.getQueryParameters()).thenReturn(params);
+        when(requestContext.getFormParameters()).thenReturn(params);
         when(params.getValues("foo")).thenReturn(null);
 
         Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",

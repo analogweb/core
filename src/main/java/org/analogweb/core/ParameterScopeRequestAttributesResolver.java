@@ -24,9 +24,12 @@ public class ParameterScopeRequestAttributesResolver extends AbstractAttributesH
         if (StringUtils.isEmpty(name)) {
             return null;
         }
-        List<String> values = requestContext.getParameters().getValues(name);
+        List<String> values = requestContext.getQueryParameters().getValues(name);
         if (values == null || values.isEmpty()) {
-            return null;
+            values = requestContext.getFormParameters().getValues(name);
+            if (values == null || values.isEmpty()) {
+                return null;
+            }
         }
         if (String[].class.equals(requiredType)) {
             return (values.isEmpty()) ? null : values.toArray(new String[values.size()]);

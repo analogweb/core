@@ -136,6 +136,9 @@ public final class MediaTypes {
 
         @Override
         public boolean isCompatible(MediaType other) {
+            if (other == null) {
+                return false;
+            }
             if (getType().equalsIgnoreCase(WILDCARD_VALUE)
                     || other.getType().equalsIgnoreCase(getType())) {
                 return getSubType().equalsIgnoreCase(WILDCARD_VALUE)
