@@ -2,13 +2,13 @@ package org.analogweb.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.analogweb.InvocationMetadata;
+import org.analogweb.MediaType;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapper;
 
@@ -19,8 +19,8 @@ import org.analogweb.TypeMapper;
  * (リクエストボディ)が指定されている必要があります。
  * @author snowgoose
  */
-// TODO move to another module.
-public class XmlTypeMapper extends AbstractAttributesHandler {
+public class XmlTypeMapper extends AbstractAttributesHandler implements
+        SpecificMediaTypeAttirbutesHandler {
 
     @Override
     public String getScopeName() {
@@ -30,20 +30,17 @@ public class XmlTypeMapper extends AbstractAttributesHandler {
     @Override
     public Object resolveAttributeValue(RequestContext context, InvocationMetadata metadata,
             String key, Class<?> requiredType) {
-        if (isXmlType(context)) {
-            try {
-                return unmershall(createUnmarshaller(requiredType), context.getRequestBody());
-            } catch (IOException e) {
-                return null;
-            }
+        try {
+            return unmershall(createUnmarshaller(requiredType), context.getRequestBody());
+        } catch (IOException e) {
+            return null;
         }
-        return null;
     }
 
-    private boolean isXmlType(RequestContext context) {
-        List<String> contentTypes = context.getRequestHeaders().getValues("Content-Type");
-        return contentTypes.isEmpty() == false
-                && (contentTypes.contains("text/xml") || contentTypes.contains("application/xml"));
+    @Override
+    public boolean supports(MediaType mediaType) {
+        return MediaTypes.valueOf("*/xml").isCompatible(mediaType)
+                || mediaType.getSubType().endsWith("+xml");
     }
 
     private Unmarshaller createUnmarshaller(Class<?> requiredType) {
