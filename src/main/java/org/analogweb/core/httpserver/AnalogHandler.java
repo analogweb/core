@@ -32,6 +32,8 @@ import com.sun.net.httpserver.HttpsExchange;
 public class AnalogHandler implements HttpHandler {
 
     private final Application app;
+    private final ApplicationContextResolver resolver;
+    private final ApplicationProperties props;
 
     public AnalogHandler(Application app) {
         this(app, (ApplicationContextResolver) null);
@@ -50,8 +52,17 @@ public class AnalogHandler implements HttpHandler {
             ApplicationProperties props) {
         Assertion.notNull(app, Application.class.getName());
         this.app = app;
-        this.app.run(contextResolver, props, getClassCollectors(), Thread.currentThread()
+        this.resolver = contextResolver;
+        this.props = props;
+    }
+
+    public void run() {
+        this.app.run(resolver, props, getClassCollectors(), Thread.currentThread()
                 .getContextClassLoader());
+    }
+
+    public void shutdown() {
+        this.app.dispose();
     }
 
     @Override

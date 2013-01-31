@@ -283,10 +283,14 @@ public class WebApplication implements Application {
         this.classLoader = null;
         this.resolver = null;
         this.applicationSpecifier = null;
-        this.modules.dispose();
-        this.modules = null;
-        this.requestPathMapping.dispose();
-        this.requestPathMapping = null;
+        if (this.modules != null) {
+            this.modules.dispose();
+            this.modules = null;
+        }
+        if (this.requestPathMapping != null) {
+            this.requestPathMapping.dispose();
+            this.requestPathMapping = null;
+        }
         ApplicationPropertiesHolder.dispose(this);
     }
 
