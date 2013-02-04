@@ -105,6 +105,15 @@ public class ConsumesMediaTypeVerifierTest {
         assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
     }
 
+    @Test
+    public void testPrepareInvokeNotDefinedFormats() {
+        Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsParameter",
+                new Class<?>[] { String.class });
+        Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
+                handlers);
+        assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+    }
+
     private static final class SomeResource {
 
         @RequestFormats(MediaTypes.APPLICATION_ATOM_XML)
@@ -116,6 +125,12 @@ public class ConsumesMediaTypeVerifierTest {
         @RequestFormats
         @On
         public String acceptsSvg(@Scope("xml") @As Object anXml) {
+            return "fake!";
+        }
+
+        @RequestFormats
+        @On
+        public String acceptsParameter(@As("param") String param) {
             return "fake!";
         }
 
