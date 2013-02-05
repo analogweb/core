@@ -7,6 +7,7 @@ import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.PreparedInvocationArguments;
+import org.analogweb.Precedence;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.InvocationFailureException;
@@ -46,6 +47,11 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
     @Override
     public void afterCompletion(RequestContext request, InvocationArguments args,
             InvocationMetadata metadata, Object invocationResult) {
+    }
+
+    @Override
+    public int getPrecedence() {
+        return Precedence.LOWEST;
     }
 
 }
