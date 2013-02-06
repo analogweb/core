@@ -63,4 +63,9 @@ public class ConsumesMediaTypeVerifier extends AbstractInvocationProcessor {
         return true;
     }
 
+    @Override
+    public int getPrecedence() {
+        return 1;
+    }
+
 }

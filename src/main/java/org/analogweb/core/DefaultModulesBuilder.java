@@ -1,6 +1,8 @@
 package org.analogweb.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -103,7 +105,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
             @Override
             public List<InvocationProcessor> getInvocationProcessors() {
                 return getComponentInstances(moduleContainerAdaptor,
-                        getInvocationProcessorClasses());
+                        getInvocationProcessorClasses(), new PrecedenceComparator<InvocationProcessor>());
             }
 
             @Override
@@ -185,6 +187,13 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                     }
                 }
                 return instance;
+            }
+
+            private <T extends MultiModule> List<T> getComponentInstances(ContainerAdaptor adaptor,
+                    List<Class<? extends T>> componentClasses,Comparator<T> comparator) {
+                List<T> result = getComponentInstances(moduleContainerAdaptor, componentClasses);
+                Collections.sort(result, comparator);
+                return result;
             }
 
             private <T extends MultiModule> List<T> getComponentInstances(ContainerAdaptor adaptor,

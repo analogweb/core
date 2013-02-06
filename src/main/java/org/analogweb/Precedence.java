@@ -14,11 +14,11 @@ public interface Precedence {
     /**
      * 最も高い優先度を表す定数です。
      */
-    int HIGHEST = Integer.MAX_VALUE;
+    int HIGHEST = Integer.MIN_VALUE;
     /**
      * 最も低い優先度を表す定数です。
      */
-    int LOWEST = Integer.MIN_VALUE;
+    int LOWEST = Integer.MAX_VALUE;
 
     /**
      * このコンポーネントの優先度を取得します。
