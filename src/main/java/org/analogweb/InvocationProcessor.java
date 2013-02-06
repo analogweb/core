@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
  * において、任意の処理を付加するコンポーネント<br/>
  * @author snowgoose
  */
-public interface InvocationProcessor extends MultiModule {
+public interface InvocationProcessor extends MultiModule,Precedence {
 
     /**
      * {@link InvocationProcessor}の各ライフサイクルにおいて

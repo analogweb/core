@@ -114,6 +114,11 @@ public class ConsumesMediaTypeVerifierTest {
         assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
     }
 
+    @Test
+    public void testPrecidence() {
+        assertThat(verifier.getPrecedence(), is(1));
+    }
+
     private static final class SomeResource {
 
         @RequestFormats(MediaTypes.APPLICATION_ATOM_XML)

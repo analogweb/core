@@ -1,6 +1,9 @@
 package org.analogweb.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -100,10 +103,16 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return this.invocationInstanceProvider;
             }
 
+            private List<InvocationProcessor> invocationProcessors;
+
             @Override
             public List<InvocationProcessor> getInvocationProcessors() {
-                return getComponentInstances(moduleContainerAdaptor,
-                        getInvocationProcessorClasses());
+                if (this.invocationProcessors == null) {
+                    this.invocationProcessors = getComponentInstances(moduleContainerAdaptor,
+                            getInvocationProcessorClasses(),
+                            new PrecedenceComparator<InvocationProcessor>());
+                }
+                return this.invocationProcessors;
             }
 
             @Override
@@ -188,20 +197,28 @@ public class DefaultModulesBuilder implements ModulesBuilder {
             }
 
             private <T extends MultiModule> List<T> getComponentInstances(ContainerAdaptor adaptor,
+                    List<Class<? extends T>> componentClasses,Comparator<T> comparator) {
+                List<T> result = getComponentInstances(moduleContainerAdaptor, componentClasses);
+                Collections.sort(result, comparator);
+                return result;
+            }
+
+            @SuppressWarnings("unchecked")
+            private <T extends MultiModule> List<T> getComponentInstances(ContainerAdaptor adaptor,
                     List<Class<? extends T>> componentClasses) {
                 List<T> instances = new ArrayList<T>();
                 Set<String> instanceFQDNs = new HashSet<String>();
                 for (Class<? extends T> clazz : componentClasses) {
-                    LinkedList<T> clazzInstances = new LinkedList<T>();
-                    clazzInstances.addAll(adaptor.getInstancesOfType(clazz));
-                    clazzInstances.addAll(getOptionalContainerAdaptor().getInstancesOfType(clazz));
-                    for (T clazzInstance : clazzInstances) {
-                        // filter same FQDN's instance.
-                        String FQDN = clazzInstance.getClass().getCanonicalName();
-                        if (instanceFQDNs.contains(FQDN) == false) {
-                            instances.add(clazzInstance);
+                    for (List<? extends T> list : Arrays.asList(adaptor.getInstancesOfType(clazz),
+                            getOptionalContainerAdaptor().getInstancesOfType(clazz))) {
+                        for (T clazzInstance : list) {
+                            // filter same FQDN's instance.
+                            String FQDN = clazzInstance.getClass().getCanonicalName();
+                            if (instanceFQDNs.contains(FQDN) == false) {
+                                instances.add(clazzInstance);
+                            }
+                            instanceFQDNs.add(FQDN);
                         }
-                        instanceFQDNs.add(FQDN);
                     }
                 }
                 Iterator<T> itr = instances.iterator();
@@ -227,6 +244,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 setModulesProviderClass(null);
                 setTypeMapperContextClass(null);
                 this.typeMapperContext = null;
+                this.invocationProcessors = null;
             }
 
         };
