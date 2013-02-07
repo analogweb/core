@@ -64,11 +64,6 @@ public class WebApplication implements Application {
         this.classLoader = classLoader;
         log.log(Markers.BOOT_APPLICATION, "IB000001");
         Collection<String> invocationPackageNames = props.getComponentPackageNames();
-        /*
-        if (CollectionUtils.isEmpty(actionPackageNames)) {
-            throw new MissingRequiredParameterException(INIT_PARAMETER_ROOT_COMPONENT_PACKAGES);
-        }
-        */
         log.log(Markers.BOOT_APPLICATION, "DB000001", invocationPackageNames);
         Set<String> modulesPackageNames = new HashSet<String>();
         if (CollectionUtils.isNotEmpty(invocationPackageNames)) {
@@ -81,7 +76,8 @@ public class WebApplication implements Application {
         log.log(Markers.BOOT_APPLICATION, "IB000002", sw.stop());
     }
 
-    public void processRequest(RequestPath requestedPath, RequestContext context,
+    @Override
+    public int processRequest(RequestPath requestedPath, RequestContext context,
             ResponseContext responseContext) throws IOException, WebApplicationException {
         InvocationMetadata metadata = null;
         Modules mod = null;
@@ -91,8 +87,7 @@ public class WebApplication implements Application {
             metadata = mapping.findInvocationMetadata(requestedPath);
             if (metadata == null) {
                 log.log(Markers.LIFECYCLE, "DL000005", requestedPath);
-                // TODO throws NoMetadataFoundException
-                return;
+                return NOT_FOUND;
             }
 
             log.log(Markers.LIFECYCLE, "DL000006", requestedPath, metadata);
@@ -118,6 +113,7 @@ public class WebApplication implements Application {
                 handleDirection(mod, exceptionResult, metadata, context, responseContext);
             }
         }
+        return PROCEEDED;
     }
 
     protected void handleDirection(Modules modules, Object result, InvocationMetadata metadata,

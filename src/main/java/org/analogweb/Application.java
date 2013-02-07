@@ -33,6 +33,18 @@ public interface Application extends Disposable {
     String DEFAULT_PACKAGE_NAME = Application.class.getPackage().getName();
 
     /**
+     * 指定された{@link RequestPath}に対応する処理が実行された場合に
+     * 返されるステータスです。
+     */
+    int PROCEEDED = 1;
+
+    /**
+     * 指定された{@link RequestPath}が存在しない場合に返される
+     * ステータスです。
+     */
+    int NOT_FOUND = 0;
+
+    /**
      * このアプリケーションインスタンスを起動します。
      * @param resolver {@link ApplicationContextResolver}
      * @param collectors {@link ClassCollector}
@@ -53,7 +65,7 @@ public interface Application extends Disposable {
      * @throws IOException
      * @throws WebApplicationException
      */
-    void processRequest(RequestPath path, RequestContext context, ResponseContext responseContext)
+    int processRequest(RequestPath path, RequestContext context, ResponseContext responseContext)
             throws IOException, WebApplicationException;
 
     /**
