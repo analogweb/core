@@ -70,7 +70,11 @@ public class AnalogHandler implements HttpHandler {
         try {
             RequestContext rcontext = createRequestContext(exc);
             ResponseContext response = createResponseContext(exc);
-            app.processRequest(rcontext.getRequestPath(), rcontext, response);
+            int proceed = app.processRequest(rcontext.getRequestPath(), rcontext, response);
+            if (proceed == Application.NOT_FOUND) {
+                exc.getResponseHeaders().clear();
+                exc.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, -1);
+            }
             response.commmit(rcontext);
         } catch (Exception e) {
             e.printStackTrace();
