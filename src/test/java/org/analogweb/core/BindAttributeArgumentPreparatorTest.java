@@ -55,8 +55,7 @@ public class BindAttributeArgumentPreparatorTest {
     @Test
     public void testPrepare() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(
-                DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doSomething",
+        final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doSomething",
                 argumentTypes);
 
         AttributesHandler handler = mock(AttributesHandler.class);
@@ -82,8 +81,7 @@ public class BindAttributeArgumentPreparatorTest {
     @Test
     public void testPrepareWithCoveredAnnotation() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(
-                DefaultActionInvocationArgumentPreparatorTestMockActions.class,
+        final Method method = ReflectionUtils.getMethodQuietly(StubResource.class,
                 "doWithCustomAnnotation", argumentTypes);
 
         AttributesHandler handler = mock(AttributesHandler.class);
@@ -104,8 +102,7 @@ public class BindAttributeArgumentPreparatorTest {
     @Test
     public void testPrepareWithFormat() {
         final Class<?>[] argumentTypes = new Class<?>[] { BigDecimal.class };
-        final Method method = ReflectionUtils.getMethodQuietly(
-                DefaultActionInvocationArgumentPreparatorTestMockActions.class, "doWithFormat",
+        final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doWithFormat",
                 argumentTypes);
 
         AttributesHandler handler = mock(AttributesHandler.class);
@@ -126,7 +123,7 @@ public class BindAttributeArgumentPreparatorTest {
     }
 
     @On
-    private static final class DefaultActionInvocationArgumentPreparatorTestMockActions {
+    private static final class StubResource {
         @On
         public String doSomething(@As("foo") String foo, @As("baa") String baa) {
             return "do something!";
