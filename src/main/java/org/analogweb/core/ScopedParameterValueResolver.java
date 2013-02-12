@@ -18,7 +18,7 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
-public class ScopedParameterValueResolver implements AnnotatedParameterValueResolver {
+public class ScopedParameterValueResolver implements AnnotatedInvocationParameterValueResolver {
 
     @Override
     public <T> T resolve(Annotation[] parameterAnnotations, Class<T> argType,
