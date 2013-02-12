@@ -18,7 +18,7 @@ public final class ArrayUtils {
     public static <T> T[] newArray(T... objects) {
         return objects;
     }
-
+    
     public static <T> T[] clone(Class<T> type, T... original) {
         return clone(type, 0, original);
     }

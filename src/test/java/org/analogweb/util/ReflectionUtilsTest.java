@@ -14,11 +14,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-
-import org.analogweb.util.ReflectionUtils;
 import org.junit.Test;
 
 /**
@@ -58,9 +57,21 @@ public class ReflectionUtilsTest {
 
     @Test
     public void testGetInstanceQuietlyWithPrivateConstractorArgs() {
-        MockObjectWithConstractorArg actual = ReflectionUtils.getInstanceQuietly(
-                MockObjectWithConstractorArg.class, "foo");
+        Object actual = ReflectionUtils.getInstanceQuietly(MockObjectWithConstractorArg.class,
+                MockObjectWithConstractorArg.class.getConstructors()[0], "foo");
         assertNotNull(actual);
+        actual = ReflectionUtils.getInstanceQuietly(MockObjectWithConstractorArg.class,
+                MockObjectWithConstractorArg.class.getConstructors()[0], (Object) null);
+        assertNotNull(actual);
+        actual = ReflectionUtils.getInstanceQuietly(MockObjectWithConstractorArg.class,
+                MockObjectWithConstractorArg.class.getConstructors()[0], new Date());
+        assertNull(actual);
+        actual = ReflectionUtils.getInstanceQuietly(MockIIObjectAbstract.class,
+                MockIIObjectAbstract.class.getConstructors()[0], new Date());
+        assertNull(actual);
+        actual = ReflectionUtils
+                .getInstanceQuietly(MockObjectWithConstractorArg.class, null, "foo");
+        assertNull(actual);
     }
 
     @Test
@@ -119,15 +130,15 @@ public class ReflectionUtilsTest {
 
     @Test
     public void testGetDeclaredMethodQuietly() {
-        Method doSomething = ReflectionUtils.getMethodQuietly(MockObject.class,
-                "doSomething", new Class[] { String.class });
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockObject.class, "doSomething",
+                new Class[] { String.class });
         assertNotNull(doSomething);
     }
 
     @Test
     public void testGetDeclaredMethodQuietlyNoSuchMethod() {
-        Method doSomething = ReflectionUtils.getMethodQuietly(MockObject.class,
-                "doAnything", new Class[] { String.class });
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockObject.class, "doAnything",
+                new Class[] { String.class });
         assertNull(doSomething);
     }
 
@@ -177,6 +188,9 @@ public class ReflectionUtilsTest {
     }
 
     public static class MockIIObjectExt extends MockIIObject {
+    }
+
+    public static abstract class MockIIObjectAbstract extends MockIIObject {
     }
 
     public static class MockObjectWithConstractorArg extends MockObject {

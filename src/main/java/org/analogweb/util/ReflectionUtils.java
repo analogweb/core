@@ -39,38 +39,37 @@ public final class ReflectionUtils {
     }
 
     public static <T> T getInstanceQuietly(Class<T> clazz) {
-        return getInstanceQuietly(clazz, new Object[0]);
-    }
-
-    public static <T> T getInstanceQuietly(Class<T> clazz, Object... args) {
-        List<Class<?>> argTypes = new ArrayList<Class<?>>();
-        for (Object arg : args) {
-            argTypes.add(arg.getClass());
-        }
         try {
-            final Constructor<T> constructor = clazz.getConstructor(argTypes
-                    .toArray(new Class<?>[argTypes.size()]));
-            AccessController.doPrivileged(new PrivilegedAction<T>() {
-                @Override
-                public T run() {
-                    constructor.setAccessible(true);
-                    return null;
-                }
-            });
-            return constructor.newInstance(args);
-        } catch (SecurityException e) {
-            log.log("TU000008", e, new Object[] { clazz });
-        } catch (NoSuchMethodException e) {
-            log.log("TU000008", e, new Object[] { clazz });
-        } catch (IllegalArgumentException e) {
-            log.log("TU000008", e, new Object[] { clazz });
+            return clazz.newInstance();
         } catch (InstantiationException e) {
             log.log("TU000008", e, new Object[] { clazz });
         } catch (IllegalAccessException e) {
             log.log("TU000008", e, new Object[] { clazz });
+        }
+        return null;
+    }
+
+    public static Object getInstanceQuietly(Constructor<?> constructor,
+            Object... args){
+        return getInstanceQuietly(Object.class, constructor, args);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getInstanceQuietly(Class<T> type, Constructor<?> constructor,
+            Object... args) {
+        try {
+            if (constructor == null) {
+                return null;
+            }
+            return (T) constructor.newInstance(args);
+        } catch (IllegalArgumentException e) {
+            log.log("TU000008", e, new Object[] { constructor.getDeclaringClass() });
+        } catch (InstantiationException e) {
+            log.log("TU000008", e, new Object[] { constructor.getDeclaringClass() });
+        } catch (IllegalAccessException e) {
+            log.log("TU000008", e, new Object[] { constructor.getDeclaringClass() });
         } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            log.log("TU000008", (cause != null) ? cause : e, new Object[] { clazz });
+            log.log("TU000008", e, new Object[] { constructor.getDeclaringClass() });
         }
         return null;
     }
@@ -92,8 +91,8 @@ public final class ReflectionUtils {
         }
         return implementsTypes;
     }
-    
-    public static Method[] getMethods(Class<?> clazz){
+
+    public static Method[] getMethods(Class<?> clazz) {
         return clazz.getMethods();
     }
 
@@ -198,7 +197,7 @@ public final class ReflectionUtils {
 
     public static Method getMethodQuietly(Class<?> clazz, String methodName,
             Class<?>[] parameterTypes) {
-    	// try inherit method.
+        // try inherit method.
         try {
             return clazz.getMethod(methodName, parameterTypes);
         } catch (SecurityException e) {
@@ -206,7 +205,7 @@ public final class ReflectionUtils {
         } catch (NoSuchMethodException e) {
             log.log("DU000011", e, clazz, methodName);
         }
-    	// try declared method.
+        // try declared method.
         try {
             return clazz.getDeclaredMethod(methodName, parameterTypes);
         } catch (SecurityException e) {
