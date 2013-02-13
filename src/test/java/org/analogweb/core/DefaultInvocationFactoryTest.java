@@ -3,11 +3,14 @@ package org.analogweb.core;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertSame;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,29 +66,41 @@ public class DefaultInvocationFactoryTest {
 
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testCreate() {
-        StubResource actionInstance = new StubResource();
-        when(provider.getInstanceOfType(StubResource.class))
-                .thenReturn(actionInstance);
-        when(metadata.getInvocationClass()).thenReturn(
-                (Class) StubResource.class);
+    public void testCreateViaProvider() {
+        StubResource instance = new StubResource();
+        when(provider.getInstanceOfType(StubResource.class)).thenReturn(instance);
+        when(metadata.getInvocationClass()).thenReturn((Class) StubResource.class);
         DefaultInvocationFactory factory = new DefaultInvocationFactory();
         Invocation invocation = factory.createInvocation(provider, metadata, context, response,
                 converters, processors, handlers);
-        assertSame(invocation.getInvocationInstance(), actionInstance);
+        assertThat((StubResource) invocation.getInvocationInstance(), is(sameInstance(instance)));
     }
 
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testCreateContainerProvidesNullInstance() {
-        when(provider.getInstanceOfType(StubResource.class))
-                .thenReturn(null);
-        when(metadata.getInvocationClass()).thenReturn(
-                (Class) StubResource.class);
+        when(provider.getInstanceOfType(StubResource.class)).thenReturn(null);
+        when(metadata.getInvocationClass()).thenReturn((Class) StubResource.class);
         DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        Invocation invocation = factory.createInvocation(provider, metadata, context, response, converters, processors,
-                handlers);
-        assertThat(invocation.getInvocationInstance(),is(not(nullValue())));
+        Invocation invocation = factory.createInvocation(provider, metadata, context, response,
+                converters, processors, handlers);
+        assertThat(invocation.getInvocationInstance(), is(not(nullValue())));
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void testCreateContainerWithSpecifiedConstractor() {
+        when(provider.getInstanceOfType(StubResourceWithConstractor.class)).thenReturn(null);
+        when(metadata.getInvocationClass()).thenReturn((Class) StubResourceWithConstractor.class);
+        AnnotatedInvocationParameterValueResolver resolver = mock(AnnotatedInvocationParameterValueResolver.class);
+        when(
+                resolver.resolve(isA(Annotation[].class), eq(String.class), eq(context),
+                        eq(metadata), eq(converters), eq(handlers))).thenReturn("Test!");
+        DefaultInvocationFactory factory = new DefaultInvocationFactory(resolver);
+        Invocation invocation = factory.createInvocation(provider, metadata, context, response,
+                converters, processors, handlers);
+        assertThat(((StubResourceWithConstractor) invocation.getInvocationInstance()).value,
+                is("Test!"));
     }
 
     @Test
@@ -103,10 +118,8 @@ public class DefaultInvocationFactoryTest {
                 return false;
             }
         });
-        when(provider.getInstanceOfType(StubResourceUnInstanticatable.class))
-                .thenReturn(null);
-        when(metadata.getInvocationClass()).thenReturn(
-                (Class) StubResourceUnInstanticatable.class);
+        when(provider.getInstanceOfType(StubResourceUnInstanticatable.class)).thenReturn(null);
+        when(metadata.getInvocationClass()).thenReturn((Class) StubResourceUnInstanticatable.class);
         DefaultInvocationFactory factory = new DefaultInvocationFactory();
         factory.createInvocation(provider, metadata, context, response, converters, processors,
                 handlers);
@@ -121,11 +134,27 @@ public class DefaultInvocationFactoryTest {
     }
 
     @On
+    public static class StubResourceWithConstractor {
+
+        private String value;
+
+        public StubResourceWithConstractor(@As("baa") String value) {
+            this.value = value;
+        }
+
+        @On
+        public String doSomething(@As("foo") String foo) {
+            return foo + " is anything!!";
+        }
+    }
+
+    @On
     public static class StubResourceUnInstanticatable {
 
-        private StubResourceUnInstanticatable(){
+        private StubResourceUnInstanticatable() {
             // nop.
         }
+
         @On
         public String doSomething(@As("foo") String foo) {
             return foo + " is anything!!";
