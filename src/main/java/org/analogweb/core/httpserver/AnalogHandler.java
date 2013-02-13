@@ -74,6 +74,8 @@ public class AnalogHandler implements HttpHandler {
             if (proceed == Application.NOT_FOUND) {
                 exc.getResponseHeaders().clear();
                 exc.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, -1);
+                exc.close();
+                return;
             }
             response.commmit(rcontext);
         } catch (Exception e) {
