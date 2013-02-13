@@ -2,6 +2,7 @@ package org.analogweb.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.analogweb.AttributesHandlers;
@@ -15,7 +16,6 @@ import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.exception.UnresolvableInvocationException;
 import org.analogweb.util.ArrayUtils;
-import org.analogweb.util.Lists;
 import org.analogweb.util.ReflectionUtils;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
@@ -67,7 +67,7 @@ public class DefaultInvocationFactory implements InvocationFactory {
         Annotation[][] ans = firstConstructor.getParameterAnnotations();
         Class<?>[] types = firstConstructor.getParameterTypes();
         AnnotatedInvocationParameterValueResolver resolver = getParameterValueResolver();
-        List<Object> argValues = Lists.array();
+        List<Object> argValues = new ArrayList<Object>();
         for (int index = 0, limit = types.length; index < limit; index++) {
             Class<?> type = types[index];
             Annotation[] ann = ans[index];
