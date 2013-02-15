@@ -40,6 +40,8 @@ public class HttpExchangeResponseContext implements ResponseContext {
             if (entity != null) {
                 entity.writeInto(ex.getResponseBody());
             }
+            ex.getResponseBody().flush();
+            ex.close();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -47,11 +49,6 @@ public class HttpExchangeResponseContext implements ResponseContext {
     }
 
     private void commitHeadersAndStatus(HttpExchange ex, RequestContext context) {
-        com.sun.net.httpserver.Headers eh = ex.getResponseHeaders();
-        Headers hs = getResponseHeaders();
-        for (String name : hs.getNames()) {
-            eh.put(name, hs.getValues(name));
-        }
         int status = getStatus();
         try {
             if (status == HttpURLConnection.HTTP_NO_CONTENT) {

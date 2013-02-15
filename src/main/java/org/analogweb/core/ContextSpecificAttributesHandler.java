@@ -3,7 +3,7 @@ package org.analogweb.core;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 
-public class ContextSpecificAttributesHandler<T extends RequestContext> extends AbstractAttributesHandler {
+public abstract class ContextSpecificAttributesHandler<T extends RequestContext> extends AbstractAttributesHandler {
 
     @Override
     @SuppressWarnings("unchecked")

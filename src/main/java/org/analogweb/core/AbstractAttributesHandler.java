@@ -9,12 +9,7 @@ import org.analogweb.RequestContext;
  * {@link AttributesHandler}の必要最低限のメソッドの拡張を支援します。
  * @author snowgoose
  */
-public class AbstractAttributesHandler implements AttributesHandler {
-
-    @Override
-    public String getScopeName() {
-        return "";
-    }
+public abstract class AbstractAttributesHandler implements AttributesHandler {
 
     @Override
     public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadata,

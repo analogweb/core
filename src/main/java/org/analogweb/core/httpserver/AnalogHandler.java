@@ -84,8 +84,6 @@ public class AnalogHandler implements HttpHandler {
             exc.sendResponseHeaders(HttpURLConnection.HTTP_INTERNAL_ERROR, -1);
             throw new IOException(e);
         }
-        exc.getResponseBody().flush();
-        exc.close();
     }
 
     protected ResponseContext createResponseContext(HttpExchange exc) {
