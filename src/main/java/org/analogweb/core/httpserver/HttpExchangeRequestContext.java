@@ -24,63 +24,63 @@ import com.sun.net.httpserver.HttpExchange;
  */
 public class HttpExchangeRequestContext implements RequestContext {
 
-    private final HttpExchange ex;
-    private final RequestPath requestPath;
-    private final Parameters params;
-    private final Parameters formParams;
+	private final HttpExchange ex;
+	private final RequestPath requestPath;
+	private final Parameters params;
+	private final Parameters formParams;
 
-    HttpExchangeRequestContext(HttpExchange ex, RequestPath requestPath) {
-        this.ex = ex;
-        this.requestPath = requestPath;
-        this.params = new QueryParameters(this);
-        this.formParams = new FormParameters(this);
-    }
+	HttpExchangeRequestContext(HttpExchange ex, RequestPath requestPath) {
+		this.ex = ex;
+		this.requestPath = requestPath;
+		this.params = new QueryParameters(this);
+		this.formParams = new FormParameters(this);
+	}
 
-    protected HttpExchange getHttpExchange() {
-        return this.ex;
-    }
+	protected HttpExchange getHttpExchange() {
+		return this.ex;
+	}
 
-    @Override
-    public MediaType getContentType() {
-        List<String> header = getRequestHeaders().getValues("Content-Type");
-        if (CollectionUtils.isEmpty(header)) {
-            return null;
-        }
-        return MediaTypes.valueOf(header.get(0));
-    }
+	@Override
+	public MediaType getContentType() {
+		List<String> header = getRequestHeaders().getValues("Content-Type");
+		if (CollectionUtils.isEmpty(header)) {
+			return null;
+		}
+		return MediaTypes.valueOf(header.get(0));
+	}
 
-    @Override
-    public Cookies getCookies() {
-        List<String> cookieHeader = getRequestHeaders().getValues("Cookie");
-        if (CollectionUtils.isEmpty(cookieHeader)) {
-            return new EmptyCookies();
-        }
-        return new RequestCookies(cookieHeader.get(0));
-    }
+	@Override
+	public Cookies getCookies() {
+		List<String> cookieHeader = getRequestHeaders().getValues("Cookie");
+		if (CollectionUtils.isEmpty(cookieHeader)) {
+			return new EmptyCookies();
+		}
+		return new RequestCookies(cookieHeader.get(0));
+	}
 
-    @Override
-    public Parameters getQueryParameters() {
-        return this.params;
-    }
+	@Override
+	public Parameters getQueryParameters() {
+		return this.params;
+	}
 
-    @Override
-    public Parameters getFormParameters() {
-        return this.formParams;
-    }
+	@Override
+	public Parameters getFormParameters() {
+		return this.formParams;
+	}
 
-    @Override
-    public InputStream getRequestBody() throws IOException {
-        return getHttpExchange().getRequestBody();
-    }
+	@Override
+	public InputStream getRequestBody() throws IOException {
+		return getHttpExchange().getRequestBody();
+	}
 
-    @Override
-    public Headers getRequestHeaders() {
-        return new HttpExchangeHeaders(getHttpExchange().getRequestHeaders());
-    }
+	@Override
+	public Headers getRequestHeaders() {
+		return new HttpExchangeHeaders(getHttpExchange().getRequestHeaders());
+	}
 
-    @Override
-    public RequestPath getRequestPath() {
-        return this.requestPath;
-    }
+	@Override
+	public RequestPath getRequestPath() {
+		return this.requestPath;
+	}
 
 }
