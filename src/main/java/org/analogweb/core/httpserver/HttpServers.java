@@ -6,7 +6,7 @@ import java.net.URI;
 import java.util.concurrent.Executors;
 
 import org.analogweb.core.WebApplication;
-import org.analogweb.exception.ApplicationRuntimeException;
+import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.util.StringUtils;
 
 import com.sun.net.httpserver.HttpHandler;

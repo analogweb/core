@@ -1,9 +1,8 @@
 package org.analogweb.core;
 
 import org.analogweb.ExceptionHandler;
+import org.analogweb.WebApplicationException;
 import org.analogweb.core.direction.HttpStatus;
-import org.analogweb.exception.RequestMethodUnsupportedException;
-import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 

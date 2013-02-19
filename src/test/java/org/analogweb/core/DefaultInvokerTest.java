@@ -19,7 +19,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
-import org.analogweb.exception.AssertionFailureException;
+import org.analogweb.core.AssertionFailureException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -14,7 +14,6 @@ import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.exception.UnresolvableInvocationException;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ReflectionUtils;
 import org.analogweb.util.logging.Log;

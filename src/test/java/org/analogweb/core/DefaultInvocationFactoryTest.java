@@ -24,7 +24,7 @@ import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
-import org.analogweb.exception.UnresolvableInvocationException;
+import org.analogweb.core.UnresolvableInvocationException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.junit.Before;
 import org.junit.Rule;

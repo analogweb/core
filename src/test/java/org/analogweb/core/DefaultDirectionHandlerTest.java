@@ -1,5 +1,6 @@
 package org.analogweb.core;
 
+
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -11,7 +12,7 @@ import org.analogweb.DirectionFormatter;
 import org.analogweb.DirectionFormatterAware;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.exception.DirectionEvaluationException;
+import org.analogweb.core.DirectionEvaluationException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

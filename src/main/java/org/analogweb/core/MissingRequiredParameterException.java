@@ -1,4 +1,4 @@
-package org.analogweb.exception;
+package org.analogweb.core;
 
 /**
  * @author snowgoose

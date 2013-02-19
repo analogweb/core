@@ -13,7 +13,7 @@ import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.exception.AssertionFailureException;
+import org.analogweb.core.AssertionFailureException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

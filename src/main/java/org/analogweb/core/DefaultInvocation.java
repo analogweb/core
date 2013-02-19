@@ -16,7 +16,6 @@ import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.exception.InvocationFailureException;
 import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
 

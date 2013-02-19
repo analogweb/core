@@ -3,7 +3,6 @@ package org.analogweb;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.analogweb.exception.WebApplicationException;
 import org.analogweb.util.ClassCollector;
 
 /**

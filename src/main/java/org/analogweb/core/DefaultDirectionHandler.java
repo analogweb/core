@@ -8,8 +8,7 @@ import org.analogweb.DirectionFormatterAware;
 import org.analogweb.DirectionHandler;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.exception.DirectionEvaluationException;
-import org.analogweb.exception.WebApplicationException;
+import org.analogweb.WebApplicationException;
 
 /**
  * @author snowgoose

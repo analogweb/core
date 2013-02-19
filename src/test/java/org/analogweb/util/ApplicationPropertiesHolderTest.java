@@ -12,7 +12,7 @@ import java.util.Collection;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationProperties;
-import org.analogweb.exception.ApplicationConfigurationException;
+import org.analogweb.core.ApplicationConfigurationException;
 import org.analogweb.util.ApplicationPropertiesHolder.Creator;
 import org.analogweb.util.ApplicationPropertiesHolder.DefaultCreator;
 import org.junit.After;

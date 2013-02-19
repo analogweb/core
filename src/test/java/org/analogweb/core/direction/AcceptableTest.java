@@ -22,7 +22,7 @@ import org.analogweb.ResponseContext;
 import org.analogweb.ResponseContext.ResponseEntity;
 import org.analogweb.ResponseContext.ResponseWriter;
 import org.analogweb.core.DefaultResponseWriter;
-import org.analogweb.exception.WebApplicationException;
+import org.analogweb.WebApplicationException;
 import org.junit.Before;
 import org.junit.Test;
 

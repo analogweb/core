@@ -21,7 +21,7 @@ import org.analogweb.ApplicationProperties;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.ResponseContext;
-import org.analogweb.exception.InvocationFailureException;
+import org.analogweb.core.InvocationFailureException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.Before;

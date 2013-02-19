@@ -1,10 +1,9 @@
-package org.analogweb.exception;
+package org.analogweb.core;
 
 /**
  * @author snowgoose
  */
-public abstract class ApplicationRuntimeException extends RuntimeException implements
-        ApplicationException {
+public abstract class ApplicationRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = -5102446288115183932L;
 

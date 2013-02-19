@@ -8,9 +8,9 @@ import java.util.Arrays;
 
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.core.direction.HttpStatus;
-import org.analogweb.exception.ApplicationRuntimeException;
-import org.analogweb.exception.RequestMethodUnsupportedException;
-import org.analogweb.exception.WebApplicationException;
+import org.analogweb.core.ApplicationRuntimeException;
+import org.analogweb.core.RequestMethodUnsupportedException;
+import org.analogweb.WebApplicationException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

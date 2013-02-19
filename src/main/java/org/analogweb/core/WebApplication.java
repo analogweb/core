@@ -31,7 +31,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
 import org.analogweb.ResponseContext;
-import org.analogweb.exception.WebApplicationException;
+import org.analogweb.WebApplicationException;
 import org.analogweb.util.ApplicationPropertiesHolder;
 import org.analogweb.util.ClassCollector;
 import org.analogweb.util.CollectionUtils;

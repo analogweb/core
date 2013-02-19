@@ -1,6 +1,6 @@
 package org.analogweb.util;
 
-import org.analogweb.exception.AssertionFailureException;
+import org.analogweb.core.AssertionFailureException;
 
 /**
  * @author snowgoose

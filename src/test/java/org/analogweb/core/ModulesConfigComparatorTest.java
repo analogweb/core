@@ -14,7 +14,7 @@ import org.analogweb.PluginModulesConfig;
 import org.analogweb.UserModulesConfig;
 import org.analogweb.core.ModulesConfigComparator;
 import org.analogweb.core.RootModulesConfig;
-import org.analogweb.exception.AssertionFailureException;
+import org.analogweb.core.AssertionFailureException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

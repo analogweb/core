@@ -10,7 +10,6 @@ import org.analogweb.PreparedInvocationArguments;
 import org.analogweb.Precedence;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.exception.InvocationFailureException;
 
 /**
  * @author snowgoose

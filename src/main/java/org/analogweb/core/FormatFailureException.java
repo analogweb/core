@@ -1,4 +1,4 @@
-package org.analogweb.exception;
+package org.analogweb.core;
 
 /**
  * 任意のインスタンスから、特定のフォーマットへの変換に失敗した場合にスローされる例外です。

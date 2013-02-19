@@ -12,8 +12,8 @@ import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.exception.ApplicationRuntimeException;
-import org.analogweb.exception.WebApplicationException;
+import org.analogweb.core.ApplicationRuntimeException;
+import org.analogweb.WebApplicationException;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.StringUtils;
 

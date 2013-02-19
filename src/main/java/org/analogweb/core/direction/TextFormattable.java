@@ -7,7 +7,7 @@ import org.analogweb.DirectionFormatterAware;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.exception.WebApplicationException;
+import org.analogweb.WebApplicationException;
 
 /**
  * テキストフォーマットが可能な{@link org.analogweb.Direction}の実装です。

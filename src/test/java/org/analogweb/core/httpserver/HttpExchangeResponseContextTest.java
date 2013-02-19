@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import org.analogweb.RequestContext;
-import org.analogweb.exception.ApplicationRuntimeException;
+import org.analogweb.core.ApplicationRuntimeException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

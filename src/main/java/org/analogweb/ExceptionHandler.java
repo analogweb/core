@@ -1,7 +1,5 @@
 package org.analogweb;
 
-import org.analogweb.exception.WebApplicationException;
-
 /**
  * リクエストを処理する過程における、全てのプロセスにおいて発生した例外をハンドルします。
  * @author snowgoose

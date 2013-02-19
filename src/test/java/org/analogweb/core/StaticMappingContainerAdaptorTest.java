@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.analogweb.core.StaticMappingContainerAdaptor;
 import org.analogweb.core.StaticMappingContainerAdaptor.AssignableFromClassKey;
-import org.analogweb.exception.AssertionFailureException;
+import org.analogweb.core.AssertionFailureException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

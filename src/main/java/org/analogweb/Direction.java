@@ -2,8 +2,6 @@ package org.analogweb;
 
 import java.io.IOException;
 
-import org.analogweb.exception.WebApplicationException;
-
 /**
  * リクエストによって起動されたエントリポイントを実行した結果とその振る舞いを定義します。<br/>
  * 定義には、フォワードやリダイレクト等が含まれます。通常、起動されたエントリポイントが

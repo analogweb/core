@@ -15,7 +15,7 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.exception.InvocationFailureException;
+import org.analogweb.core.InvocationFailureException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.junit.Before;
 import org.junit.Rule;

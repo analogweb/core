@@ -7,7 +7,6 @@ import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.core.direction.HttpStatus;
 import org.analogweb.core.direction.Text;
-import org.analogweb.exception.UnresolvableResultException;
 
 /**
  * @author snowgoose

@@ -11,7 +11,6 @@ import java.util.Map;
 import org.analogweb.MediaType;
 import org.analogweb.Parameters;
 import org.analogweb.RequestContext;
-import org.analogweb.exception.ApplicationRuntimeException;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;

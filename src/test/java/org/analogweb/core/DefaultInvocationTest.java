@@ -22,7 +22,7 @@ import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
-import org.analogweb.exception.InvocationFailureException;
+import org.analogweb.core.InvocationFailureException;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ReflectionUtils;
 import org.hamcrest.BaseMatcher;

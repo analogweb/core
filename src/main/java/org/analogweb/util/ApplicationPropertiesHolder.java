@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationProperties;
-import org.analogweb.exception.ApplicationConfigurationException;
+import org.analogweb.core.ApplicationConfigurationException;
 
 /**
  * 唯一の{@link ApplicationProperties}のインスタンスを保持、管理します。

@@ -12,7 +12,7 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.core.MediaTypes;
-import org.analogweb.exception.WebApplicationException;
+import org.analogweb.WebApplicationException;
 import org.analogweb.util.StringUtils;
 
 /**

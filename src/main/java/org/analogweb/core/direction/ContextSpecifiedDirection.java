@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.analogweb.Direction;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.exception.WebApplicationException;
+import org.analogweb.WebApplicationException;
 
 public abstract class ContextSpecifiedDirection<T extends RequestContext> implements Direction {
 

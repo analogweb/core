@@ -11,8 +11,8 @@ import java.util.Arrays;
 
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
-import org.analogweb.exception.InvalidRequestPathException;
-import org.analogweb.exception.RequestMethodUnsupportedException;
+import org.analogweb.core.InvalidRequestPathException;
+import org.analogweb.core.RequestMethodUnsupportedException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;

@@ -7,7 +7,7 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.core.DefaultResponseWriter;
-import org.analogweb.exception.ApplicationRuntimeException;
+import org.analogweb.core.ApplicationRuntimeException;
 
 import com.sun.net.httpserver.HttpExchange;
 

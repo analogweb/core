@@ -10,7 +10,7 @@ import org.analogweb.DirectionFormatter;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseContext.ResponseEntity;
-import org.analogweb.exception.FormatFailureException;
+import org.analogweb.core.FormatFailureException;
 
 /**
  * オブジェクトをXMLにフォーマットしてレスポンスする

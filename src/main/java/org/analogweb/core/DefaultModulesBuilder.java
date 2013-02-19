@@ -30,8 +30,6 @@ import org.analogweb.ModulesBuilder;
 import org.analogweb.MultiModule;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.exception.MissingModuleException;
-import org.analogweb.exception.MissingModulesProviderException;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
