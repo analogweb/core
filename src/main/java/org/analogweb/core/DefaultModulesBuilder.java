@@ -25,6 +25,7 @@ import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
+import org.analogweb.InvokerFactory;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.MultiModule;
@@ -41,7 +42,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
     private Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> modulesProviderClass;
     private Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> invocationInstanceProviderClass;
-    private Class<? extends Invoker> invokerClass;
+    private Class<? extends InvokerFactory> invokerFactoryClass;
     private Class<? extends InvocationFactory> invocationFactoryClass;
     private Class<? extends DirectionResolver> directionResolverClass;
     private Class<? extends DirectionHandler> directionHandlerClass;
@@ -84,10 +85,18 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                         getInvocationMetadataFactoryClasses());
             }
 
-            @Override
-            public Invoker getInvoker() {
-                return getComponentInstance(moduleContainerAdaptor, getInvokerClass());
-            }
+            private Invoker invoker;
+
+			@Override
+			public Invoker getInvoker() {
+				if (invoker == null) {
+					InvokerFactory factory = getComponentInstance(
+							moduleContainerAdaptor, getInvokerFactoryClass());
+					invoker = factory.createInvoker(getTypeMapperContext(),
+							getInvocationProcessors(), getAttributesHandlers());
+				}
+				return invoker;
+			}
 
             private ContainerAdaptor invocationInstanceProvider;
 
@@ -238,7 +247,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 setExceptionHandlerClass(null);
                 setInvocationFactoryClass(null);
                 setInvocationInstanceProviderClass(null);
-                setInvokerClass(null);
+                setInvokerFactoryClass(null);
                 setModulesProviderClass(null);
                 setTypeMapperContextClass(null);
                 this.typeMapperContext = null;
@@ -274,8 +283,8 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public ModulesBuilder setInvokerClass(Class<? extends Invoker> actionInvokerClass) {
-        this.invokerClass = actionInvokerClass;
+    public ModulesBuilder setInvokerFactoryClass(Class<? extends InvokerFactory> invokerFactoryClass) {
+        this.invokerFactoryClass = invokerFactoryClass;
         return this;
     }
 
@@ -343,8 +352,8 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         return this.invocationMetadataFactoryClasses;
     }
 
-    protected Class<? extends Invoker> getInvokerClass() {
-        return this.invokerClass;
+    protected Class<? extends InvokerFactory> getInvokerFactoryClass() {
+        return this.invokerFactoryClass;
     }
 
     protected Class<? extends ContainerAdaptorFactory<?>> getInvocationInstanceProviderClass() {

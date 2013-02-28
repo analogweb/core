@@ -73,6 +73,7 @@ public interface InvocationProcessor extends MultiModule,Precedence {
      * @param handlers {@link AttributesHandlers}
      * @return {@link Invocation}の実行結果
      */
+    // TODO Change return type to void.
     Object postInvoke(Object invocationResult, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, AttributesHandlers handlers);
 

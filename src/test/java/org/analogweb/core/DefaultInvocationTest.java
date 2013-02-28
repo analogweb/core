@@ -2,16 +2,14 @@ package org.analogweb.core;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.analogweb.AttributesHandlers;
@@ -22,12 +20,7 @@ import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
-import org.analogweb.core.InvocationFailureException;
-import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ReflectionUtils;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,363 +31,303 @@ import org.junit.rules.ExpectedException;
  */
 public class DefaultInvocationTest {
 
-    private DefaultInvocation invocation;
+	private DefaultInvocation invocation;
 
-    private InvocationMetadata metadata;
-    private RequestContext context;
-    private ResponseContext response;
-    private TypeMapperContext converters;
-    private List<InvocationProcessor> processors;
-    private InvocationProcessor processor;
-    private AttributesHandlers handlers;
+	private InvocationMetadata metadata;
+	private RequestContext context;
+	private ResponseContext response;
+	private TypeMapperContext converters;
+	private List<InvocationProcessor> processors;
+	private InvocationProcessor processor1;
+	private InvocationProcessor processor2;
+	private InvocationProcessor processor3;
+	private AttributesHandlers handlers;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    @Before
-    public void setUp() {
-        metadata = mock(InvocationMetadata.class);
-        context = mock(RequestContext.class);
-        response = mock(ResponseContext.class);
-        converters = mock(TypeMapperContext.class);
-        processors = new ArrayList<InvocationProcessor>();
-        processor = mock(InvocationProcessor.class);
-        processors.add(processor);
-        handlers = mock(AttributesHandlers.class);
-    }
+	@Before
+	public void setUp() {
+		metadata = mock(InvocationMetadata.class);
+		context = mock(RequestContext.class);
+		response = mock(ResponseContext.class);
+		converters = mock(TypeMapperContext.class);
+		processor1 = mock(InvocationProcessor.class);
+		processor2 = mock(InvocationProcessor.class);
+		processor3 = mock(InvocationProcessor.class);
+		processors = Arrays.asList(processor1, processor2, processor3);
+		handlers = mock(AttributesHandlers.class);
+	}
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testInvoke() {
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testInvoke() {
+		StubResource instance = new StubResource();
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) instance.getClass());
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
 
-        MockActions instance = new MockActions();
-        final String methodName = "doSomething";
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
-                argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, context, response, converters,
-                processors, handlers);
-        invocation.putInvocationArgument(0, "foo");
-        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
-        when(metadata.getMethodName()).thenReturn(methodName);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(method, metadata, invocation)).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
-        Object actionResult = new Object();
-        when(processor.postInvoke("foo is something!!", invocation, metadata, context, handlers))
-                .thenReturn(actionResult);
-        doNothing().when(processor).afterCompletion(context, invocation, metadata, actionResult);
+		invocation = new DefaultInvocation(instance, metadata, context,
+				response);
+		invocation.putInvocationArgument(0, "foo");
 
-        Object actual = invocation.invoke();
-        assertThat(actual, is(actionResult));
+		Object actionResult = new Object();
+		when(
+				processor1.postInvoke("foo is something!!", invocation,
+						metadata, context, handlers)).thenReturn(actionResult);
+		doNothing().when(processor1).afterCompletion(context, invocation,
+				metadata, actionResult);
 
-        verify(processor)
-                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
-        verify(processor).onInvoke(method, metadata, invocation);
-        verify(processor).postInvoke("foo is something!!", invocation, metadata, context, handlers);
-        verify(processor).afterCompletion(context, invocation, metadata, actionResult);
-    }
+		Object actual = invocation.invoke();
+		assertThat(actual.toString(), is("foo is something!!"));
+	}
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testInvokeWithResultOnInvoke() {
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testPrepareInvoke() {
 
-        MockActions instance = new MockActions();
-        final String methodName = "doSomething";
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
-                argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, context, response, converters,
-                processors, handlers);
-        invocation.putInvocationArgument(0, "foo");
+		StubResource instance = new StubResource();
+		final String methodName = "doSomething";
+		final Class<?>[] argumentTypes = new Class<?>[] { String.class };
+		final Method method = ReflectionUtils.getMethodQuietly(
+				StubResource.class, methodName, argumentTypes);
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) instance.getClass());
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
 
-        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
-        when(metadata.getMethodName()).thenReturn(methodName);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        Object result = new Object();
-        when(processor.onInvoke(method, metadata, invocation)).thenReturn(result);
+		invocation = new DefaultInvocation(instance, metadata, context,
+				response);
+		invocation.putInvocationArgument(0, "foo");
 
-        Object actual = invocation.invoke();
-        assertThat(actual, is(result));
+		when(
+				processor1.prepareInvoke(method, invocation, metadata, context,
+						converters, handlers)).thenReturn(
+				InvocationProcessor.NO_INTERRUPTION);
+		when(
+				processor2.prepareInvoke(method, invocation, metadata, context,
+						converters, handlers)).thenReturn(
+				InvocationProcessor.NO_INTERRUPTION);
+		when(
+				processor3.prepareInvoke(method, invocation, metadata, context,
+						converters, handlers)).thenReturn(
+				InvocationProcessor.NO_INTERRUPTION);
 
-        verify(processor)
-                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
-        verify(processor).onInvoke(method, metadata, invocation);
-    }
+		Object actual = invocation.prepareInvoke(processors, handlers,
+				converters);
+		assertThat(actual, is(InvocationProcessor.NO_INTERRUPTION));
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testInvokeNoAccessableMethod() {
+		verify(processor1).prepareInvoke(method, invocation, metadata, context,
+				converters, handlers);
+		verify(processor2).prepareInvoke(method, invocation, metadata, context,
+				converters, handlers);
+		verify(processor3).prepareInvoke(method, invocation, metadata, context,
+				converters, handlers);
+	}
 
-        MockActions instance = new MockActions();
-        final String methodName = "doNothing";
-        final Class<?>[] argumentTypes = new Class<?>[0];
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
-                argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, context, response, converters,
-                processors, handlers);
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testPrepareInvokeWithInterruption() {
 
-        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
-        when(metadata.getMethodName()).thenReturn(methodName);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(method, metadata, invocation)).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
+		StubResource instance = new StubResource();
+		final String methodName = "doSomething";
+		final Class<?>[] argumentTypes = new Class<?>[] { String.class };
+		final Method method = ReflectionUtils.getMethodQuietly(
+				StubResource.class, methodName, argumentTypes);
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) instance.getClass());
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
 
-        invocation.invoke();
+		invocation = new DefaultInvocation(instance, metadata, context,
+				response);
+		invocation.putInvocationArgument(0, "foo");
 
-        verify(processor)
-                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
-        verify(processor).processException(isA(InvocationFailureException.class), eq(context),
-                eq(invocation), eq(metadata));
-    }
+		Object result = new Object();
+		when(
+				processor1.prepareInvoke(method, invocation, metadata, context,
+						converters, handlers)).thenReturn(
+				InvocationProcessor.NO_INTERRUPTION);
+		when(
+				processor2.prepareInvoke(method, invocation, metadata, context,
+						converters, handlers)).thenReturn(result);
+		when(
+				processor3.prepareInvoke(method, invocation, metadata, context,
+						converters, handlers)).thenReturn(
+				InvocationProcessor.NO_INTERRUPTION);
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testInvokeWithMultiArgs() {
+		Object actual = invocation.prepareInvoke(processors, handlers,
+				converters);
+		assertThat(actual, is(result));
 
-        MockActions instance = new MockActions();
-        final String methodName = "doAnything";
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class, Integer.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
-                argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, context, response, converters,
-                processors, handlers);
-        invocation.putInvocationArgument(0, "foo");
-        invocation.putInvocationArgument(2, 1);
+		verify(processor1).prepareInvoke(method, invocation, metadata, context,
+				converters, handlers);
+		verify(processor2).prepareInvoke(method, invocation, metadata, context,
+				converters, handlers);
+		verifyZeroInteractions(processor3);
+	}
 
-        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
-        when(metadata.getMethodName()).thenReturn(methodName);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(method, metadata, invocation)).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
-        Object actionResult = new Object();
-        when(
-                processor.postInvoke("No1 foo with null is anything!!", invocation, metadata,
-                        context, handlers)).thenReturn(actionResult);
-        doNothing().when(processor).afterCompletion(context, invocation, metadata, actionResult);
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testPostInvoke() {
 
-        Object actual = invocation.invoke();
-        assertThat(actual, is(actionResult));
+		StubResource instance = new StubResource();
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) instance.getClass());
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
 
-        verify(processor)
-                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
-        verify(processor).postInvoke("No1 foo with null is anything!!", invocation, metadata,
-                context, handlers);
-        verify(processor).afterCompletion(context, invocation, metadata, actionResult);
-    }
+		invocation = new DefaultInvocation(instance, metadata, context,
+				response);
+		invocation.putInvocationArgument(0, "foo");
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testInvokePutArg() {
+		Object result = new Object();
+		when(
+				processor1.postInvoke(result, invocation, metadata, context,
+						handlers)).thenReturn(
+				InvocationProcessor.NO_INTERRUPTION);
+		when(
+				processor2.postInvoke(result, invocation, metadata, context,
+						handlers)).thenReturn(
+				InvocationProcessor.NO_INTERRUPTION);
+		when(
+				processor3.postInvoke(result, invocation, metadata, context,
+						handlers)).thenReturn(
+				InvocationProcessor.NO_INTERRUPTION);
 
-        MockActions instance = new MockActions();
-        final String methodName = "doSomething";
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
-                argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, context, response, converters,
-                processors, handlers);
-        invocation.putInvocationArgument(0, "foo");
-        invocation.putInvocationArgument(0, "baa");
+		invocation.postInvoke(processors, result, handlers);
 
-        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
-        when(metadata.getMethodName()).thenReturn(methodName);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(method, metadata, invocation)).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
-        Object actionResult = new Object();
-        when(processor.postInvoke("baa is something!!", invocation, metadata, context, handlers))
-                .thenReturn(actionResult);
-        doNothing().when(processor).afterCompletion(context, invocation, metadata, actionResult);
+		verify(processor1).postInvoke(result, invocation, metadata, context,
+				handlers);
+		verify(processor2).postInvoke(result, invocation, metadata, context,
+				handlers);
+		verify(processor3).postInvoke(result, invocation, metadata, context,
+				handlers);
+	}
 
-        Object actual = invocation.invoke();
-        assertThat(actual, is(actionResult));
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testOnException() {
 
-        verify(processor)
-                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
-        verify(processor).postInvoke("baa is something!!", invocation, metadata, context, handlers);
-        verify(processor).afterCompletion(context, invocation, metadata, actionResult);
-    }
+		StubResource instance = new StubResource();
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) instance.getClass());
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testInvokePutArgWithIllegalArgument() {
+		invocation = new DefaultInvocation(instance, metadata, context,
+				response);
+		invocation.putInvocationArgument(0, "foo");
 
-        MockActions instance = new MockActions();
-        final String methodName = "doSomething";
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
-                argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, context, response, converters,
-                processors, handlers);
-        invocation.putInvocationArgument(0, 1L);
+		Exception ex = new Exception();
+		when(processor1.processException(ex, context, invocation, metadata))
+				.thenReturn(InvocationProcessor.NO_INTERRUPTION);
+		when(processor2.processException(ex, context, invocation, metadata))
+				.thenReturn(InvocationProcessor.NO_INTERRUPTION);
+		when(processor3.processException(ex, context, invocation, metadata))
+				.thenReturn(InvocationProcessor.NO_INTERRUPTION);
 
-        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
-        when(metadata.getMethodName()).thenReturn(methodName);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(method, metadata, invocation)).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
+		invocation.onException(processors, ex);
 
-        invocation.invoke();
+		verify(processor1).processException(ex, context, invocation, metadata);
+		verify(processor2).processException(ex, context, invocation, metadata);
+		verify(processor3).processException(ex, context, invocation, metadata);
+	}
 
-        verify(processor)
-                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
-        verify(processor).processException(isA(InvocationFailureException.class), eq(context),
-                eq(invocation), eq(metadata));
-    }
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testOnExceptionWithInterruption() {
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testInvokeWithException() {
+		StubResource instance = new StubResource();
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) instance.getClass());
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
 
-        thrown.expect(InvocationFailureException.class);
-        // cause exception is action thrown.
-        thrown.expect(rootExceptionIs(NullPointerException.class));
+		invocation = new DefaultInvocation(instance, metadata, context,
+				response);
+		invocation.putInvocationArgument(0, "foo");
 
-        InvocationProcessor processor2 = mock(InvocationProcessor.class);
-        processors.add(processor2);
+		Object result = new Object();
+		Exception ex = new Exception();
+		when(processor1.processException(ex, context, invocation, metadata))
+				.thenReturn(InvocationProcessor.NO_INTERRUPTION);
+		when(processor2.processException(ex, context, invocation, metadata))
+				.thenReturn(result);
 
-        MockActions instance = new MockActions();
-        final String methodName = "doSomethingWithException";
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class, Long.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
-                argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, context, response, converters,
-                processors, handlers);
-        invocation.putInvocationArgument(0, "foo");
+		Object actual = invocation.onException(processors, ex);
 
-        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
-        when(metadata.getMethodName()).thenReturn(methodName);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+		assertThat(actual, is(result));
 
-        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor2.prepareInvoke(method, invocation, metadata, context, converters, handlers))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        when(processor.onInvoke(method, metadata, invocation)).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
-        when(processor2.onInvoke(method, metadata, invocation)).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
+		verify(processor1).processException(ex, context, invocation, metadata);
+		verify(processor2).processException(ex, context, invocation, metadata);
+		verifyZeroInteractions(processor3);
+	}
 
-        invocation.putInvocationArgument(1, 100L);
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testAfterCompletion() {
 
-        when(
-                processor.processException(isA(InvocationFailureException.class), eq(context),
-                        eq(invocation), eq(metadata))).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
-        doThrow(
-                new InvocationFailureException(new NullPointerException(), metadata, ArrayUtils
-                        .newArray())).when(processor2).processException(
-                isA(InvocationFailureException.class), eq(context), eq(invocation), eq(metadata));
-        doNothing().when(processor2).afterCompletion(context, invocation, metadata, null);
+		StubResource instance = new StubResource();
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) instance.getClass());
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
 
-        invocation.invoke();
+		invocation = new DefaultInvocation(instance, metadata, context,
+				response);
+		invocation.putInvocationArgument(0, "foo");
 
-        verify(processor)
-                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
-        verify(processor).postInvoke("baa is something!!", invocation, metadata, context, handlers);
-        verify(processor).afterCompletion(context, invocation, metadata, null);
-    }
+		Object result = new Object();
+		doNothing().when(processor1).afterCompletion(context, invocation,
+				metadata, result);
+		doNothing().when(processor2).afterCompletion(context, invocation,
+				metadata, result);
+		doNothing().when(processor3).afterCompletion(context, invocation,
+				metadata, result);
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testInvokeWithExceptionWithInterraption() {
+		invocation.afterCompletion(processors, result);
 
-        InvocationProcessor processor2 = mock(InvocationProcessor.class);
-        processors.add(processor2);
+		verify(processor1).afterCompletion(context, invocation, metadata,
+				result);
+		verify(processor2).afterCompletion(context, invocation, metadata,
+				result);
+		verify(processor3).afterCompletion(context, invocation, metadata,
+				result);
+	}
 
-        MockActions instance = new MockActions();
-        final String methodName = "doSomethingWithException";
-        final Class<?>[] argumentTypes = new Class<?>[] { String.class, Long.class };
-        final Method method = ReflectionUtils.getMethodQuietly(MockActions.class, methodName,
-                argumentTypes);
-        invocation = new DefaultInvocation(instance, metadata, context, response, converters,
-                processors, handlers);
+	@On
+	public static class StubResource {
+		@On
+		private String doNothing() {
+			return null;
+		}
 
-        when(metadata.getInvocationClass()).thenReturn((Class) instance.getClass());
-        when(metadata.getMethodName()).thenReturn(methodName);
-        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+		@On
+		public String doSomething(@As("foo") String foo) {
+			return String.format("%s is something!!", foo);
+		}
 
-        when(processor.prepareInvoke(method, invocation, metadata, context, converters, handlers))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        invocation.putInvocationArgument(0, "foo");
-        when(processor2.prepareInvoke(method, invocation, metadata, context, converters, handlers))
-                .thenReturn(InvocationProcessor.NO_INTERRUPTION);
-        invocation.putInvocationArgument(1, 100L);
-        when(processor.onInvoke(method, metadata, invocation)).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
-        when(processor2.onInvoke(method, metadata, invocation)).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
+		@On
+		public String doAnything(@As("foo") String foo, String baa,
+				@As("baz") Integer baz) {
+			return String
+					.format("No%s %s with %s is anything!!", baz, foo, baa);
+		}
 
-        Object invocationResult = new Object();
-        when(
-                processor.processException(isA(InvocationFailureException.class), eq(context),
-                        eq(invocation), eq(metadata))).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
-        when(
-                processor2.processException(isA(InvocationFailureException.class), eq(context),
-                        eq(invocation), eq(metadata))).thenReturn(invocationResult);
-
-        Object actual = invocation.invoke();
-
-        assertThat(actual, is(invocationResult));
-
-        verify(processor)
-                .prepareInvoke(method, invocation, metadata, context, converters, handlers);
-    }
-
-    private Matcher<InvocationFailureException> rootExceptionIs(final Class<? extends Throwable> t) {
-        return new BaseMatcher<InvocationFailureException>() {
-
-            @Override
-            public boolean matches(Object arg0) {
-                if (arg0 instanceof Throwable) {
-                    Throwable exp = (Throwable) arg0;
-                    return exp.getCause().getClass().equals(t);
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo(Description arg0) {
-                arg0.appendText(t.toString());
-            }
-        };
-    }
-
-    @On
-    public static class MockActions {
-        @On
-        private String doNothing() {
-            return null;
-        }
-
-        @On
-        public String doSomething(@As("foo") String foo) {
-            return String.format("%s is something!!", foo);
-        }
-
-        @On
-        public String doAnything(@As("foo") String foo, String baa, @As("baz") Integer baz) {
-            return String.format("No%s %s with %s is anything!!", baz, foo, baa);
-        }
-
-        @On
-        public String doSomethingWithException(@As("foo") String foo, @As("baa") Long baa) {
-            throw new NullPointerException("oops!");
-        }
-    }
+		@On
+		public String doSomethingWithException(@As("foo") String foo,
+				@As("baa") Long baa) {
+			throw new NullPointerException("oops!");
+		}
+	}
 
 }

@@ -7,7 +7,7 @@ import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.InvocationProcessor;
-import org.analogweb.Invoker;
+import org.analogweb.InvokerFactory;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.ModulesConfig;
 import org.analogweb.TypeMapperContext;
@@ -24,7 +24,7 @@ public final class RootModulesConfig implements ModulesConfig {
         Assertion.notNull(builder, ModulesBuilder.class.getCanonicalName());
         return builder.setModulesProviderClass(StaticMappingContainerAdaptorFactory.class)
                 .setInvocationInstanceProviderClass(SingletonInstanceContainerAdaptorFactory.class)
-                .setInvocationFactoryClass(InvocationFactory.class).setInvokerClass(Invoker.class)
+                .setInvocationFactoryClass(InvocationFactory.class).setInvokerFactoryClass(InvokerFactory.class)
                 .setDirectionHandlerClass(DirectionHandler.class)
                 .setDirectionResolverClass(DirectionResolver.class)
                 .setExceptionHandlerClass(ExceptionHandler.class)

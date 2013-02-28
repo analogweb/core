@@ -10,7 +10,7 @@ import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.InvocationProcessor;
-import org.analogweb.Invoker;
+import org.analogweb.InvokerFactory;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.core.AssertionFailureException;
@@ -43,7 +43,7 @@ public class DefaultModulesConfigTest {
                 .thenReturn(modulesBuilder);
         when(modulesBuilder.setInvocationFactoryClass(InvocationFactory.class)).thenReturn(
                 modulesBuilder);
-        when(modulesBuilder.setInvokerClass(Invoker.class)).thenReturn(modulesBuilder);
+        when(modulesBuilder.setInvokerFactoryClass(InvokerFactory.class)).thenReturn(modulesBuilder);
         when(modulesBuilder.setDirectionHandlerClass(DirectionHandler.class)).thenReturn(
                 modulesBuilder);
         when(modulesBuilder.setDirectionResolverClass(DirectionResolver.class)).thenReturn(

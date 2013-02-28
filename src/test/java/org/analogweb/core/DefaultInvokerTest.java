@@ -1,25 +1,27 @@
 package org.analogweb.core;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.analogweb.AttributesHandlers;
-import org.analogweb.ContainerAdaptor;
 import org.analogweb.Invocation;
-import org.analogweb.InvocationFactory;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
-import org.analogweb.Modules;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.annotation.As;
-import org.analogweb.annotation.On;
-import org.analogweb.core.AssertionFailureException;
+import org.analogweb.TypeMapperContext;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,94 +32,116 @@ import org.junit.rules.ExpectedException;
  */
 public class DefaultInvokerTest {
 
-    private InvocationMetadata metadata;
-    private RequestContext context;
-    private ResponseContext response;
-    private List<InvocationProcessor> processors;
-    private InvocationProcessor processor;
-    private InvocationFactory factory;
-    private Invocation invocation;
-    private Modules modules;
-    private ContainerAdaptor adaptor;
-    private AttributesHandlers handlers;
+	private InvocationMetadata metadata;
+	private RequestContext request;
+	private ResponseContext response;
+	private List<InvocationProcessor> processors;
+	private InvocationProcessor processor;
+	private Invocation invocation;
+	private AttributesHandlers handlers;
+	private TypeMapperContext typeMapper;
+	private InvocationArguments args;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-        metadata = mock(InvocationMetadata.class);
-        context = mock(RequestContext.class);
-        response = mock(ResponseContext.class);
-        processors = new ArrayList<InvocationProcessor>();
-        processor = mock(InvocationProcessor.class);
-        processors.add(processor);
-        factory = mock(InvocationFactory.class);
-        invocation = mock(Invocation.class);
-        modules = mock(Modules.class);
-        adaptor = mock(ContainerAdaptor.class);
-        handlers = mock(AttributesHandlers.class);
-    }
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		metadata = mock(InvocationMetadata.class);
+		request = mock(RequestContext.class);
+		response = mock(ResponseContext.class);
+		processors = new ArrayList<InvocationProcessor>();
+		processor = mock(InvocationProcessor.class);
+		processors.add(processor);
+		invocation = mock(Invocation.class);
+		handlers = mock(AttributesHandlers.class);
+		typeMapper = mock(TypeMapperContext.class);
+		args = mock(InvocationArguments.class);
+	}
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testInvoke() {
+	@Test
+	public void testInvoke() {
+		Invoker invoker = new DefaultInvoker(processors, typeMapper, handlers);
 
-        final MockActions actionInstance = new MockActions();
+		Object result = new Object();
+		when(invocation.invoke()).thenReturn(result);
+		when(invocation.getInvocationArguments()).thenReturn(args);
+		when(invocation.prepareInvoke(processors, handlers, typeMapper))
+				.thenReturn(InvocationProcessor.NO_INTERRUPTION);
+		doNothing().when(invocation).postInvoke(processors, result, handlers);
+		doNothing().when(invocation).afterCompletion(processors, result);
 
-        Invoker invoker = new DefaultInvoker();
+		// delegate to Invocation#invoke only.
+		Object actual = invoker.invoke(invocation, metadata, request, response);
 
-        when(adaptor.getInstanceOfType(MockActions.class)).thenReturn(actionInstance);
-        when(metadata.getInvocationClass()).thenReturn((Class) MockActions.class);
-        when(
-                factory.createInvocation(adaptor, metadata, context, response, null, processors,
-                        handlers)).thenReturn(invocation);
+		assertThat(actual, is(result));
+		verify(invocation).prepareInvoke(processors, handlers, typeMapper);
+		verify(invocation).invoke();
+		verify(invocation).postInvoke(processors, result, handlers);
+		verify(invocation).afterCompletion(processors, result);
+	}
 
-        Invocation invocation = mock(Invocation.class);
-        // delegate to Invocation#invoke only.
-        invoker.invoke(invocation, metadata, context);
+	@Test
+	public void testInvokeWithException() {
+		thrown.expect(InvocationFailureException.class);
+		Invoker invoker = new DefaultInvoker(processors, typeMapper, handlers);
 
-        verify(invocation).invoke();
-    }
+		Object result = new Object();
+		when(invocation.invoke()).thenThrow(new IllegalArgumentException());
+		when(invocation.getInvocationArguments()).thenReturn(args);
+		when(args.asList()).thenReturn(Collections.emptyList());
+		when(invocation.prepareInvoke(processors, handlers, typeMapper))
+				.thenReturn(InvocationProcessor.NO_INTERRUPTION);
+		when(
+				invocation.onException(eq(processors),
+						isA(IllegalArgumentException.class))).thenReturn(
+				InvocationProcessor.NO_INTERRUPTION);
+		doNothing().when(invocation).afterCompletion(processors, result);
 
-    @Test
-    public void testInvokeWithNullInvocationMetadata() {
+		invoker.invoke(invocation, metadata, request, response);
+	}
 
-        thrown.expect(AssertionFailureException.class);
+	@Test
+	public void testInvokeWithInterruption() {
+		Invoker invoker = new DefaultInvoker(processors, typeMapper, handlers);
 
-        Invoker invoker = new DefaultInvoker();
+		Object result = new Object();
+		when(invocation.getInvocationArguments()).thenReturn(args);
+		when(invocation.prepareInvoke(processors, handlers, typeMapper))
+				.thenReturn(result);
 
-        when(modules.getInvocationFactory()).thenReturn(null);
-        when(modules.getInvocationProcessors()).thenReturn(processors);
+		// delegate to Invocation#invoke only.
+		Object actual = invoker.invoke(invocation, metadata, request, response);
 
-        Invocation invocation = mock(Invocation.class);
-        // delegate to invocation only.
-        invoker.invoke(invocation, null, context);
-    }
+		assertThat(actual, is(result));
+		verify(invocation).prepareInvoke(processors, handlers, typeMapper);
+	}
 
-    @Test
-    public void testInvokeWithNullInvocation() {
+	@Test
+	public void testInvokeOnExceptionInterruption() {
+		Invoker invoker = new DefaultInvoker(processors, typeMapper, handlers);
 
-        thrown.expect(AssertionFailureException.class);
+		Object result = new Object();
+		when(invocation.invoke()).thenThrow(new IllegalArgumentException());
+		when(invocation.getInvocationArguments()).thenReturn(args);
+		when(args.asList()).thenReturn(Collections.emptyList());
+		when(invocation.prepareInvoke(processors, handlers, typeMapper))
+				.thenReturn(InvocationProcessor.NO_INTERRUPTION);
+		when(
+				invocation.onException(eq(processors),
+						isA(IllegalArgumentException.class)))
+				.thenReturn(result);
 
-        Invoker invoker = new DefaultInvoker();
+		Object actual = invoker.invoke(invocation, metadata, request, response);
 
-        when(modules.getInvocationFactory()).thenReturn(null);
-        when(modules.getInvocationProcessors()).thenReturn(processors);
-
-        // delegate to invocation only.
-        invoker.invoke(null, metadata, context);
-    }
-
-    @On
-    public static class MockActions {
-        @On
-        public String doSomething(@As("foo") String foo) {
-            return foo + " is anything!!";
-        }
-    }
+		assertThat(actual, is(result));
+		verify(invocation).prepareInvoke(processors, handlers, typeMapper);
+		verify(invocation).invoke();
+		verify(invocation).onException(eq(processors),
+				isA(IllegalArgumentException.class));
+	}
 
 }

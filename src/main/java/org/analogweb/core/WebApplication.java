@@ -96,10 +96,10 @@ public class WebApplication implements Application {
 
             Invocation invocation = mod.getInvocationFactory().createInvocation(
                     invocationInstances, metadata, context, responseContext,
-                    mod.getTypeMapperContext(), mod.getInvocationProcessors(),
+                    mod.getTypeMapperContext(),
                     mod.getAttributesHandlers());
 
-            Object invocationResult = mod.getInvoker().invoke(invocation, metadata, context);
+            Object invocationResult = mod.getInvoker().invoke(invocation, metadata, context,responseContext);
 
             log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(),
                     invocationResult);

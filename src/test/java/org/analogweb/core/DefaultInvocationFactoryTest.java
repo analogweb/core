@@ -36,129 +36,153 @@ import org.junit.rules.ExpectedException;
  */
 public class DefaultInvocationFactoryTest {
 
-    private ContainerAdaptor provider;
-    private InvocationMetadata metadata;
-    private RequestContext context;
-    private ResponseContext response;
-    private TypeMapperContext converters;
-    private List<InvocationProcessor> processors;
-    private InvocationProcessor processor;
-    private AttributesHandlers handlers;
+	private ContainerAdaptor provider;
+	private InvocationMetadata metadata;
+	private RequestContext context;
+	private ResponseContext response;
+	private TypeMapperContext converters;
+	private List<InvocationProcessor> processors;
+	private InvocationProcessor processor;
+	private AttributesHandlers handlers;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-        provider = mock(ContainerAdaptor.class);
-        metadata = mock(InvocationMetadata.class);
-        context = mock(RequestContext.class);
-        response = mock(ResponseContext.class);
-        converters = mock(TypeMapperContext.class);
-        processors = new ArrayList<InvocationProcessor>();
-        processor = mock(InvocationProcessor.class);
-        processors.add(processor);
-        handlers = mock(AttributesHandlers.class);
-    }
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		provider = mock(ContainerAdaptor.class);
+		metadata = mock(InvocationMetadata.class);
+		context = mock(RequestContext.class);
+		response = mock(ResponseContext.class);
+		converters = mock(TypeMapperContext.class);
+		processors = new ArrayList<InvocationProcessor>();
+		processor = mock(InvocationProcessor.class);
+		processors.add(processor);
+		handlers = mock(AttributesHandlers.class);
+	}
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testCreateViaProvider() {
-        StubResource instance = new StubResource();
-        when(provider.getInstanceOfType(StubResource.class)).thenReturn(instance);
-        when(metadata.getInvocationClass()).thenReturn((Class) StubResource.class);
-        DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        Invocation invocation = factory.createInvocation(provider, metadata, context, response,
-                converters, processors, handlers);
-        assertThat((StubResource) invocation.getInvocationInstance(), is(sameInstance(instance)));
-    }
+	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void testCreateViaProvider() {
+		StubResource instance = new StubResource();
+		when(provider.getInstanceOfType(StubResource.class)).thenReturn(
+				instance);
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) StubResource.class);
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
+		DefaultInvocationFactory factory = new DefaultInvocationFactory();
+		Invocation invocation = factory.createInvocation(provider, metadata,
+				context, response, converters, handlers);
+		assertThat((StubResource) invocation.getInvocationInstance(),
+				is(sameInstance(instance)));
+	}
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testCreateContainerProvidesNullInstance() {
-        when(provider.getInstanceOfType(StubResource.class)).thenReturn(null);
-        when(metadata.getInvocationClass()).thenReturn((Class) StubResource.class);
-        DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        Invocation invocation = factory.createInvocation(provider, metadata, context, response,
-                converters, processors, handlers);
-        assertThat(invocation.getInvocationInstance(), is(not(nullValue())));
-    }
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testCreateContainerProvidesNullInstance() {
+		when(provider.getInstanceOfType(StubResource.class)).thenReturn(null);
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) StubResource.class);
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
+		DefaultInvocationFactory factory = new DefaultInvocationFactory();
+		Invocation invocation = factory.createInvocation(provider, metadata,
+				context, response, converters, handlers);
+		assertThat(invocation.getInvocationInstance(), is(not(nullValue())));
+	}
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testCreateContainerWithSpecifiedConstractor() {
-        when(provider.getInstanceOfType(StubResourceWithConstractor.class)).thenReturn(null);
-        when(metadata.getInvocationClass()).thenReturn((Class) StubResourceWithConstractor.class);
-        AnnotatedInvocationParameterValueResolver resolver = mock(AnnotatedInvocationParameterValueResolver.class);
-        when(
-                resolver.resolve(isA(Annotation[].class), eq(String.class), eq(context),
-                        eq(metadata), eq(converters), eq(handlers))).thenReturn("Test!");
-        DefaultInvocationFactory factory = new DefaultInvocationFactory(resolver);
-        Invocation invocation = factory.createInvocation(provider, metadata, context, response,
-                converters, processors, handlers);
-        assertThat(((StubResourceWithConstractor) invocation.getInvocationInstance()).value,
-                is("Test!"));
-    }
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testCreateContainerWithSpecifiedConstractor() {
+		when(provider.getInstanceOfType(StubResourceWithConstractor.class))
+				.thenReturn(null);
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) StubResourceWithConstractor.class);
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
+		AnnotatedInvocationParameterValueResolver resolver = mock(AnnotatedInvocationParameterValueResolver.class);
+		when(
+				resolver.resolve(isA(Annotation[].class), eq(String.class),
+						eq(context), eq(metadata), eq(converters), eq(handlers)))
+				.thenReturn("Test!");
+		DefaultInvocationFactory factory = new DefaultInvocationFactory(
+				resolver);
+		Invocation invocation = factory.createInvocation(provider, metadata,
+				context, response, converters, handlers);
+		assertThat(
+				((StubResourceWithConstractor) invocation
+						.getInvocationInstance()).value,
+				is("Test!"));
+	}
 
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testCreateUnInstanticatable() {
-        thrown.expect(new NoDescribeMatcher<UnresolvableInvocationException>() {
-            @Override
-            public boolean matches(Object arg0) {
-                if (arg0 instanceof UnresolvableInvocationException) {
-                    UnresolvableInvocationException ex = (UnresolvableInvocationException) arg0;
-                    InvocationMetadata actual = ex.getSourceMetadata();
-                    assertThat(actual, is(metadata));
-                    return true;
-                }
-                return false;
-            }
-        });
-        when(provider.getInstanceOfType(StubResourceUnInstanticatable.class)).thenReturn(null);
-        when(metadata.getInvocationClass()).thenReturn((Class) StubResourceUnInstanticatable.class);
-        DefaultInvocationFactory factory = new DefaultInvocationFactory();
-        factory.createInvocation(provider, metadata, context, response, converters, processors,
-                handlers);
-    }
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testCreateUnInstanticatable() {
+		thrown.expect(new NoDescribeMatcher<UnresolvableInvocationException>() {
+			@Override
+			public boolean matches(Object arg0) {
+				if (arg0 instanceof UnresolvableInvocationException) {
+					UnresolvableInvocationException ex = (UnresolvableInvocationException) arg0;
+					InvocationMetadata actual = ex.getSourceMetadata();
+					assertThat(actual, is(metadata));
+					return true;
+				}
+				return false;
+			}
+		});
+		when(provider.getInstanceOfType(StubResourceUnInstanticatable.class))
+				.thenReturn(null);
+		when(metadata.getInvocationClass()).thenReturn(
+				(Class) StubResourceUnInstanticatable.class);
+		when(metadata.getMethodName()).thenReturn("doSomething");
+		when(metadata.getArgumentTypes()).thenReturn(
+				new Class<?>[] { String.class });
+		DefaultInvocationFactory factory = new DefaultInvocationFactory();
+		factory.createInvocation(provider, metadata, context, response,
+				converters, handlers);
+	}
 
-    @On
-    public static class StubResource {
-        @On
-        public String doSomething(@As("foo") String foo) {
-            return foo + " is anything!!";
-        }
-    }
+	@On
+	public static class StubResource {
+		@On
+		public String doSomething(@As("foo") String foo) {
+			return foo + " is anything!!";
+		}
+	}
 
-    @On
-    public static class StubResourceWithConstractor {
+	@On
+	public static class StubResourceWithConstractor {
 
-        private String value;
+		private String value;
 
-        public StubResourceWithConstractor(@As("baa") String value) {
-            this.value = value;
-        }
+		public StubResourceWithConstractor(@As("baa") String value) {
+			this.value = value;
+		}
 
-        @On
-        public String doSomething(@As("foo") String foo) {
-            return foo + " is anything!!";
-        }
-    }
+		@On
+		public String doSomething(@As("foo") String foo) {
+			return foo + " is anything!!";
+		}
+	}
 
-    @On
-    public static class StubResourceUnInstanticatable {
+	@On
+	public static class StubResourceUnInstanticatable {
 
-        private StubResourceUnInstanticatable() {
-            // nop.
-        }
+		private StubResourceUnInstanticatable() {
+			// nop.
+		}
 
-        @On
-        public String doSomething(@As("foo") String foo) {
-            return foo + " is anything!!";
-        }
-    }
+		@On
+		public String doSomething(@As("foo") String foo) {
+			return foo + " is anything!!";
+		}
+	}
 
 }
