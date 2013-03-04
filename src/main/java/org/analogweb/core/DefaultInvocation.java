@@ -20,7 +20,6 @@ import org.analogweb.util.ReflectionUtils;
 
 /**
  * {@link Invocation}のデフォルトの実装です。
- * 
  * @author snowgoose
  */
 public class DefaultInvocation implements Invocation, InvocationArguments {

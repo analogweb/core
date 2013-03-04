@@ -43,6 +43,9 @@ public interface ModulesBuilder {
 	ModulesBuilder addInvocationProcessorClass(
 			Class<? extends InvocationProcessor> invocationProcessorClass);
 
+	ModulesBuilder addInvocationInterceptorClass(
+			Class<? extends InvocationInterceptor> invocationInterceptorClass);
+
 	ModulesBuilder clearInvocationProcessorClass();
 
 	ModulesBuilder addAttributesHandlerClass(

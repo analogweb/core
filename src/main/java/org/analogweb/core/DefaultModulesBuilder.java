@@ -22,6 +22,7 @@ import org.analogweb.DirectionHandler;
 import org.analogweb.DirectionResolver;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
+import org.analogweb.InvocationInterceptor;
 import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
@@ -40,52 +41,54 @@ import org.analogweb.util.ReflectionUtils;
  */
 public class DefaultModulesBuilder implements ModulesBuilder {
 
-    private Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> modulesProviderClass;
-    private Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> invocationInstanceProviderClass;
-    private Class<? extends InvokerFactory> invokerFactoryClass;
-    private Class<? extends InvocationFactory> invocationFactoryClass;
-    private Class<? extends DirectionResolver> directionResolverClass;
-    private Class<? extends DirectionHandler> directionHandlerClass;
-    private Class<? extends ExceptionHandler> exceptionHandlerClass;
-    private Class<? extends TypeMapperContext> typeMapperContextClass;
-    private final List<Class<? extends InvocationProcessor>> invocationProcessorClasses;
-    private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
-    private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
-    private final Map<Class<? extends Direction>, Class<? extends DirectionFormatter>> directionFormatterClasses;
-    private final List<Class<? extends MultiModule>> ignoreClasses;
-    private final List<MultiModule.Filter> ignoreFilters;
+	private Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> modulesProviderClass;
+	private Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> invocationInstanceProviderClass;
+	private Class<? extends InvokerFactory> invokerFactoryClass;
+	private Class<? extends InvocationFactory> invocationFactoryClass;
+	private Class<? extends DirectionResolver> directionResolverClass;
+	private Class<? extends DirectionHandler> directionHandlerClass;
+	private Class<? extends ExceptionHandler> exceptionHandlerClass;
+	private Class<? extends TypeMapperContext> typeMapperContextClass;
+	private final List<Class<? extends InvocationProcessor>> invocationProcessorClasses;
+	private final List<Class<? extends InvocationInterceptor>> invocationInterceptorClasses;
+	private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
+	private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
+	private final Map<Class<? extends Direction>, Class<? extends DirectionFormatter>> directionFormatterClasses;
+	private final List<Class<? extends MultiModule>> ignoreClasses;
+	private final List<MultiModule.Filter> ignoreFilters;
 
-    public DefaultModulesBuilder() {
-        this.invocationProcessorClasses = new LinkedList<Class<? extends InvocationProcessor>>();
-        this.invocationMetadataFactoryClasses = new LinkedList<Class<? extends InvocationMetadataFactory>>();
-        this.attributesHandlerClasses = new LinkedList<Class<? extends AttributesHandler>>();
-        this.directionFormatterClasses = Maps.newConcurrentHashMap();
-        this.ignoreClasses = new LinkedList<Class<? extends MultiModule>>();
-        this.ignoreFilters = new LinkedList<MultiModule.Filter>();
-    }
+	public DefaultModulesBuilder() {
+		this.invocationProcessorClasses = new LinkedList<Class<? extends InvocationProcessor>>();
+		this.invocationInterceptorClasses = new LinkedList<Class<? extends InvocationInterceptor>>();
+		this.invocationMetadataFactoryClasses = new LinkedList<Class<? extends InvocationMetadataFactory>>();
+		this.attributesHandlerClasses = new LinkedList<Class<? extends AttributesHandler>>();
+		this.directionFormatterClasses = Maps.newConcurrentHashMap();
+		this.ignoreClasses = new LinkedList<Class<? extends MultiModule>>();
+		this.ignoreFilters = new LinkedList<MultiModule.Filter>();
+	}
 
-    @Override
-    public Modules buildModules(final ApplicationContextResolver resolver,
-            final ContainerAdaptor defaultContainer) {
+	@Override
+	public Modules buildModules(final ApplicationContextResolver resolver,
+			final ContainerAdaptor defaultContainer) {
 
-        Assertion.notNull(getModulesProviderClass(), "ModulesProviderClass");
+		Assertion.notNull(getModulesProviderClass(), "ModulesProviderClass");
 
-        final ContainerAdaptor moduleContainerAdaptor = createModuleContainerAdaptor(resolver,
-                defaultContainer);
+		final ContainerAdaptor moduleContainerAdaptor = createModuleContainerAdaptor(
+				resolver, defaultContainer);
 
-        if (moduleContainerAdaptor == null) {
-            throw new MissingModulesProviderException();
-        }
+		if (moduleContainerAdaptor == null) {
+			throw new MissingModulesProviderException();
+		}
 
-        return new Modules() {
+		return new Modules() {
 
-            @Override
-            public List<InvocationMetadataFactory> getInvocationMetadataFactories() {
-                return getComponentInstances(moduleContainerAdaptor,
-                        getInvocationMetadataFactoryClasses());
-            }
+			@Override
+			public List<InvocationMetadataFactory> getInvocationMetadataFactories() {
+				return getComponentInstances(moduleContainerAdaptor,
+						getInvocationMetadataFactoryClasses());
+			}
 
-            private Invoker invoker;
+			private Invoker invoker;
 
 			@Override
 			public Invoker getInvoker() {
@@ -98,360 +101,412 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 				return invoker;
 			}
 
-            private ContainerAdaptor invocationInstanceProvider;
+			private ContainerAdaptor invocationInstanceProvider;
 
-            @Override
-            public ContainerAdaptor getInvocationInstanceProvider() {
-                if (this.invocationInstanceProvider == null) {
-                    ContainerAdaptorFactory<?> factory = moduleContainerAdaptor
-                            .getInstanceOfType(getInvocationInstanceProviderClass());
-                    this.invocationInstanceProvider = factory.createContainerAdaptor(resolver);
-                }
-                return this.invocationInstanceProvider;
-            }
+			@Override
+			public ContainerAdaptor getInvocationInstanceProvider() {
+				if (this.invocationInstanceProvider == null) {
+					ContainerAdaptorFactory<?> factory = moduleContainerAdaptor
+							.getInstanceOfType(getInvocationInstanceProviderClass());
+					this.invocationInstanceProvider = factory
+							.createContainerAdaptor(resolver);
+				}
+				return this.invocationInstanceProvider;
+			}
 
-            private List<InvocationProcessor> invocationProcessors;
+			private List<InvocationProcessor> invocationProcessors;
 
-            @Override
-            public List<InvocationProcessor> getInvocationProcessors() {
-                if (this.invocationProcessors == null) {
-                    this.invocationProcessors = getComponentInstances(moduleContainerAdaptor,
-                            getInvocationProcessorClasses(),
-                            new PrecedenceComparator<InvocationProcessor>());
-                }
-                return this.invocationProcessors;
-            }
+			@Override
+			public List<InvocationProcessor> getInvocationProcessors() {
+				if (this.invocationProcessors == null) {
+					this.invocationProcessors = getComponentInstances(
+							moduleContainerAdaptor,
+							getInvocationProcessorClasses(),
+							new PrecedenceComparator<InvocationProcessor>());
+				}
+				return this.invocationProcessors;
+			}
 
-            @Override
-            public InvocationFactory getInvocationFactory() {
-                return getComponentInstance(moduleContainerAdaptor, getInvocationFactoryClass());
-            }
+			private List<InvocationInterceptor> invocationInterceptors;
 
-            @Override
-            public DirectionResolver getDirectionResolver() {
-                return getComponentInstance(moduleContainerAdaptor, getDirectionResolverClass());
-            }
+			@Override
+			public List<InvocationInterceptor> getInvocationInterceptors() {
+				if (this.invocationInterceptors == null) {
+					this.invocationInterceptors = getComponentInstances(
+							moduleContainerAdaptor,
+							getInvocationInterceptorClasses(),
+							new PrecedenceComparator<InvocationInterceptor>());
+				}
+				return this.invocationInterceptors;
+			}
 
-            @Override
-            public DirectionHandler getDirectionHandler() {
-                return getComponentInstance(moduleContainerAdaptor, getDirectionHandlerClass());
-            }
+			@Override
+			public InvocationFactory getInvocationFactory() {
+				return getComponentInstance(moduleContainerAdaptor,
+						getInvocationFactoryClass());
+			}
 
-            @Override
-            public ExceptionHandler getExceptionHandler() {
-                return getComponentInstance(moduleContainerAdaptor, getExceptionHandlerClass());
-            }
+			@Override
+			public DirectionResolver getDirectionResolver() {
+				return getComponentInstance(moduleContainerAdaptor,
+						getDirectionResolverClass());
+			}
 
-            @Override
-            public TypeMapper findTypeMapper(Class<? extends TypeMapper> clazz) {
-                return getComponentInstance(moduleContainerAdaptor, clazz);
-            }
+			@Override
+			public DirectionHandler getDirectionHandler() {
+				return getComponentInstance(moduleContainerAdaptor,
+						getDirectionHandlerClass());
+			}
 
-            private TypeMapperContext typeMapperContext;
+			@Override
+			public ExceptionHandler getExceptionHandler() {
+				return getComponentInstance(moduleContainerAdaptor,
+						getExceptionHandlerClass());
+			}
 
-            @Override
-            public TypeMapperContext getTypeMapperContext() {
-                if (this.typeMapperContext == null) {
-                    typeMapperContext = moduleContainerAdaptor
-                            .getInstanceOfType(getTypeMapperContextClass());
-                    if (typeMapperContext == null) {
-                        typeMapperContext = new DefaultTypeMapperContext(moduleContainerAdaptor);
-                    }
-                }
-                return this.typeMapperContext;
-            }
+			@Override
+			public TypeMapper findTypeMapper(Class<? extends TypeMapper> clazz) {
+				return getComponentInstance(moduleContainerAdaptor, clazz);
+			}
 
-            @Override
-            public ContainerAdaptor getOptionalContainerAdaptor() {
-                return defaultContainer;
-            }
+			private TypeMapperContext typeMapperContext;
 
-            //TODO remove
-            List<AttributesHandler> getAttributesHandlerList() {
-                return getComponentInstances(moduleContainerAdaptor, getAttributesHandlerClasses());
-            }
+			@Override
+			public TypeMapperContext getTypeMapperContext() {
+				if (this.typeMapperContext == null) {
+					typeMapperContext = moduleContainerAdaptor
+							.getInstanceOfType(getTypeMapperContextClass());
+					if (typeMapperContext == null) {
+						typeMapperContext = new DefaultTypeMapperContext(
+								moduleContainerAdaptor);
+					}
+				}
+				return this.typeMapperContext;
+			}
 
-            private DefaultAttributesHandlers handlers;
+			@Override
+			public ContainerAdaptor getOptionalContainerAdaptor() {
+				return defaultContainer;
+			}
 
-            @Override
-            public AttributesHandlers getAttributesHandlers() {
-                if (this.handlers == null) {
-                    this.handlers = new DefaultAttributesHandlers(getAttributesHandlerList());
-                }
-                return this.handlers;
-            }
+			// TODO remove
+			List<AttributesHandler> getAttributesHandlerList() {
+				return getComponentInstances(moduleContainerAdaptor,
+						getAttributesHandlerClasses());
+			}
 
-            @Override
-            public DirectionFormatter findDirectionFormatter(
-                    Class<? extends Direction> mapToDirection) {
-                Class<? extends DirectionFormatter> formatterClass = getDirectionFormatterClass(mapToDirection);
-                if (formatterClass != null) {
-                    return getComponentInstance(moduleContainerAdaptor, formatterClass);
-                }
-                return null;
-            }
+			private DefaultAttributesHandlers handlers;
 
-            private <T> T getComponentInstance(ContainerAdaptor adaptor, Class<T> componentClass) {
-                Assertion.notNull(componentClass, "component-class");
-                T instance = adaptor.getInstanceOfType(componentClass);
-                if (instance == null) {
-                    instance = getOptionalContainerAdaptor().getInstanceOfType(componentClass);
-                    if (instance == null) {
-                        throw new MissingModuleException(componentClass);
-                    }
-                }
-                return instance;
-            }
+			@Override
+			public AttributesHandlers getAttributesHandlers() {
+				if (this.handlers == null) {
+					this.handlers = new DefaultAttributesHandlers(
+							getAttributesHandlerList());
+				}
+				return this.handlers;
+			}
 
-            private <T extends MultiModule> List<T> getComponentInstances(ContainerAdaptor adaptor,
-                    List<Class<? extends T>> componentClasses,Comparator<T> comparator) {
-                List<T> result = getComponentInstances(moduleContainerAdaptor, componentClasses);
-                Collections.sort(result, comparator);
-                return result;
-            }
+			@Override
+			public DirectionFormatter findDirectionFormatter(
+					Class<? extends Direction> mapToDirection) {
+				Class<? extends DirectionFormatter> formatterClass = getDirectionFormatterClass(mapToDirection);
+				if (formatterClass != null) {
+					return getComponentInstance(moduleContainerAdaptor,
+							formatterClass);
+				}
+				return null;
+			}
 
-            @SuppressWarnings("unchecked")
-            private <T extends MultiModule> List<T> getComponentInstances(ContainerAdaptor adaptor,
-                    List<Class<? extends T>> componentClasses) {
-                List<T> instances = new ArrayList<T>();
-                Set<String> instanceFQDNs = new HashSet<String>();
-                for (Class<? extends T> clazz : componentClasses) {
-                    for (List<? extends T> list : Arrays.asList(adaptor.getInstancesOfType(clazz),
-                            getOptionalContainerAdaptor().getInstancesOfType(clazz))) {
-                        for (T clazzInstance : list) {
-                            // filter same FQDN's instance.
-                            String FQDN = clazzInstance.getClass().getCanonicalName();
-                            if (instanceFQDNs.contains(FQDN) == false) {
-                                instances.add(clazzInstance);
-                            }
-                            instanceFQDNs.add(FQDN);
-                        }
-                    }
-                }
-                Iterator<T> itr = instances.iterator();
-                while (itr.hasNext()) {
-                    T next = itr.next();
-                    for (MultiModule.Filter moduleClass : getIgnoringFilters()) {
-                        if (moduleClass.isAppreciable(next) == false) {
-                            itr.remove();
-                        }
-                    }
-                }
-                return instances;
-            }
+			private <T> T getComponentInstance(ContainerAdaptor adaptor,
+					Class<T> componentClass) {
+				Assertion.notNull(componentClass, "component-class");
+				T instance = adaptor.getInstanceOfType(componentClass);
+				if (instance == null) {
+					instance = getOptionalContainerAdaptor().getInstanceOfType(
+							componentClass);
+					if (instance == null) {
+						throw new MissingModuleException(componentClass);
+					}
+				}
+				return instance;
+			}
 
-            @Override
-            public void dispose() {
-                setDirectionHandlerClass(null);
-                setDirectionResolverClass(null);
-                setExceptionHandlerClass(null);
-                setInvocationFactoryClass(null);
-                setInvocationInstanceProviderClass(null);
-                setInvokerFactoryClass(null);
-                setModulesProviderClass(null);
-                setTypeMapperContextClass(null);
-                this.typeMapperContext = null;
-                this.invocationProcessors = null;
-            }
+			private <T extends MultiModule> List<T> getComponentInstances(
+					ContainerAdaptor adaptor,
+					List<Class<? extends T>> componentClasses,
+					Comparator<T> comparator) {
+				List<T> result = getComponentInstances(moduleContainerAdaptor,
+						componentClasses);
+				Collections.sort(result, comparator);
+				return result;
+			}
 
-        };
-    }
+			@SuppressWarnings("unchecked")
+			private <T extends MultiModule> List<T> getComponentInstances(
+					ContainerAdaptor adaptor,
+					List<Class<? extends T>> componentClasses) {
+				List<T> instances = new ArrayList<T>();
+				Set<String> instanceFQDNs = new HashSet<String>();
+				for (Class<? extends T> clazz : componentClasses) {
+					for (List<? extends T> list : Arrays.asList(
+							adaptor.getInstancesOfType(clazz),
+							getOptionalContainerAdaptor().getInstancesOfType(
+									clazz))) {
+						for (T clazzInstance : list) {
+							// filter same FQDN's instance.
+							String FQDN = clazzInstance.getClass()
+									.getCanonicalName();
+							if (instanceFQDNs.contains(FQDN) == false) {
+								instances.add(clazzInstance);
+							}
+							instanceFQDNs.add(FQDN);
+						}
+					}
+				}
+				Iterator<T> itr = instances.iterator();
+				while (itr.hasNext()) {
+					T next = itr.next();
+					for (MultiModule.Filter moduleClass : getIgnoringFilters()) {
+						if (moduleClass.isAppreciable(next) == false) {
+							itr.remove();
+						}
+					}
+				}
+				return instances;
+			}
 
-    protected ContainerAdaptor createModuleContainerAdaptor(
-            final ApplicationContextResolver resolver, final ContainerAdaptor defaultContainer) {
-        if (getModulesProviderClass().equals(StaticMappingContainerAdaptorFactory.class)) {
-            return defaultContainer;
-        } else {
-            ContainerAdaptorFactory<? extends ContainerAdaptor> factory = ReflectionUtils
-                    .getInstanceQuietly(getModulesProviderClass());
-            return factory.createContainerAdaptor(resolver);
-        }
-    }
+			@Override
+			public void dispose() {
+				setDirectionHandlerClass(null);
+				setDirectionResolverClass(null);
+				setExceptionHandlerClass(null);
+				setInvocationFactoryClass(null);
+				setInvocationInstanceProviderClass(null);
+				setInvokerFactoryClass(null);
+				setModulesProviderClass(null);
+				setTypeMapperContextClass(null);
+				this.typeMapperContext = null;
+				this.invocationProcessors = null;
+				this.invocationInterceptors = null;
+			}
 
-    @Override
-    public ModulesBuilder setModulesProviderClass(
-            Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> modulesProviderClass) {
-        this.modulesProviderClass = modulesProviderClass;
-        return this;
-    }
+		};
+	}
 
-    @Override
-    public ModulesBuilder addInvocationMetadataFactoriesClass(
-            Class<? extends InvocationMetadataFactory> actionMethodMetadataFactoryClass) {
-        this.invocationMetadataFactoryClasses.add(actionMethodMetadataFactoryClass);
-        return this;
-    }
+	protected ContainerAdaptor createModuleContainerAdaptor(
+			final ApplicationContextResolver resolver,
+			final ContainerAdaptor defaultContainer) {
+		if (getModulesProviderClass().equals(
+				StaticMappingContainerAdaptorFactory.class)) {
+			return defaultContainer;
+		} else {
+			ContainerAdaptorFactory<? extends ContainerAdaptor> factory = ReflectionUtils
+					.getInstanceQuietly(getModulesProviderClass());
+			return factory.createContainerAdaptor(resolver);
+		}
+	}
 
-    @Override
-    public ModulesBuilder setInvokerFactoryClass(Class<? extends InvokerFactory> invokerFactoryClass) {
-        this.invokerFactoryClass = invokerFactoryClass;
-        return this;
-    }
+	@Override
+	public ModulesBuilder setModulesProviderClass(
+			Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> modulesProviderClass) {
+		this.modulesProviderClass = modulesProviderClass;
+		return this;
+	}
 
-    @Override
-    public ModulesBuilder setInvocationInstanceProviderClass(
-            Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> actionInstanceProviderClass) {
-        this.invocationInstanceProviderClass = actionInstanceProviderClass;
-        return this;
-    }
+	@Override
+	public ModulesBuilder addInvocationMetadataFactoriesClass(
+			Class<? extends InvocationMetadataFactory> actionMethodMetadataFactoryClass) {
+		this.invocationMetadataFactoryClasses
+				.add(actionMethodMetadataFactoryClass);
+		return this;
+	}
 
-    @Override
-    public ModulesBuilder setInvocationFactoryClass(
-            Class<? extends InvocationFactory> actionInvocationFactoryClass) {
-        this.invocationFactoryClass = actionInvocationFactoryClass;
-        return this;
-    }
+	@Override
+	public ModulesBuilder setInvokerFactoryClass(
+			Class<? extends InvokerFactory> invokerFactoryClass) {
+		this.invokerFactoryClass = invokerFactoryClass;
+		return this;
+	}
 
-    @Override
-    public ModulesBuilder setDirectionResolverClass(
-            Class<? extends DirectionResolver> actionResultResolverClass) {
-        this.directionResolverClass = actionResultResolverClass;
-        return this;
-    }
+	@Override
+	public ModulesBuilder setInvocationInstanceProviderClass(
+			Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> actionInstanceProviderClass) {
+		this.invocationInstanceProviderClass = actionInstanceProviderClass;
+		return this;
+	}
 
-    @Override
-    public ModulesBuilder setDirectionHandlerClass(
-            Class<? extends DirectionHandler> actionResultHandlerClass) {
-        this.directionHandlerClass = actionResultHandlerClass;
-        return this;
-    }
+	@Override
+	public ModulesBuilder setInvocationFactoryClass(
+			Class<? extends InvocationFactory> actionInvocationFactoryClass) {
+		this.invocationFactoryClass = actionInvocationFactoryClass;
+		return this;
+	}
 
-    @Override
-    public ModulesBuilder setTypeMapperContextClass(
-            Class<? extends TypeMapperContext> typeMapperContextClass) {
-        this.typeMapperContextClass = typeMapperContextClass;
-        return this;
-    }
+	@Override
+	public ModulesBuilder setDirectionResolverClass(
+			Class<? extends DirectionResolver> actionResultResolverClass) {
+		this.directionResolverClass = actionResultResolverClass;
+		return this;
+	}
 
-    @Override
-    public ModulesBuilder setExceptionHandlerClass(
-            Class<? extends ExceptionHandler> exceptionHandlerClass) {
-        this.exceptionHandlerClass = exceptionHandlerClass;
-        return this;
-    }
+	@Override
+	public ModulesBuilder setDirectionHandlerClass(
+			Class<? extends DirectionHandler> actionResultHandlerClass) {
+		this.directionHandlerClass = actionResultHandlerClass;
+		return this;
+	}
 
-    @Override
-    public ModulesBuilder addInvocationProcessorClass(
-            Class<? extends InvocationProcessor> actionInvocationProcessorClass) {
-        this.invocationProcessorClasses.add(actionInvocationProcessorClass);
-        return this;
-    }
+	@Override
+	public ModulesBuilder setTypeMapperContextClass(
+			Class<? extends TypeMapperContext> typeMapperContextClass) {
+		this.typeMapperContextClass = typeMapperContextClass;
+		return this;
+	}
 
-    @Override
-    public ModulesBuilder addAttributesHandlerClass(
-            Class<? extends AttributesHandler> requestAttributesResolverClass) {
-        this.attributesHandlerClasses.add(requestAttributesResolverClass);
-        return this;
-    }
+	@Override
+	public ModulesBuilder setExceptionHandlerClass(
+			Class<? extends ExceptionHandler> exceptionHandlerClass) {
+		this.exceptionHandlerClass = exceptionHandlerClass;
+		return this;
+	}
 
-    protected Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> getModulesProviderClass() {
-        return this.modulesProviderClass;
-    }
+	@Override
+	public ModulesBuilder addInvocationProcessorClass(
+			Class<? extends InvocationProcessor> actionInvocationProcessorClass) {
+		this.invocationProcessorClasses.add(actionInvocationProcessorClass);
+		return this;
+	}
 
-    protected List<Class<? extends InvocationMetadataFactory>> getInvocationMetadataFactoryClasses() {
-        return this.invocationMetadataFactoryClasses;
-    }
+	@Override
+	public ModulesBuilder addInvocationInterceptorClass(
+			Class<? extends InvocationInterceptor> invocationInterceptorClass) {
+		this.invocationInterceptorClasses.add(invocationInterceptorClass);
+		return this;
+	}
 
-    protected Class<? extends InvokerFactory> getInvokerFactoryClass() {
-        return this.invokerFactoryClass;
-    }
+	@Override
+	public ModulesBuilder addAttributesHandlerClass(
+			Class<? extends AttributesHandler> requestAttributesResolverClass) {
+		this.attributesHandlerClasses.add(requestAttributesResolverClass);
+		return this;
+	}
 
-    protected Class<? extends ContainerAdaptorFactory<?>> getInvocationInstanceProviderClass() {
-        return this.invocationInstanceProviderClass;
-    }
+	protected Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> getModulesProviderClass() {
+		return this.modulesProviderClass;
+	}
 
-    protected Class<? extends InvocationFactory> getInvocationFactoryClass() {
-        return this.invocationFactoryClass;
-    }
+	protected List<Class<? extends InvocationMetadataFactory>> getInvocationMetadataFactoryClasses() {
+		return this.invocationMetadataFactoryClasses;
+	}
 
-    protected Class<? extends DirectionResolver> getDirectionResolverClass() {
-        return this.directionResolverClass;
-    }
+	protected Class<? extends InvokerFactory> getInvokerFactoryClass() {
+		return this.invokerFactoryClass;
+	}
 
-    protected Class<? extends DirectionHandler> getDirectionHandlerClass() {
-        return this.directionHandlerClass;
-    }
+	protected Class<? extends ContainerAdaptorFactory<?>> getInvocationInstanceProviderClass() {
+		return this.invocationInstanceProviderClass;
+	}
 
-    protected Class<? extends ExceptionHandler> getExceptionHandlerClass() {
-        return this.exceptionHandlerClass;
-    }
+	protected Class<? extends InvocationFactory> getInvocationFactoryClass() {
+		return this.invocationFactoryClass;
+	}
 
-    protected Class<? extends TypeMapperContext> getTypeMapperContextClass() {
-        return this.typeMapperContextClass;
-    }
+	protected Class<? extends DirectionResolver> getDirectionResolverClass() {
+		return this.directionResolverClass;
+	}
 
-    protected List<Class<? extends InvocationProcessor>> getInvocationProcessorClasses() {
-        return this.invocationProcessorClasses;
-    }
+	protected Class<? extends DirectionHandler> getDirectionHandlerClass() {
+		return this.directionHandlerClass;
+	}
 
-    protected List<Class<? extends AttributesHandler>> getAttributesHandlerClasses() {
-        return attributesHandlerClasses;
-    }
+	protected Class<? extends ExceptionHandler> getExceptionHandlerClass() {
+		return this.exceptionHandlerClass;
+	}
 
-    protected Class<? extends DirectionFormatter> getDirectionFormatterClass(
-            Class<? extends Direction> mapToDirection) {
-        return this.directionFormatterClasses.get(mapToDirection);
-    }
+	protected Class<? extends TypeMapperContext> getTypeMapperContextClass() {
+		return this.typeMapperContextClass;
+	}
 
-    protected List<Class<? extends MultiModule>> getIgnoringClasses() {
-        return this.ignoreClasses;
-    }
+	protected List<Class<? extends InvocationInterceptor>> getInvocationInterceptorClasses() {
+		return this.invocationInterceptorClasses;
+	}
 
-    protected List<MultiModule.Filter> getIgnoringFilters() {
-        return this.ignoreFilters;
-    }
+	protected List<Class<? extends InvocationProcessor>> getInvocationProcessorClasses() {
+		return this.invocationProcessorClasses;
+	}
 
-    @Override
-    public ModulesBuilder clearInvocationMetadataFactoriesClass() {
-        this.invocationMetadataFactoryClasses.clear();
-        return this;
-    }
+	protected List<Class<? extends AttributesHandler>> getAttributesHandlerClasses() {
+		return attributesHandlerClasses;
+	}
 
-    @Override
-    public ModulesBuilder clearInvocationProcessorClass() {
-        this.invocationProcessorClasses.clear();
-        return this;
-    }
+	protected Class<? extends DirectionFormatter> getDirectionFormatterClass(
+			Class<? extends Direction> mapToDirection) {
+		return this.directionFormatterClasses.get(mapToDirection);
+	}
 
-    @Override
-    public ModulesBuilder clearAttributesHanderClass() {
-        this.attributesHandlerClasses.clear();
-        return this;
-    }
+	protected List<Class<? extends MultiModule>> getIgnoringClasses() {
+		return this.ignoreClasses;
+	}
 
-    @Override
-    public ModulesBuilder addDirectionFormatterClass(
-            Class<? extends Direction> mapToDirectionClass,
-            Class<? extends DirectionFormatter> directionFormatterClass) {
-        this.directionFormatterClasses.put(mapToDirectionClass, directionFormatterClass);
-        return this;
-    }
+	protected List<MultiModule.Filter> getIgnoringFilters() {
+		return this.ignoreFilters;
+	}
 
-    @Override
-    public ModulesBuilder clearDirectionFormatterClass() {
-        this.directionFormatterClasses.clear();
-        return this;
-    }
+	@Override
+	public ModulesBuilder clearInvocationMetadataFactoriesClass() {
+		this.invocationMetadataFactoryClasses.clear();
+		return this;
+	}
 
-    @Override
-    public ModulesBuilder ignore(final Class<? extends MultiModule> multiModuleClass) {
-        Assertion.notNull(multiModuleClass, MultiModule.class.getCanonicalName());
-        return filter(new MultiModule.Filter() {
-            @Override
-            public <T extends MultiModule> boolean isAppreciable(T aMultiModule) {
-                if (multiModuleClass.isInstance(aMultiModule)) {
-                    return false;
-                }
-                return true;
-            }
-        });
-    }
+	@Override
+	public ModulesBuilder clearInvocationProcessorClass() {
+		this.invocationProcessorClasses.clear();
+		return this;
+	}
 
-    @Override
-    public ModulesBuilder filter(MultiModule.Filter multiModuleFilter) {
-        Assertion.notNull(multiModuleFilter, MultiModule.Filter.class.getCanonicalName());
-        this.ignoreFilters.add(multiModuleFilter);
-        return this;
-    }
+	@Override
+	public ModulesBuilder clearAttributesHanderClass() {
+		this.attributesHandlerClasses.clear();
+		return this;
+	}
+
+	@Override
+	public ModulesBuilder addDirectionFormatterClass(
+			Class<? extends Direction> mapToDirectionClass,
+			Class<? extends DirectionFormatter> directionFormatterClass) {
+		this.directionFormatterClasses.put(mapToDirectionClass,
+				directionFormatterClass);
+		return this;
+	}
+
+	@Override
+	public ModulesBuilder clearDirectionFormatterClass() {
+		this.directionFormatterClasses.clear();
+		return this;
+	}
+
+	@Override
+	public ModulesBuilder ignore(
+			final Class<? extends MultiModule> multiModuleClass) {
+		Assertion.notNull(multiModuleClass,
+				MultiModule.class.getCanonicalName());
+		return filter(new MultiModule.Filter() {
+			@Override
+			public <T extends MultiModule> boolean isAppreciable(T aMultiModule) {
+				if (multiModuleClass.isInstance(aMultiModule)) {
+					return false;
+				}
+				return true;
+			}
+		});
+	}
+
+	@Override
+	public ModulesBuilder filter(MultiModule.Filter multiModuleFilter) {
+		Assertion.notNull(multiModuleFilter,
+				MultiModule.Filter.class.getCanonicalName());
+		this.ignoreFilters.add(multiModuleFilter);
+		return this;
+	}
 
 }

@@ -16,6 +16,8 @@ public interface Modules extends Disposable {
 
     List<InvocationProcessor> getInvocationProcessors();
 
+    List<InvocationInterceptor> getInvocationInterceptors();
+
     InvocationFactory getInvocationFactory();
 
     DirectionResolver getDirectionResolver();
