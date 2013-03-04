@@ -33,22 +33,6 @@ public interface InvocationProcessor extends MultiModule,Precedence {
             RequestContext context, TypeMapperContext converters, AttributesHandlers handlers);
 
     /**
-     * 全ての{@link InvocationProcessor}の#prepareInvoke実行後、
-     * {@link Invocation#invoke()}が実行される直前に行う処理を追加します。<br/>
-     * {@link Invocation}に引き渡される、確定されたパラメータを変更することは
-     * できません。未確定(null)であるパラメータに対する値の追加を行うことが
-     * 可能です。{@link Invocation}を引き続き実行する場合は{@link #NO_INTERRUPTION}
-     * を返します。{@link #NO_INTERRUPTION}以外の値が返される場合、それを実行結果
-     * として処理し、{@link Invocation}および続く{@link InvocationProcessor}の処理は
-     * 中断されます。
-     * @param method 実行対象の{@link Method}
-     * @param metadata {@link InvocationMetadata}
-     * @param args {@link InvocationArguments}
-     * @return 実行処理を中断する結果({@link Direction}など。)
-     */
-    Object onInvoke(Method method, InvocationMetadata metadata, InvocationArguments args);
-
-    /**
      * {@link Invocation}実行時に例外が発生した場合に、処理を追加します。<br/>
      * 通常は、{@link #NO_INTERRUPTION}を返します。それ以外の
      * 値をかえす場合は、その戻り値が処理結果となります。
@@ -71,10 +55,8 @@ public interface InvocationProcessor extends MultiModule,Precedence {
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
      * @param handlers {@link AttributesHandlers}
-     * @return {@link Invocation}の実行結果
      */
-    // TODO Change return type to void.
-    Object postInvoke(Object invocationResult, InvocationArguments args,
+    void postInvoke(Object invocationResult, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, AttributesHandlers handlers);
 
     /**

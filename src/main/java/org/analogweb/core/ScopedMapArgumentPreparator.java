@@ -47,7 +47,7 @@ public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
     }
 
     @Override
-    public Object postInvoke(Object invocationResult, InvocationArguments args,
+    public void postInvoke(Object invocationResult, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, AttributesHandlers handlers) {
         for (Object arg : args.asList()) {
             if (arg instanceof ContextExtractor) {
@@ -55,7 +55,6 @@ public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
                 scopedAttributes.extract(context, handlers);
             }
         }
-        return invocationResult;
     }
 
     static final class ContextExtractor<V> extends HashMap<String, V> {

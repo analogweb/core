@@ -57,10 +57,10 @@ public class AbstractInvocationProcessorTest {
 
     @Test
     public void testPostInvoke() {
+        // do nothing.
         AttributesHandlers handlers = mock(AttributesHandlers.class);
         Object invocationResult = new Object();
-        Object actual = processor.postInvoke(invocationResult, args, metadata, context, handlers);
-        assertSame(actual, invocationResult);
+        processor.postInvoke(invocationResult, args, metadata, context, handlers);
     }
 
     @Test

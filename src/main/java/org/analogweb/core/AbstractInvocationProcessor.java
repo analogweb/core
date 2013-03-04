@@ -24,11 +24,6 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
     }
 
     @Override
-    public Object onInvoke(Method method, InvocationMetadata metadata, InvocationArguments args) {
-        return NO_INTERRUPTION;
-    }
-
-    @Override
     public Object processException(Exception ex, RequestContext request,
             PreparedInvocationArguments args, InvocationMetadata metadata) {
         if (ex instanceof InvocationFailureException) {
@@ -38,14 +33,15 @@ public abstract class AbstractInvocationProcessor implements InvocationProcessor
     }
 
     @Override
-    public Object postInvoke(Object invocationResult, InvocationArguments args,
+    public void postInvoke(Object invocationResult, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, AttributesHandlers handlers) {
-        return invocationResult;
+    	// nop.
     }
 
     @Override
     public void afterCompletion(RequestContext request, InvocationArguments args,
             InvocationMetadata metadata, Object invocationResult) {
+    	// nop.
     }
 
     @Override

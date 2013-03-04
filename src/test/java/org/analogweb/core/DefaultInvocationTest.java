@@ -74,9 +74,8 @@ public class DefaultInvocationTest {
 		invocation.putInvocationArgument(0, "foo");
 
 		Object actionResult = new Object();
-		when(
-				processor1.postInvoke("foo is something!!", invocation,
-						metadata, context, handlers)).thenReturn(actionResult);
+		doNothing().when(processor1).postInvoke("foo is something!!", invocation,
+				metadata, context, handlers);
 		doNothing().when(processor1).afterCompletion(context, invocation,
 				metadata, actionResult);
 
@@ -187,18 +186,15 @@ public class DefaultInvocationTest {
 		invocation.putInvocationArgument(0, "foo");
 
 		Object result = new Object();
-		when(
-				processor1.postInvoke(result, invocation, metadata, context,
-						handlers)).thenReturn(
-				InvocationProcessor.NO_INTERRUPTION);
-		when(
-				processor2.postInvoke(result, invocation, metadata, context,
-						handlers)).thenReturn(
-				InvocationProcessor.NO_INTERRUPTION);
-		when(
-				processor3.postInvoke(result, invocation, metadata, context,
-						handlers)).thenReturn(
-				InvocationProcessor.NO_INTERRUPTION);
+		doNothing().when(
+				processor1).postInvoke(result, invocation, metadata, context,
+						handlers);
+		doNothing().when(
+				processor2).postInvoke(result, invocation, metadata, context,
+						handlers);
+		doNothing().when(
+				processor3).postInvoke(result, invocation, metadata, context,
+						handlers);
 
 		invocation.postInvoke(processors, result, handlers);
 
