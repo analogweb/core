@@ -195,8 +195,9 @@ public class DefaultModulesBuilderTest {
 		Invoker foundInvoker = mock(Invoker.class);
 		InvokerFactory factory = mock(InvokerFactory.class);
 		when(
-				factory.createInvoker(isA(TypeMapperContext.class),
-						isA(List.class), isA(AttributesHandlers.class)))
+				factory.createInvoker(isA(List.class), isA(List.class),
+						isA(TypeMapperContext.class),
+						isA(AttributesHandlers.class)))
 				.thenReturn(foundInvoker);
 		when(defaultAdaptor.getInstanceOfType(InvokerFactory.class))
 				.thenReturn(factory);

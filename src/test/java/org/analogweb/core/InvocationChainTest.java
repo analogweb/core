@@ -53,8 +53,8 @@ public class InvocationChainTest {
 				return result;
 			}
 		});
-		InvocationChain chain = new InvocationChain(root, metadata,
-				interceptors.iterator());
+		InvocationChain chain = InvocationChain.create(root, metadata,
+				interceptors);
 		Object result = new Object();
 		when(root.invoke()).thenReturn(result);
 		Object actual = chain.invoke();
@@ -96,8 +96,8 @@ public class InvocationChainTest {
 				return result;
 			}
 		});
-		InvocationChain chain = new InvocationChain(root, metadata,
-				interceptors.iterator());
+		InvocationChain chain = InvocationChain.create(root, metadata,
+				interceptors);
 		Object result = new Object();
 		when(root.invoke()).thenReturn(result);
 		when(root.invoke()).thenThrow(new IllegalArgumentException());

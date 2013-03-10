@@ -7,14 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.analogweb.AttributesHandlers;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.TypeMapperContext;
 import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
 
@@ -30,7 +27,6 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
 	private final ResponseContext responseContext;
 	private final TreeMap<Integer, Object> preparedArgsMap;
 	private List<Object> argumentList;
-	private Method method;
 
 	public DefaultInvocation(Object invocationInstance,
 			InvocationMetadata metadata, RequestContext context,
@@ -40,30 +36,17 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
 		this.requestContext = context;
 		this.responseContext = responseContext;
 		this.preparedArgsMap = Maps.newTreeMap();
-		this.method = ReflectionUtils.getMethodQuietly(getMetadata()
-				.getInvocationClass(), metadata.getMethodName(), metadata
-				.getArgumentTypes());
-	}
-
-	@Override
-	public Object prepareInvoke(List<InvocationProcessor> processors,
-			AttributesHandlers attributesHandlers,
-			TypeMapperContext typeMapperContext) {
-		Object interruption = InvocationProcessor.NO_INTERRUPTION;
-		for (InvocationProcessor processor : processors) {
-			interruption = processor.prepareInvoke(method, this, metadata,
-					requestContext, typeMapperContext, attributesHandlers);
-			if (interruption != InvocationProcessor.NO_INTERRUPTION) {
-				return interruption;
-			}
-		}
-		return interruption;
 	}
 
 	@Override
 	public Object invoke() throws InvocationFailureException {
 		Object[] args = asList().toArray(new Object[argumentList.size()]);
 		try {
+			Method method = ReflectionUtils.getInvocationMethod(metadata);
+			if (method == null) {
+				throw new InvocationFailureException(
+						new NoSuchMethodException(), metadata, args);
+			}
 			return method.invoke(invocationInstance, args);
 		} catch (IllegalArgumentException e) {
 			throw new InvocationFailureException(e, metadata, args);
@@ -72,38 +55,6 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
 		} catch (InvocationTargetException e) {
 			Throwable th = e.getCause();
 			throw new InvocationFailureException(th, metadata, args);
-		}
-	}
-
-	@Override
-	public void postInvoke(List<InvocationProcessor> processors,
-			Object invocationResult, AttributesHandlers attributesHandlers) {
-		for (InvocationProcessor processor : processors) {
-			processor.postInvoke(invocationResult, this, metadata,
-					requestContext, attributesHandlers);
-		}
-	}
-
-	@Override
-	public Object onException(List<InvocationProcessor> processors,
-			Exception thrown) {
-		Object interruption = InvocationProcessor.NO_INTERRUPTION;
-		for (InvocationProcessor processor : processors) {
-			interruption = processor.processException(thrown, requestContext,
-					this, metadata);
-			if (interruption != InvocationProcessor.NO_INTERRUPTION) {
-				return interruption;
-			}
-		}
-		return interruption;
-	}
-
-	@Override
-	public void afterCompletion(List<InvocationProcessor> processors,
-			Object invocationResult) {
-		for (InvocationProcessor processor : processors) {
-			processor.afterCompletion(requestContext, this, metadata,
-					invocationResult);
 		}
 	}
 

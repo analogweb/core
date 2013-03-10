@@ -1,33 +1,42 @@
 package org.analogweb.core;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.analogweb.AttributesHandlers;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationInterceptor;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationProcessor;
-import org.analogweb.TypeMapperContext;
+import org.analogweb.util.CollectionUtils;
 
 /**
  * @author snowgoose
  */
-public class InvocationChain implements Invocation {
+class InvocationChain implements Invocation {
 	
 	private Invocation root;
 	private InvocationMetadata metadata;
 	private Iterator<InvocationInterceptor> interceptors;
 	private boolean notArchiveTail = true;
 	private Object result ;
+	
+	public static InvocationChain create(Invocation root, InvocationMetadata metadata,
+			List<InvocationInterceptor> interceptors) {
+		return new InvocationChain(root, metadata, interceptors);
+	}
 
-	public InvocationChain(Invocation root, InvocationMetadata metadata,
-			Iterator<InvocationInterceptor> interceptors) {
+	@SuppressWarnings("unchecked")
+	private InvocationChain(Invocation root, InvocationMetadata metadata,
+			List<InvocationInterceptor> interceptors) {
 		super();
 		this.root = root;
 		this.metadata = metadata;
-		this.interceptors = interceptors;
+		if(CollectionUtils.isEmpty(interceptors)){
+			this.interceptors = Collections.EMPTY_LIST.iterator();
+		} else {
+			this.interceptors = interceptors.iterator();
+		}
 	}
 
 	@Override
@@ -58,31 +67,6 @@ public class InvocationChain implements Invocation {
 	@Override
 	public InvocationArguments getInvocationArguments() {
 		return root.getInvocationArguments();
-	}
-
-	@Override
-	public Object prepareInvoke(List<InvocationProcessor> processors,
-			AttributesHandlers attributesHandlers,
-			TypeMapperContext typeMapperContext) {
-		return root.prepareInvoke(processors, attributesHandlers, typeMapperContext);
-	}
-
-	@Override
-	public void postInvoke(List<InvocationProcessor> processors,
-			Object invocationResult, AttributesHandlers attributesHandlers) {
-		root.postInvoke(processors, invocationResult, attributesHandlers);
-	}
-
-	@Override
-	public Object onException(List<InvocationProcessor> processors,
-			Exception thrown) {
-		return root.onException(processors, thrown);
-	}
-
-	@Override
-	public void afterCompletion(List<InvocationProcessor> processors,
-			Object invocationResult) {
-		root.afterCompletion(processors, invocationResult);
 	}
 
 }

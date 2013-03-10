@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.analogweb.InvocationMetadata;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 
@@ -215,6 +216,11 @@ public final class ReflectionUtils {
         }
         return null;
     }
+    
+	public static Method getInvocationMethod(InvocationMetadata metadata) {
+		return getMethodQuietly(metadata.getInvocationClass(),
+				metadata.getMethodName(), metadata.getArgumentTypes());
+	}
 
     public static Set<Class<?>> findAllImplementsInterfacesRecursivery(Class<?> find) {
         Set<Class<?>> result = new HashSet<Class<?>>();

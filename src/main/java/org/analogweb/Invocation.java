@@ -1,8 +1,5 @@
 package org.analogweb;
 
-import java.util.List;
-
-
 /**
  * リクエストされたエントリポイントとなるメソッド(実行する対象)を表すコンポーネントです。<br/>
  * このコンポーネントはアクションメソッドの実行毎にインスタンスが生成され、 
@@ -26,17 +23,11 @@ public interface Invocation {
      */
     Object getInvocationInstance();
 
+    /**
+     * エントリポイントの実行時に指定される{@link InvocationArguments}
+     * を取得します。
+     * @return {@link InvocationArguments}
+     */
     InvocationArguments getInvocationArguments();
-
-	Object prepareInvoke(List<InvocationProcessor> processors,
-			AttributesHandlers attributesHandlers,
-			TypeMapperContext typeMapperContext);
-
-	void postInvoke(List<InvocationProcessor> processors,Object invocationResult,
-			AttributesHandlers attributesHandlers);
-
-	Object onException(List<InvocationProcessor> processors,Exception thrown);
-
-	void afterCompletion(List<InvocationProcessor> processors,Object invocationResult);
 
 }

@@ -95,8 +95,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 				if (invoker == null) {
 					InvokerFactory factory = getComponentInstance(
 							moduleContainerAdaptor, getInvokerFactoryClass());
-					invoker = factory.createInvoker(getTypeMapperContext(),
-							getInvocationProcessors(), getAttributesHandlers());
+					invoker = factory.createInvoker(
+							getInvocationInterceptors(),
+							getInvocationProcessors(), getTypeMapperContext(),
+							getAttributesHandlers());
 				}
 				return invoker;
 			}
