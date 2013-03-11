@@ -187,14 +187,12 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 			}
 
 			@Override
-			public ContainerAdaptor getOptionalContainerAdaptor() {
-				return defaultContainer;
+			public ContainerAdaptor getModulesContainerAdaptor() {
+				return moduleContainerAdaptor;
 			}
 
-			// TODO remove
-			List<AttributesHandler> getAttributesHandlerList() {
-				return getComponentInstances(moduleContainerAdaptor,
-						getAttributesHandlerClasses());
+			private ContainerAdaptor getOptionalContainerAdaptor() {
+				return defaultContainer;
 			}
 
 			private DefaultAttributesHandlers handlers;
@@ -203,7 +201,8 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 			public AttributesHandlers getAttributesHandlers() {
 				if (this.handlers == null) {
 					this.handlers = new DefaultAttributesHandlers(
-							getAttributesHandlerList());
+							getComponentInstances(moduleContainerAdaptor,
+									getAttributesHandlerClasses()));
 				}
 				return this.handlers;
 			}

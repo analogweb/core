@@ -30,7 +30,7 @@ public interface Modules extends Disposable {
 
     TypeMapper findTypeMapper(Class<? extends TypeMapper> clazz);
 
-    ContainerAdaptor getOptionalContainerAdaptor();
+    ContainerAdaptor getModulesContainerAdaptor();
 
     AttributesHandlers getAttributesHandlers();
 
