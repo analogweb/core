@@ -205,6 +205,7 @@ public class DefaultModulesBuilderTest {
 		builder.setModulesProviderClass(MockModulesProvidingContainerAdaptorFactory.class);
 		Modules modules = builder.buildModules(resolver, defaultAdaptor);
 		adaptor.unregister(Invoker.class);
+		builder.setTypeMapperContextClass(typeMapperContext.getClass());
 
 		Invoker actual = modules.getInvoker();
 		log.debug(actual.toString());

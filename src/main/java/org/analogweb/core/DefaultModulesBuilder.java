@@ -29,6 +29,7 @@ import org.analogweb.Invoker;
 import org.analogweb.InvokerFactory;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
+import org.analogweb.ModulesContainerAdaptorAware;
 import org.analogweb.MultiModule;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.util.Assertion;
@@ -165,19 +166,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 						getExceptionHandlerClass());
 			}
 
-			private TypeMapperContext typeMapperContext;
-
 			@Override
 			public TypeMapperContext getTypeMapperContext() {
-				if (this.typeMapperContext == null) {
-					typeMapperContext = moduleContainerAdaptor
-							.getInstanceOfType(getTypeMapperContextClass());
-					if (typeMapperContext == null) {
-						typeMapperContext = new DefaultTypeMapperContext(
-								moduleContainerAdaptor);
-					}
-				}
-				return this.typeMapperContext;
+				return getComponentInstance(moduleContainerAdaptor,
+						getTypeMapperContextClass());
 			}
 
 			@Override
@@ -223,6 +215,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 						throw new MissingModuleException(componentClass);
 					}
 				}
+				if (instance instanceof ModulesContainerAdaptorAware) {
+					((ModulesContainerAdaptorAware) instance)
+							.setModulesContainerAdaptor(getModulesContainerAdaptor());
+				}
 				return instance;
 			}
 
@@ -252,6 +248,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 							String FQDN = clazzInstance.getClass()
 									.getCanonicalName();
 							if (instanceFQDNs.contains(FQDN) == false) {
+								if (clazzInstance instanceof ModulesContainerAdaptorAware) {
+									((ModulesContainerAdaptorAware) clazzInstance)
+											.setModulesContainerAdaptor(getModulesContainerAdaptor());
+								}
 								instances.add(clazzInstance);
 							}
 							instanceFQDNs.add(FQDN);
@@ -280,7 +280,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 				setInvokerFactoryClass(null);
 				setModulesProviderClass(null);
 				setTypeMapperContextClass(null);
-				this.typeMapperContext = null;
 				this.invocationProcessors = null;
 				this.invocationInterceptors = null;
 			}
