@@ -153,7 +153,6 @@ public class DefaultModulesBuilderTest {
 				invocationInterceptor);
 		assertSame(modules.getExceptionHandler(), exceptionHandler);
 		assertSame(modules.getTypeMapperContext(), typeMapperContext);
-		assertSame(modules.findTypeMapper(typeMapper.getClass()), typeMapper);
 		assertSame(modules.findDirectionFormatter(mapToDirection.getClass()),
 				directionFormatter);
 

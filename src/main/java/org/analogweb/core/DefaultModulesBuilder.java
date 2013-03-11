@@ -30,7 +30,6 @@ import org.analogweb.InvokerFactory;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.MultiModule;
-import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.Maps;
@@ -164,11 +163,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 			public ExceptionHandler getExceptionHandler() {
 				return getComponentInstance(moduleContainerAdaptor,
 						getExceptionHandlerClass());
-			}
-
-			@Override
-			public TypeMapper findTypeMapper(Class<? extends TypeMapper> clazz) {
-				return getComponentInstance(moduleContainerAdaptor, clazz);
 			}
 
 			private TypeMapperContext typeMapperContext;
