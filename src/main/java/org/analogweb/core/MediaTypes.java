@@ -105,6 +105,7 @@ public final class MediaTypes {
             this.subType = (StringUtils.isEmpty(subType)) ? WILDCARD_VALUE : subType;
             this.parameters = (Map<String, String>) ((parameters == null) ? Maps.newEmptyHashMap()
                     : initParameters(parameters));
+            this.parameters = Collections.unmodifiableMap(this.parameters);
         }
 
         private Map<String, String> initParameters(Map<String, String> parameters) {
@@ -178,7 +179,7 @@ public final class MediaTypes {
             subType = value.substring(s + 1, p);
             parameterMap = Maps.newEmptyHashMap();
             for (String param : StringUtils.split(value.substring(p + 1), ';')) {
-                List<String> sp = StringUtils.split(param, '=');
+                List<String> sp = StringUtils.split(param.trim(), '=');
                 if (sp.size() > 1) {
                     parameterMap.put(sp.get(0), sp.get(1));
                 }

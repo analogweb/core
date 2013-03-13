@@ -53,11 +53,12 @@ public class FormParametersTest {
     public void testAsMap() throws Exception {
         RequestPath path = mock(RequestPath.class);
         when(context.getRequestPath()).thenReturn(path);
-        when(context.getContentType()).thenReturn(MediaTypes.APPLICATION_FORM_URLENCODED_TYPE);
+        MediaType mt = MediaTypes.valueOf("application/x-www-form-urlencoded; charset=UTF-8");
+        when(context.getContentType()).thenReturn(mt);
         when(path.getRequestURI()).thenReturn(URI.create("http://localhost:80/a"));
         when(context.getRequestBody()).thenReturn(
                 new ByteArrayInputStream("%E5%A0%B4%E6%89%80=Tokyo&%E5%90%8D%E5%89%8D=Yukio"
-                        .getBytes()));
+                        .getBytes("UTF-8")));
         Map<String, String[]> map = params.asMap();
         String[] actual = map.get("名前");
         assertThat(actual.length, is(1));
@@ -75,11 +76,12 @@ public class FormParametersTest {
     public void testAsMapOtherEncoding() throws Exception {
         RequestPath path = mock(RequestPath.class);
         when(context.getRequestPath()).thenReturn(path);
-        when(context.getContentType()).thenReturn(MediaTypes.APPLICATION_FORM_URLENCODED_TYPE);
+        MediaType mt = MediaTypes.valueOf("application/x-www-form-urlencoded; charset=UTF-8");
+        when(context.getContentType()).thenReturn(mt);
         when(path.getRequestURI()).thenReturn(URI.create("http://localhost:80/a"));
         when(context.getRequestBody()).thenReturn(
                 new ByteArrayInputStream("%E5%A0%B4%E6%89%80=Tokyo&%E5%90%8D%E5%89%8D=Yukio"
-                        .getBytes()));
+                        .getBytes("UTF-8")));
         Map<String, String[]> map = params.asMap();
         String[] actual = map.get("名前");
         assertThat(actual.length, is(1));
