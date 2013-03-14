@@ -5,8 +5,8 @@ import org.analogweb.DirectionResolver;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.core.direction.HttpStatus;
-import org.analogweb.core.direction.Text;
+import org.analogweb.core.response.HttpStatus;
+import org.analogweb.core.response.Text;
 
 /**
  * @author snowgoose

@@ -7,7 +7,7 @@ import static org.mockito.Mockito.mock;
 import java.util.Arrays;
 
 import org.analogweb.RequestPathMetadata;
-import org.analogweb.core.direction.HttpStatus;
+import org.analogweb.core.response.HttpStatus;
 import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.RequestMethodUnsupportedException;
 import org.analogweb.WebApplicationException;

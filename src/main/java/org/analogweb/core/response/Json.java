@@ -1,4 +1,4 @@
-package org.analogweb.core.direction;
+package org.analogweb.core.response;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;

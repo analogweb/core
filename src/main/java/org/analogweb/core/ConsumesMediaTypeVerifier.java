@@ -12,7 +12,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.RequestFormats;
 import org.analogweb.annotation.Scope;
-import org.analogweb.core.direction.HttpStatus;
+import org.analogweb.core.response.HttpStatus;
 import org.analogweb.util.AnnotationUtils;
 import org.analogweb.util.ArrayUtils;
 

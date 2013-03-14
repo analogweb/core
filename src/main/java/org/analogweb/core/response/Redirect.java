@@ -1,4 +1,4 @@
-package org.analogweb.core.direction;
+package org.analogweb.core.response;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

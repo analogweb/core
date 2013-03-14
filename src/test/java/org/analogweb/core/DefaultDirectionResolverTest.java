@@ -9,8 +9,8 @@ import org.analogweb.Direction;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.core.direction.HttpStatus;
-import org.analogweb.core.direction.Text;
+import org.analogweb.core.response.HttpStatus;
+import org.analogweb.core.response.Text;
 import org.junit.Before;
 import org.junit.Test;
 

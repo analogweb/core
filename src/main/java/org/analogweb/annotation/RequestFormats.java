@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * リクエストされたエンティティにするフォーマット（メディアタイプ）を指定します。<br/>
  * リクエストが指定されたフォーマットに該当しない場合は、
- * {@link org.analogweb.core.direction.HttpStatus#UNSUPPORTED_MEDIA_TYPE}
+ * {@link org.analogweb.core.response.HttpStatus#UNSUPPORTED_MEDIA_TYPE}
  * が返されます。
  * @author snowgoose
  */

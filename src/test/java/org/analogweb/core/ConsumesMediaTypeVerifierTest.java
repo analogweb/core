@@ -18,7 +18,7 @@ import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
 import org.analogweb.annotation.RequestFormats;
 import org.analogweb.annotation.Scope;
-import org.analogweb.core.direction.HttpStatus;
+import org.analogweb.core.response.HttpStatus;
 import org.analogweb.util.ReflectionUtils;
 import org.junit.Before;
 import org.junit.Test;
