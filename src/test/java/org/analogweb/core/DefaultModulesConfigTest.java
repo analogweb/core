@@ -44,9 +44,9 @@ public class DefaultModulesConfigTest {
         when(modulesBuilder.setInvocationFactoryClass(InvocationFactory.class)).thenReturn(
                 modulesBuilder);
         when(modulesBuilder.setInvokerFactoryClass(InvokerFactory.class)).thenReturn(modulesBuilder);
-        when(modulesBuilder.setDirectionHandlerClass(ResponseHandler.class)).thenReturn(
+        when(modulesBuilder.setResponseHandlerClass(ResponseHandler.class)).thenReturn(
                 modulesBuilder);
-        when(modulesBuilder.setDirectionResolverClass(ResponseResolver.class)).thenReturn(
+        when(modulesBuilder.setResponseResolverClass(ResponseResolver.class)).thenReturn(
                 modulesBuilder);
         when(modulesBuilder.setModulesProviderClass(StaticMappingContainerAdaptorFactory.class))
                 .thenReturn(modulesBuilder);

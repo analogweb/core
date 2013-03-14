@@ -124,8 +124,8 @@ public class DefaultModulesBuilderTest {
 		builder.setInvocationInstanceProviderClass((Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>>) containerAdaptorFactory
 				.getClass());
 		builder.setInvokerFactoryClass(invokerFactory.getClass());
-		builder.setDirectionHandlerClass(directiontHandler.getClass());
-		builder.setDirectionResolverClass(directionResolver.getClass());
+		builder.setResponseHandlerClass(directiontHandler.getClass());
+		builder.setResponseResolverClass(directionResolver.getClass());
 		builder.addInvocationProcessorClass(invocationProcessor.getClass());
 		builder.addInvocationInterceptorClass(invocationInterceptor.getClass());
 		builder.addInvocationMetadataFactoriesClass(invocationMetadataFactory
@@ -134,7 +134,7 @@ public class DefaultModulesBuilderTest {
 		builder.setExceptionHandlerClass(exceptionHandler.getClass());
 		builder.setTypeMapperContextClass(typeMapperContext.getClass());
 		Response mapToResponse = mock(Response.class);
-		builder.addDirectionFormatterClass(mapToResponse.getClass(),
+		builder.addResponseFormatterClass(mapToResponse.getClass(),
 				directionFormatter.getClass());
 
 		Modules modules = builder.buildModules(resolver, adaptor);
@@ -145,15 +145,15 @@ public class DefaultModulesBuilderTest {
 		// same instance.
 		assertSame(modules.getInvocationInstanceProvider(), containerAdaptor);
 		assertSame(modules.getInvocationFactory(), invocationFactory);
-		assertSame(modules.getDirectionResolver(), directionResolver);
-		assertSame(modules.getDirectionHandler(), directiontHandler);
+		assertSame(modules.getResponseResolver(), directionResolver);
+		assertSame(modules.getResponseHandler(), directiontHandler);
 		assertSame(modules.getInvocationProcessors().get(0),
 				invocationProcessor);
 		assertSame(modules.getInvocationInterceptors().get(0),
 				invocationInterceptor);
 		assertSame(modules.getExceptionHandler(), exceptionHandler);
 		assertSame(modules.getTypeMapperContext(), typeMapperContext);
-		assertSame(modules.findDirectionFormatter(mapToResponse.getClass()),
+		assertSame(modules.findResponseFormatter(mapToResponse.getClass()),
 				directionFormatter);
 
 		when(attributesHandler.getScopeName()).thenReturn("request");

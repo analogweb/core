@@ -119,11 +119,11 @@ public class WebApplication implements Application {
     protected void handleResponse(Modules modules, Object result, InvocationMetadata metadata,
             RequestContext context, ResponseContext responseContext) throws IOException,
             WebApplicationException {
-        ResponseResolver resultResolver = modules.getDirectionResolver();
+        ResponseResolver resultResolver = modules.getResponseResolver();
         Response resolved = resultResolver.resolve(result, metadata, context, responseContext);
         log.log(Markers.LIFECYCLE, "DL000008", result, result);
 
-        ResponseFormatter resultFormatter = modules.findDirectionFormatter(resolved.getClass());
+        ResponseFormatter resultFormatter = modules.findResponseFormatter(resolved.getClass());
 
         if (resultFormatter != null) {
             log.log(Markers.LIFECYCLE, "DL000010", result, resultFormatter);
@@ -131,7 +131,7 @@ public class WebApplication implements Application {
             log.log(Markers.LIFECYCLE, "DL000011", result);
         }
 
-        ResponseHandler resultHandler = modules.getDirectionHandler();
+        ResponseHandler resultHandler = modules.getResponseHandler();
         resultHandler.handleResult(resolved, resultFormatter, context, responseContext);
     }
 

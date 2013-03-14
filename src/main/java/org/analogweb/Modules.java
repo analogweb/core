@@ -20,11 +20,9 @@ public interface Modules extends Disposable {
 
     InvocationFactory getInvocationFactory();
 
-    // TODO rename method #30
-    ResponseResolver getDirectionResolver();
+    ResponseResolver getResponseResolver();
 
-    // TODO rename method #30
-    ResponseHandler getDirectionHandler();
+    ResponseHandler getResponseHandler();
 
     ExceptionHandler getExceptionHandler();
 
@@ -34,7 +32,6 @@ public interface Modules extends Disposable {
 
     AttributesHandlers getAttributesHandlers();
 
-    // TODO rename method #30
-    ResponseFormatter findDirectionFormatter(Class<? extends Response> mapToDirection);
+    ResponseFormatter findResponseFormatter(Class<? extends Response> mapToResponse);
     
 }

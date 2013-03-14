@@ -22,16 +22,14 @@ public interface ModulesBuilder {
 	ModulesBuilder setInvokerFactoryClass(
 			Class<? extends InvokerFactory> invokerFactoryClass);
 
-    // TODO rename method #30
-	ModulesBuilder setDirectionResolverClass(
-			Class<? extends ResponseResolver> actionResultResolverClass);
+	ModulesBuilder setResponseResolverClass(
+			Class<? extends ResponseResolver> responseResolverClass);
 
 	ModulesBuilder setExceptionHandlerClass(
 			Class<? extends ExceptionHandler> exceptionHandlerClass);
 
-    // TODO rename method #30
-	ModulesBuilder setDirectionHandlerClass(
-			Class<? extends ResponseHandler> actionResultHandlerClass);
+	ModulesBuilder setResponseHandlerClass(
+			Class<? extends ResponseHandler> responseHandlerClass);
 
 	ModulesBuilder setTypeMapperContextClass(
 			Class<? extends TypeMapperContext> typeMapperContextClass);
@@ -54,10 +52,9 @@ public interface ModulesBuilder {
 
 	ModulesBuilder clearAttributesHanderClass();
 
-    // TODO rename method #30
-	ModulesBuilder addDirectionFormatterClass(
-			Class<? extends Response> mapToDirectionClass,
-			Class<? extends ResponseFormatter> directionFormatterClass);
+	ModulesBuilder addResponseFormatterClass(
+			Class<? extends Response> mapToResponseClass,
+			Class<? extends ResponseFormatter> responseFormatterClass);
 
 	ModulesBuilder clearDirectionFormatterClass();
 

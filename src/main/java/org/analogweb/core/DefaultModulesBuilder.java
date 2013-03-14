@@ -149,13 +149,13 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 			}
 
 			@Override
-			public ResponseResolver getDirectionResolver() {
+			public ResponseResolver getResponseResolver() {
 				return getComponentInstance(moduleContainerAdaptor,
 						getResponseResolverClass());
 			}
 
 			@Override
-			public ResponseHandler getDirectionHandler() {
+			public ResponseHandler getResponseHandler() {
 				return getComponentInstance(moduleContainerAdaptor,
 						getResponseHandlerClass());
 			}
@@ -194,7 +194,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 			}
 
 			@Override
-			public ResponseFormatter findDirectionFormatter(
+			public ResponseFormatter findResponseFormatter(
 					Class<? extends Response> mapToResponse) {
 				Class<? extends ResponseFormatter> formatterClass = getResponseFormatterClass(mapToResponse);
 				if (formatterClass != null) {
@@ -272,8 +272,8 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
 			@Override
 			public void dispose() {
-				setDirectionHandlerClass(null);
-				setDirectionResolverClass(null);
+				setResponseHandlerClass(null);
+				setResponseResolverClass(null);
 				setExceptionHandlerClass(null);
 				setInvocationFactoryClass(null);
 				setInvocationInstanceProviderClass(null);
@@ -337,14 +337,14 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 	}
 
 	@Override
-	public ModulesBuilder setDirectionResolverClass(
+	public ModulesBuilder setResponseResolverClass(
 			Class<? extends ResponseResolver> actionResultResolverClass) {
 		this.directionResolverClass = actionResultResolverClass;
 		return this;
 	}
 
 	@Override
-	public ModulesBuilder setDirectionHandlerClass(
+	public ModulesBuilder setResponseHandlerClass(
 			Class<? extends ResponseHandler> actionResultHandlerClass) {
 		this.directionHandlerClass = actionResultHandlerClass;
 		return this;
@@ -465,7 +465,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 	}
 
 	@Override
-	public ModulesBuilder addDirectionFormatterClass(
+	public ModulesBuilder addResponseFormatterClass(
 			Class<? extends Response> mapToResponseClass,
 			Class<? extends ResponseFormatter> directionFormatterClass) {
 		this.directionFormatterClasses.put(mapToResponseClass,

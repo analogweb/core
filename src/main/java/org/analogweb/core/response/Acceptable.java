@@ -133,7 +133,17 @@ public class Acceptable implements Response {
         public int compare(String arg0, String arg1) {
             if (arg0.contains("*")) {
                 if (arg1.contains("*")) {
-                    return (StringUtils.trimToEmpty(arg0).startsWith("*/")) ? 1 : -1;
+                    if (StringUtils.trimToEmpty(arg0).startsWith("*/")){
+                    	return 1;
+                    } else if(StringUtils.trimToEmpty(arg1).startsWith("*/")){
+                    	return -1;
+                    }
+                    List<String> s0 = StringUtils.split(arg0, ';');
+                    List<String> s1 = StringUtils.split(arg1, ';');
+                    if (s0.size() == s1.size()) {
+                        return 0;
+                    }
+                    return (s0.size() > s1.size()) ? -1 : 1;
                 } else {
                     return 1;
                 }
@@ -145,7 +155,7 @@ public class Acceptable implements Response {
                 if (s0.size() == s1.size()) {
                     return 0;
                 }
-                return (s0.size() > s0.size()) ? -1 : 1;
+                return (s0.size() > s1.size()) ? -1 : 1;
             }
         }
     }

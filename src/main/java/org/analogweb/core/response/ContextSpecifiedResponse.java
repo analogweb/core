@@ -7,8 +7,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.WebApplicationException;
 
-// TODO rename type #30
-public abstract class ContextSpecifiedDirection<T extends RequestContext> implements Response {
+public abstract class ContextSpecifiedResponse<T extends RequestContext> implements Response {
 
     @Override
     @SuppressWarnings("unchecked")
