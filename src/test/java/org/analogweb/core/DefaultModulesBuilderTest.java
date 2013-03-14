@@ -19,10 +19,10 @@ import org.analogweb.AttributesHandler;
 import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
-import org.analogweb.Direction;
-import org.analogweb.DirectionFormatter;
-import org.analogweb.DirectionHandler;
-import org.analogweb.DirectionResolver;
+import org.analogweb.Response;
+import org.analogweb.ResponseFormatter;
+import org.analogweb.ResponseHandler;
+import org.analogweb.ResponseResolver;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationInterceptor;
@@ -64,15 +64,15 @@ public class DefaultModulesBuilderTest {
 	private ContainerAdaptorFactory containerAdaptorFactory;
 	private ContainerAdaptor containerAdaptor;
 	private InvocationFactory invocationFactory;
-	private DirectionResolver directionResolver;
-	private DirectionHandler directiontHandler;
+	private ResponseResolver directionResolver;
+	private ResponseHandler directiontHandler;
 	private InvocationProcessor invocationProcessor;
 	private InvocationInterceptor invocationInterceptor;
 	private AttributesHandler attributesHandler;
 	private ExceptionHandler exceptionHandler;
 	private TypeMapperContext typeMapperContext;
 	private TypeMapper typeMapper;
-	private DirectionFormatter directionFormatter;
+	private ResponseFormatter directionFormatter;
 
 	@Before
 	public void setUp() {
@@ -88,15 +88,15 @@ public class DefaultModulesBuilderTest {
 		when(containerAdaptorFactory.createContainerAdaptor(resolver))
 				.thenReturn(containerAdaptor);
 		invocationFactory = mock(InvocationFactory.class);
-		directionResolver = mock(DirectionResolver.class);
-		directiontHandler = mock(DirectionHandler.class);
+		directionResolver = mock(ResponseResolver.class);
+		directiontHandler = mock(ResponseHandler.class);
 		invocationProcessor = mock(InvocationProcessor.class);
 		invocationInterceptor = mock(InvocationInterceptor.class);
 		attributesHandler = mock(AttributesHandler.class);
 		exceptionHandler = mock(ExceptionHandler.class);
 		typeMapperContext = mock(TypeMapperContext.class);
 		typeMapper = mock(TypeMapper.class);
-		directionFormatter = mock(DirectionFormatter.class);
+		directionFormatter = mock(ResponseFormatter.class);
 
 		adaptor.register(invocationMetadataFactory.getClass(),
 				invocationMetadataFactory);
@@ -133,8 +133,8 @@ public class DefaultModulesBuilderTest {
 		builder.addAttributesHandlerClass(attributesHandler.getClass());
 		builder.setExceptionHandlerClass(exceptionHandler.getClass());
 		builder.setTypeMapperContextClass(typeMapperContext.getClass());
-		Direction mapToDirection = mock(Direction.class);
-		builder.addDirectionFormatterClass(mapToDirection.getClass(),
+		Response mapToResponse = mock(Response.class);
+		builder.addDirectionFormatterClass(mapToResponse.getClass(),
 				directionFormatter.getClass());
 
 		Modules modules = builder.buildModules(resolver, adaptor);
@@ -153,7 +153,7 @@ public class DefaultModulesBuilderTest {
 				invocationInterceptor);
 		assertSame(modules.getExceptionHandler(), exceptionHandler);
 		assertSame(modules.getTypeMapperContext(), typeMapperContext);
-		assertSame(modules.findDirectionFormatter(mapToDirection.getClass()),
+		assertSame(modules.findDirectionFormatter(mapToResponse.getClass()),
 				directionFormatter);
 
 		when(attributesHandler.getScopeName()).thenReturn("request");

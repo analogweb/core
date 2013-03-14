@@ -2,23 +2,23 @@ package org.analogweb.core.response;
 
 import java.io.IOException;
 
-import org.analogweb.DirectionFormatter;
-import org.analogweb.DirectionFormatterAware;
+import org.analogweb.ResponseFormatter;
+import org.analogweb.ResponseFormatterAware;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.WebApplicationException;
 
 /**
- * テキストフォーマットが可能な{@link org.analogweb.Direction}の実装です。
+ * テキストフォーマットが可能な{@link org.analogweb.Response}の実装です。
  * @param <T> フォーマットする{@link TextFormattable}の型
  * @author snowgoose
  */
 public abstract class TextFormattable<T extends TextFormattable<T>> extends TextFormat<T> implements
-        DirectionFormatterAware<T> {
+        ResponseFormatterAware<T> {
 
     private Object source;
-    private DirectionFormatter formatter;
+    private ResponseFormatter formatter;
 
     public TextFormattable() {
         super();
@@ -41,10 +41,10 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
     }
 
     /**
-     * 現在のフォーマット可能な{@link DirectionFormatter}を取得します。<br/>
-     * @return {@link DirectionFormatter}
+     * 現在のフォーマット可能な{@link ResponseFormatter}を取得します。<br/>
+     * @return {@link ResponseFormatter}
      */
-    protected DirectionFormatter getFormatter() {
+    protected ResponseFormatter getFormatter() {
         return this.formatter;
     }
 
@@ -57,7 +57,7 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
             super.writeEntity(response);
             return;
         }
-        DirectionFormatter formatter = getFormatter();
+        ResponseFormatter formatter = getFormatter();
         if (formatter == null) {
             formatter = getDefaultFormatter();
         }
@@ -66,19 +66,19 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
     }
 
     /**
-     * デフォルトの{@link DirectionFormatter}によって特定のフォーマットへのレンダリングを行います。<br/>
-     * この{@link DirectionFormatter}は全ての{@link TextFormattable}のインスタンスに適用されます。
+     * デフォルトの{@link ResponseFormatter}によって特定のフォーマットへのレンダリングを行います。<br/>
+     * この{@link ResponseFormatter}は全ての{@link TextFormattable}のインスタンスに適用されます。
      */
-    protected abstract DirectionFormatter getDefaultFormatter();
+    protected abstract ResponseFormatter getDefaultFormatter();
 
     /**
-     * 指定した{@link DirectionFormatter}によって特定のフォーマットのレンダリングを行います。<br/>
-     * 既に{@link DirectionFormatter}が指定されている場合は無視されます。
-     * @param formatter {@link DirectionFormatter}
+     * 指定した{@link ResponseFormatter}によって特定のフォーマットのレンダリングを行います。<br/>
+     * 既に{@link ResponseFormatter}が指定されている場合は無視されます。
+     * @param formatter {@link ResponseFormatter}
      */
     @Override
     @SuppressWarnings("unchecked")
-    public T attach(DirectionFormatter formatter) {
+    public T attach(ResponseFormatter formatter) {
         if (this.formatter == null) {
             this.formatter = formatter;
         }
@@ -87,7 +87,7 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
 
     @Override
     public String toString() {
-        DirectionFormatter f;
+        ResponseFormatter f;
         return String.format("%s with %s", getClass(),
                 (f = getFormatter()) == null ? "default-formatter" : f);
     }

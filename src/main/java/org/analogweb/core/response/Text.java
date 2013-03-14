@@ -1,7 +1,5 @@
 package org.analogweb.core.response;
 
-import org.analogweb.Direction;
-
 /**
  * テキストをレスポンスする{@link Direction}です。<br/>
  * レスポンスにおける既定のContent-Typeは「text/plain」であり 、文字セットは「UTF-8」です。

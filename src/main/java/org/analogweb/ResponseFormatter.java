@@ -5,7 +5,7 @@ package org.analogweb;
  * フォーマット処理を定義します。
  * @author snowgoose
  */
-public interface DirectionFormatter extends MultiModule {
+public interface ResponseFormatter extends MultiModule {
 
     /**
      * 指定されたオブジェクトをフォーマットし、レスポンスに書き込みを行います。

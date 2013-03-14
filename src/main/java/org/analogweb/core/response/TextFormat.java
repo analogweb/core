@@ -4,9 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import org.analogweb.Direction;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
+import org.analogweb.Response;
 import org.analogweb.ResponseContext;
 import org.analogweb.WebApplicationException;
 import org.analogweb.util.StringUtils;
@@ -17,7 +17,7 @@ import org.analogweb.util.StringUtils;
  * 
  * @author snowgoose
  */
-public class TextFormat<T extends TextFormat<T>> implements Direction {
+public class TextFormat<T extends TextFormat<T>> implements Response {
 
     private static final String DEFAULT_CHARSET = Charset.defaultCharset().displayName();
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";

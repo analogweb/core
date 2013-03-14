@@ -1,8 +1,8 @@
 package org.analogweb.core;
 
 import org.analogweb.AttributesHandler;
-import org.analogweb.DirectionHandler;
-import org.analogweb.DirectionResolver;
+import org.analogweb.ResponseHandler;
+import org.analogweb.ResponseResolver;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadataFactory;
@@ -25,8 +25,8 @@ public final class RootModulesConfig implements ModulesConfig {
         return builder.setModulesProviderClass(StaticMappingContainerAdaptorFactory.class)
                 .setInvocationInstanceProviderClass(SingletonInstanceContainerAdaptorFactory.class)
                 .setInvocationFactoryClass(InvocationFactory.class).setInvokerFactoryClass(InvokerFactory.class)
-                .setDirectionHandlerClass(DirectionHandler.class)
-                .setDirectionResolverClass(DirectionResolver.class)
+                .setDirectionHandlerClass(ResponseHandler.class)
+                .setDirectionResolverClass(ResponseResolver.class)
                 .setExceptionHandlerClass(ExceptionHandler.class)
                 .setTypeMapperContextClass(TypeMapperContext.class)
                 .addInvocationProcessorClass(InvocationProcessor.class)

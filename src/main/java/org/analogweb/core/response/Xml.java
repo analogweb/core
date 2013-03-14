@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import org.analogweb.DirectionFormatter;
+import org.analogweb.ResponseFormatter;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseContext.ResponseEntity;
@@ -14,7 +14,7 @@ import org.analogweb.core.FormatFailureException;
 
 /**
  * オブジェクトをXMLにフォーマットしてレスポンスする
- * {@link org.analogweb.Direction}の実装です。<br/>
+ * {@link org.analogweb.Response}の実装です。<br/>
  * デフォルトのContent-Typeは「application/xml; charset=UTF-8」です。
  * @author snowgoose
  */
@@ -33,7 +33,7 @@ public class Xml extends TextFormattable<Xml> {
         super.withCharset(DEFAULT_CHARSET);
     }
 
-    static class DefaultFormatter implements DirectionFormatter {
+    static class DefaultFormatter implements ResponseFormatter {
         @Override
         public void formatAndWriteInto(RequestContext context, ResponseContext writeTo,
                 String charset, final Object source) throws FormatFailureException {
@@ -57,7 +57,7 @@ public class Xml extends TextFormattable<Xml> {
     }
 
     @Override
-    protected DirectionFormatter getDefaultFormatter() {
+    protected ResponseFormatter getDefaultFormatter() {
         return new Xml.DefaultFormatter();
     }
 

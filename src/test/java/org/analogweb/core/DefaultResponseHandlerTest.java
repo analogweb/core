@@ -1,18 +1,17 @@
 package org.analogweb.core;
 
-
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 
-import org.analogweb.Direction;
-import org.analogweb.DirectionFormatter;
-import org.analogweb.DirectionFormatterAware;
+import org.analogweb.Response;
+import org.analogweb.ResponseFormatter;
+import org.analogweb.ResponseFormatterAware;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.core.DirectionEvaluationException;
+import org.analogweb.core.ResponseEvaluationException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -22,9 +21,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class DefaultDirectionHandlerTest {
+public class DefaultResponseHandlerTest {
 
-    private DefaultDirectionHandler handler;
+    private DefaultResponseHandler handler;
 
     private RequestContext context;
     private ResponseContext response;
@@ -34,7 +33,7 @@ public class DefaultDirectionHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        handler = new DefaultDirectionHandler();
+        handler = new DefaultResponseHandler();
         context = mock(RequestContext.class);
         response = mock(ResponseContext.class);
     }
@@ -45,7 +44,7 @@ public class DefaultDirectionHandlerTest {
 
     @Test
     public void testHandleResult() throws Exception {
-        Direction result = mock(Direction.class);
+        Response result = mock(Response.class);
 
         handler.handleResult(result, null, context, response);
 
@@ -54,16 +53,16 @@ public class DefaultDirectionHandlerTest {
     }
 
     @Test
-    public void testHandleResultWithoutDirectionResult() throws Exception {
-        thrown.expect(DirectionEvaluationException.class);
+    public void testHandleResultWithoutResponseResult() throws Exception {
+        thrown.expect(ResponseEvaluationException.class);
 
         handler.handleResult(null, null, context, response);
     }
 
     @Test
-    public void testHandleResultWithDirectionFormatterAware() throws Exception {
-        DirectionFormatterAware<?> result = mock(DirectionFormatterAware.class);
-        DirectionFormatter formatter = mock(DirectionFormatter.class);
+    public void testHandleResultWithResponseFormatterAware() throws Exception {
+        ResponseFormatterAware<?> result = mock(ResponseFormatterAware.class);
+        ResponseFormatter formatter = mock(ResponseFormatter.class);
 
         handler.handleResult(result, formatter, context, response);
 
@@ -73,24 +72,24 @@ public class DefaultDirectionHandlerTest {
 
     @Test
     public void testHandleResultWithIOException() throws Exception {
-        Direction result = mock(Direction.class);
+        Response result = mock(Response.class);
 
-        thrown.expect(DirectionEvaluationException.class);
-        thrown.expect(hasDirection(result));
+        thrown.expect(ResponseEvaluationException.class);
+        thrown.expect(hasResponse(result));
 
         doThrow(new IOException()).when(result).render(context, response);
 
         handler.handleResult(result, null, context, response);
     }
 
-    private static Matcher<?> hasDirection(final Direction actionResult) {
+    private static Matcher<?> hasResponse(final Response actionResult) {
 
-        return new BaseMatcher<Direction>() {
+        return new BaseMatcher<Response>() {
 
             @Override
             public boolean matches(Object item) {
-                if (item instanceof DirectionEvaluationException) {
-                    DirectionEvaluationException are = (DirectionEvaluationException) item;
+                if (item instanceof ResponseEvaluationException) {
+                    ResponseEvaluationException are = (ResponseEvaluationException) item;
                     return are.getActionResult() == actionResult;
                 }
                 return false;

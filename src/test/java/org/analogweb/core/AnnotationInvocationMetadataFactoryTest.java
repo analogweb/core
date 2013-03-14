@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.analogweb.Direction;
+import org.analogweb.Response;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.annotation.As;
@@ -293,22 +293,22 @@ public class AnnotationInvocationMetadataFactoryTest {
 	public static class FooActions {
 
 		@On("/something/done")
-		public Direction doSomething() {
+		public Response doSomething() {
 			return null;
 		}
 
 		@On("something/donewitharg")
-		public Direction doSomethingWithArg(@As("arg") String arg) {
+		public Response doSomethingWithArg(@As("arg") String arg) {
 			return null;
 		}
 
-		public Direction doSomethingNoDetectable(String arg,
+		public Response doSomethingNoDetectable(String arg,
 				@As("foo") Integer foo) {
 			return null;
 		}
 
 		@On
-		public Direction doSomethingNameBased(@As("arg") String arg) {
+		public Response doSomethingNameBased(@As("arg") String arg) {
 			return null;
 		}
 
@@ -318,46 +318,46 @@ public class AnnotationInvocationMetadataFactoryTest {
 	public static class BaaActions {
 
 		@On("/something/done")
-		public Direction doSomething() {
+		public Response doSomething() {
 			return null;
 		}
 
 		@On("something/donewitharg")
-		public Direction doSomethingWithArg(@As("arg") String arg) {
+		public Response doSomethingWithArg(@As("arg") String arg) {
 			return null;
 		}
 
-		public Direction doSomethingNoDetectable(String arg,
+		public Response doSomethingNoDetectable(String arg,
 				@As("foo") Integer foo) {
 			return null;
 		}
 
 		@On
-		public Direction doSomethingNameBased(@As("arg") String arg) {
+		public Response doSomethingNameBased(@As("arg") String arg) {
 			return null;
 		}
 
 		@On("/something/post")
 		@Post
-		public Direction doSomethingWithPostMethod() {
+		public Response doSomethingWithPostMethod() {
 			return null;
 		}
 
 		@On("/something/get")
 		@Get
-		public Direction doSomethingWithGetMethod() {
+		public Response doSomethingWithGetMethod() {
 			return null;
 		}
 
 		@On("/something/delete")
 		@Delete
-		public Direction doSomethingWithDeleteMethod(@As("arg") String arg) {
+		public Response doSomethingWithDeleteMethod(@As("arg") String arg) {
 			return null;
 		}
 
 		@On("/something/put")
 		@Put
-		public Direction doSomethingWithPutMethod() {
+		public Response doSomethingWithPutMethod() {
 			return null;
 		}
 
@@ -366,7 +366,7 @@ public class AnnotationInvocationMetadataFactoryTest {
 	public static class BazActions {
 
 		@On("/something/done")
-		public Direction doSomething() {
+		public Response doSomething() {
 			return null;
 		}
 	}

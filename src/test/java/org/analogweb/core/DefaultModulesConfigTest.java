@@ -4,8 +4,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.analogweb.AttributesHandler;
-import org.analogweb.DirectionHandler;
-import org.analogweb.DirectionResolver;
+import org.analogweb.ResponseHandler;
+import org.analogweb.ResponseResolver;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadataFactory;
@@ -44,9 +44,9 @@ public class DefaultModulesConfigTest {
         when(modulesBuilder.setInvocationFactoryClass(InvocationFactory.class)).thenReturn(
                 modulesBuilder);
         when(modulesBuilder.setInvokerFactoryClass(InvokerFactory.class)).thenReturn(modulesBuilder);
-        when(modulesBuilder.setDirectionHandlerClass(DirectionHandler.class)).thenReturn(
+        when(modulesBuilder.setDirectionHandlerClass(ResponseHandler.class)).thenReturn(
                 modulesBuilder);
-        when(modulesBuilder.setDirectionResolverClass(DirectionResolver.class)).thenReturn(
+        when(modulesBuilder.setDirectionResolverClass(ResponseResolver.class)).thenReturn(
                 modulesBuilder);
         when(modulesBuilder.setModulesProviderClass(StaticMappingContainerAdaptorFactory.class))
                 .thenReturn(modulesBuilder);

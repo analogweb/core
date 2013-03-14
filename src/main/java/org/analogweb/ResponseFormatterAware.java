@@ -5,13 +5,13 @@ package org.analogweb;
  * 表します。
  * @author snowgoose
  */
-public interface DirectionFormatterAware<T extends Direction> extends Direction {
+public interface ResponseFormatterAware<T extends Response> extends Response {
     
     /**
      * {@link DirectionFormatter}を適用します。
      * @param formatter {@link DirectionFormatter}
      * @return フォーマッタが適用された{@link Direction}の自身のインスタンス
      */
-    T attach(DirectionFormatter formatter);
+    T attach(ResponseFormatter formatter);
 
 }

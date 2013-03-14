@@ -7,7 +7,7 @@ import java.io.IOException;
  * 通常、このハンドラは{@link Direction#render(RequestContext, ResponseContext)}を実行するのみです。
  * @author snowgoose
  */
-public interface DirectionHandler extends Module {
+public interface ResponseHandler extends Module {
 
     /**
      * {@link Direction}を評価します。指定された{@link Direction}が{@link DirectionFormatterAware}
@@ -19,6 +19,6 @@ public interface DirectionHandler extends Module {
      * @throws IOException {@link Direction}の評価時にI/Oエラーが発生した場合。
      * @throws WebApplicationException {@link Direction}の評価時に任意の例外が発生した場合。
      */
-    void handleResult(Direction result, DirectionFormatter resultFormatter, RequestContext context,ResponseContext response) throws IOException, WebApplicationException;
+    void handleResult(Response result, ResponseFormatter resultFormatter, RequestContext context,ResponseContext response) throws IOException, WebApplicationException;
 
 }

@@ -15,10 +15,10 @@ import org.analogweb.Application;
 import org.analogweb.ApplicationContextResolver;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.ContainerAdaptor;
-import org.analogweb.Direction;
-import org.analogweb.DirectionFormatter;
-import org.analogweb.DirectionHandler;
-import org.analogweb.DirectionResolver;
+import org.analogweb.Response;
+import org.analogweb.ResponseFormatter;
+import org.analogweb.ResponseHandler;
+import org.analogweb.ResponseResolver;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
@@ -104,26 +104,26 @@ public class WebApplication implements Application {
             log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(),
                     invocationResult);
 
-            handleDirection(mod, invocationResult, metadata, context, responseContext);
+            handleResponse(mod, invocationResult, metadata, context, responseContext);
         } catch (Exception e) {
             ExceptionHandler handler = mod.getExceptionHandler();
             log.log(Markers.LIFECYCLE, "DL000009", (Object) e, handler);
             Object exceptionResult = handler.handleException(e);
             if (exceptionResult != null) {
-                handleDirection(mod, exceptionResult, metadata, context, responseContext);
+                handleResponse(mod, exceptionResult, metadata, context, responseContext);
             }
         }
         return PROCEEDED;
     }
 
-    protected void handleDirection(Modules modules, Object result, InvocationMetadata metadata,
+    protected void handleResponse(Modules modules, Object result, InvocationMetadata metadata,
             RequestContext context, ResponseContext responseContext) throws IOException,
             WebApplicationException {
-        DirectionResolver resultResolver = modules.getDirectionResolver();
-        Direction resolved = resultResolver.resolve(result, metadata, context, responseContext);
+        ResponseResolver resultResolver = modules.getDirectionResolver();
+        Response resolved = resultResolver.resolve(result, metadata, context, responseContext);
         log.log(Markers.LIFECYCLE, "DL000008", result, result);
 
-        DirectionFormatter resultFormatter = modules.findDirectionFormatter(resolved.getClass());
+        ResponseFormatter resultFormatter = modules.findDirectionFormatter(resolved.getClass());
 
         if (resultFormatter != null) {
             log.log(Markers.LIFECYCLE, "DL000010", result, resultFormatter);
@@ -131,7 +131,7 @@ public class WebApplication implements Application {
             log.log(Markers.LIFECYCLE, "DL000011", result);
         }
 
-        DirectionHandler resultHandler = modules.getDirectionHandler();
+        ResponseHandler resultHandler = modules.getDirectionHandler();
         resultHandler.handleResult(resolved, resultFormatter, context, responseContext);
     }
 

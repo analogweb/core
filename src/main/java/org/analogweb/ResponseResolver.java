@@ -7,7 +7,7 @@ package org.analogweb;
  * 生成すること等が可能です。
  * @author snowgoose
  */
-public interface DirectionResolver extends Module {
+public interface ResponseResolver extends Module {
 
     /**
      * エントリポイントの任意の実行結果を、レスポンスにレンダリング可能な{@link Direction}に変換します。
@@ -18,6 +18,6 @@ public interface DirectionResolver extends Module {
      * @param responseContext {@link ResponseContext}
      * @return 実行結果から特定された{@link Direction}
      */
-    Direction resolve(Object invocationResult, InvocationMetadata metadata, RequestContext context, ResponseContext responseContext);
+    Response resolve(Object invocationResult, InvocationMetadata metadata, RequestContext context, ResponseContext responseContext);
 
 }

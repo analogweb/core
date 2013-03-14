@@ -12,11 +12,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.analogweb.Direction;
+import org.analogweb.Response;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.core.DirectionEvaluationException;
+import org.analogweb.core.ResponseEvaluationException;
 import org.analogweb.core.MissingRequirmentsException;
 import org.analogweb.WebApplicationException;
 import org.analogweb.util.Assertion;
@@ -26,10 +26,10 @@ import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 
 /**
- * リダイレクトを行う{@link Direction}です。
+ * リダイレクトを行う{@link Response}です。
  * @author snowgoose
  */
-public class Redirect implements Direction {
+public class Redirect implements Response {
 
     private static final Log log = Logs.getLog(Redirect.class);
     protected static final String DEFAULT_ENCODING_CHARSET = "UTF-8";
@@ -98,7 +98,7 @@ public class Redirect implements Direction {
                             .append(URLEncoder.encode(param.getValue(), getEncodingCharset()));
                 }
             } catch (UnsupportedEncodingException e) {
-                throw new DirectionEvaluationException(e, this);
+                throw new ResponseEvaluationException(e, this);
             }
         }
         return buffer.toString();

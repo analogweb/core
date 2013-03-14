@@ -8,15 +8,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.Date;
 
-import org.analogweb.Direction;
-import org.analogweb.DirectionFormatter;
+import org.analogweb.Response;
+import org.analogweb.ResponseFormatter;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.core.FormatFailureException;
 import org.analogweb.util.ArrayUtils;
 
 /**
- * オブジェクトをJSON形式でフォーマットしてレスポンスする{@link Direction}です。<br/>
+ * オブジェクトをJSON形式でフォーマットしてレスポンスする{@link Response}です。<br/>
  * オブジェクト形式でフォーマットされた({}で囲まれた)JSONオブジェクトを生成します。
  * デフォルトのContent-Typeは「application/json; charset=UTF-8」です。
  * @author snowgoose
@@ -49,7 +49,7 @@ public class Json extends TextFormattable<Json> {
         super.withCharset(DEFAULT_JSON_CHARSET);
     }
 
-    static class DefaultFormatter implements DirectionFormatter {
+    static class DefaultFormatter implements ResponseFormatter {
 
         @Override
         public void formatAndWriteInto(RequestContext context, ResponseContext writeTo,
@@ -154,11 +154,11 @@ public class Json extends TextFormattable<Json> {
     }
 
     /**
-     * デフォルトの{@link DirectionFormatter}によってJSONのレンダリングを行います。<br/>
-     * この{@link DirectionFormatter}は全ての{@link Json}のインスタンスに適用されます。
+     * デフォルトの{@link ResponseFormatter}によってJSONのレンダリングを行います。<br/>
+     * この{@link ResponseFormatter}は全ての{@link Json}のインスタンスに適用されます。
      */
     @Override
-    public DirectionFormatter getDefaultFormatter() {
+    public ResponseFormatter getDefaultFormatter() {
         return new Json.DefaultFormatter();
     }
 

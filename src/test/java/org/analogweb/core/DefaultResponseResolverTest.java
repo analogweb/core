@@ -5,7 +5,7 @@ import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-import org.analogweb.Direction;
+import org.analogweb.Response;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -14,16 +14,16 @@ import org.analogweb.core.response.Text;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DefaultDirectionResolverTest extends DefaultDirectionResolver {
+public class DefaultResponseResolverTest extends DefaultResponseResolver {
 
-    private DefaultDirectionResolver resolver;
+    private DefaultResponseResolver resolver;
     private InvocationMetadata metadata;
     private RequestContext context;
     private ResponseContext response;
 
     @Before
     public void setUp() throws Exception {
-        resolver = new DefaultDirectionResolver();
+        resolver = new DefaultResponseResolver();
         metadata = mock(InvocationMetadata.class);
         context = mock(RequestContext.class);
         response = mock(ResponseContext.class);
@@ -31,8 +31,8 @@ public class DefaultDirectionResolverTest extends DefaultDirectionResolver {
 
     @Test
     public void testResolve() {
-        Direction invocationResult = mock(Direction.class);
-        Direction actual = resolver.resolve(invocationResult, metadata, context, response);
+        Response invocationResult = mock(Response.class);
+        Response actual = resolver.resolve(invocationResult, metadata, context, response);
 
         assertThat(actual, is(sameInstance(invocationResult)));
     }
@@ -65,7 +65,7 @@ public class DefaultDirectionResolverTest extends DefaultDirectionResolver {
 
     @Test
     public void testResolveWithoutResult() {
-        Direction invocationResult = null;
+        Response invocationResult = null;
         HttpStatus actual = (HttpStatus) resolver.resolve(invocationResult, metadata, context,
                 response);
 

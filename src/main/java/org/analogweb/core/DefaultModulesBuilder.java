@@ -16,10 +16,10 @@ import org.analogweb.AttributesHandler;
 import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
-import org.analogweb.Direction;
-import org.analogweb.DirectionFormatter;
-import org.analogweb.DirectionHandler;
-import org.analogweb.DirectionResolver;
+import org.analogweb.Response;
+import org.analogweb.ResponseFormatter;
+import org.analogweb.ResponseHandler;
+import org.analogweb.ResponseResolver;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationInterceptor;
@@ -45,15 +45,15 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 	private Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> invocationInstanceProviderClass;
 	private Class<? extends InvokerFactory> invokerFactoryClass;
 	private Class<? extends InvocationFactory> invocationFactoryClass;
-	private Class<? extends DirectionResolver> directionResolverClass;
-	private Class<? extends DirectionHandler> directionHandlerClass;
+	private Class<? extends ResponseResolver> directionResolverClass;
+	private Class<? extends ResponseHandler> directionHandlerClass;
 	private Class<? extends ExceptionHandler> exceptionHandlerClass;
 	private Class<? extends TypeMapperContext> typeMapperContextClass;
 	private final List<Class<? extends InvocationProcessor>> invocationProcessorClasses;
 	private final List<Class<? extends InvocationInterceptor>> invocationInterceptorClasses;
 	private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
 	private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
-	private final Map<Class<? extends Direction>, Class<? extends DirectionFormatter>> directionFormatterClasses;
+	private final Map<Class<? extends Response>, Class<? extends ResponseFormatter>> directionFormatterClasses;
 	private final List<Class<? extends MultiModule>> ignoreClasses;
 	private final List<MultiModule.Filter> ignoreFilters;
 
@@ -149,15 +149,15 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 			}
 
 			@Override
-			public DirectionResolver getDirectionResolver() {
+			public ResponseResolver getDirectionResolver() {
 				return getComponentInstance(moduleContainerAdaptor,
-						getDirectionResolverClass());
+						getResponseResolverClass());
 			}
 
 			@Override
-			public DirectionHandler getDirectionHandler() {
+			public ResponseHandler getDirectionHandler() {
 				return getComponentInstance(moduleContainerAdaptor,
-						getDirectionHandlerClass());
+						getResponseHandlerClass());
 			}
 
 			@Override
@@ -194,9 +194,9 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 			}
 
 			@Override
-			public DirectionFormatter findDirectionFormatter(
-					Class<? extends Direction> mapToDirection) {
-				Class<? extends DirectionFormatter> formatterClass = getDirectionFormatterClass(mapToDirection);
+			public ResponseFormatter findDirectionFormatter(
+					Class<? extends Response> mapToResponse) {
+				Class<? extends ResponseFormatter> formatterClass = getResponseFormatterClass(mapToResponse);
 				if (formatterClass != null) {
 					return getComponentInstance(moduleContainerAdaptor,
 							formatterClass);
@@ -338,14 +338,14 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
 	@Override
 	public ModulesBuilder setDirectionResolverClass(
-			Class<? extends DirectionResolver> actionResultResolverClass) {
+			Class<? extends ResponseResolver> actionResultResolverClass) {
 		this.directionResolverClass = actionResultResolverClass;
 		return this;
 	}
 
 	@Override
 	public ModulesBuilder setDirectionHandlerClass(
-			Class<? extends DirectionHandler> actionResultHandlerClass) {
+			Class<? extends ResponseHandler> actionResultHandlerClass) {
 		this.directionHandlerClass = actionResultHandlerClass;
 		return this;
 	}
@@ -405,11 +405,11 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 		return this.invocationFactoryClass;
 	}
 
-	protected Class<? extends DirectionResolver> getDirectionResolverClass() {
+	protected Class<? extends ResponseResolver> getResponseResolverClass() {
 		return this.directionResolverClass;
 	}
 
-	protected Class<? extends DirectionHandler> getDirectionHandlerClass() {
+	protected Class<? extends ResponseHandler> getResponseHandlerClass() {
 		return this.directionHandlerClass;
 	}
 
@@ -433,9 +433,9 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 		return attributesHandlerClasses;
 	}
 
-	protected Class<? extends DirectionFormatter> getDirectionFormatterClass(
-			Class<? extends Direction> mapToDirection) {
-		return this.directionFormatterClasses.get(mapToDirection);
+	protected Class<? extends ResponseFormatter> getResponseFormatterClass(
+			Class<? extends Response> mapToResponse) {
+		return this.directionFormatterClasses.get(mapToResponse);
 	}
 
 	protected List<Class<? extends MultiModule>> getIgnoringClasses() {
@@ -466,9 +466,9 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
 	@Override
 	public ModulesBuilder addDirectionFormatterClass(
-			Class<? extends Direction> mapToDirectionClass,
-			Class<? extends DirectionFormatter> directionFormatterClass) {
-		this.directionFormatterClasses.put(mapToDirectionClass,
+			Class<? extends Response> mapToResponseClass,
+			Class<? extends ResponseFormatter> directionFormatterClass) {
+		this.directionFormatterClasses.put(mapToResponseClass,
 				directionFormatterClass);
 		return this;
 	}

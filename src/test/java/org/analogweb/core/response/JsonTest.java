@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.analogweb.DirectionFormatter;
+import org.analogweb.ResponseFormatter;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -227,7 +227,7 @@ public class JsonTest {
 
     @Test
     public void testReplaceFormatter() throws Exception {
-        DirectionFormatter formatter = mock(DirectionFormatter.class);
+        ResponseFormatter formatter = mock(ResponseFormatter.class);
 
         Simple bean = new Simple("foo", 33, null);
         Json json = Json.as(bean).withCharset("Shift-JIS").attach(formatter);

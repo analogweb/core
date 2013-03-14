@@ -15,7 +15,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.analogweb.Direction;
+import org.analogweb.Response;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -57,7 +57,7 @@ public class AcceptableTest {
 
         final Member m = new Member("snowgoose", 34);
         Acceptable a = Acceptable.as(m);
-        a.map(new Direction() {
+        a.map(new Response() {
 
             @Override
             public void render(RequestContext context, ResponseContext response)
@@ -108,9 +108,9 @@ public class AcceptableTest {
         //        when(request.getHeader("Accept")).thenReturn(accept);
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-        final Direction anyDirection = mock(Direction.class);
-        Acceptable.as(m).mapToAny(anyDirection).render(context, response);
-        verify(anyDirection).render(context, response);
+        final Response anyResponse = mock(Response.class);
+        Acceptable.as(m).mapToAny(anyResponse).render(context, response);
+        verify(anyResponse).render(context, response);
     }
 
     @Test
@@ -127,7 +127,7 @@ public class AcceptableTest {
 
         final Member m = new Member("snowgoose", 34);
         Acceptable a = Acceptable.as(m);
-        a.mapToAny(new Direction() {
+        a.mapToAny(new Response() {
 
             @Override
             public void render(RequestContext context, ResponseContext response)
@@ -149,9 +149,9 @@ public class AcceptableTest {
                 Arrays.asList("text/x-dvi", "image/png", "application/json"));
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-        final Direction replaceDirection = mock(Direction.class);
-        Acceptable.as(m).map(replaceDirection, "application/json").render(context, response);
-        verify(replaceDirection).render(context, response);
+        final Response replaceResponse = mock(Response.class);
+        Acceptable.as(m).map(replaceResponse, "application/json").render(context, response);
+        verify(replaceResponse).render(context, response);
     }
 
     @Test
@@ -170,9 +170,9 @@ public class AcceptableTest {
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Accept")).thenReturn(
                 Arrays.asList("text/x-dvi", "image/png", "*/*"));
-        final Direction replaceDirection = mock(Direction.class);
-        Acceptable.as(m).mapToAny(replaceDirection).render(context, response);
-        verify(replaceDirection).render(context, response);
+        final Response replaceResponse = mock(Response.class);
+        Acceptable.as(m).mapToAny(replaceResponse).render(context, response);
+        verify(replaceResponse).render(context, response);
     }
 
     private String schenarioRender(final String accept, final Member m) throws Exception {

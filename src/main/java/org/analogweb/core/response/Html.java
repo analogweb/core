@@ -2,7 +2,7 @@ package org.analogweb.core.response;
 
 import java.util.Map;
 
-import org.analogweb.DirectionFormatter;
+import org.analogweb.ResponseFormatter;
 import org.analogweb.util.Assertion;
 
 /**
@@ -53,7 +53,7 @@ public class Html extends TextFormattable<Html> {
     }
 
     @Override
-    protected DirectionFormatter getDefaultFormatter() {
+    protected ResponseFormatter getDefaultFormatter() {
         // TODO Implement!
         throw new UnsupportedOperationException();
     }

@@ -3,7 +3,6 @@ package org.analogweb;
 /**
  * アプリケーションにおける{@link Modules}を構成するビルダです。<br/>
  * {@link Modules}を構成するためのコンポーネント(型)の定義情報を保持します。
- * 
  * @author snowgoose
  */
 public interface ModulesBuilder {
@@ -23,14 +22,16 @@ public interface ModulesBuilder {
 	ModulesBuilder setInvokerFactoryClass(
 			Class<? extends InvokerFactory> invokerFactoryClass);
 
+    // TODO rename method #30
 	ModulesBuilder setDirectionResolverClass(
-			Class<? extends DirectionResolver> actionResultResolverClass);
+			Class<? extends ResponseResolver> actionResultResolverClass);
 
 	ModulesBuilder setExceptionHandlerClass(
 			Class<? extends ExceptionHandler> exceptionHandlerClass);
 
+    // TODO rename method #30
 	ModulesBuilder setDirectionHandlerClass(
-			Class<? extends DirectionHandler> actionResultHandlerClass);
+			Class<? extends ResponseHandler> actionResultHandlerClass);
 
 	ModulesBuilder setTypeMapperContextClass(
 			Class<? extends TypeMapperContext> typeMapperContextClass);
@@ -53,9 +54,10 @@ public interface ModulesBuilder {
 
 	ModulesBuilder clearAttributesHanderClass();
 
+    // TODO rename method #30
 	ModulesBuilder addDirectionFormatterClass(
-			Class<? extends Direction> mapToDirectionClass,
-			Class<? extends DirectionFormatter> directionFormatterClass);
+			Class<? extends Response> mapToDirectionClass,
+			Class<? extends ResponseFormatter> directionFormatterClass);
 
 	ModulesBuilder clearDirectionFormatterClass();
 
