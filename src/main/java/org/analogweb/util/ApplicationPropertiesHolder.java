@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.analogweb.Application;
@@ -66,19 +68,37 @@ public final class ApplicationPropertiesHolder {
         private final Collection<String> packageNames;
         private final String applicationSpecifier;
         private final String tempDirectoryPath;
+        private final Locale defaultClientLocale;
 
         public DefaultCreator() {
-            this(Application.class.getPackage().getName(), null, null);
+            this(Application.class.getPackage().getName(), null, null, null);
         }
 
         public DefaultCreator(String packageNames, String applicationSpecifier,
-                String tempDirectoryPath) {
+                String tempDirectoryPath,String defaultClientLocale) {
             this.packageNames = createUserDefinedPackageNames(packageNames);
             this.applicationSpecifier = createApplicationSpecifier(applicationSpecifier);
             this.tempDirectoryPath = createTempDirPath(tempDirectoryPath);
+            this.defaultClientLocale = createDefaultClientLocale(defaultClientLocale);
         }
 
-        @Override
+		protected Locale createDefaultClientLocale(String locale) {
+			if (StringUtils.isEmpty(locale)) {
+				return Locale.getDefault();
+			}
+			List<String> values = StringUtils.split(locale.replace('_', '-'),
+					'-');
+			switch (values.size()) {
+			case 2:
+				return new Locale(values.get(0), values.get(1));
+			case 3:
+				return new Locale(values.get(0), values.get(1), values.get(2));
+			default:
+				return new Locale(values.get(0));
+			}
+		}
+
+		@Override
         public ApplicationProperties create() {
             return new ApplicationProperties() {
 
@@ -96,6 +116,11 @@ public final class ApplicationPropertiesHolder {
                 public String getApplicationSpecifier() {
                     return applicationSpecifier;
                 }
+
+				@Override
+				public Locale getDefaultClientLocale() {
+					return defaultClientLocale;
+				}
             };
         }
 

@@ -2,6 +2,8 @@ package org.analogweb;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 1つのHTTPリクエストをライフサイクルとする全てのモジュールを保持します。<br/>
@@ -53,5 +55,17 @@ public interface RequestContext {
      * @return {@link RequestPath}
      */
     RequestPath getRequestPath();
+
+    /**
+     * 現在のリクエストにおける{@link Locale}を取得します。
+     * @return {@link Locale}
+     */
+    Locale getLocale();
+
+    /**
+     * 現在のリクエストにおける{@link Locale}を優先度の順に取得します。
+     * @return {@link Locale}
+     */
+    List<Locale> getLocales();
 
 }

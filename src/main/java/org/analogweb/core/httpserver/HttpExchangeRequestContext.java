@@ -3,6 +3,7 @@ package org.analogweb.core.httpserver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 
 import org.analogweb.Cookies;
 import org.analogweb.Headers;
@@ -10,6 +11,7 @@ import org.analogweb.MediaType;
 import org.analogweb.Parameters;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
+import org.analogweb.core.AcceptLanguages;
 import org.analogweb.core.EmptyCookies;
 import org.analogweb.core.FormParameters;
 import org.analogweb.core.MediaTypes;
@@ -28,12 +30,16 @@ public class HttpExchangeRequestContext implements RequestContext {
 	private final RequestPath requestPath;
 	private final Parameters params;
 	private final Parameters formParams;
-
-	HttpExchangeRequestContext(HttpExchange ex, RequestPath requestPath) {
+	private final AcceptLanguages langs;
+	private final Locale defaultLocale;
+	
+	HttpExchangeRequestContext(HttpExchange ex, RequestPath requestPath, Locale defaultLocale) {
 		this.ex = ex;
 		this.requestPath = requestPath;
 		this.params = new QueryParameters(this);
 		this.formParams = new FormParameters(this);
+		this.langs = new AcceptLanguages(this);
+		this.defaultLocale = defaultLocale;
 	}
 
 	protected HttpExchange getHttpExchange() {
@@ -81,6 +87,16 @@ public class HttpExchangeRequestContext implements RequestContext {
 	@Override
 	public RequestPath getRequestPath() {
 		return this.requestPath;
+	}
+
+	@Override
+	public List<Locale> getLocales() {
+		return this.langs.getLocales();
+	}
+
+	@Override
+	public Locale getLocale() {
+		return CollectionUtils.indexOf(getLocales(),0, this.defaultLocale);
 	}
 
 }

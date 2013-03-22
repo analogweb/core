@@ -70,7 +70,7 @@ public class AnalogHandler implements HttpHandler {
         try {
             RequestContext rcontext = createRequestContext(exc);
             ResponseContext response = createResponseContext(exc);
-            int proceed = app.processRequest(rcontext.getRequestPath(), rcontext, response);
+            int proceed = this.app.processRequest(rcontext.getRequestPath(), rcontext, response);
             if (proceed == Application.NOT_FOUND) {
                 exc.getResponseHeaders().clear();
                 exc.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, -1);
@@ -92,7 +92,7 @@ public class AnalogHandler implements HttpHandler {
 
     protected RequestContext createRequestContext(HttpExchange exc) throws URISyntaxException {
         RequestPath requestPath = createRequestPath(exc);
-        return new HttpExchangeRequestContext(exc, requestPath);
+        return new HttpExchangeRequestContext(exc, requestPath, this.props.getDefaultClientLocale());
     }
 
     protected RequestPath createRequestPath(HttpExchange exc) throws URISyntaxException {

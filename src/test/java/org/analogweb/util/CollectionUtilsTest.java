@@ -1,5 +1,8 @@
 package org.analogweb.util;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -26,4 +29,11 @@ public class CollectionUtilsTest {
         assertTrue(CollectionUtils.isNotEmpty(Arrays.asList("a", "b")));
     }
 
+    @Test
+    public void testIndexOf(){
+    	assertThat(CollectionUtils.indexOf(Arrays.asList("a","b","c"), 1),is("b"));
+    	assertThat(CollectionUtils.indexOf(Arrays.asList("a","b","c"), 3),is(nullValue()));
+    	assertThat(CollectionUtils.indexOf(Arrays.asList("a","b","c"), -1),is(nullValue()));
+    	assertThat(CollectionUtils.indexOf(Arrays.asList("a","b","c"), 3, "d"),is("d"));
+    }
 }

@@ -26,6 +26,10 @@ public interface Application extends Disposable {
      */
     String INIT_PARAMETER_APPLICATION_TEMPORARY_DIR = "application.tmpdir";
     /**
+     * アプリケーションがレスポンスする既定の{@link Locale}を指定する指定するキー
+     */
+    String INIT_PARAMETER_APPLICATION_PROVISION_LOCALE = "application.locale";
+    /**
      * アプリケーションを構成するコンポーネントが格納されている
      * 既定のパッケージ名
      */

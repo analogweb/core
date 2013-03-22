@@ -2,6 +2,7 @@ package org.analogweb;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * アプリケーションインスタンスで共有される唯一のプロパティです。<br/>
@@ -32,4 +33,5 @@ public interface ApplicationProperties {
      */
     File getTempDir();
 
+    Locale getDefaultClientLocale();
 }

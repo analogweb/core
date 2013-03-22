@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationProperties;
@@ -98,9 +99,10 @@ public class ApplicationPropertiesHolderTest {
         File dir = folder.newFolder();
         String packageNames = "foo.baa,baz.boo";
         String applicationSpecifier = ".do";
+        String locale = "en-us";
         String tempDirectoryPath = dir.getPath();
         DefaultCreator creator = new DefaultCreator(packageNames, applicationSpecifier,
-                tempDirectoryPath);
+                tempDirectoryPath,locale);
         ApplicationProperties actual = ApplicationPropertiesHolder.configure(app, creator);
         assertThat(actual.getApplicationSpecifier(), is(applicationSpecifier));
         Collection<String> actualPackageNames = actual.getComponentPackageNames();
@@ -110,6 +112,7 @@ public class ApplicationPropertiesHolderTest {
                 actual.getTempDir().getPath(),
                 is(new File(dir.getPath() + SystemProperties.fileSeparator()
                         + Application.class.getCanonicalName()).getPath()));
+        assertThat(actual.getDefaultClientLocale(),is(Locale.US));
     }
 
     @Test
@@ -118,10 +121,12 @@ public class ApplicationPropertiesHolderTest {
         String packageNames = "";
         String applicationSpecifier = ".do";
         String tempDirectoryPath = dir.getPath();
+        String locale = "";
         DefaultCreator creator = new DefaultCreator(packageNames, applicationSpecifier,
-                tempDirectoryPath);
+                tempDirectoryPath,locale);
         ApplicationProperties actual = ApplicationPropertiesHolder.configure(app, creator);
         assertThat(actual.getComponentPackageNames().isEmpty(), is(true));
+        assertThat(actual.getDefaultClientLocale(),is(Locale.getDefault()));
     }
 
 }
