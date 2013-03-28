@@ -22,19 +22,14 @@ public class AbstractAttributesHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        handler = new AbstractAttributesHandler() {
-            @Override
-            public String getScopeName() {
-                return null;
-            }
-        };
+        handler = new AbstractAttributesHandler() {};
         requestContext = mock(RequestContext.class);
         metadata = mock(InvocationMetadata.class);
     }
 
     @Test
     public void testNop() {
-        assertThat(handler.resolveAttributeValue(requestContext, metadata, "foo", String.class),
+        assertThat(handler.resolveValue(requestContext, metadata, "foo", String.class),
                 is(nullValue()));
         handler.putAttributeValue(requestContext, "foo", new Object());
         handler.removeAttribute(requestContext, "foo");

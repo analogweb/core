@@ -4,37 +4,34 @@ import java.util.List;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolver;
 import org.analogweb.util.StringUtils;
 
 /**
  * @author snowgoose
  */
-public class ParameterScopeRequestAttributesResolver extends AbstractAttributesHandler {
+public class ParameterScopeRequestAttributesResolver implements
+		RequestValueResolver {
 
-    private static final String NAME = "parameter";
-
-    @Override
-    public String getScopeName() {
-        return NAME;
-    }
-
-    @Override
-    public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadata,
-            String name, Class<?> requiredType) {
-        if (StringUtils.isEmpty(name)) {
-            return null;
-        }
-        List<String> values = requestContext.getQueryParameters().getValues(name);
-        if (values == null || values.isEmpty()) {
-            values = requestContext.getFormParameters().getValues(name);
-            if (values == null || values.isEmpty()) {
-                return null;
-            }
-        }
-        if (String[].class.equals(requiredType)) {
-            return (values.isEmpty()) ? null : values.toArray(new String[values.size()]);
-        }
-        return values.get(0);
-    }
+	@Override
+	public Object resolveValue(RequestContext requestContext,
+			InvocationMetadata metadata, String name, Class<?> requiredType) {
+		if (StringUtils.isEmpty(name)) {
+			return null;
+		}
+		List<String> values = requestContext.getQueryParameters().getValues(
+				name);
+		if (values == null || values.isEmpty()) {
+			values = requestContext.getFormParameters().getValues(name);
+			if (values == null || values.isEmpty()) {
+				return null;
+			}
+		}
+		if (String[].class.equals(requiredType)) {
+			return (values.isEmpty()) ? null : values
+					.toArray(new String[values.size()]);
+		}
+		return values.get(0);
+	}
 
 }

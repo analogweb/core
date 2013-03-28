@@ -5,12 +5,12 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolvers;
 import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.util.ArrayUtils;
@@ -38,10 +38,11 @@ public class DefaultInvocationFactory implements InvocationFactory {
 		this.resolver = resolver;
 	}
 
+	@Override
 	public Invocation createInvocation(ContainerAdaptor instanceProvider,
 			InvocationMetadata metadata, RequestContext context,
 			ResponseContext responseContext, TypeMapperContext converters,
-			AttributesHandlers handlers) {
+			RequestValueResolvers handlers) {
 		Object invocationInstance = resolveInvocationInstance(instanceProvider,
 				metadata, context);
 		if (invocationInstance == null) {
@@ -59,7 +60,7 @@ public class DefaultInvocationFactory implements InvocationFactory {
 
 	protected Object resolveByDefault(InvocationMetadata metadata,
 			RequestContext context, ResponseContext responseContext,
-			TypeMapperContext converters, AttributesHandlers handlers) {
+			TypeMapperContext converters, RequestValueResolvers handlers) {
 		Class<?> invocationClass = metadata.getInvocationClass();
 		Constructor<?>[] crs = invocationClass.getConstructors();
 		if (ArrayUtils.isEmpty(crs)) {

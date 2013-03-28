@@ -7,7 +7,7 @@ public abstract class ContextSpecificAttributesHandler<T extends RequestContext>
 
     @Override
     @SuppressWarnings("unchecked")
-    public final Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadata,
+    public final Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
             String key, Class<?> requiredType) {
         return this.resolveAttributeValueOnContext((T)requestContext, metadata, key, requiredType);
     }

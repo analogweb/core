@@ -52,6 +52,11 @@ public interface ModulesBuilder {
 
 	ModulesBuilder clearAttributesHanderClass();
 
+	ModulesBuilder addRequestValueResolverClass(
+			Class<? extends RequestValueResolver> requestValueResolverClass);
+
+	ModulesBuilder clearRequestValueResolverClass();
+
 	ModulesBuilder addResponseFormatterClass(
 			Class<? extends Response> mapToResponseClass,
 			Class<? extends ResponseFormatter> responseFormatterClass);

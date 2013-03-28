@@ -5,22 +5,16 @@ import java.util.List;
 import org.analogweb.Headers;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolver;
 import org.analogweb.util.StringUtils;
 
 /**
  * @author snowgoose
  */
-public class RequestHeaderScopeRequestAttributesResolver extends AbstractAttributesHandler {
+public class RequestHeaderScopeRequestAttributesResolver implements RequestValueResolver {
 
-    private static final String NAME = "header";
-
-    @Override
-    public String getScopeName() {
-        return NAME;
-    }
-
-    @Override
-    public Object resolveAttributeValue(RequestContext requestContext,
+	@Override
+    public Object resolveValue(RequestContext requestContext,
             InvocationMetadata metadatan, String name, Class<?> requiredtype) {
         if (StringUtils.isEmpty(name)) {
             return null;

@@ -15,11 +15,11 @@ public interface InvocationFactory extends Module {
      * @param request {@link RequestContext}
      * @param response {@link ResponseContext}
      * @param typeMapperContext {@link TypeMapperContext}
-     * @param handlers {@link AttributesHandlers}
+     * @param resolvers {@link RequestValueResolvers}
      * @return　生成された{@link Invocation}
      */
     Invocation createInvocation(ContainerAdaptor instanceProvider, InvocationMetadata metadata,
             RequestContext request, ResponseContext response,TypeMapperContext typeMapperContext,
-            AttributesHandlers handlers);
+            RequestValueResolvers resolvers);
 
 }

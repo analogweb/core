@@ -9,14 +9,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.analogweb.AttributesHandler;
-import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.To;
 import org.analogweb.util.AnnotationUtils;
-import org.analogweb.util.StringUtils;
 
 /**
  * {@link To}注釈が付与された{@link org.analogweb.annotation.On} メソッドの引数に対して、
@@ -31,7 +30,7 @@ public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
-            AttributesHandlers handlers) {
+            RequestValueResolvers handlers) {
         Annotation[][] argumentAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
@@ -48,7 +47,7 @@ public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
 
     @Override
     public void postInvoke(Object invocationResult, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context, AttributesHandlers handlers) {
+            InvocationMetadata metadata, RequestContext context, RequestValueResolvers handlers) {
         for (Object arg : args.asList()) {
             if (arg instanceof ContextExtractor) {
                 ContextExtractor<?> scopedAttributes = (ContextExtractor<?>) arg;
@@ -61,15 +60,15 @@ public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
 
         private static final long serialVersionUID = -944143676425859153L;
         private Set<String> removedKeys = new HashSet<String>();
-        private String scopeName;
+        private Class<? extends AttributesHandler> handlerClass;
 
-        ContextExtractor(String scopeName) {
+        ContextExtractor(Class<? extends AttributesHandler> handlerClass) {
             super();
-            this.scopeName = StringUtils.isEmpty(scopeName) ? "request" : scopeName;
+            this.handlerClass = handlerClass;
         }
 
-        String getScopeName() {
-            return this.scopeName;
+        Class<? extends AttributesHandler> getHandlerClass() {
+            return this.handlerClass;
         }
 
         @Override
@@ -79,8 +78,8 @@ public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
             return removed;
         }
 
-        void extract(RequestContext context, AttributesHandlers handlers) {
-            AttributesHandler handler = handlers.get(getScopeName());
+        void extract(RequestContext context, RequestValueResolvers handlers) {
+            AttributesHandler handler = handlers.findAttributesHandler(getHandlerClass());
             if (handler != null) {
                 for (Entry<String, ?> entry : entrySet()) {
                     handler.putAttributeValue(context, entry.getKey(), entry.getValue());

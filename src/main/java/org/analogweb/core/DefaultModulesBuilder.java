@@ -13,9 +13,10 @@ import java.util.Set;
 
 import org.analogweb.ApplicationContextResolver;
 import org.analogweb.AttributesHandler;
-import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
+import org.analogweb.RequestValueResolver;
+import org.analogweb.RequestValueResolvers;
 import org.analogweb.Response;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
@@ -53,6 +54,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 	private final List<Class<? extends InvocationInterceptor>> invocationInterceptorClasses;
 	private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
 	private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
+	private final List<Class<? extends RequestValueResolver>> requestValueResolverClasses;
 	private final Map<Class<? extends Response>, Class<? extends ResponseFormatter>> directionFormatterClasses;
 	private final List<Class<? extends MultiModule>> ignoreClasses;
 	private final List<MultiModule.Filter> ignoreFilters;
@@ -62,6 +64,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 		this.invocationInterceptorClasses = new LinkedList<Class<? extends InvocationInterceptor>>();
 		this.invocationMetadataFactoryClasses = new LinkedList<Class<? extends InvocationMetadataFactory>>();
 		this.attributesHandlerClasses = new LinkedList<Class<? extends AttributesHandler>>();
+		this.requestValueResolverClasses = new LinkedList<Class<? extends RequestValueResolver>>();
 		this.directionFormatterClasses = Maps.newConcurrentHashMap();
 		this.ignoreClasses = new LinkedList<Class<? extends MultiModule>>();
 		this.ignoreFilters = new LinkedList<MultiModule.Filter>();
@@ -98,7 +101,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 					invoker = factory.createInvoker(
 							getInvocationInterceptors(),
 							getInvocationProcessors(), getTypeMapperContext(),
-							getAttributesHandlers());
+							getRequestValueResolvers());
 				}
 				return invoker;
 			}
@@ -179,18 +182,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
 			private ContainerAdaptor getOptionalContainerAdaptor() {
 				return defaultContainer;
-			}
-
-			private DefaultAttributesHandlers handlers;
-
-			@Override
-			public AttributesHandlers getAttributesHandlers() {
-				if (this.handlers == null) {
-					this.handlers = new DefaultAttributesHandlers(
-							getComponentInstances(moduleContainerAdaptor,
-									getAttributesHandlerClasses()));
-				}
-				return this.handlers;
 			}
 
 			@Override
@@ -282,6 +273,23 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 				setTypeMapperContextClass(null);
 				this.invocationProcessors = null;
 				this.invocationInterceptors = null;
+			}
+
+			private RequestValueResolvers resolvers;
+
+			@Override
+			public RequestValueResolvers getRequestValueResolvers() {
+				if(this.resolvers == null){
+					List<RequestValueResolver> resolverList = new LinkedList<RequestValueResolver>();
+					resolverList.addAll(
+							getComponentInstances(moduleContainerAdaptor,
+									getAttributesHandlerClasses()));
+					resolverList.addAll(
+							getComponentInstances(moduleContainerAdaptor,
+									getRequestValueResolverClasses()));
+					this.resolvers = new DefaultReqestValueResolvers(resolverList);
+				}
+				return resolvers;
 			}
 
 		};
@@ -433,6 +441,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 		return attributesHandlerClasses;
 	}
 
+	protected List<Class<? extends RequestValueResolver>> getRequestValueResolverClasses() {
+		return this.requestValueResolverClasses;
+	}
+
 	protected Class<? extends ResponseFormatter> getResponseFormatterClass(
 			Class<? extends Response> mapToResponse) {
 		return this.directionFormatterClasses.get(mapToResponse);
@@ -461,6 +473,19 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 	@Override
 	public ModulesBuilder clearAttributesHanderClass() {
 		this.attributesHandlerClasses.clear();
+		return this;
+	}
+
+	@Override
+	public ModulesBuilder addRequestValueResolverClass(
+			Class<? extends RequestValueResolver> requestValueResolverClass) {
+		this.requestValueResolverClasses.add(requestValueResolverClass);
+		return this;
+	}
+
+	@Override
+	public ModulesBuilder clearRequestValueResolverClass() {
+		this.requestValueResolverClasses.clear();
 		return this;
 	}
 

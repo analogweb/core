@@ -97,7 +97,7 @@ public class WebApplication implements Application {
             Invocation invocation = mod.getInvocationFactory().createInvocation(
                     invocationInstances, metadata, context, responseContext,
                     mod.getTypeMapperContext(),
-                    mod.getAttributesHandlers());
+                    mod.getRequestValueResolvers());
 
             Object invocationResult = mod.getInvoker().invoke(invocation, metadata, context,responseContext);
 

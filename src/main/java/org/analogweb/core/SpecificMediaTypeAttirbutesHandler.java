@@ -2,13 +2,14 @@ package org.analogweb.core;
 
 import org.analogweb.AttributesHandler;
 import org.analogweb.MediaType;
+import org.analogweb.RequestValueResolver;
 
 /**
  * 値の取得時に、特定のメディアタイプを指定する
  * {@link AttributesHandler}です。
  * @author snowgoose
  */
-public interface SpecificMediaTypeAttirbutesHandler extends AttributesHandler {
+public interface SpecificMediaTypeAttirbutesHandler extends RequestValueResolver {
 
     /**
      * 指定された{@link MediaType}が、このコンポーネントで

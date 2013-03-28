@@ -39,10 +39,10 @@ public class PathVariableScopeRequestAttributesResolverTest {
         when(definedPath.getActualPath()).thenReturn("/mock/do/{something}/else");
         when(definedPath.match(requestedPath)).thenReturn(true);
 
-        String actual = (String) resolver.resolveAttributeValue(context, metadata, "something",
+        String actual = (String) resolver.resolveValue(context, metadata, "something",
                 null);
         assertThat(actual, is("any"));
-        actual = (String) resolver.resolveAttributeValue(context, metadata, "anything", null);
+        actual = (String) resolver.resolveValue(context, metadata, "anything", null);
         assertThat(actual, is(nullValue()));
     }
 
@@ -56,7 +56,7 @@ public class PathVariableScopeRequestAttributesResolverTest {
         when(definedPath.getActualPath()).thenReturn("/mock/do/any/else");
         when(definedPath.match(requestedPath)).thenReturn(true);
 
-        String actual = (String) resolver.resolveAttributeValue(context, metadata, "something",
+        String actual = (String) resolver.resolveValue(context, metadata, "something",
                 null);
         assertThat(actual, is(nullValue()));
     }

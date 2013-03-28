@@ -33,16 +33,11 @@ public class RequestHeaderScopeRequestAttributesResolverTest {
     }
 
     @Test
-    public void testGetName() {
-        assertThat(resolver.getScopeName(), is("header"));
-    }
-
-    @Test
     public void testResolveAttributeValue() {
         when(requestContext.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("text/plain"));
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "Content-Type", null);
+        Object actual = resolver.resolveValue(requestContext, metadata, "Content-Type", null);
         assertThat(((String[]) actual)[0], is("text/plain"));
     }
 
@@ -51,13 +46,13 @@ public class RequestHeaderScopeRequestAttributesResolverTest {
         when(requestContext.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Foo-Type")).thenReturn(null);
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "Foo-Type", null);
+        Object actual = resolver.resolveValue(requestContext, metadata, "Foo-Type", null);
         assertNull(actual);
     }
 
     @Test
     public void testResolveAttributeValueWithNullName() {
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, null, null);
+        Object actual = resolver.resolveValue(requestContext, metadata, null, null);
         assertNull(actual);
     }
 

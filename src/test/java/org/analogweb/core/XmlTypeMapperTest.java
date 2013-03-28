@@ -41,7 +41,7 @@ public class XmlTypeMapperTest {
                 .getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
         when(context.getRequestBody()).thenReturn(xmlBody);
-        Hello actual = (Hello) mapper.resolveAttributeValue(context, null, null, Hello.class);
+        Hello actual = (Hello) mapper.resolveValue(context, null, null, Hello.class);
         assertThat(actual.getWorld(), is("snowgoose"));
     }
 
@@ -53,7 +53,7 @@ public class XmlTypeMapperTest {
                 .getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
         when(context.getRequestBody()).thenReturn(xmlBody);
-        UnHello actual = (UnHello) mapper.resolveAttributeValue(context, null, null, UnHello.class);
+        UnHello actual = (UnHello) mapper.resolveValue(context, null, null, UnHello.class);
         assertThat(actual, is(nullValue()));
     }
 
@@ -64,7 +64,7 @@ public class XmlTypeMapperTest {
         byte[] xmlBytes = "{\"hello\":\"world\"}".getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
         when(context.getRequestBody()).thenReturn(xmlBody);
-        UnHello actual = (UnHello) mapper.resolveAttributeValue(context, null, null, UnHello.class);
+        UnHello actual = (UnHello) mapper.resolveValue(context, null, null, UnHello.class);
         assertThat(actual, is(nullValue()));
     }
 
@@ -76,7 +76,7 @@ public class XmlTypeMapperTest {
         byte[] xmlBytes = "plain text".getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
         when(context.getRequestBody()).thenReturn(xmlBody);
-        UnHello actual = (UnHello) mapper.resolveAttributeValue(context, null, null, UnHello.class);
+        UnHello actual = (UnHello) mapper.resolveValue(context, null, null, UnHello.class);
         assertThat(actual, is(nullValue()));
     }
 

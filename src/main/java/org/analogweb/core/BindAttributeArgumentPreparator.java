@@ -3,10 +3,10 @@ package org.analogweb.core;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 
@@ -31,13 +31,13 @@ public class BindAttributeArgumentPreparator extends AbstractInvocationProcessor
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
-            AttributesHandlers handlers) {
+            RequestValueResolvers resolvers) {
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
         AnnotatedInvocationParameterValueResolver resolver = getParameterValueResolver();
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
             Object convertedValue = resolver.resolve(parameterAnnotations[index], argTypes[index],
-                    context, metadata, converters, handlers);
+                    context, metadata, converters, resolvers);
             if (convertedValue != null) {
                 args.putInvocationArgument(index, convertedValue);
             }

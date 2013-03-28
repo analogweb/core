@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.analogweb.AttributesHandlers;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationInterceptor;
@@ -23,6 +22,7 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolvers;
 import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
@@ -41,7 +41,7 @@ public class DefaultInvokerTest {
 	private RequestContext request;
 	private ResponseContext response;
 	private Invocation invocation;
-	private AttributesHandlers handlers;
+	private RequestValueResolvers handlers;
 	private TypeMapperContext typeMapper;
 	private InvocationArguments args;
 	private List<InvocationProcessor> processors;
@@ -61,7 +61,7 @@ public class DefaultInvokerTest {
 		processor = mock(InvocationProcessor.class);
 		processors.add(processor);
 		invocation = mock(Invocation.class);
-		handlers = mock(AttributesHandlers.class);
+		handlers = mock(RequestValueResolvers.class);
 		typeMapper = mock(TypeMapperContext.class);
 		args = mock(InvocationArguments.class);
 		processor = mock(InvocationProcessor.class);

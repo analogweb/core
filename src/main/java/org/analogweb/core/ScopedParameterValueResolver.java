@@ -2,18 +2,17 @@ package org.analogweb.core;
 
 import java.lang.annotation.Annotation;
 
-import org.analogweb.AttributesHandler;
-import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolver;
+import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
+import org.analogweb.annotation.By;
 import org.analogweb.annotation.Formats;
 import org.analogweb.annotation.MapWith;
-import org.analogweb.annotation.Scope;
 import org.analogweb.util.AnnotationUtils;
-import org.analogweb.util.StringUtils;
 
 /**
  * @author snowgoose
@@ -23,17 +22,18 @@ public class ScopedParameterValueResolver implements AnnotatedInvocationParamete
     @Override
     public <T> T resolve(Annotation[] parameterAnnotations, Class<T> argType,
             RequestContext context, InvocationMetadata metadata, TypeMapperContext converters,
-            AttributesHandlers handlers) {
+            RequestValueResolvers handlers) {
         As bindAttribute = AnnotationUtils.findAnnotation(As.class, parameterAnnotations);
         if (bindAttribute != null) {
-            Scope scope = AnnotationUtils.findAnnotation(Scope.class, parameterAnnotations);
-            String scopeValue = StringUtils.EMPTY;
-            if (scope != null) {
-                scopeValue = scope.value();
+            By scope = AnnotationUtils.findAnnotation(By.class, parameterAnnotations);
+            RequestValueResolver handler;
+            if(scope == null){
+                handler = handlers.findDefaultRequestValueResolver();
+            } else {
+                handler = handlers.findRequestValueResolver(scope.value());
             }
-            AttributesHandler handler = handlers.get(scopeValue);
             if (handler != null) {
-                Object value = handler.resolveAttributeValue(context, metadata,
+                Object value = handler.resolveValue(context, metadata,
                         bindAttribute.value(), argType);
                 if (value != null) {
                     MapWith mapWith = AnnotationUtils.findAnnotation(MapWith.class,

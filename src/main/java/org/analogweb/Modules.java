@@ -30,7 +30,7 @@ public interface Modules extends Disposable {
 
     ContainerAdaptor getModulesContainerAdaptor();
 
-    AttributesHandlers getAttributesHandlers();
+    RequestValueResolvers getRequestValueResolvers();
 
     ResponseFormatter findResponseFormatter(Class<? extends Response> mapToResponse);
     

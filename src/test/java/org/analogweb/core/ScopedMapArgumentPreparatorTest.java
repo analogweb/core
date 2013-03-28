@@ -13,10 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.analogweb.AttributesHandler;
-import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
@@ -37,7 +37,7 @@ public class ScopedMapArgumentPreparatorTest {
     private InvocationArguments args;
     private RequestContext context;
     private TypeMapperContext typeMapper;
-    private AttributesHandlers handlers;
+    private RequestValueResolvers handlers;
     private AttributesHandler handler;
 
     /**
@@ -50,7 +50,7 @@ public class ScopedMapArgumentPreparatorTest {
         args = mock(InvocationArguments.class);
         context = mock(RequestContext.class);
         typeMapper = mock(TypeMapperContext.class);
-        handlers = mock(AttributesHandlers.class);
+        handlers = mock(RequestValueResolvers.class);
         handler = mock(AttributesHandler.class);
     }
 
@@ -85,15 +85,18 @@ public class ScopedMapArgumentPreparatorTest {
 
         preparator.prepareInvoke(doSomething, args, metadata, context, typeMapper, handlers);
     }
+    
+    interface Session extends AttributesHandler {
+    }
 
     @Test
     public void testExtractToSpecifiedScopeFirstArgument() {
         Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(
-                "session");
+                Session.class);
         BigDecimal amount = new BigDecimal("1000");
         scopedMap.put("amount", amount);
 
-        when(handlers.get("session")).thenReturn(handler);
+        when(handlers.findAttributesHandler(Session.class)).thenReturn(handler);
 
         ArrayList<Object> list = new ArrayList<Object>();
         list.add(scopedMap);
@@ -104,6 +107,9 @@ public class ScopedMapArgumentPreparatorTest {
         preparator.postInvoke(invocationResult, args, metadata, context, handlers);
 
         verify(handler).putAttributeValue(context, "amount", amount);
+    }
+
+    interface Request extends AttributesHandler {
     }
 
     @Test
@@ -115,12 +121,12 @@ public class ScopedMapArgumentPreparatorTest {
         Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
         ArrayList<Object> list = new ArrayList<Object>();
-        Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>("");
+        Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(Request.class);
         BigDecimal amount = new BigDecimal("1000");
         scopedMap.put("amount", amount);
         list.add(scopedMap);
         when(args.asList()).thenReturn(list);
-        when(handlers.get("request")).thenReturn(handler);
+        when(handlers.findAttributesHandler(Request.class)).thenReturn(handler);
 
         Object invocationResult = new Object();
 
@@ -132,10 +138,10 @@ public class ScopedMapArgumentPreparatorTest {
     @Test
     public void testExtractAndRemoveToScopeFirstArgument() {
         Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(
-                "session");
+                Session.class);
         scopedMap.remove("amount");
 
-        when(handlers.get("session")).thenReturn(handler);
+        when(handlers.findAttributesHandler(Session.class)).thenReturn(handler);
 
         ArrayList<Object> list = new ArrayList<Object>();
         list.add("boobaa");
@@ -152,23 +158,23 @@ public class ScopedMapArgumentPreparatorTest {
     @On
     private static class MockAction {
         @On
-        public String doSomething(@To Map<String, ?> foo, @As("baa") String baa) {
+        public String doSomething(@To(Request.class) Map<String, ?> foo, @As("baa") String baa) {
             return "do something!";
         }
 
         @On
-        public String doSomethingElse(@To("session") Map<String, Object> session,
+        public String doSomethingElse(@To(Session.class) Map<String, Object> session,
                 @As("baa") String baa) {
             return "do something!";
         }
 
         @On
-        public String doNothing(@To HashMap<String, ?> foo, @As("baa") String baa) {
+        public String doNothing(HashMap<String, ?> foo, @As("baa") String baa) {
             return "do something!";
         }
 
         @On
-        public String doAnything(@To String notMap, @As("baa") String baa) {
+        public String doAnything(@To(AttributesHandler.class) String notMap, @As("baa") String baa) {
             return "do something!";
         }
     }

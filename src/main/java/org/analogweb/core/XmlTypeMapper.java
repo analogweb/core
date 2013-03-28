@@ -19,16 +19,10 @@ import org.analogweb.TypeMapper;
  * (リクエストボディ)が指定されている必要があります。
  * @author snowgoose
  */
-public class XmlTypeMapper extends AbstractAttributesHandler implements
-        SpecificMediaTypeAttirbutesHandler {
+public class XmlTypeMapper implements SpecificMediaTypeAttirbutesHandler {
 
-    @Override
-    public String getScopeName() {
-        return "xml";
-    }
-
-    @Override
-    public Object resolveAttributeValue(RequestContext context, InvocationMetadata metadata,
+	@Override
+    public Object resolveValue(RequestContext context, InvocationMetadata metadata,
             String key, Class<?> requiredType) {
         try {
             return unmershall(createUnmarshaller(requiredType), context.getRequestBody());

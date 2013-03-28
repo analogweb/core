@@ -3,7 +3,7 @@ package org.analogweb.core;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.analogweb.AttributesHandlers;
+import org.analogweb.RequestValueResolvers;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationInterceptor;
@@ -23,10 +23,10 @@ public class DefaultInvoker implements Invoker {
 	private final TypeMapperContext converters;
 	private final List<InvocationProcessor> processors;
 	private final List<InvocationInterceptor> interceptors;
-	private final AttributesHandlers handlers;
+	private final RequestValueResolvers handlers;
 
 	public DefaultInvoker(List<InvocationProcessor> processors,List<InvocationInterceptor> interceptors,
-			TypeMapperContext converters, AttributesHandlers handlers) {
+			TypeMapperContext converters, RequestValueResolvers handlers) {
 		super();
 		this.converters = converters;
 		this.processors = processors;
@@ -38,7 +38,7 @@ public class DefaultInvoker implements Invoker {
 	public Object invoke(Invocation invocation, InvocationMetadata metadata,
 			RequestContext request, ResponseContext response) {
 		List<InvocationProcessor> processors = getInvocationProcessors();
-		AttributesHandlers attributesHandlers = getAttributesHandlers();
+		RequestValueResolvers attributesHandlers = getRequestValueResolvers();
 		TypeMapperContext typeMapperContext = getTypeMapperContext();
 		InvocationArguments arguments = invocation.getInvocationArguments();
 		Object interruption = prepareInvoke(processors,arguments, metadata,
@@ -65,7 +65,7 @@ public class DefaultInvoker implements Invoker {
 
 	protected Object prepareInvoke(List<InvocationProcessor> processors,InvocationArguments args,
 			InvocationMetadata metadata, RequestContext request,
-			AttributesHandlers attributesHandlers,
+			RequestValueResolvers attributesHandlers,
 			TypeMapperContext typeMapperContext) {
 		Object interruption = InvocationProcessor.NO_INTERRUPTION;
 		Method method = ReflectionUtils.getInvocationMethod(metadata);
@@ -82,7 +82,7 @@ public class DefaultInvoker implements Invoker {
 	protected void postInvoke(List<InvocationProcessor> processors,
 			Object invocationResult, InvocationArguments args,
 			InvocationMetadata metadata, RequestContext request,
-			AttributesHandlers attributesHandlers) {
+			RequestValueResolvers attributesHandlers) {
 		for (InvocationProcessor processor : processors) {
 			processor.postInvoke(invocationResult, args, metadata, request,
 					attributesHandlers);
@@ -111,7 +111,7 @@ public class DefaultInvoker implements Invoker {
 		return processors;
 	}
 
-	protected AttributesHandlers getAttributesHandlers() {
+	protected RequestValueResolvers getRequestValueResolvers() {
 		return handlers;
 	}
 

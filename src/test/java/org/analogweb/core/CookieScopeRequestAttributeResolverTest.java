@@ -31,11 +31,6 @@ public class CookieScopeRequestAttributeResolverTest {
     }
 
     @Test
-    public void testGetName() {
-        assertThat(resolver.getScopeName(), is("cookie"));
-    }
-
-    @Test
     public void testResolveAttributeValue() {
         Cookies.Cookie cookie1 = mock(Cookies.Cookie.class);
         Cookies.Cookie cookie2 = mock(Cookies.Cookie.class);
@@ -44,7 +39,7 @@ public class CookieScopeRequestAttributeResolverTest {
         when(requestContext.getCookies()).thenReturn(cookies);
         when(cookies.getCookie("foo")).thenReturn(cookie1);
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",null);
+        Object actual = resolver.resolveValue(requestContext, metadata, "foo",null);
         assertThat((String) actual, is("baa"));
     }
 
@@ -57,7 +52,7 @@ public class CookieScopeRequestAttributeResolverTest {
         when(requestContext.getCookies()).thenReturn(cookies);
         when(cookies.getCookie("foo")).thenReturn(cookie1);
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",Cookies.Cookie.class);
+        Object actual = resolver.resolveValue(requestContext, metadata, "foo",Cookies.Cookie.class);
         assertThat(((Cookies.Cookie) actual).getValue(), is("baa"));
     }
 
@@ -66,7 +61,7 @@ public class CookieScopeRequestAttributeResolverTest {
         when(requestContext.getCookies()).thenReturn(cookies);
         when(cookies.getCookie("baa")).thenReturn(null);
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "baa",null);
+        Object actual = resolver.resolveValue(requestContext, metadata, "baa",null);
         assertNull(actual);
     }
 
@@ -74,14 +69,8 @@ public class CookieScopeRequestAttributeResolverTest {
     public void testResolveAttributeValueCookiesNotAvairable() {
         when(requestContext.getCookies()).thenReturn(null);
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",null);
+        Object actual = resolver.resolveValue(requestContext, metadata, "foo",null);
         assertNull(actual);
-    }
-
-    @Test
-    public void testRemoveAttribute() {
-        // do nothing.
-        resolver.removeAttribute(requestContext, "baa");
     }
 
 }

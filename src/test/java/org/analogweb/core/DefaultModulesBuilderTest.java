@@ -16,13 +16,8 @@ import java.util.Map;
 
 import org.analogweb.ApplicationContextResolver;
 import org.analogweb.AttributesHandler;
-import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
-import org.analogweb.Response;
-import org.analogweb.ResponseFormatter;
-import org.analogweb.ResponseHandler;
-import org.analogweb.ResponseResolver;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationInterceptor;
@@ -32,11 +27,13 @@ import org.analogweb.Invoker;
 import org.analogweb.InvokerFactory;
 import org.analogweb.Modules;
 import org.analogweb.MultiModule;
+import org.analogweb.RequestValueResolvers;
+import org.analogweb.Response;
+import org.analogweb.ResponseFormatter;
+import org.analogweb.ResponseHandler;
+import org.analogweb.ResponseResolver;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.core.AssertionFailureException;
-import org.analogweb.core.MissingModuleException;
-import org.analogweb.core.MissingModulesProviderException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
@@ -155,8 +152,6 @@ public class DefaultModulesBuilderTest {
 		assertSame(modules.getTypeMapperContext(), typeMapperContext);
 		assertSame(modules.findResponseFormatter(mapToResponse.getClass()),
 				directionFormatter);
-
-		when(attributesHandler.getScopeName()).thenReturn("request");
 	}
 
 	@Test
@@ -196,7 +191,7 @@ public class DefaultModulesBuilderTest {
 		when(
 				factory.createInvoker(isA(List.class), isA(List.class),
 						isA(TypeMapperContext.class),
-						isA(AttributesHandlers.class)))
+						isA(RequestValueResolvers.class)))
 				.thenReturn(foundInvoker);
 		when(defaultAdaptor.getInstanceOfType(InvokerFactory.class))
 				.thenReturn(factory);

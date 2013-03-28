@@ -32,8 +32,8 @@ public class RequestBodyScopeAttributesResolverTest extends RequestBodyScopeAttr
     public void testResolveAttributeValue() throws Exception {
         InputStream expected = new ByteArrayInputStream(new byte[0]);
         when(requestContext.getRequestBody()).thenReturn(expected);
-        InputStream actual = (InputStream) resolver.resolveAttributeValue(requestContext, metadata,
-                "", null);
+        InputStream actual = (InputStream) resolver
+                .resolveValue(requestContext, metadata, "", null);
         assertThat(actual, is(expected));
     }
 
@@ -41,14 +41,8 @@ public class RequestBodyScopeAttributesResolverTest extends RequestBodyScopeAttr
     @SuppressWarnings("unchecked")
     public void testResolveAttributeValueWithException() throws Exception {
         when(requestContext.getRequestBody()).thenThrow(IOException.class);
-        InputStream actual = (InputStream) resolver.resolveAttributeValue(requestContext, metadata,
-                "", null);
+        InputStream actual = (InputStream) resolver
+                .resolveValue(requestContext, metadata, "", null);
         assertThat(actual, is(nullValue()));
     }
-
-    @Test
-    public void testGetScopeName() {
-        assertThat(resolver.getScopeName(), is("body"));
-    }
-
 }

@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.analogweb.AttributesHandler;
+
 /**
  * スコープ内で、操作可能な属性を保持するモデルマップである事を表す注釈です。<br/>
  * 指定されたスコープに設定された属性のマップを展開するアウトプット・パラメータとして
@@ -19,8 +21,8 @@ import java.lang.annotation.Target;
 public @interface To {
 
     /**
-     * このマップを展開するスコープ名を指定します。
-     * @return スコープ名
+     * このマップを展開する{@link AttributesHandler}を指定します。
+     * @return このマップを展開する{@link AttributesHandler}
      */
-    String value() default "";
+    Class<? extends AttributesHandler> value();
 }

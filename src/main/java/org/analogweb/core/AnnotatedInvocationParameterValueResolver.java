@@ -2,9 +2,9 @@ package org.analogweb.core;
 
 import java.lang.annotation.Annotation;
 
-import org.analogweb.AttributesHandlers;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
 
 /**
@@ -23,10 +23,10 @@ public interface AnnotatedInvocationParameterValueResolver {
      * @param context {@link RequestContext}
      * @param metadata {@link InvocationMetadata}
      * @param converters {@link TypeMapperContext}
-     * @param handlers {@link AttributesHandlers}
+     * @param handlers {@link RequestValueResolvers}
      * @return 解決された値
      */
     <T> T resolve(Annotation[] parameterAnnotations, Class<T> argType, RequestContext context,
-            InvocationMetadata metadata, TypeMapperContext converters, AttributesHandlers handlers);
+            InvocationMetadata metadata, TypeMapperContext converters, RequestValueResolvers handlers);
 
 }

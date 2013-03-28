@@ -12,7 +12,7 @@ import org.analogweb.RequestContext;
 public abstract class AbstractAttributesHandler implements AttributesHandler {
 
     @Override
-    public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadata,
+    public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
             String key, Class<?> requiredType) {
         // nop
         return null;

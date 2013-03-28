@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolver;
 
 /**
  * リクエストボディをストリームで取得する{@link AbstractAttributesHandler}の実装です。<br/>
@@ -12,17 +13,10 @@ import org.analogweb.RequestContext;
  * nullを返します。
  * @author snowgoose
  */
-public class RequestBodyScopeAttributesResolver extends AbstractAttributesHandler {
+public class RequestBodyScopeAttributesResolver implements RequestValueResolver {
 
-    public static final String NAME = "body";
-
-    @Override
-    public String getScopeName() {
-        return NAME;
-    }
-
-    @Override
-    public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadata,
+	@Override
+    public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
             String query, Class<?> type) {
         try {
             return requestContext.getRequestBody();

@@ -35,18 +35,11 @@ public class ParameterScopeRequestAttributesResolverTest {
     }
 
     @Test
-    public void testGetName() {
-        // always return 'parameter'
-        String actual = resolver.getScopeName();
-        assertThat(actual, is("parameter"));
-    }
-
-    @Test
     public void testResolveAttributeValue() {
         when(requestContext.getQueryParameters()).thenReturn(params);
         when(params.getValues("foo")).thenReturn(Arrays.asList("baa"));
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",
+        Object actual = resolver.resolveValue(requestContext, metadata, "foo",
                 String.class);
         assertThat(actual.toString(), is("baa"));
     }
@@ -58,14 +51,14 @@ public class ParameterScopeRequestAttributesResolverTest {
         when(requestContext.getFormParameters()).thenReturn(params);
         when(params.getValues("foo")).thenReturn(Arrays.asList("baa"));
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",
+        Object actual = resolver.resolveValue(requestContext, metadata, "foo",
                 String.class);
         assertThat(actual.toString(), is("baa"));
     }
 
     @Test
     public void testResolveAttributeValueWithNullName() {
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, null,
+        Object actual = resolver.resolveValue(requestContext, metadata, null,
                 String[].class);
         assertNull(actual);
     }
@@ -75,7 +68,7 @@ public class ParameterScopeRequestAttributesResolverTest {
         when(requestContext.getQueryParameters()).thenReturn(params);
         when(params.getValues("foo")).thenReturn(Arrays.asList("baa", "baz"));
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",
+        Object actual = resolver.resolveValue(requestContext, metadata, "foo",
                 String[].class);
         assertTrue(actual instanceof String[]);
         String[] actualArray = (String[]) actual;
@@ -89,7 +82,7 @@ public class ParameterScopeRequestAttributesResolverTest {
         when(requestContext.getFormParameters()).thenReturn(params);
         when(params.getValues("foo")).thenReturn(null);
 
-        Object actual = resolver.resolveAttributeValue(requestContext, metadata, "foo",
+        Object actual = resolver.resolveValue(requestContext, metadata, "foo",
                 String[].class);
         assertNull(actual);
     }

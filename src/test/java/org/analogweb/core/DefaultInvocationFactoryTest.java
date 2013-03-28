@@ -14,17 +14,16 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.analogweb.AttributesHandlers;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestValueResolvers;
 import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.On;
-import org.analogweb.core.UnresolvableInvocationException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,7 +42,7 @@ public class DefaultInvocationFactoryTest {
 	private TypeMapperContext converters;
 	private List<InvocationProcessor> processors;
 	private InvocationProcessor processor;
-	private AttributesHandlers handlers;
+	private RequestValueResolvers handlers;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -61,7 +60,7 @@ public class DefaultInvocationFactoryTest {
 		processors = new ArrayList<InvocationProcessor>();
 		processor = mock(InvocationProcessor.class);
 		processors.add(processor);
-		handlers = mock(AttributesHandlers.class);
+		handlers = mock(RequestValueResolvers.class);
 	}
 
 	@Test
@@ -160,7 +159,7 @@ public class DefaultInvocationFactoryTest {
 	@On
 	public static class StubResourceWithConstractor {
 
-		private String value;
+		private final String value;
 
 		public StubResourceWithConstractor(@As("baa") String value) {
 			this.value = value;

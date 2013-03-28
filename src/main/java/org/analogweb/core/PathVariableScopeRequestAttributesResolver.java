@@ -8,24 +8,20 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
+import org.analogweb.RequestValueResolver;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
 
 /**
  * @author snowgoose
  */
-public class PathVariableScopeRequestAttributesResolver extends AbstractAttributesHandler {
+public class PathVariableScopeRequestAttributesResolver implements RequestValueResolver {
 
     static final String VALIABLES_CACHE_KEY = PathVariableScopeRequestAttributesResolver.class
             .getCanonicalName() + "_VALIABLES_CACHE";
 
-    @Override
-    public String getScopeName() {
-        return "path";
-    }
-
-    @Override
-    public Object resolveAttributeValue(RequestContext requestContext, InvocationMetadata metadata,
+	@Override
+    public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
             String name, Class<?> requiredType) {
         RequestPathMetadata definedPath = metadata.getDefinedPath();
         if (hasPlaceHolder(definedPath.getActualPath())) {
