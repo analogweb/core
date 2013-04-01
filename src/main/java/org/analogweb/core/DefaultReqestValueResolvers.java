@@ -13,7 +13,7 @@ import org.analogweb.util.Maps;
 
 public class DefaultReqestValueResolvers implements RequestValueResolvers {
 
-    private static final Class<? extends RequestValueResolver> DEFAULT_RESOLVER_CLASS = ParameterScopeRequestAttributesResolver.class;
+    static final Class<? extends RequestValueResolver> DEFAULT_RESOLVER_CLASS = ParameterScopeRequestAttributesResolver.class;
     private final Map<Key, RequestValueResolver> resolverMap;
 
     public DefaultReqestValueResolvers(List<? extends RequestValueResolver> resolvers) {
@@ -26,14 +26,16 @@ public class DefaultReqestValueResolvers implements RequestValueResolvers {
     }
 
     @Override
-    public RequestValueResolver findDefaultRequestValueResolver() {
-        return findRequestValueResolver(DEFAULT_RESOLVER_CLASS);
-    }
-
-    @Override
     public RequestValueResolver findRequestValueResolver(
             Class<? extends RequestValueResolver> resolverClass) {
-        return this.resolverMap.get(Key.valueOf(resolverClass));
+        if (resolverClass == null) {
+            return this.resolverMap.get(Key.valueOf(getDefaultRequestValueResolverClass()));
+        }
+        RequestValueResolver resolver = this.resolverMap.get(Key.valueOf(resolverClass));
+        if (resolver == null) {
+            return this.resolverMap.get(Key.valueOf(getDefaultRequestValueResolverClass()));
+        }
+        return resolver;
     }
 
     @Override
@@ -43,6 +45,10 @@ public class DefaultReqestValueResolvers implements RequestValueResolvers {
             return (AttributesHandler) resolver;
         }
         return null;
+    }
+
+    protected Class<? extends RequestValueResolver> getDefaultRequestValueResolverClass(){
+        return DEFAULT_RESOLVER_CLASS;
     }
 
     static class Key implements Serializable {

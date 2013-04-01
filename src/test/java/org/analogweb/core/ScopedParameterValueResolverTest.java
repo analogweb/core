@@ -54,7 +54,7 @@ public class ScopedParameterValueResolverTest {
                 argumentTypes);
 
         AttributesHandler handler = mock(AttributesHandler.class);
-        when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
+        when(handlers.findRequestValueResolver(null)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(handler.resolveValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
                 "foo!");
@@ -75,7 +75,7 @@ public class ScopedParameterValueResolverTest {
 
         Date expected = new Date();
         AttributesHandler handler = mock(AttributesHandler.class);
-        when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
+        when(handlers.findRequestValueResolver(null)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(handler.resolveValue(context, metadata, "baa", argumentTypes[1])).thenReturn(
                 expected);
@@ -156,7 +156,7 @@ public class ScopedParameterValueResolverTest {
 
         BigDecimal expected = new BigDecimal(1000);
         AttributesHandler handler = mock(AttributesHandler.class);
-        when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
+        when(handlers.findRequestValueResolver(null)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(handler.resolveValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
                 "1,000");

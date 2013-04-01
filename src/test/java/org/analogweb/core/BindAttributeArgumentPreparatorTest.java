@@ -60,7 +60,7 @@ public class BindAttributeArgumentPreparatorTest {
                 argumentTypes);
 
         AttributesHandler handler = mock(AttributesHandler.class);
-        when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
+        when(handlers.findRequestValueResolver(null)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(handler.resolveValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
                 "foo!");
@@ -107,7 +107,7 @@ public class BindAttributeArgumentPreparatorTest {
                 argumentTypes);
 
         AttributesHandler handler = mock(AttributesHandler.class);
-        when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
+        when(handlers.findRequestValueResolver(null)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(handler.resolveValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
                 "100,000");

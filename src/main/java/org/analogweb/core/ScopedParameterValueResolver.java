@@ -28,7 +28,7 @@ public class ScopedParameterValueResolver implements AnnotatedInvocationParamete
             By scope = AnnotationUtils.findAnnotation(By.class, parameterAnnotations);
             RequestValueResolver handler;
             if(scope == null){
-                handler = handlers.findDefaultRequestValueResolver();
+                handler = handlers.findRequestValueResolver(null);
             } else {
                 handler = handlers.findRequestValueResolver(scope.value());
             }

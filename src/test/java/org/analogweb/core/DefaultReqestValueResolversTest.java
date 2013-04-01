@@ -1,5 +1,8 @@
 package org.analogweb.core;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.util.Arrays;
 
 import org.analogweb.AttributesHandler;
@@ -15,19 +18,20 @@ public class DefaultReqestValueResolversTest {
     @Test
     public void test() {
         resolvers = new DefaultReqestValueResolvers(Arrays.asList(new A(), new B(), new C(),
-                new D(), new E(),new F()));
+                new D(), new E(), new F()));
         RequestValueResolver a = resolvers.findRequestValueResolver(A.class);
         RequestValueResolver b = resolvers.findRequestValueResolver(B.class);
         RequestValueResolver c = resolvers.findRequestValueResolver(C.class);
         RequestValueResolver d = resolvers.findRequestValueResolver(D.class);
         RequestValueResolver e = resolvers.findRequestValueResolver(E.class);
         RequestValueResolver f = resolvers.findRequestValueResolver(F.class);
-        System.out.println(a.getClass().getCanonicalName());
-        System.out.println(b.getClass().getCanonicalName());
-        System.out.println(c.getClass().getCanonicalName());
-        System.out.println(d.getClass().getCanonicalName());
-        System.out.println(e.getClass().getCanonicalName());
-        System.out.println(f.getClass().getCanonicalName());
+        String expected = D.class.getCanonicalName();
+        assertThat(expected, is(a.getClass().getCanonicalName()));
+        assertThat(expected, is(b.getClass().getCanonicalName()));
+        assertThat(expected, is(c.getClass().getCanonicalName()));
+        assertThat(expected, is(d.getClass().getCanonicalName()));
+        assertThat(E.class.getCanonicalName(), is(e.getClass().getCanonicalName()));
+        assertThat(F.class.getCanonicalName(), is(f.getClass().getCanonicalName()));
     }
 
     class A implements RequestValueResolver {
@@ -58,6 +62,7 @@ public class DefaultReqestValueResolversTest {
             // nop.
         }
     }
+
     class E implements RequestValueResolver {
 
         @Override
@@ -67,6 +72,7 @@ public class DefaultReqestValueResolversTest {
             return null;
         }
     }
+
     class F implements RequestValueResolver {
 
         @Override
