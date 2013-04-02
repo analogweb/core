@@ -54,8 +54,8 @@ public class ConsumesMediaTypeVerifier extends AbstractInvocationProcessor {
             By by = AnnotationUtils.findAnnotation(By.class, pa);
             if (by != null) {
                 RequestValueResolver ha = handlers.findRequestValueResolver(by.value());
-                if (ha instanceof SpecificMediaTypeAttirbutesHandler
-                        && ((SpecificMediaTypeAttirbutesHandler) ha).supports(contentType)) {
+                if (ha instanceof SpecificMediaTypeRequestValueResolver
+                        && ((SpecificMediaTypeRequestValueResolver) ha).supports(contentType)) {
                     return false;
                 }
             }
@@ -67,5 +67,4 @@ public class ConsumesMediaTypeVerifier extends AbstractInvocationProcessor {
     public int getPrecedence() {
         return 1;
     }
-
 }

@@ -13,9 +13,9 @@ import org.analogweb.RequestValueResolver;
  * nullを返します。
  * @author snowgoose
  */
-public class RequestBodyScopeAttributesResolver implements RequestValueResolver {
+public class RequestBodyValueResolver implements RequestValueResolver {
 
-	@Override
+    @Override
     public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
             String query, Class<?> type) {
         try {
@@ -24,5 +24,4 @@ public class RequestBodyScopeAttributesResolver implements RequestValueResolver 
             return null;
         }
     }
-
 }

@@ -15,15 +15,15 @@ import org.analogweb.RequestContext;
 import org.junit.Before;
 import org.junit.Test;
 
-public class RequestBodyScopeAttributesResolverTest extends RequestBodyScopeAttributesResolver {
+public class RequestBodyValueResolverTest {
 
-    private RequestBodyScopeAttributesResolver resolver;
+    private RequestBodyValueResolver resolver;
     private RequestContext requestContext;
     private InvocationMetadata metadata;
 
     @Before
     public void setUp() throws Exception {
-        resolver = new RequestBodyScopeAttributesResolver();
+        resolver = new RequestBodyValueResolver();
         requestContext = mock(RequestContext.class);
         metadata = mock(InvocationMetadata.class);
     }

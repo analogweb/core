@@ -11,11 +11,11 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
-public class RequestHeaderScopeRequestAttributesResolver implements RequestValueResolver {
+public class HeaderValueResolver implements RequestValueResolver {
 
-	@Override
-    public Object resolveValue(RequestContext requestContext,
-            InvocationMetadata metadatan, String name, Class<?> requiredtype) {
+    @Override
+    public Object resolveValue(RequestContext requestContext, InvocationMetadata metadatan,
+            String name, Class<?> requiredtype) {
         if (StringUtils.isEmpty(name)) {
             return null;
         }
@@ -26,5 +26,4 @@ public class RequestHeaderScopeRequestAttributesResolver implements RequestValue
         }
         return headerValues.toArray(new String[headerValues.size()]);
     }
-
 }

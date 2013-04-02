@@ -17,16 +17,16 @@ import org.junit.Test;
 /**
  * @author snowgoose
  */
-public class RequestHeaderScopeRequestAttributesResolverTest {
+public class HeaderValueResolverTest {
 
-    private RequestHeaderScopeRequestAttributesResolver resolver;
+    private HeaderValueResolver resolver;
     private RequestContext requestContext;
     private InvocationMetadata metadata;
     private Headers headers;
 
     @Before
     public void setUp() throws Exception {
-        resolver = new RequestHeaderScopeRequestAttributesResolver();
+        resolver = new HeaderValueResolver();
         requestContext = mock(RequestContext.class);
         metadata = mock(InvocationMetadata.class);
         headers = mock(Headers.class);
@@ -36,7 +36,6 @@ public class RequestHeaderScopeRequestAttributesResolverTest {
     public void testResolveAttributeValue() {
         when(requestContext.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("text/plain"));
-
         Object actual = resolver.resolveValue(requestContext, metadata, "Content-Type", null);
         assertThat(((String[]) actual)[0], is("text/plain"));
     }
@@ -45,7 +44,6 @@ public class RequestHeaderScopeRequestAttributesResolverTest {
     public void testResolveAttributeValueNotAvairable() {
         when(requestContext.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Foo-Type")).thenReturn(null);
-
         Object actual = resolver.resolveValue(requestContext, metadata, "Foo-Type", null);
         assertNull(actual);
     }
@@ -55,5 +53,4 @@ public class RequestHeaderScopeRequestAttributesResolverTest {
         Object actual = resolver.resolveValue(requestContext, metadata, null, null);
         assertNull(actual);
     }
-
 }

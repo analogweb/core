@@ -20,15 +20,15 @@ import org.analogweb.RequestContext;
 import org.junit.Before;
 import org.junit.Test;
 
-public class XmlTypeMapperTest {
+public class XmlValueResolverTest {
 
-    private XmlTypeMapper mapper;
+    private XmlValueResolver mapper;
     private RequestContext context;
     private Headers headers;
 
     @Before
     public void setUp() throws Exception {
-        mapper = new XmlTypeMapper();
+        mapper = new XmlValueResolver();
         context = mock(RequestContext.class);
         headers = mock(Headers.class);
     }
@@ -86,13 +86,13 @@ public class XmlTypeMapperTest {
         assertThat(mapper.supports(MediaTypes.APPLICATION_XML_TYPE), is(true));
         assertThat(mapper.supports(MediaTypes.APPLICATION_SVG_XML_TYPE), is(true));
         assertThat(mapper.supports(MediaTypes.APPLICATION_ATOM_XML_TYPE), is(true));
-
         assertThat(mapper.supports(MediaTypes.APPLICATION_JSON_TYPE), is(false));
         assertThat(mapper.supports(MediaTypes.TEXT_PLAIN_TYPE), is(false));
     }
 
     @XmlRootElement
     static class Hello implements Serializable {
+
         private static final long serialVersionUID = 1L;
         @XmlElement
         private String world;
@@ -104,6 +104,7 @@ public class XmlTypeMapperTest {
 
     @XmlRootElement
     static class UnHello implements Serializable {
+
         private static final long serialVersionUID = 1L;
         @XmlElement
         private String world;
@@ -112,5 +113,4 @@ public class XmlTypeMapperTest {
             return this.world;
         }
     }
-
 }

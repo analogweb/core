@@ -13,7 +13,7 @@ import org.analogweb.util.Maps;
 
 public class DefaultReqestValueResolvers implements RequestValueResolvers {
 
-    static final Class<? extends RequestValueResolver> DEFAULT_RESOLVER_CLASS = ParameterScopeRequestAttributesResolver.class;
+    static final Class<? extends RequestValueResolver> DEFAULT_RESOLVER_CLASS = ParameterValueResolver.class;
     private final Map<Key, RequestValueResolver> resolverMap;
 
     public DefaultReqestValueResolvers(List<? extends RequestValueResolver> resolvers) {
@@ -47,7 +47,7 @@ public class DefaultReqestValueResolvers implements RequestValueResolvers {
         return null;
     }
 
-    protected Class<? extends RequestValueResolver> getDefaultRequestValueResolverClass(){
+    protected Class<? extends RequestValueResolver> getDefaultRequestValueResolverClass() {
         return DEFAULT_RESOLVER_CLASS;
     }
 

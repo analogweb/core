@@ -16,15 +16,15 @@ import org.junit.Test;
 /**
  * @author snowgoose
  */
-public class PathVariableScopeRequestAttributesResolverTest {
+public class PathVariableValueResolverTest {
 
-    private PathVariableScopeRequestAttributesResolver resolver;
+    private PathVariableValueResolver resolver;
     private InvocationMetadata metadata;
     private RequestContext context;
 
     @Before
     public void setUp() throws Exception {
-        resolver = new PathVariableScopeRequestAttributesResolver();
+        resolver = new PathVariableValueResolver();
         metadata = mock(InvocationMetadata.class);
         context = mock(RequestContext.class);
     }
@@ -38,9 +38,7 @@ public class PathVariableScopeRequestAttributesResolverTest {
         when(metadata.getDefinedPath()).thenReturn(definedPath);
         when(definedPath.getActualPath()).thenReturn("/mock/do/{something}/else");
         when(definedPath.match(requestedPath)).thenReturn(true);
-
-        String actual = (String) resolver.resolveValue(context, metadata, "something",
-                null);
+        String actual = (String) resolver.resolveValue(context, metadata, "something", null);
         assertThat(actual, is("any"));
         actual = (String) resolver.resolveValue(context, metadata, "anything", null);
         assertThat(actual, is(nullValue()));
@@ -55,10 +53,7 @@ public class PathVariableScopeRequestAttributesResolverTest {
         when(metadata.getDefinedPath()).thenReturn(definedPath);
         when(definedPath.getActualPath()).thenReturn("/mock/do/any/else");
         when(definedPath.match(requestedPath)).thenReturn(true);
-
-        String actual = (String) resolver.resolveValue(context, metadata, "something",
-                null);
+        String actual = (String) resolver.resolveValue(context, metadata, "something", null);
         assertThat(actual, is(nullValue()));
     }
-
 }

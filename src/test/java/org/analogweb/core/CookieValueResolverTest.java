@@ -15,16 +15,16 @@ import org.junit.Test;
 /**
  * @author snowgoose
  */
-public class CookieScopeRequestAttributeResolverTest {
+public class CookieValueResolverTest {
 
-    private CookieScopeRequestAttributeResolver resolver;
+    private CookieValueResolver resolver;
     private RequestContext requestContext;
     private Cookies cookies;
     private InvocationMetadata metadata;
 
     @Before
     public void setUp() throws Exception {
-        resolver = new CookieScopeRequestAttributeResolver();
+        resolver = new CookieValueResolver();
         requestContext = mock(RequestContext.class);
         cookies = mock(Cookies.class);
         metadata = mock(InvocationMetadata.class);

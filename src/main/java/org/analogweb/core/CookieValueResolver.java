@@ -8,7 +8,7 @@ import org.analogweb.RequestValueResolver;
 /**
  * @author snowgoose
  */
-public class CookieScopeRequestAttributeResolver implements RequestValueResolver {
+public class CookieValueResolver implements RequestValueResolver {
 
 	@Override
     public Object resolveValue(RequestContext requestContext,

@@ -69,7 +69,7 @@ public class ConsumesMediaTypeVerifierTest {
     public void testPrepareInvokeDefaultFormats() {
         MediaType requstType = MediaTypes.APPLICATION_XML_TYPE;
         when(context.getContentType()).thenReturn(requstType);
-        SpecificMediaTypeAttirbutesHandler handler = mock(SpecificMediaTypeAttirbutesHandler.class);
+        SpecificMediaTypeRequestValueResolver handler = mock(SpecificMediaTypeRequestValueResolver.class);
         when(handlers.findRequestValueResolver(Xml.class)).thenReturn(handler);
         when(handler.supports(requstType)).thenReturn(true);
         Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsSvg",
@@ -83,7 +83,7 @@ public class ConsumesMediaTypeVerifierTest {
     public void testPrepareInvokeDefaultFormatsNotSupported() {
         MediaType requstType = MediaTypes.APPLICATION_JSON_TYPE;
         when(context.getContentType()).thenReturn(requstType);
-        SpecificMediaTypeAttirbutesHandler handler = mock(SpecificMediaTypeAttirbutesHandler.class);
+        SpecificMediaTypeRequestValueResolver handler = mock(SpecificMediaTypeRequestValueResolver.class);
         when(handlers.findRequestValueResolver(Xml.class)).thenReturn(handler);
         when(handler.supports(requstType)).thenReturn(false);
         Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsSvg",

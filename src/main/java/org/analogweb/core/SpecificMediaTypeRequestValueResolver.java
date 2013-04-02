@@ -9,7 +9,7 @@ import org.analogweb.RequestValueResolver;
  * {@link AttributesHandler}です。
  * @author snowgoose
  */
-public interface SpecificMediaTypeAttirbutesHandler extends RequestValueResolver {
+public interface SpecificMediaTypeRequestValueResolver extends RequestValueResolver {
 
     /**
      * 指定された{@link MediaType}が、このコンポーネントで

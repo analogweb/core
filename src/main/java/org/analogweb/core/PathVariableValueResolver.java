@@ -15,12 +15,12 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
-public class PathVariableScopeRequestAttributesResolver implements RequestValueResolver {
+public class PathVariableValueResolver implements RequestValueResolver {
 
-    static final String VALIABLES_CACHE_KEY = PathVariableScopeRequestAttributesResolver.class
-            .getCanonicalName() + "_VALIABLES_CACHE";
+    static final String VALIABLES_CACHE_KEY = PathVariableValueResolver.class.getCanonicalName()
+            + "_VALIABLES_CACHE";
 
-	@Override
+    @Override
     public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
             String name, Class<?> requiredType) {
         RequestPathMetadata definedPath = metadata.getDefinedPath();
@@ -55,5 +55,4 @@ public class PathVariableScopeRequestAttributesResolver implements RequestValueR
         Pattern hasPlaceHolder = Pattern.compile(".*\\{[a-zA-z0-9]*\\}.*");
         return hasPlaceHolder.matcher(value).matches();
     }
-
 }
