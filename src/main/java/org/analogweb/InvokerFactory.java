@@ -10,13 +10,8 @@ public interface InvokerFactory extends Module {
     /**
      * 新しい{@link Invoker}のインスタンスを生成します。
      * @param interceptors 生成される{@link Invocation}に適用される全ての{@link InvocationInterceptor}
-     * @param processors 生成される{@link Invocation}に適用される全ての{@link InvocationProcessor}
-     * @param converters {@link TypeMapperContext}
-     * @param resolvers {@link RequestValueResolvers}
      * @return　生成された{@link Invoker}
      */
-	Invoker createInvoker(List<InvocationInterceptor> interceptors,
-			List<InvocationProcessor> processors, TypeMapperContext converters,
-			RequestValueResolvers resolvers);
+	Invoker createInvoker(List<InvocationInterceptor> interceptors);
 
 }

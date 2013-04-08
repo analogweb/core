@@ -65,11 +65,9 @@ public interface InvocationProcessor extends MultiModule,Precedence {
      * {@link #processException(Exception, RequestContext, PreparedInvocationArguments, InvocationMetadata)}
      * で結果が買えされない場合実行されます。
      * @param request {@link RequestContext}
-     * @param args {@link InvocationArguments}
-     * @param metadata {@link InvocationMetadata}
-     * @param invocationResult {@link Invocation}の実行結果(例外が発生するなどして実行結果が存在しない場合はnull)
+     * @param response {@link ResponseContext}
+     * @param e {@link Exception}
      */
-    void afterCompletion(RequestContext request, InvocationArguments args,
-            InvocationMetadata metadata, Object invocationResult);
+    void afterCompletion(RequestContext request, ResponseContext response,Exception e);
 
 }

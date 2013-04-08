@@ -14,8 +14,8 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolvers;
+import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.core.InvocationFailureException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,6 +32,7 @@ public class AbstractInvocationProcessorTest {
     private InvocationMetadata metadata;
     private InvocationArguments args;
     private RequestContext context;
+    private ResponseContext response;
     private TypeMapperContext converters;
 
     @Rule
@@ -45,6 +46,7 @@ public class AbstractInvocationProcessorTest {
         metadata = mock(InvocationMetadata.class);
         args = mock(InvocationArguments.class);
         context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
         converters = mock(TypeMapperContext.class);
     }
 
@@ -66,8 +68,7 @@ public class AbstractInvocationProcessorTest {
     @Test
     public void testAfterCompletion() {
         // do nothing.
-        Object invocationResult = new Object();
-        processor.afterCompletion(context, args, metadata, invocationResult);
+        processor.afterCompletion(context, response, null);
     }
 
     @Test

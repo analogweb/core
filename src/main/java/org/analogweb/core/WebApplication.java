@@ -15,14 +15,12 @@ import org.analogweb.Application;
 import org.analogweb.ApplicationContextResolver;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.ContainerAdaptor;
-import org.analogweb.Response;
-import org.analogweb.ResponseFormatter;
-import org.analogweb.ResponseHandler;
-import org.analogweb.ResponseResolver;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.Invocation;
+import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationMetadataFactory;
+import org.analogweb.InvocationProcessor;
 import org.analogweb.Module;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
@@ -30,7 +28,13 @@ import org.analogweb.ModulesConfig;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
+import org.analogweb.RequestValueResolvers;
+import org.analogweb.Response;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseFormatter;
+import org.analogweb.ResponseHandler;
+import org.analogweb.ResponseResolver;
+import org.analogweb.TypeMapperContext;
 import org.analogweb.WebApplicationException;
 import org.analogweb.util.ApplicationPropertiesHolder;
 import org.analogweb.util.ClassCollector;
@@ -56,6 +60,7 @@ public class WebApplication implements Application {
     private ClassLoader classLoader;
     private ApplicationContextResolver resolver;
 
+    @Override
     public void run(ApplicationContextResolver resolver, ApplicationProperties props,
             Collection<ClassCollector> collectors, ClassLoader classLoader) {
         StopWatch sw = new StopWatch();
@@ -81,6 +86,7 @@ public class WebApplication implements Application {
             ResponseContext responseContext) throws IOException, WebApplicationException {
         InvocationMetadata metadata = null;
         Modules mod = null;
+        List<InvocationProcessor> processors = null;
         try {
             RequestPathMapping mapping = getRequestPathMapping();
             log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
@@ -89,31 +95,94 @@ public class WebApplication implements Application {
                 log.log(Markers.LIFECYCLE, "DL000005", requestedPath);
                 return NOT_FOUND;
             }
-
             log.log(Markers.LIFECYCLE, "DL000006", requestedPath, metadata);
             mod = getModules();
             ContainerAdaptor invocationInstances = mod.getInvocationInstanceProvider();
-
+            RequestValueResolvers resolvers = mod.getRequestValueResolvers();
+            TypeMapperContext typeMapperContext = mod.getTypeMapperContext();
             Invocation invocation = mod.getInvocationFactory().createInvocation(
-                    invocationInstances, metadata, context, responseContext,
-                    mod.getTypeMapperContext(),
-                    mod.getRequestValueResolvers());
-
-            Object invocationResult = mod.getInvoker().invoke(invocation, metadata, context,responseContext);
-
-            log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(),
-                    invocationResult);
-
-            handleResponse(mod, invocationResult, metadata, context, responseContext);
+                    invocationInstances, metadata, context, responseContext, typeMapperContext,
+                    resolvers);
+            InvocationArguments arguments = invocation.getInvocationArguments();
+            processors = mod.getInvocationProcessors();
+            prepareInvoke(processors, arguments, metadata, context, resolvers, typeMapperContext);
+            try {
+                Object invocationResult = mod.getInvoker().invoke(invocation, metadata, context,
+                        responseContext);
+                log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(),
+                        invocationResult);
+                postInvoke(processors, invocationResult, arguments, metadata, context, resolvers);
+                handleResponse(mod, invocationResult, metadata, context, responseContext);
+            } catch (Exception e) {
+                log.log(Markers.LIFECYCLE, "DL000012", invocation.getInvocationInstance(), e);
+                onException(processors, e, arguments, metadata, context);
+                List<Object> args = arguments.asList();
+                throw new InvocationFailureException(e, metadata, args.toArray(new Object[args
+                        .size()]));
+            }
+            afterCompletion(processors, context, responseContext, null);
+        } catch (InvokeInterruptedException e) {
+            handleResponse(mod, e.getInterruption(), metadata, context, responseContext);
+            afterCompletion(processors, context, responseContext, e);
         } catch (Exception e) {
             ExceptionHandler handler = mod.getExceptionHandler();
             log.log(Markers.LIFECYCLE, "DL000009", (Object) e, handler);
             Object exceptionResult = handler.handleException(e);
             if (exceptionResult != null) {
                 handleResponse(mod, exceptionResult, metadata, context, responseContext);
+                afterCompletion(processors, context, responseContext, e);
+            } else {
+                afterCompletion(processors, context, responseContext, e);
+                throw new WebApplicationException(e);
             }
         }
         return PROCEEDED;
+    }
+
+    protected Object prepareInvoke(List<InvocationProcessor> processors, InvocationArguments args,
+            InvocationMetadata metadata, RequestContext request,
+            RequestValueResolvers attributesHandlers, TypeMapperContext typeMapperContext) {
+        log.log(Markers.LIFECYCLE, "DL000013");
+        Object interruption = InvocationProcessor.NO_INTERRUPTION;
+        Method method = ReflectionUtils.getInvocationMethod(metadata);
+        for (InvocationProcessor processor : processors) {
+            interruption = processor.prepareInvoke(method, args, metadata, request,
+                    typeMapperContext, attributesHandlers);
+            if (interruption != InvocationProcessor.NO_INTERRUPTION) {
+                throw new InvokeInterruptedException(interruption);
+            }
+        }
+        return interruption;
+    }
+
+    protected void postInvoke(List<InvocationProcessor> processors, Object invocationResult,
+            InvocationArguments args, InvocationMetadata metadata, RequestContext request,
+            RequestValueResolvers attributesHandlers) {
+        log.log(Markers.LIFECYCLE, "DL000014");
+        for (InvocationProcessor processor : processors) {
+            processor.postInvoke(invocationResult, args, metadata, request, attributesHandlers);
+        }
+    }
+
+    protected Object onException(List<InvocationProcessor> processors, Exception thrown,
+            InvocationArguments args, InvocationMetadata metadata, RequestContext request) {
+        log.log(Markers.LIFECYCLE, "DL000015");
+        Object interruption = InvocationProcessor.NO_INTERRUPTION;
+        for (InvocationProcessor processor : processors) {
+            interruption = processor.processException(thrown, request, args, metadata);
+            if (interruption != InvocationProcessor.NO_INTERRUPTION) {
+                throw new InvokeInterruptedException(interruption);
+            }
+        }
+        return interruption;
+    }
+
+    protected void afterCompletion(List<InvocationProcessor> processors, RequestContext context,
+            ResponseContext responseContext, Exception e) {
+        log.log(Markers.LIFECYCLE, "DL000016");
+        for (InvocationProcessor processor : processors) {
+            processor.afterCompletion(context, responseContext, e);
+        }
     }
 
     protected void handleResponse(Modules modules, Object result, InvocationMetadata metadata,
@@ -122,15 +191,12 @@ public class WebApplication implements Application {
         ResponseResolver resultResolver = modules.getResponseResolver();
         Response resolved = resultResolver.resolve(result, metadata, context, responseContext);
         log.log(Markers.LIFECYCLE, "DL000008", result, result);
-
         ResponseFormatter resultFormatter = modules.findResponseFormatter(resolved.getClass());
-
         if (resultFormatter != null) {
             log.log(Markers.LIFECYCLE, "DL000010", result, resultFormatter);
         } else {
             log.log(Markers.LIFECYCLE, "DL000011", result);
         }
-
         ResponseHandler resultHandler = modules.getResponseHandler();
         resultHandler.handleResult(resolved, resultFormatter, context, responseContext);
     }
@@ -141,9 +207,7 @@ public class WebApplication implements Application {
         Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames, collectors);
         ModulesBuilder modulesBuilder = processConfigPreparation(ReflectionUtils
                 .filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses));
-
         ApplicationContextResolver resolver = getApplicationContextResolver();
-
         ContainerAdaptor defaultContainer = setUpDefaultContainer(resolver, moduleClasses);
         Modules modules = modulesBuilder.buildModules(resolver, defaultContainer);
         setModules(modules);
@@ -289,5 +353,4 @@ public class WebApplication implements Application {
         }
         ApplicationPropertiesHolder.dispose(this);
     }
-
 }
