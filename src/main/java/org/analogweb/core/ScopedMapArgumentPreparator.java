@@ -25,7 +25,7 @@ import org.analogweb.util.AnnotationUtils;
  * インスタンスの適用はされません。
  * @author snowgoose
  */
-public class ScopedMapArgumentPreparator extends AbstractInvocationProcessor {
+public class ScopedMapArgumentPreparator extends AbstractApplicationProcessor {
 
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,

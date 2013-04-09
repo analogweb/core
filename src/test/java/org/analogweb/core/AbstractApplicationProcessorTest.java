@@ -9,9 +9,9 @@ import static org.mockito.Mockito.mock;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.ResponseContext;
@@ -25,9 +25,9 @@ import org.junit.rules.ExpectedException;
 /**
  * @author snowgoose
  */
-public class AbstractInvocationProcessorTest {
+public class AbstractApplicationProcessorTest {
 
-    private final AbstractInvocationProcessor processor = new AbstractInvocationProcessor() {
+    private final AbstractApplicationProcessor processor = new AbstractApplicationProcessor() {
     };
     private InvocationMetadata metadata;
     private InvocationArguments args;
@@ -54,7 +54,7 @@ public class AbstractInvocationProcessorTest {
     public void testPrepareInvoke() {
         Object actual = processor.prepareInvoke((Method) null, args, metadata, context, converters,
                 null);
-        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
+        assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
     }
 
     @Test
@@ -125,7 +125,7 @@ public class AbstractInvocationProcessorTest {
         Exception ex = new Exception();
 
         Object actual = processor.processException(ex, context, args, metadata);
-        assertThat(actual, is(InvocationProcessor.NO_INTERRUPTION));
+        assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
     }
 
 }

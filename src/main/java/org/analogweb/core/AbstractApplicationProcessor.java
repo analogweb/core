@@ -2,9 +2,9 @@ package org.analogweb.core;
 
 import java.lang.reflect.Method;
 
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.Precedence;
 import org.analogweb.PreparedInvocationArguments;
 import org.analogweb.RequestContext;
@@ -15,7 +15,7 @@ import org.analogweb.TypeMapperContext;
 /**
  * @author snowgoose
  */
-public abstract class AbstractInvocationProcessor implements InvocationProcessor {
+public abstract class AbstractApplicationProcessor implements ApplicationProcessor {
 
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,

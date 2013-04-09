@@ -39,13 +39,13 @@ public interface ModulesBuilder {
 
 	ModulesBuilder clearInvocationMetadataFactoriesClass();
 
-	ModulesBuilder addInvocationProcessorClass(
-			Class<? extends InvocationProcessor> invocationProcessorClass);
+	ModulesBuilder addApplicationProcessorClass(
+			Class<? extends ApplicationProcessor> applicationProcessorClass);
 
 	ModulesBuilder addInvocationInterceptorClass(
 			Class<? extends InvocationInterceptor> invocationInterceptorClass);
 
-	ModulesBuilder clearInvocationProcessorClass();
+	ModulesBuilder clearApplicationProcessorClass();
 
 	ModulesBuilder addAttributesHandlerClass(
 			Class<? extends AttributesHandler> attributesHandlerClass);

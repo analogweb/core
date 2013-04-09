@@ -14,10 +14,10 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.ResponseContext;
@@ -40,8 +40,8 @@ public class DefaultInvocationFactoryTest {
 	private RequestContext context;
 	private ResponseContext response;
 	private TypeMapperContext converters;
-	private List<InvocationProcessor> processors;
-	private InvocationProcessor processor;
+	private List<ApplicationProcessor> processors;
+	private ApplicationProcessor processor;
 	private RequestValueResolvers handlers;
 
 	@Rule
@@ -57,8 +57,8 @@ public class DefaultInvocationFactoryTest {
 		context = mock(RequestContext.class);
 		response = mock(ResponseContext.class);
 		converters = mock(TypeMapperContext.class);
-		processors = new ArrayList<InvocationProcessor>();
-		processor = mock(InvocationProcessor.class);
+		processors = new ArrayList<ApplicationProcessor>();
+		processor = mock(ApplicationProcessor.class);
 		processors.add(processor);
 		handlers = mock(RequestValueResolvers.class);
 	}

@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.analogweb.InvocationProcessor;
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.Precedence;
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ public class PrecedenceComparatorTest {
     public void testCompare() {
         Precedence p1 = mock(Precedence.class);
         Precedence p2 = mock(Precedence.class);
-        Precedence p3 = mock(InvocationProcessor.class);
+        Precedence p3 = mock(ApplicationProcessor.class);
         Precedence p4 = mock(Precedence.class);
         Precedence p5 = mock(Precedence.class);
 
@@ -33,7 +33,7 @@ public class PrecedenceComparatorTest {
         Collections.sort(list, new PrecedenceComparator<Precedence>());
 
         assertThat(list.get(0), is(p5));
-        assertThat(list.get(1), is((Precedence) p1));
+        assertThat(list.get(1), is(p1));
         assertThat(list.get(2), is(p2));
         assertThat(list.get(3), is(p3));
         assertThat(list.get(4), is(p4));
@@ -68,15 +68,15 @@ public class PrecedenceComparatorTest {
 
     @Test
     public void testDifferentType() {
-        InvocationProcessor p1 = mock(InvocationProcessor.class);
-        InvocationProcessor p2 = mock(InvocationProcessor.class);
-        InvocationProcessor p3 = mock(InvocationProcessor.class);
+        ApplicationProcessor p1 = mock(ApplicationProcessor.class);
+        ApplicationProcessor p2 = mock(ApplicationProcessor.class);
+        ApplicationProcessor p3 = mock(ApplicationProcessor.class);
 
         when(p1.getPrecedence()).thenReturn(1);
         when(p2.getPrecedence()).thenReturn(2);
         when(p3.getPrecedence()).thenReturn(3);
 
-        List<InvocationProcessor> list = Arrays.asList(p2, p3, p1);
+        List<ApplicationProcessor> list = Arrays.asList(p2, p3, p1);
         Collections.sort(list, new PrecedenceComparator<Precedence>());
 
         assertThat(list.get(0), is(p1));

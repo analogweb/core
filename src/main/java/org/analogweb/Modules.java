@@ -14,7 +14,7 @@ public interface Modules extends Disposable {
 
     ContainerAdaptor getInvocationInstanceProvider();
 
-    List<InvocationProcessor> getInvocationProcessors();
+    List<ApplicationProcessor> getApplicationProcessors();
 
     List<InvocationInterceptor> getInvocationInterceptors();
 

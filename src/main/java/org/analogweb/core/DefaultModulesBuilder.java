@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.AttributesHandler;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
@@ -19,7 +20,6 @@ import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationInterceptor;
 import org.analogweb.InvocationMetadataFactory;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.InvokerFactory;
 import org.analogweb.Modules;
@@ -50,7 +50,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private Class<? extends ResponseHandler> directionHandlerClass;
     private Class<? extends ExceptionHandler> exceptionHandlerClass;
     private Class<? extends TypeMapperContext> typeMapperContextClass;
-    private final List<Class<? extends InvocationProcessor>> invocationProcessorClasses;
+    private final List<Class<? extends ApplicationProcessor>> applicationProcessorClasses;
     private final List<Class<? extends InvocationInterceptor>> invocationInterceptorClasses;
     private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
     private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
@@ -60,7 +60,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private final List<MultiModule.Filter> ignoreFilters;
 
     public DefaultModulesBuilder() {
-        this.invocationProcessorClasses = new LinkedList<Class<? extends InvocationProcessor>>();
+        this.applicationProcessorClasses = new LinkedList<Class<? extends ApplicationProcessor>>();
         this.invocationInterceptorClasses = new LinkedList<Class<? extends InvocationInterceptor>>();
         this.invocationMetadataFactoryClasses = new LinkedList<Class<? extends InvocationMetadataFactory>>();
         this.attributesHandlerClasses = new LinkedList<Class<? extends AttributesHandler>>();
@@ -111,16 +111,16 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return this.invocationInstanceProvider;
             }
 
-            private List<InvocationProcessor> invocationProcessors;
+            private List<ApplicationProcessor> applicationProcessors;
 
             @Override
-            public List<InvocationProcessor> getInvocationProcessors() {
-                if (this.invocationProcessors == null) {
-                    this.invocationProcessors = getComponentInstances(moduleContainerAdaptor,
-                            getInvocationProcessorClasses(),
-                            new PrecedenceComparator<InvocationProcessor>());
+            public List<ApplicationProcessor> getApplicationProcessors() {
+                if (this.applicationProcessors == null) {
+                    this.applicationProcessors = getComponentInstances(moduleContainerAdaptor,
+                            getApplicationProcessorClasses(),
+                            new PrecedenceComparator<ApplicationProcessor>());
                 }
-                return this.invocationProcessors;
+                return this.applicationProcessors;
             }
 
             private List<InvocationInterceptor> invocationInterceptors;
@@ -245,8 +245,14 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 setInvokerFactoryClass(null);
                 setModulesProviderClass(null);
                 setTypeMapperContextClass(null);
-                this.invocationProcessors = null;
-                this.invocationInterceptors = null;
+                if (this.applicationProcessors != null) {
+                    this.applicationProcessors.clear();
+                    this.applicationProcessors = null;
+                }
+                if (this.invocationInterceptors != null) {
+                    this.invocationInterceptors.clear();
+                    this.invocationInterceptors = null;
+                }
             }
 
             private RequestValueResolvers resolvers;
@@ -340,9 +346,9 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public ModulesBuilder addInvocationProcessorClass(
-            Class<? extends InvocationProcessor> actionInvocationProcessorClass) {
-        this.invocationProcessorClasses.add(actionInvocationProcessorClass);
+    public ModulesBuilder addApplicationProcessorClass(
+            Class<? extends ApplicationProcessor> applicationProcessorClass) {
+        this.applicationProcessorClasses.add(applicationProcessorClass);
         return this;
     }
 
@@ -400,8 +406,8 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         return this.invocationInterceptorClasses;
     }
 
-    protected List<Class<? extends InvocationProcessor>> getInvocationProcessorClasses() {
-        return this.invocationProcessorClasses;
+    protected List<Class<? extends ApplicationProcessor>> getApplicationProcessorClasses() {
+        return this.applicationProcessorClasses;
     }
 
     protected List<Class<? extends AttributesHandler>> getAttributesHandlerClasses() {
@@ -432,8 +438,8 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public ModulesBuilder clearInvocationProcessorClass() {
-        this.invocationProcessorClasses.clear();
+    public ModulesBuilder clearApplicationProcessorClass() {
+        this.applicationProcessorClasses.clear();
         return this;
     }
 

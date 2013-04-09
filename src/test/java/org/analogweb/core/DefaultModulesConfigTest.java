@@ -3,17 +3,16 @@ package org.analogweb.core;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.AttributesHandler;
-import org.analogweb.ResponseHandler;
-import org.analogweb.ResponseResolver;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadataFactory;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.InvokerFactory;
 import org.analogweb.ModulesBuilder;
+import org.analogweb.ResponseHandler;
+import org.analogweb.ResponseResolver;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.core.AssertionFailureException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,7 +53,7 @@ public class DefaultModulesConfigTest {
                 modulesBuilder);
         when(modulesBuilder.setTypeMapperContextClass(TypeMapperContext.class)).thenReturn(
                 modulesBuilder);
-        when(modulesBuilder.addInvocationProcessorClass(InvocationProcessor.class)).thenReturn(
+        when(modulesBuilder.addApplicationProcessorClass(ApplicationProcessor.class)).thenReturn(
                 modulesBuilder);
         when(modulesBuilder.addInvocationMetadataFactoriesClass(InvocationMetadataFactory.class))
                 .thenReturn(modulesBuilder);

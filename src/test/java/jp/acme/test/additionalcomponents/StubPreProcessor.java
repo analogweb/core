@@ -8,12 +8,12 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.core.AbstractInvocationProcessor;
+import org.analogweb.core.AbstractApplicationProcessor;
 
 /**
  * @author snowgoose
  */
-public class StubPreProcessor extends AbstractInvocationProcessor {
+public class StubPreProcessor extends AbstractApplicationProcessor {
 
     @Override
     public Invocation prepareInvoke(Method method, InvocationArguments args,

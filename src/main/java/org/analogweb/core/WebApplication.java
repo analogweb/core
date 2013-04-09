@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ExceptionHandler;
@@ -20,7 +21,6 @@ import org.analogweb.Invocation;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationMetadataFactory;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.Module;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
@@ -86,7 +86,7 @@ public class WebApplication implements Application {
             ResponseContext responseContext) throws IOException, WebApplicationException {
         InvocationMetadata metadata = null;
         Modules mod = null;
-        List<InvocationProcessor> processors = null;
+        List<ApplicationProcessor> processors = null;
         try {
             RequestPathMapping mapping = getRequestPathMapping();
             log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
@@ -104,7 +104,7 @@ public class WebApplication implements Application {
                     invocationInstances, metadata, context, responseContext, typeMapperContext,
                     resolvers);
             InvocationArguments arguments = invocation.getInvocationArguments();
-            processors = mod.getInvocationProcessors();
+            processors = mod.getApplicationProcessors();
             prepareInvoke(processors, arguments, metadata, context, resolvers, typeMapperContext);
             try {
                 Object invocationResult = mod.getInvoker().invoke(invocation, metadata, context,
@@ -139,48 +139,48 @@ public class WebApplication implements Application {
         return PROCEEDED;
     }
 
-    protected Object prepareInvoke(List<InvocationProcessor> processors, InvocationArguments args,
+    protected Object prepareInvoke(List<ApplicationProcessor> processors, InvocationArguments args,
             InvocationMetadata metadata, RequestContext request,
             RequestValueResolvers attributesHandlers, TypeMapperContext typeMapperContext) {
         log.log(Markers.LIFECYCLE, "DL000013");
-        Object interruption = InvocationProcessor.NO_INTERRUPTION;
+        Object interruption = ApplicationProcessor.NO_INTERRUPTION;
         Method method = ReflectionUtils.getInvocationMethod(metadata);
-        for (InvocationProcessor processor : processors) {
+        for (ApplicationProcessor processor : processors) {
             interruption = processor.prepareInvoke(method, args, metadata, request,
                     typeMapperContext, attributesHandlers);
-            if (interruption != InvocationProcessor.NO_INTERRUPTION) {
+            if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
                 throw new InvokeInterruptedException(interruption);
             }
         }
         return interruption;
     }
 
-    protected void postInvoke(List<InvocationProcessor> processors, Object invocationResult,
+    protected void postInvoke(List<ApplicationProcessor> processors, Object invocationResult,
             InvocationArguments args, InvocationMetadata metadata, RequestContext request,
             RequestValueResolvers attributesHandlers) {
         log.log(Markers.LIFECYCLE, "DL000014");
-        for (InvocationProcessor processor : processors) {
+        for (ApplicationProcessor processor : processors) {
             processor.postInvoke(invocationResult, args, metadata, request, attributesHandlers);
         }
     }
 
-    protected Object onException(List<InvocationProcessor> processors, Exception thrown,
+    protected Object onException(List<ApplicationProcessor> processors, Exception thrown,
             InvocationArguments args, InvocationMetadata metadata, RequestContext request) {
         log.log(Markers.LIFECYCLE, "DL000015");
-        Object interruption = InvocationProcessor.NO_INTERRUPTION;
-        for (InvocationProcessor processor : processors) {
+        Object interruption = ApplicationProcessor.NO_INTERRUPTION;
+        for (ApplicationProcessor processor : processors) {
             interruption = processor.processException(thrown, request, args, metadata);
-            if (interruption != InvocationProcessor.NO_INTERRUPTION) {
+            if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
                 throw new InvokeInterruptedException(interruption);
             }
         }
         return interruption;
     }
 
-    protected void afterCompletion(List<InvocationProcessor> processors, RequestContext context,
+    protected void afterCompletion(List<ApplicationProcessor> processors, RequestContext context,
             ResponseContext responseContext, Exception e) {
         log.log(Markers.LIFECYCLE, "DL000016");
-        for (InvocationProcessor processor : processors) {
+        for (ApplicationProcessor processor : processors) {
             processor.afterCompletion(context, responseContext, e);
         }
     }

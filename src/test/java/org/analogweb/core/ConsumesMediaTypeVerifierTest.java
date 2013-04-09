@@ -7,9 +7,9 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.MediaType;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolver;
@@ -51,7 +51,7 @@ public class ConsumesMediaTypeVerifierTest {
                 new Class<?>[] { Object.class });
         Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
                 handlers);
-        assertThat(actual, is(InvocationProcessor.NO_INTERRUPTION));
+        assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ConsumesMediaTypeVerifierTest {
                 new Class<?>[] { Object.class });
         Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
                 handlers);
-        assertThat(actual, is(InvocationProcessor.NO_INTERRUPTION));
+        assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
     }
 
     @Test

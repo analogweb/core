@@ -12,10 +12,10 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.AttributesHandler;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolver;
 import org.analogweb.RequestValueResolvers;
@@ -73,7 +73,7 @@ public class BindAttributeArgumentPreparatorTest {
 
         Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
                 handlers);
-        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
+        assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
 
         verify(args).putInvocationArgument(0, "foo!");
         verify(args).putInvocationArgument(1, "baa!");
@@ -95,7 +95,7 @@ public class BindAttributeArgumentPreparatorTest {
 
         Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
                 handlers);
-        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
+        assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
 
         verify(args).putInvocationArgument(0, "booz!");
     }
@@ -118,7 +118,7 @@ public class BindAttributeArgumentPreparatorTest {
 
         Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
                 handlers);
-        assertSame(actual, InvocationProcessor.NO_INTERRUPTION);
+        assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
 
         verify(args).putInvocationArgument(0, expected);
     }

@@ -19,7 +19,7 @@ import org.analogweb.util.ArrayUtils;
 /**
  * @author snowgoose
  */
-public class ConsumesMediaTypeVerifier extends AbstractInvocationProcessor {
+public class ConsumesMediaTypeVerifier extends AbstractApplicationProcessor {
 
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,

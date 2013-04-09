@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.AttributesHandler;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
@@ -22,7 +23,6 @@ import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationInterceptor;
 import org.analogweb.InvocationMetadataFactory;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.InvokerFactory;
 import org.analogweb.Modules;
@@ -61,7 +61,7 @@ public class DefaultModulesBuilderTest {
     private InvocationFactory invocationFactory;
     private ResponseResolver directionResolver;
     private ResponseHandler directiontHandler;
-    private InvocationProcessor invocationProcessor;
+    private ApplicationProcessor invocationProcessor;
     private InvocationInterceptor invocationInterceptor;
     private AttributesHandler attributesHandler;
     private ExceptionHandler exceptionHandler;
@@ -81,7 +81,7 @@ public class DefaultModulesBuilderTest {
         invocationFactory = mock(InvocationFactory.class);
         directionResolver = mock(ResponseResolver.class);
         directiontHandler = mock(ResponseHandler.class);
-        invocationProcessor = mock(InvocationProcessor.class);
+        invocationProcessor = mock(ApplicationProcessor.class);
         invocationInterceptor = mock(InvocationInterceptor.class);
         attributesHandler = mock(AttributesHandler.class);
         exceptionHandler = mock(ExceptionHandler.class);
@@ -113,7 +113,7 @@ public class DefaultModulesBuilderTest {
         builder.setInvokerFactoryClass(invokerFactory.getClass());
         builder.setResponseHandlerClass(directiontHandler.getClass());
         builder.setResponseResolverClass(directionResolver.getClass());
-        builder.addInvocationProcessorClass(invocationProcessor.getClass());
+        builder.addApplicationProcessorClass(invocationProcessor.getClass());
         builder.addInvocationInterceptorClass(invocationInterceptor.getClass());
         builder.addInvocationMetadataFactoriesClass(invocationMetadataFactory.getClass());
         builder.addAttributesHandlerClass(attributesHandler.getClass());
@@ -129,7 +129,7 @@ public class DefaultModulesBuilderTest {
         assertSame(modules.getInvocationFactory(), invocationFactory);
         assertSame(modules.getResponseResolver(), directionResolver);
         assertSame(modules.getResponseHandler(), directiontHandler);
-        assertSame(modules.getInvocationProcessors().get(0), invocationProcessor);
+        assertSame(modules.getApplicationProcessors().get(0), invocationProcessor);
         assertSame(modules.getInvocationInterceptors().get(0), invocationInterceptor);
         assertSame(modules.getExceptionHandler(), exceptionHandler);
         assertSame(modules.getTypeMapperContext(), typeMapperContext);
@@ -185,14 +185,14 @@ public class DefaultModulesBuilderTest {
     @Test
     public void testOptionalModulesFound() {
         ContainerAdaptor defaultAdaptor = mock(ContainerAdaptor.class);
-        InvocationProcessor foundProcessor = mock(InvocationProcessor.class);
-        List<InvocationProcessor> processors = Arrays.asList(foundProcessor);
-        when(defaultAdaptor.getInstancesOfType(InvocationProcessor.class)).thenReturn(processors);
-        builder.addInvocationProcessorClass(InvocationProcessor.class);
+        ApplicationProcessor foundProcessor = mock(ApplicationProcessor.class);
+        List<ApplicationProcessor> processors = Arrays.asList(foundProcessor);
+        when(defaultAdaptor.getInstancesOfType(ApplicationProcessor.class)).thenReturn(processors);
+        builder.addApplicationProcessorClass(ApplicationProcessor.class);
         builder.setModulesProviderClass(MockModulesProvidingContainerAdaptorFactory.class);
         Modules modules = builder.buildModules(resolver, defaultAdaptor);
-        adaptor.unregister(InvocationProcessor.class);
-        List<InvocationProcessor> actual = modules.getInvocationProcessors();
+        adaptor.unregister(ApplicationProcessor.class);
+        List<ApplicationProcessor> actual = modules.getApplicationProcessors();
         log.debug(actual.toString());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(foundProcessor));
@@ -201,15 +201,15 @@ public class DefaultModulesBuilderTest {
     @Test
     public void testOptionalMultiSameTypeModulesFound() {
         ContainerAdaptor defaultAdaptor = mock(ContainerAdaptor.class);
-        InvocationProcessor foundProcessor = mock(InvocationProcessor.class);
-        InvocationProcessor foundProcessor2 = mock(InvocationProcessor.class);
-        List<InvocationProcessor> processors = Arrays.asList(foundProcessor, foundProcessor2);
-        when(defaultAdaptor.getInstancesOfType(InvocationProcessor.class)).thenReturn(processors);
-        builder.addInvocationProcessorClass(InvocationProcessor.class);
+        ApplicationProcessor foundProcessor = mock(ApplicationProcessor.class);
+        ApplicationProcessor foundProcessor2 = mock(ApplicationProcessor.class);
+        List<ApplicationProcessor> processors = Arrays.asList(foundProcessor, foundProcessor2);
+        when(defaultAdaptor.getInstancesOfType(ApplicationProcessor.class)).thenReturn(processors);
+        builder.addApplicationProcessorClass(ApplicationProcessor.class);
         builder.setModulesProviderClass(MockModulesProvidingContainerAdaptorFactory.class);
         Modules modules = builder.buildModules(resolver, defaultAdaptor);
-        adaptor.unregister(InvocationProcessor.class);
-        List<InvocationProcessor> actual = modules.getInvocationProcessors();
+        adaptor.unregister(ApplicationProcessor.class);
+        List<ApplicationProcessor> actual = modules.getApplicationProcessors();
         log.debug(actual.toString());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(foundProcessor));
@@ -226,15 +226,15 @@ public class DefaultModulesBuilderTest {
     @Test
     public void testClearMultipleModules() {
         builder.addInvocationMetadataFactoriesClass(invocationMetadataFactory.getClass());
-        builder.addInvocationProcessorClass(invocationProcessor.getClass());
+        builder.addApplicationProcessorClass(invocationProcessor.getClass());
         builder.addAttributesHandlerClass(attributesHandler.getClass());
         assertThat(builder.getInvocationMetadataFactoryClasses().size(), is(1));
-        assertThat(builder.getInvocationProcessorClasses().size(), is(1));
+        assertThat(builder.getApplicationProcessorClasses().size(), is(1));
         assertThat(builder.getAttributesHandlerClasses().size(), is(1));
         assertSame(builder, builder.clearInvocationMetadataFactoriesClass());
         assertTrue(builder.getInvocationMetadataFactoryClasses().isEmpty());
-        assertSame(builder, builder.clearInvocationProcessorClass());
-        assertTrue(builder.getInvocationProcessorClasses().isEmpty());
+        assertSame(builder, builder.clearApplicationProcessorClass());
+        assertTrue(builder.getApplicationProcessorClasses().isEmpty());
         assertSame(builder, builder.clearAttributesHanderClass());
         assertTrue(builder.getAttributesHandlerClasses().isEmpty());
     }
@@ -242,21 +242,21 @@ public class DefaultModulesBuilderTest {
     @Test
     public void testIgnoreModules() {
         final ContainerAdaptor defaultAdaptor = mock(ContainerAdaptor.class);
-        List<InvocationProcessor> processors = new ArrayList<InvocationProcessor>();
+        List<ApplicationProcessor> processors = new ArrayList<ApplicationProcessor>();
         processors.add(new ProcessorA());
         processors.add(new ProcessorB());
         processors.add(new ProcessorC());
-        when(defaultAdaptor.getInstancesOfType(InvocationProcessor.class)).thenReturn(processors);
+        when(defaultAdaptor.getInstancesOfType(ApplicationProcessor.class)).thenReturn(processors);
         ca = defaultAdaptor;
         builder.setModulesProviderClass(MockContainerAdaptorFactory.class);
-        builder.addInvocationProcessorClass(InvocationProcessor.class);
+        builder.addApplicationProcessorClass(ApplicationProcessor.class);
         Modules modules = builder.buildModules(resolver, defaultAdaptor);
-        List<InvocationProcessor> actual = modules.getInvocationProcessors();
+        List<ApplicationProcessor> actual = modules.getApplicationProcessors();
         log.debug(actual.toString());
         assertThat(actual.size(), is(3));
         builder.ignore(ProcessorB.class);
         modules = builder.buildModules(resolver, defaultAdaptor);
-        actual = modules.getInvocationProcessors();
+        actual = modules.getApplicationProcessors();
         log.debug(actual.toString());
         assertThat(actual.size(), is(1));
     }
@@ -285,14 +285,14 @@ public class DefaultModulesBuilderTest {
         ProcessorA a = new ProcessorA();
         final ProcessorB b = new ProcessorB();
         ProcessorC c = new ProcessorC();
-        List<InvocationProcessor> processors = new ArrayList<InvocationProcessor>();
+        List<ApplicationProcessor> processors = new ArrayList<ApplicationProcessor>();
         processors.add(a);
         processors.add(b);
         processors.add(c);
-        when(defaultAdaptor.getInstancesOfType(InvocationProcessor.class)).thenReturn(processors);
+        when(defaultAdaptor.getInstancesOfType(ApplicationProcessor.class)).thenReturn(processors);
         ca = defaultAdaptor;
         builder.setModulesProviderClass(MockContainerAdaptorFactory.class);
-        builder.addInvocationProcessorClass(InvocationProcessor.class);
+        builder.addApplicationProcessorClass(ApplicationProcessor.class);
         MultiModule.Filter filter = new MultiModule.Filter() {
 
             @Override
@@ -305,7 +305,7 @@ public class DefaultModulesBuilderTest {
         };
         builder.filter(filter);
         Modules modules = builder.buildModules(resolver, defaultAdaptor);
-        List<InvocationProcessor> actual = modules.getInvocationProcessors();
+        List<ApplicationProcessor> actual = modules.getApplicationProcessors();
         log.debug(actual.toString());
         assertThat(actual.size(), is(2));
     }
@@ -316,14 +316,14 @@ public class DefaultModulesBuilderTest {
         final ProcessorA a = new ProcessorA();
         ProcessorB b = new ProcessorB();
         final ProcessorC c = new ProcessorC();
-        List<InvocationProcessor> processors = new ArrayList<InvocationProcessor>();
+        List<ApplicationProcessor> processors = new ArrayList<ApplicationProcessor>();
         processors.add(a);
         processors.add(b);
         processors.add(c);
-        when(defaultAdaptor.getInstancesOfType(InvocationProcessor.class)).thenReturn(processors);
+        when(defaultAdaptor.getInstancesOfType(ApplicationProcessor.class)).thenReturn(processors);
         ca = defaultAdaptor;
         builder.setModulesProviderClass(MockContainerAdaptorFactory.class);
-        builder.addInvocationProcessorClass(InvocationProcessor.class);
+        builder.addApplicationProcessorClass(ApplicationProcessor.class);
         MultiModule.Filter filtera = new MultiModule.Filter() {
 
             @Override
@@ -347,13 +347,13 @@ public class DefaultModulesBuilderTest {
         builder.filter(filtera);
         builder.filter(filterc);
         Modules modules = builder.buildModules(resolver, defaultAdaptor);
-        List<InvocationProcessor> actual = modules.getInvocationProcessors();
+        List<ApplicationProcessor> actual = modules.getApplicationProcessors();
         log.debug(actual.toString());
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0), is((InvocationProcessor) b));
+        assertThat(actual.get(0), is((ApplicationProcessor) b));
     }
 
-    private static class ProcessorA extends AbstractInvocationProcessor {
+    private static class ProcessorA extends AbstractApplicationProcessor {
     }
 
     private static class ProcessorB extends ProcessorA {

@@ -15,11 +15,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationInterceptor;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.Invoker;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolvers;
@@ -44,8 +44,8 @@ public class DefaultInvokerTest {
     private RequestValueResolvers handlers;
     private TypeMapperContext typeMapper;
     private InvocationArguments args;
-    private List<InvocationProcessor> processors;
-    private InvocationProcessor processor;
+    private List<ApplicationProcessor> processors;
+    private ApplicationProcessor processor;
     private List<InvocationInterceptor> interceptors;
     private InvocationInterceptor interceptor;
     @Rule
@@ -56,14 +56,14 @@ public class DefaultInvokerTest {
         metadata = mock(InvocationMetadata.class);
         request = mock(RequestContext.class);
         response = mock(ResponseContext.class);
-        processors = new ArrayList<InvocationProcessor>();
-        processor = mock(InvocationProcessor.class);
+        processors = new ArrayList<ApplicationProcessor>();
+        processor = mock(ApplicationProcessor.class);
         processors.add(processor);
         invocation = mock(Invocation.class);
         handlers = mock(RequestValueResolvers.class);
         typeMapper = mock(TypeMapperContext.class);
         args = mock(InvocationArguments.class);
-        processor = mock(InvocationProcessor.class);
+        processor = mock(ApplicationProcessor.class);
         processors = Arrays.asList(processor);
         interceptor = new AbstractInvocationInterceptor();
         interceptors = Arrays.asList(interceptor);
@@ -85,7 +85,7 @@ public class DefaultInvokerTest {
         when(
                 processor.prepareInvoke(isA(Method.class), eq(args), eq(metadata), eq(request),
                         eq(typeMapper), eq(handlers))).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
+                ApplicationProcessor.NO_INTERRUPTION);
         doNothing().when(processor).postInvoke("foo is something!!", args, metadata, request,
                 handlers);
         // delegate to Invocation#invoke only.
@@ -108,10 +108,10 @@ public class DefaultInvokerTest {
         when(
                 processor.prepareInvoke(isA(Method.class), eq(args), eq(metadata), eq(request),
                         eq(typeMapper), eq(handlers))).thenReturn(
-                InvocationProcessor.NO_INTERRUPTION);
+                ApplicationProcessor.NO_INTERRUPTION);
         when(
                 processor.processException(isA(IllegalArgumentException.class), eq(request),
-                        eq(args), eq(metadata))).thenReturn(InvocationProcessor.NO_INTERRUPTION);
+                        eq(args), eq(metadata))).thenReturn(ApplicationProcessor.NO_INTERRUPTION);
         invoker.invoke(invocation, metadata, request, response);
     }
 

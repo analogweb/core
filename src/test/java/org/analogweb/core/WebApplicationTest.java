@@ -15,9 +15,9 @@ import java.util.List;
 import jp.acme.test.additionalcomponents.StubPreProcessor;
 
 import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationProcessor;
 import org.analogweb.Modules;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
@@ -40,15 +40,12 @@ import org.junit.rules.TemporaryFolder;
 public class WebApplicationTest {
 
     private static final Log log = Logs.getLog(WebApplicationTest.class);
-
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
-
     private WebApplication application;
     private ClassLoader classLoader;
     private ApplicationContextResolver resolver;
     private Collection<ClassCollector> collectors;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -68,20 +65,16 @@ public class WebApplicationTest {
         when(props.getApplicationSpecifier()).thenReturn(".rn");
         when(props.getComponentPackageNames())
                 .thenReturn(Arrays.asList("jp.acme.test.actionsonly"));
-
         File tempFolder = folder.newFolder("test");
         when(props.getTempDir()).thenReturn(tempFolder);
-
         application = new WebApplication();
         application.run(resolver, props, collectors, classLoader);
-
         RequestPathMapping mapping = application.getRequestPathMapping();
         RequestPath pathAnyThing = mock(RequestPath.class);
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
         when(pathAnyThing.getMethod()).thenReturn("POST");
         InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(pathAnyThing);
         log.debug(metadataAnyThing.toString());
-
         assertThat(application.getApplicationSpecifier(), is(".rn"));
     }
 
@@ -91,20 +84,16 @@ public class WebApplicationTest {
         when(props.getApplicationSpecifier()).thenReturn(null);
         when(props.getComponentPackageNames())
                 .thenReturn(Arrays.asList("jp.acme.test.actionsonly"));
-
         File tempFolder = folder.newFolder("test");
         when(props.getTempDir()).thenReturn(tempFolder);
-
         application = new WebApplication();
         application.run(resolver, props, collectors, classLoader);
-
         RequestPathMapping mapping = application.getRequestPathMapping();
         RequestPath pathAnyThing = mock(RequestPath.class);
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
         when(pathAnyThing.getMethod()).thenReturn("POST");
         InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(pathAnyThing);
         log.debug(metadataAnyThing.toString());
-
         assertThat(application.getApplicationSpecifier(), is(nullValue()));
     }
 
@@ -113,10 +102,8 @@ public class WebApplicationTest {
         ApplicationProperties props = mock(ApplicationProperties.class);
         when(props.getApplicationSpecifier()).thenReturn(".do");
         when(props.getComponentPackageNames()).thenReturn(null);
-
         File tempFolder = folder.newFolder("test");
         when(props.getTempDir()).thenReturn(tempFolder);
-
         application = new WebApplication();
         application.run(resolver, props, collectors, classLoader);
     }
@@ -127,21 +114,19 @@ public class WebApplicationTest {
         when(props.getApplicationSpecifier()).thenReturn(null);
         when(props.getComponentPackageNames()).thenReturn(
                 Arrays.asList("jp.acme.test.additionalcomponents"));
-
         File tempFolder = folder.newFolder("test");
         when(props.getTempDir()).thenReturn(tempFolder);
-
         application = new WebApplication();
         application.run(resolver, props, collectors, classLoader);
-
         Modules modules = application.getModules();
-        final List<InvocationProcessor> processors = modules.getInvocationProcessors();
-        assertThat(processors, new NoDescribeMatcher<List<InvocationProcessor>>() {
+        final List<ApplicationProcessor> processors = modules.getApplicationProcessors();
+        assertThat(processors, new NoDescribeMatcher<List<ApplicationProcessor>>() {
+
             @Override
             @SuppressWarnings("unchecked")
             public boolean matches(Object arg0) {
                 if (processors.getClass().isInstance(arg0)) {
-                    for (InvocationProcessor processor : (List<InvocationProcessor>) arg0) {
+                    for (ApplicationProcessor processor : (List<ApplicationProcessor>) arg0) {
                         if (processor instanceof StubPreProcessor) {
                             return true;
                         }
@@ -158,18 +143,13 @@ public class WebApplicationTest {
         when(props.getApplicationSpecifier()).thenReturn(null);
         when(props.getComponentPackageNames())
                 .thenReturn(Arrays.asList("jp.acme.test.actionsonly"));
-
         File tempFolder = folder.newFolder("test");
         when(props.getTempDir()).thenReturn(tempFolder);
-
         application = new WebApplication();
         application.run(resolver, props, collectors, classLoader);
-
         application.dispose();
-
         assertThat(application.getApplicationSpecifier(), is(nullValue()));
         assertThat(application.getModules(), is(nullValue()));
         assertThat(application.getRequestPathMapping(), is(nullValue()));
     }
-
 }

@@ -13,10 +13,10 @@ import org.analogweb.annotation.As;
 /**
  * エントリポイントメソッドの引数から{@link As}が付与されている引数を検知し、 {@link As}
  * に定義されたスコープと属性名に応じた値をエントリポイントメソッド の引数の値として設定する
- * {@link AbstractInvocationProcessor}の実装です。
+ * {@link AbstractApplicationProcessor}の実装です。
  * @author snowgoose
  */
-public class BindAttributeArgumentPreparator extends AbstractInvocationProcessor {
+public class BindAttributeArgumentPreparator extends AbstractApplicationProcessor {
 
     private AnnotatedInvocationParameterValueResolver resolver;
 

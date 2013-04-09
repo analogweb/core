@@ -10,7 +10,7 @@ public class StubModulesConfig implements UserModulesConfig {
 
     @Override
     public ModulesBuilder prepare(ModulesBuilder builder) {
-        builder.addInvocationProcessorClass(StubPreProcessor.class);
+        builder.addApplicationProcessorClass(StubPreProcessor.class);
         return builder;
     }
 
