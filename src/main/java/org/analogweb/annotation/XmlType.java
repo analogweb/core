@@ -6,17 +6,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.analogweb.RequestValueResolver;
+import org.analogweb.core.XmlValueResolver;
 
 /**
- * 値を取得可能な特定の{@link RequestValueResolver}を指定します。<br/>
- * @author snowgoose
+ * @author snowgooseyk
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER,ElementType.ANNOTATION_TYPE })
-public @interface By {
-
-	Class<? extends RequestValueResolver> value();
-
+@Target({ ElementType.PARAMETER })
+@By(XmlValueResolver.class)
+public @interface XmlType {
 }

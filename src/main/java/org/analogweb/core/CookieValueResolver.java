@@ -10,9 +10,9 @@ import org.analogweb.RequestValueResolver;
  */
 public class CookieValueResolver implements RequestValueResolver {
 
-	@Override
-    public Object resolveValue(RequestContext requestContext,
-            InvocationMetadata metadatan, String key, Class<?> requiredType) {
+    @Override
+    public Object resolveValue(RequestContext requestContext, InvocationMetadata metadatan,
+            String key, Class<?> requiredType) {
         Cookies cookies = requestContext.getCookies();
         if (cookies != null) {
             Cookies.Cookie cookie = cookies.getCookie(key);
@@ -24,5 +24,4 @@ public class CookieValueResolver implements RequestValueResolver {
         }
         return null;
     }
-
 }
