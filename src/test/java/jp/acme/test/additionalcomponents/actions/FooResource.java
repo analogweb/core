@@ -3,7 +3,7 @@ package jp.acme.test.additionalcomponents.actions;
 import org.analogweb.annotation.On;
 
 @On
-public class FooActions {
+public class FooResource {
 
     @On
     public String doSomething() {

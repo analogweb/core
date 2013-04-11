@@ -5,18 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.RequestPathMetadata;
-import org.analogweb.annotation.Delete;
-import org.analogweb.annotation.Get;
+import org.analogweb.annotation.HttpMethod;
 import org.analogweb.annotation.On;
-import org.analogweb.annotation.Post;
-import org.analogweb.annotation.Put;
 import org.analogweb.util.AnnotationUtils;
+import org.analogweb.util.CollectionUtils;
 import org.analogweb.util.StringUtils;
-
 
 /**
  * @author snowgoose
@@ -29,32 +25,31 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
     }
 
     @Override
-	public InvocationMetadata createInvocationMetadata(Class<?> actionsClass,
-			Method actionMethod) {
-		On typePathMapping = AnnotationUtils.findAnnotation(On.class,
-				actionsClass);
-		On methodPathMapping = actionMethod.getAnnotation(On.class);
-		if (typePathMapping != null && methodPathMapping != null) {
-			return new DefaultInvocationMetadata(actionsClass,
-					actionMethod.getName(), actionMethod.getParameterTypes(),
-					relativeRequestPath(actionsClass, actionMethod,
-							typePathMapping, methodPathMapping));
-		} else {
-			return null;
-		}
-	}
+    public InvocationMetadata createInvocationMetadata(Class<?> invocationClass,
+            Method invocationMethod) {
+        On typePathMapping = AnnotationUtils.findAnnotation(On.class, invocationClass);
+        On methodPathMapping = invocationMethod.getAnnotation(On.class);
+        if (typePathMapping != null && methodPathMapping != null) {
+            return new DefaultInvocationMetadata(invocationClass, invocationMethod.getName(),
+                    invocationMethod.getParameterTypes(), relativeRequestPath(invocationClass,
+                            invocationMethod, typePathMapping, methodPathMapping));
+        } else {
+            return null;
+        }
+    }
 
-    protected RequestPathMetadata relativeRequestPath(Class<?> actionsClass, Method actionMethod,
-            On typePathMapping, On methodPathMapping) {
+    protected RequestPathMetadata relativeRequestPath(Class<?> invocationClass,
+            Method invocationMethod, On typePathMapping, On methodPathMapping) {
         String editedRoot = typePathMapping.value();
         if (StringUtils.isEmpty(editedRoot)) {
-            editedRoot = actionsClass.getSimpleName().replace("Actions", "").toLowerCase();
+            editedRoot = invocationClass.getSimpleName().replace("Resource", "").toLowerCase();
         }
         String editedPath = methodPathMapping.value();
         if (StringUtils.isEmpty(editedPath)) {
-            editedPath = actionMethod.getName();
+            editedPath = invocationMethod.getName();
         }
-        return newRequestPathDefinition(editedRoot, editedPath, resolveRequestMethods(actionMethod));
+        return newRequestPathDefinition(editedRoot, editedPath,
+                resolveRequestMethods(invocationMethod));
     }
 
     protected RequestPathMetadata newRequestPathDefinition(String root, String path,
@@ -62,24 +57,17 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
         return RequestPathDefinition.define(root, path, methods);
     }
 
-    private String[] resolveRequestMethods(Method actionMethod) {
-        List<String> methods = new ArrayList<String>();
-        if (actionMethod.getAnnotation(Post.class) != null) {
-            methods.add("POST");
-        }
-        if (actionMethod.getAnnotation(Get.class) != null) {
-            methods.add("GET");
-        }
-        if (actionMethod.getAnnotation(Delete.class) != null) {
-            methods.add("DELETE");
-        }
-        if (actionMethod.getAnnotation(Put.class) != null) {
-            methods.add("PUT");
-        }
-        if (methods.isEmpty()) {
+    private String[] resolveRequestMethods(Method method) {
+        List<String> methods;
+        List<HttpMethod> httpMethods = AnnotationUtils.findAnnotations(HttpMethod.class, method);
+        if (CollectionUtils.isEmpty(httpMethods)) {
             methods = Arrays.asList("GET", "POST");
+            return methods.toArray(new String[methods.size()]);
+        }
+        methods = new ArrayList<String>();
+        for (HttpMethod hm : httpMethods) {
+            methods.add(hm.value());
         }
         return methods.toArray(new String[methods.size()]);
     }
-
 }

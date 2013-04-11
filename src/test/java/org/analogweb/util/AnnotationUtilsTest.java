@@ -1,12 +1,17 @@
 package org.analogweb.util;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -64,44 +69,91 @@ public class AnnotationUtilsTest {
         assertNull(actual);
     }
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.ANNOTATION_TYPE,ElementType.TYPE})
-    private @interface SomeAnnotation {
+    @Test
+    public void testFindAnnotationsViaMethod() throws Exception {
+        Method method = SomeClass.class.getMethod("doSomething");
+        List<SomeAnnotation> actual = AnnotationUtils.findAnnotations(SomeAnnotation.class, method);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(instanceOf(SomeAnnotation.class)));
     }
-    
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    @SomeAnnotation
-    private @interface SomeAnnotationInclude {
-        
+
+    @Test
+    public void testFindAnnotationViaExtendsMethod() throws Exception {
+        Method method = SomeClassExtends.class.getMethod("doSomething");
+        List<SomeAnnotation> actual = AnnotationUtils.findAnnotations(SomeAnnotation.class, method);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(instanceOf(SomeAnnotation.class)));
+    }
+
+    @Test
+    public void testFindAnnotationViaDelegatedMethod() throws Exception {
+        Method method = SomeIncludeClass.class.getMethod("doAnything");
+        List<SomeAnnotation> actual = AnnotationUtils.findAnnotations(SomeAnnotation.class, method);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(instanceOf(SomeAnnotation.class)));
+    }
+
+    @Test
+    public void testFindManyAnnotationViaDelegatedMethod() throws Exception {
+        Method method = ManyIncludeClass.class.getMethod("doAnything");
+        List<SomeAnnotation> actual = AnnotationUtils.findAnnotations(SomeAnnotation.class, method);
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), is(instanceOf(SomeAnnotation.class)));
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.ANNOTATION_TYPE,ElementType.TYPE})
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD })
+    private @interface SomeAnnotation {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.TYPE, ElementType.METHOD })
+    @SomeAnnotation
+    private @interface SomeAnnotationInclude {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
     private @interface AnyAnnotation {
     }
 
     @SomeAnnotation
-    private final class SomeClass {
+    private class SomeClass {
 
+        @SomeAnnotation
+        public void doSomething() {
+            // nop
+        }
     }
 
     @SomeAnnotation
     private interface SomeClassIf {
-
     }
 
     private final class SomeClassImpl implements SomeClassIf {
-
     }
 
     @SomeAnnotationInclude
     private final class SomeIncludeClass {
 
+        @SomeAnnotationInclude
+        public void doAnything() {
+            // nop
+        }
     }
 
     private final class AnyClass {
-
     }
 
+    private final class SomeClassExtends extends SomeClass {
+    }
+
+    private final class ManyIncludeClass {
+
+        @SomeAnnotationInclude
+        @SomeAnnotation
+        public void doAnything() {
+            // nop
+        }
+    }
 }

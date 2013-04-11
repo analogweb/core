@@ -3,7 +3,7 @@ package jp.acme.test.actionsonly;
 import org.analogweb.annotation.On;
 
 @On
-public class BaaActions {
+public class BaaResource {
 
     @On("anything")
     public String doAnything() {

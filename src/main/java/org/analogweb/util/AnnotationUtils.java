@@ -1,6 +1,9 @@
 package org.analogweb.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * アノテーションを操作、取得する為のユーティリティです。
@@ -65,4 +68,14 @@ public final class AnnotationUtils {
         return null;
     }
 
+    public static <T extends Annotation> List<T> findAnnotations(Class<T> target, Method method) {
+        List<T> annotations = new ArrayList<T>();
+        for (Annotation ann : method.getAnnotations()) {
+            T an = findAnnotation(target, ann);
+            if (an != null) {
+                annotations.add(an);
+            }
+        }
+        return annotations;
+    }
 }

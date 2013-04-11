@@ -15,6 +15,7 @@ import java.lang.annotation.Target;
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
+@HttpMethod("POST")
 public @interface Post {
 
 }
