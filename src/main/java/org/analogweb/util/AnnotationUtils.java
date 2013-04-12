@@ -22,6 +22,10 @@ public final class AnnotationUtils {
     public static <T extends Annotation> T findAnnotation(Class<T> target,
             Class<?> annotationContainsClass) {
         Assertion.notNull(annotationContainsClass, "Class must not be null");
+        if(Annotation.class.isAssignableFrom(annotationContainsClass)
+                && !annotationContainsClass.getPackage().equals(Annotation.class.getPackage())){
+            return findAnnotation(target, annotationContainsClass.getAnnotations());
+        }
         T annotation = annotationContainsClass.getAnnotation(target);
         if (annotation != null) {
             return annotation;

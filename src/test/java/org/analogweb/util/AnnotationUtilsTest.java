@@ -101,15 +101,29 @@ public class AnnotationUtilsTest {
         assertThat(actual.get(0), is(instanceOf(SomeAnnotation.class)));
     }
 
+    @Test
+    public void testFindInclusiveAnnotationViaDelegatedMethod() throws Exception {
+        Method method = ManyIncludeClass.class.getMethod("doSomething");
+        List<SomeAnnotation> actual = AnnotationUtils.findAnnotations(SomeAnnotation.class, method);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(instanceOf(SomeAnnotation.class)));
+    }
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD })
     private @interface SomeAnnotation {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ ElementType.TYPE, ElementType.METHOD })
+    @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
     @SomeAnnotation
     private @interface SomeAnnotationInclude {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.TYPE, ElementType.METHOD})
+    @SomeAnnotationInclude
+    private @interface SomeAnnotationReInclude {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -153,6 +167,11 @@ public class AnnotationUtilsTest {
         @SomeAnnotationInclude
         @SomeAnnotation
         public void doAnything() {
+            // nop
+        }
+
+        @SomeAnnotationReInclude
+        public void doSomething() {
             // nop
         }
     }
