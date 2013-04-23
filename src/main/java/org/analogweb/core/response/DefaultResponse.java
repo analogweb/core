@@ -17,36 +17,43 @@ import org.analogweb.util.Maps;
  * @author snowgoose
  */
 public class DefaultResponse implements Response {
-	
+
 	private Map<String, String> header = Maps.newEmptyHashMap();
-	private HttpStatus status = HttpStatus.OK;
+	private HttpStatus status;
 	private ResponseEntity entity;
-	
+
 	@Override
 	public void render(RequestContext request, ResponseContext response)
 			throws IOException, WebApplicationException {
 		ResponseEntity entity = getResponseEntity();
-		if(entity == null){
-			entity = extractResponseEntity(request,response);
-			if(entity == null){
-				setStatus(HttpStatus.NO_CONTENT);
+		HttpStatus defaultStatus = HttpStatus.OK;
+		if (entity == null) {
+			entity = extractResponseEntity(request, response);
+			if (entity == null) {
+				defaultStatus = HttpStatus.NO_CONTENT;
 			}
 		}
-		writeEntityToResponse(response.getResponseWriter(), entity);
-		mergeHeaders(request,response,getHeaders(),entity);
-		updateStatusToResponse(response, getStatus());
+		if (entity != null) {
+			writeEntityToResponse(response.getResponseWriter(), entity);
+		}
+		mergeHeaders(request, response, getHeaders(), entity);
+		updateStatusToResponse(response, getStatus() == null ? defaultStatus
+				: getStatus());
 	}
 
-	protected void writeEntityToResponse(ResponseWriter writer, ResponseEntity entity) {
+	protected void writeEntityToResponse(ResponseWriter writer,
+			ResponseEntity entity) {
 		writer.writeEntity(entity);
 	}
 
-	protected void updateStatusToResponse(ResponseContext response, HttpStatus status) {
+	protected void updateStatusToResponse(ResponseContext response,
+			HttpStatus status) {
 		response.setStatus(status.getStatusCode());
 	}
 
-	protected void mergeHeaders(RequestContext request,ResponseContext response,
-			Map<String, String> headers, ResponseEntity entity) {
+	protected void mergeHeaders(RequestContext request,
+			ResponseContext response, Map<String, String> headers,
+			ResponseEntity entity) {
 		Headers responseHeader = response.getResponseHeaders();
 		for (Entry<String, String> entry : headers.entrySet()) {
 			responseHeader.putValue(entry.getKey(), entry.getValue());
@@ -60,16 +67,16 @@ public class DefaultResponse implements Response {
 	protected final void setStatus(HttpStatus status) {
 		this.status = status;
 	}
-	
-	protected final void addHeader(String attribute,String value){
+
+	protected final void addHeader(String attribute, String value) {
 		this.header.put(attribute, value);
 	}
-	
-	protected final void addHeaders(Map<String,String> headers){
+
+	protected final void addHeaders(Map<String, String> headers) {
 		this.header.putAll(headers);
 	}
 
-	protected final void setResponseEntity(ResponseEntity entity){
+	protected final void setResponseEntity(ResponseEntity entity) {
 		this.entity = entity;
 	}
 
@@ -80,12 +87,13 @@ public class DefaultResponse implements Response {
 	protected final HttpStatus getStatus() {
 		return status;
 	}
-	
-	protected final ResponseEntity getResponseEntity(){
+
+	protected final ResponseEntity getResponseEntity() {
 		return this.entity;
 	}
 
-	protected ResponseEntity extractResponseEntity(RequestContext request,ResponseContext response) {
+	protected ResponseEntity extractResponseEntity(RequestContext request,
+			ResponseContext response) {
 		return null;
 	}
 
