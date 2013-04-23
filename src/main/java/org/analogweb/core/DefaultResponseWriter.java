@@ -1,6 +1,7 @@
 package org.analogweb.core;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +39,19 @@ public class DefaultResponseWriter implements ResponseWriter {
                     IOUtils.closeQuietly(entity);
                 }
             }
+            private long length = Long.MIN_VALUE;
+			@Override
+			public long getContentLength() {
+				if(this.length == Long.MIN_VALUE){
+			    	if(ByteArrayInputStream.class.isInstance(entity)
+			    			|| FileInputStream.class.isInstance(entity)){
+			    		length = IOUtils.avairable(entity);
+			    	} else {
+			    		length = -1;
+			    	}
+				}
+				return length;
+			}
         });
     }
 

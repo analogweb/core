@@ -73,5 +73,13 @@ public final class IOUtils {
         }
         return sb.toString();
     }
+    
+	public static int avairable(InputStream in) {
+		try {
+			return in.available();
+		} catch (IOException e) {
+			return -1;
+		}
+	}
 
 }

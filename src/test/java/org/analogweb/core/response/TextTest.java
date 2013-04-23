@@ -45,8 +45,8 @@ public class TextTest {
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
 
-        assertThat(actual.getContentType(), is("text/plain; charset=" + charset));
-        assertThat(actual.getCharset(), is(Charset.defaultCharset().displayName()));
+        assertThat(actual.resolveContentType(), is("text/plain; charset=" + charset));
+        assertThat(actual.getCharsetAsText(), is(Charset.defaultCharset().displayName()));
 
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
@@ -70,9 +70,9 @@ public class TextTest {
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
 
-        assertThat(actual.getContentType(), is("text/plain; charset="
+        assertThat(actual.resolveContentType(), is("text/plain; charset="
                 + Charset.defaultCharset().displayName()));
-        assertThat(actual.getCharset(), is(Charset.defaultCharset().displayName()));
+        assertThat(actual.getCharsetAsText(), is(Charset.defaultCharset().displayName()));
 
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
@@ -95,8 +95,8 @@ public class TextTest {
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
 
-        assertThat(actual.getContentType(), is("text/plain"));
-        assertThat(actual.getCharset(), is(StringUtils.EMPTY));
+        assertThat(actual.resolveContentType(), is("text/plain"));
+        assertThat(actual.getCharsetAsText(), is(StringUtils.EMPTY));
 
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
@@ -119,8 +119,8 @@ public class TextTest {
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
 
-        assertThat(actual.getContentType(), is("text/xml; charset=" + charset));
-        assertThat(actual.getCharset(), is(charset));
+        assertThat(actual.resolveContentType(), is("text/xml; charset=" + charset));
+        assertThat(actual.getCharsetAsText(), is(charset));
 
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
@@ -143,7 +143,7 @@ public class TextTest {
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
 
-        assertThat(actual.getContentType(), is("application/json; charset=" + charset));
+        assertThat(actual.resolveContentType(), is("application/json; charset=" + charset));
 
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
@@ -165,8 +165,8 @@ public class TextTest {
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
 
-        assertThat(actual.getContentType(), is("text/plain; charset=Shift-JIS"));
-        assertThat(actual.getCharset(), is("Shift-JIS"));
+        assertThat(actual.resolveContentType(), is("text/plain; charset=Shift-JIS"));
+        assertThat(actual.getCharsetAsText(), is("Shift-JIS"));
 
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);

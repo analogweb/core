@@ -30,6 +30,9 @@ public class ConsumesMediaTypeVerifier extends AbstractApplicationProcessor {
         if (formats != null) {
             String[] expectMimes = formats.value();
             MediaType contentType = context.getContentType();
+            if(contentType == null){
+                return HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+            }
             if (ArrayUtils.isEmpty(expectMimes)) {
                 if (mediaTypeUnsupported(contentType, method, resolvers)) {
                     return HttpStatus.UNSUPPORTED_MEDIA_TYPE;

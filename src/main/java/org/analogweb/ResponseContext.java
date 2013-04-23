@@ -100,6 +100,8 @@ public interface ResponseContext {
          * @throws {@link IOException}
          */
         void writeInto(OutputStream responseBody) throws IOException ;
+
+        long getContentLength();
     }
 
 }

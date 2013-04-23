@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.analogweb.ResponseFormatter;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -58,8 +57,8 @@ public class JsonTest {
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
 
-        assertThat(json.getContentType(), is("application/json; charset=" + charset));
-        assertThat(json.getCharset(), is(charset));
+        assertThat(json.resolveContentType(), is("application/json; charset=" + charset));
+        assertThat(json.getCharsetAsText(), is(charset));
 
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
@@ -109,8 +108,8 @@ public class JsonTest {
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
 
-        assertThat(json.getContentType(), is("application/json; charset=" + charset));
-        assertThat(json.getCharset(), is(charset));
+        assertThat(json.resolveContentType(), is("application/json; charset=" + charset));
+        assertThat(json.getCharsetAsText(), is(charset));
 
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
@@ -139,8 +138,8 @@ public class JsonTest {
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
 
-        assertThat(json.getContentType(), is("application/json; charset=" + charset));
-        assertThat(json.getCharset(), is(charset));
+        assertThat(json.resolveContentType(), is("application/json; charset=" + charset));
+        assertThat(json.getCharsetAsText(), is(charset));
 
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
@@ -223,24 +222,6 @@ public class JsonTest {
         String actual = new String(out.toByteArray(), charset);
 
         assertThat(actual, is("{\"age\": 33,\"birthDay\": null,\"name\": \"foo\"}"));
-    }
-
-    @Test
-    public void testReplaceFormatter() throws Exception {
-        ResponseFormatter formatter = mock(ResponseFormatter.class);
-
-        Simple bean = new Simple("foo", 33, null);
-        Json json = Json.as(bean).withCharset("Shift-JIS").attach(formatter);
-
-        ResponseWriter writer = new DefaultResponseWriter();
-        when(response.getResponseWriter()).thenReturn(writer);
-
-        Headers headers = mock(Headers.class);
-        when(response.getResponseHeaders()).thenReturn(headers);
-
-        json.render(context, response);
-
-        verify(formatter).formatAndWriteInto(context, response, "Shift-JIS", bean);
     }
 
     static class Simple implements Serializable {

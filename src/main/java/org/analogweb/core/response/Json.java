@@ -4,6 +4,8 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -11,9 +13,9 @@ import java.util.Date;
 import org.analogweb.Response;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.RequestContext;
-import org.analogweb.ResponseContext;
 import org.analogweb.core.FormatFailureException;
 import org.analogweb.util.ArrayUtils;
+import org.analogweb.util.IOUtils;
 
 /**
  * オブジェクトをJSON形式でフォーマットしてレスポンスする{@link Response}です。<br/>
@@ -52,11 +54,12 @@ public class Json extends TextFormattable<Json> {
     static class DefaultFormatter implements ResponseFormatter {
 
         @Override
-        public void formatAndWriteInto(RequestContext context, ResponseContext writeTo,
+        public void formatAndWriteInto(RequestContext context, OutputStream writeTo,
                 String charset, Object source) throws FormatFailureException {
             StringBuilder buffer = new StringBuilder();
             format(buffer, source);
-            writeTo.getResponseWriter().writeEntity(buffer.toString(), Charset.forName(charset));
+			IOUtils.copyQuietly(new ByteArrayInputStream(buffer.toString()
+					.getBytes(Charset.forName(charset))), writeTo);
         }
 
         private void format(StringBuilder buffer, Object source) throws FormatFailureException {

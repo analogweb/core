@@ -1,13 +1,13 @@
 package org.analogweb.core.response;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
+import org.analogweb.ResponseContext.ResponseEntity;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseFormatterAware;
-import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.WebApplicationException;
 
 /**
  * テキストフォーマットが可能な{@link org.analogweb.Response}の実装です。
@@ -36,7 +36,7 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
         this.source = source;
     }
 
-    protected Object getSource() {
+    protected final Object getSource() {
         return this.source;
     }
 
@@ -47,31 +47,38 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
     protected ResponseFormatter getFormatter() {
         return this.formatter;
     }
-
-    @Override
-    public void render(RequestContext context, ResponseContext response) throws IOException,
-            WebApplicationException {
-        Object toXml = getSource();
-        Headers headers = response.getResponseHeaders();
-        if (toXml == null) {
-            super.writeEntity(response);
-            return;
-        }
-        ResponseFormatter formatter = getFormatter();
-        if (formatter == null) {
-            formatter = getDefaultFormatter();
-        }
-        headers.putValue("Content-Type", getContentType());
-        formatter.formatAndWriteInto(context, response, getCharset(), toXml);
-    }
-
+    
     /**
-     * デフォルトの{@link ResponseFormatter}によって特定のフォーマットへのレンダリングを行います。<br/>
-     * この{@link ResponseFormatter}は全ての{@link TextFormattable}のインスタンスに適用されます。
+          * デフォルトの{@link ResponseFormatter}によって特定のフォーマットへのレンダリングを行います。<br/>
+          * この{@link ResponseFormatter}は全ての{@link TextFormattable}のインスタンスに適用されます。
      */
     protected abstract ResponseFormatter getDefaultFormatter();
 
-    /**
+	@Override
+	protected ResponseEntity extractResponseEntity(
+			final RequestContext request, final ResponseContext response) {
+		final Object source = getSource();
+		if (source == null) {
+			return super.extractResponseEntity(request, response);
+		}
+		final ResponseFormatter formatter = getFormatter() == null ? getDefaultFormatter()
+				: getFormatter();
+		return new ResponseEntity() {
+
+			@Override
+			public void writeInto(OutputStream responseBody) throws IOException {
+				formatter.formatAndWriteInto(request, responseBody,
+						getCharsetAsText(), source);
+			}
+
+			@Override
+			public long getContentLength() {
+				return -1;
+			}
+		};
+	}
+
+	/**
      * 指定した{@link ResponseFormatter}によって特定のフォーマットのレンダリングを行います。<br/>
      * 既に{@link ResponseFormatter}が指定されている場合は無視されます。
      * @param formatter {@link ResponseFormatter}

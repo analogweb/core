@@ -1,14 +1,13 @@
 package org.analogweb.core.response;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Map;
 
-import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.Response;
 import org.analogweb.ResponseContext;
-import org.analogweb.WebApplicationException;
+import org.analogweb.ResponseContext.ResponseEntity;
+import org.analogweb.core.DefaultResponseEntity;
 import org.analogweb.util.StringUtils;
 
 /**
@@ -17,7 +16,7 @@ import org.analogweb.util.StringUtils;
  * 
  * @author snowgoose
  */
-public class TextFormat<T extends TextFormat<T>> implements Response {
+public class TextFormat<T extends TextFormat<T>> extends DefaultResponse implements Response {
 
     private static final String DEFAULT_CHARSET = Charset.defaultCharset().displayName();
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
@@ -35,7 +34,9 @@ public class TextFormat<T extends TextFormat<T>> implements Response {
     }
 
     protected TextFormat(String input, String contentType, String charset) {
-        this.responseText = input;
+    	super();
+		this.responseText = StringUtils.isEmpty(input) ? StringUtils.EMPTY
+				: input;
         this.charset = charset;
         this.contentType = contentType;
     }
@@ -66,53 +67,49 @@ public class TextFormat<T extends TextFormat<T>> implements Response {
     }
 
     @Override
-    public void render(RequestContext context, ResponseContext response) throws IOException,
-            WebApplicationException {
-        Headers headers = response.getResponseHeaders();
-        headers.putValue("Content-Type", getContentType());
-        writeEntity(response);
-    }
+	protected ResponseEntity extractResponseEntity(RequestContext request,
+			ResponseContext response) {
+		Charset cs = getCharset();
+		if (cs == null) {
+			return new DefaultResponseEntity(getResponseText());
+		} else {
+			return new DefaultResponseEntity(getResponseText(), cs);
+		}
+	}
 
-    protected void writeEntity(ResponseContext response) throws IOException {
-        String text = getResponseText();
-        String charset = getCharset();
-        // TODO too lazy...
-        if (StringUtils.isEmpty(charset)) {
-            response.getResponseWriter().writeEntity(
-                    StringUtils.isEmpty(text) ? StringUtils.EMPTY : text);
-        } else {
-            response.getResponseWriter().writeEntity(
-                    StringUtils.isEmpty(text) ? StringUtils.EMPTY : text,
-                    Charset.forName(getCharset()));
-        }
-    }
+	protected void mergeHeaders(RequestContext request,
+			ResponseContext response, Map<String, String> headers,
+			ResponseEntity entity) {
+		String contentType = resolveContentType();
+		if (StringUtils.isNotEmpty(contentType)) {
+			response.getResponseHeaders().putValue("Content-Type", contentType);
+		}
+		super.mergeHeaders(request, response, headers, entity);
+	}
 
-    protected ByteArrayInputStream textToInputStream(String text, String charset)
-            throws IOException {
-        if (StringUtils.isEmpty(text)) {
-            return new ByteArrayInputStream(StringUtils.EMPTY.getBytes());
-        } else if (StringUtils.isEmpty(charset)) {
-            return new ByteArrayInputStream(text.getBytes());
-        } else {
-            return new ByteArrayInputStream(text.getBytes(charset));
-        }
-    }
-
-    protected String getResponseText() {
+	protected String getResponseText() {
         return this.responseText;
     }
 
-    public String getCharset() {
+	public Charset getCharset() {
+		String cs = getCharsetAsText();
+		if (StringUtils.isEmpty(cs)) {
+			return null;
+		}
+		return Charset.forName(cs);
+	}
+
+    public final String getCharsetAsText() {
         return this.charset;
     }
 
-    public String getContentType() {
-        String charset = getCharset();
+    protected String resolveContentType() {
+        String charset = getCharsetAsText();
         if (StringUtils.isEmpty(charset)) {
             return this.contentType;
         } else {
             return new StringBuilder(32).append(this.contentType).append("; charset=")
-                    .append(getCharset()).toString();
+                    .append(getCharsetAsText()).toString();
         }
     }
 
