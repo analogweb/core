@@ -3,24 +3,23 @@ package org.analogweb.core.response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
 
-import org.analogweb.Renderable;
-import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.ResponseEntity;
 import org.analogweb.core.ApplicationRuntimeException;
-import org.analogweb.WebApplicationException;
+import org.analogweb.core.DefaultResponseEntity;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.StringUtils;
 
 /**
  * @author snowgoose
  */
-public class Resource implements Renderable {
+public class Resource extends DefaultResponse {
 
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
@@ -69,13 +68,26 @@ public class Resource implements Renderable {
     }
 
     @Override
-    public void render(RequestContext context, ResponseContext response) throws IOException,
-            WebApplicationException {
-        Headers headers = response.getResponseHeaders();
-        headers.putValue("Content-Type", getContentType());
-        headers.putValue(CONTENT_DISPOSITION, createContentDisposition());
-        response.getResponseWriter().writeEntity(getInputStream());
-    }
+	protected void mergeHeaders(RequestContext request,
+			ResponseContext response, Map<String, String> headers,
+			ResponseEntity entity) {
+        headers.put("Content-Type", getContentType());
+        try{
+            headers.put(CONTENT_DISPOSITION, createContentDisposition());
+        } catch(UnsupportedEncodingException e){
+        	throw new ApplicationRuntimeException(e) {
+        		// TODO 
+				private static final long serialVersionUID = 1L;
+			};
+        }
+		super.mergeHeaders(request, response, headers, entity);
+	}
+
+	@Override
+	protected ResponseEntity extractResponseEntity(RequestContext request,
+			ResponseContext response) {
+		return new DefaultResponseEntity(getInputStream());
+	}
 
     protected String createContentDisposition() throws UnsupportedEncodingException {
         StringBuilder buffer = new StringBuilder();
