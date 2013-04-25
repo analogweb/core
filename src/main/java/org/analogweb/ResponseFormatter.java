@@ -1,6 +1,6 @@
 package org.analogweb;
 
-import java.io.OutputStream;
+import org.analogweb.ResponseContext.ResponseEntity;
 
 /**
  * レスポンスボディに、特定のフォーマットをレンダリング可能な{@link Direction}における、
@@ -11,12 +11,13 @@ public interface ResponseFormatter extends MultiModule {
 
     /**
      * 指定されたオブジェクトをフォーマットし、レスポンスに書き込みを行います。
-     * @param context {@link RequestContext}
-     * @param writeTo 書き込みを行う{@link OutputStream}
+     * @param request {@link RequestContext}
+     * @param response 書き込みを行う{@link ResponseContext}
      * @param charset 書き込み時に使用される文字コード
      * @param source フォーマットを行うオブジェクト
+     * @return {@link ResponseEntity}
      */
-    void formatAndWriteInto(RequestContext context, OutputStream writeTo, String charset,
-            Object source);
+	ResponseEntity formatAndWriteInto(RequestContext request,
+			ResponseContext response, String charset, Object source);
 
 }

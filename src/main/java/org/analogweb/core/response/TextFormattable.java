@@ -1,8 +1,5 @@
 package org.analogweb.core.response;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.analogweb.ResponseContext.ResponseEntity;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseFormatterAware;
@@ -56,26 +53,16 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
 
 	@Override
 	protected ResponseEntity extractResponseEntity(
-			final RequestContext request, final ResponseContext response) {
-		final Object source = getSource();
+			RequestContext request, ResponseContext response) {
+		Object source = getSource();
 		if (source == null) {
 			return super.extractResponseEntity(request, response);
 		}
-		final ResponseFormatter formatter = getFormatter() == null ? getDefaultFormatter()
-				: getFormatter();
-		return new ResponseEntity() {
-
-			@Override
-			public void writeInto(OutputStream responseBody) throws IOException {
-				formatter.formatAndWriteInto(request, responseBody,
-						getCharsetAsText(), source);
-			}
-
-			@Override
-			public long getContentLength() {
-				return -1;
-			}
-		};
+		ResponseFormatter formatter = getFormatter();
+		if(formatter == null){
+			formatter = getDefaultFormatter();
+		}
+		return formatter.formatAndWriteInto(request, response, getCharsetAsText(), source);
 	}
 
 	/**

@@ -1,12 +1,15 @@
 package org.analogweb.core.response;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.analogweb.ResponseContext;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.RequestContext;
+import org.analogweb.ResponseContext.ResponseEntity;
 import org.analogweb.core.FormatFailureException;
 
 /**
@@ -32,22 +35,31 @@ public class Xml extends TextFormattable<Xml> {
 
 	static class DefaultFormatter implements ResponseFormatter {
 		@Override
-		public void formatAndWriteInto(RequestContext context,
-				OutputStream writeTo, String charset, final Object source)
+		public ResponseEntity formatAndWriteInto(RequestContext request,
+				ResponseContext response, String charset, final Object source)
 				throws FormatFailureException {
-			try {
-				final JAXBContext jaxb = JAXBContext.newInstance(source
-						.getClass());
-				try {
-					jaxb.createMarshaller().marshal(source, writeTo);
-				} catch (JAXBException e) {
-					throw new FormatFailureException(e, source, getClass()
-							.getName());
+			return new ResponseEntity() {
+				@Override
+				public void writeInto(OutputStream responseBody) throws IOException {
+					try {
+						final JAXBContext jaxb = JAXBContext.newInstance(source
+								.getClass());
+						try {
+							jaxb.createMarshaller().marshal(source, responseBody);
+						} catch (JAXBException e) {
+							throw new FormatFailureException(e, source, getClass()
+									.getName());
+						}
+					} catch (JAXBException e) {
+						throw new FormatFailureException(e, source, getClass()
+								.getName());
+					}
 				}
-			} catch (JAXBException e) {
-				throw new FormatFailureException(e, source, getClass()
-						.getName());
-			}
+				@Override
+				public long getContentLength() {
+					return -1;
+				}
+			};
 		}
 
 	}
