@@ -1,6 +1,6 @@
 package org.analogweb.core;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.ResponseResolver;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
@@ -14,14 +14,14 @@ import org.analogweb.core.response.Text;
 public class DefaultResponseResolver implements ResponseResolver {
 
     @Override
-    public Response resolve(Object invocationResult, InvocationMetadata metadata,
+    public Renderable resolve(Object invocationResult, InvocationMetadata metadata,
             RequestContext context, ResponseContext responseContext) {
         if (invocationResult == null) {
             return nullToResponse(metadata, context);
         }
         Class<?> type = invocationResult.getClass();
-        if (Response.class.isAssignableFrom(type)) {
-            return (Response) invocationResult;
+        if (Renderable.class.isAssignableFrom(type)) {
+            return (Renderable) invocationResult;
         }
         if (type.equals(Integer.TYPE) || Number.class.isAssignableFrom(type)) {
             return numberToResponse((Number) invocationResult);
@@ -32,20 +32,20 @@ public class DefaultResponseResolver implements ResponseResolver {
         return anyObjectToResponse(invocationResult, metadata, context);
     }
 
-    protected Response nullToResponse(InvocationMetadata metadata, RequestContext context) {
+    protected Renderable nullToResponse(InvocationMetadata metadata, RequestContext context) {
         return HttpStatus.NO_CONTENT;
     }
 
-    protected Response numberToResponse(Number num) {
+    protected Renderable numberToResponse(Number num) {
         return HttpStatus.valueOf(num.intValue());
     }
 
-    protected Response stringToResponse(String str, InvocationMetadata metadata,
+    protected Renderable stringToResponse(String str, InvocationMetadata metadata,
             RequestContext context) {
         return Text.with(str);
     }
 
-    protected Response anyObjectToResponse(Object invocationResult, InvocationMetadata metadata,
+    protected Renderable anyObjectToResponse(Object invocationResult, InvocationMetadata metadata,
             RequestContext context) {
         throw new UnresolvableResultException(invocationResult);
     }

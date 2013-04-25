@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.Date;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.RequestContext;
@@ -18,7 +18,7 @@ import org.analogweb.core.FormatFailureException;
 import org.analogweb.util.ArrayUtils;
 
 /**
- * オブジェクトをJSON形式でフォーマットしてレスポンスする{@link Response}です。<br/>
+ * オブジェクトをJSON形式でフォーマットしてレスポンスする{@link Renderable}です。<br/>
  * オブジェクト形式でフォーマットされた({}で囲まれた)JSONオブジェクトを生成します。
  * デフォルトのContent-Typeは「application/json; charset=UTF-8」です。
  * @author snowgoose

@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -26,10 +26,10 @@ import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 
 /**
- * リダイレクトを行う{@link Response}です。
+ * リダイレクトを行う{@link Renderable}です。
  * @author snowgoose
  */
-public class Redirect implements Response {
+public class Redirect implements Renderable {
 
     private static final Log log = Logs.getLog(Redirect.class);
     protected static final String DEFAULT_ENCODING_CHARSET = "UTF-8";

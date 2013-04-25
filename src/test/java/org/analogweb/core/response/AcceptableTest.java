@@ -15,7 +15,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -57,7 +57,7 @@ public class AcceptableTest {
 
         final Member m = new Member("snowgoose", 34);
         Acceptable a = Acceptable.as(m);
-        a.map(new Response() {
+        a.map(new Renderable() {
 
             @Override
             public void render(RequestContext context, ResponseContext response)
@@ -108,7 +108,7 @@ public class AcceptableTest {
         //        when(request.getHeader("Accept")).thenReturn(accept);
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-        final Response anyResponse = mock(Response.class);
+        final Renderable anyResponse = mock(Renderable.class);
         Acceptable.as(m).mapToAny(anyResponse).render(context, response);
         verify(anyResponse).render(context, response);
     }
@@ -127,7 +127,7 @@ public class AcceptableTest {
 
         final Member m = new Member("snowgoose", 34);
         Acceptable a = Acceptable.as(m);
-        a.mapToAny(new Response() {
+        a.mapToAny(new Renderable() {
 
             @Override
             public void render(RequestContext context, ResponseContext response)
@@ -149,7 +149,7 @@ public class AcceptableTest {
                 Arrays.asList("text/x-dvi", "image/png", "application/json"));
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-        final Response replaceResponse = mock(Response.class);
+        final Renderable replaceResponse = mock(Renderable.class);
         Acceptable.as(m).map(replaceResponse, "application/json").render(context, response);
         verify(replaceResponse).render(context, response);
     }
@@ -170,7 +170,7 @@ public class AcceptableTest {
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Accept")).thenReturn(
                 Arrays.asList("text/x-dvi", "image/png", "*/*"));
-        final Response replaceResponse = mock(Response.class);
+        final Renderable replaceResponse = mock(Renderable.class);
         Acceptable.as(m).mapToAny(replaceResponse).render(context, response);
         verify(replaceResponse).render(context, response);
     }

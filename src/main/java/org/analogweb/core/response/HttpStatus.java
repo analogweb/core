@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -14,7 +14,7 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
-public enum HttpStatus implements Response {
+public enum HttpStatus implements Renderable {
 
     CONTINUE(100),
     SWITCHING_PROTOCOLS(101),
@@ -79,7 +79,7 @@ public enum HttpStatus implements Response {
     private int statusCode;
     private String reason;
     private Map<String, String> responseHeaders;
-    private Response preRenderDirection;
+    private Renderable preRenderDirection;
 
     HttpStatus(final int statusCode) {
         this.statusCode = statusCode;
@@ -92,7 +92,7 @@ public enum HttpStatus implements Response {
         if (StringUtils.isNotEmpty(reason)) {
             Text.with(reason).render(context, response);
         } else {
-            Response preRenderDirection = getPreRenderResponse();
+            Renderable preRenderDirection = getPreRenderResponse();
             if (preRenderDirection != null) {
                 preRenderDirection.render(context, response);
             }
@@ -125,7 +125,7 @@ public enum HttpStatus implements Response {
         return this.reason;
     }
 
-    public Response getPreRenderResponse() {
+    public Renderable getPreRenderResponse() {
         return this.preRenderDirection;
     }
 
@@ -143,7 +143,7 @@ public enum HttpStatus implements Response {
         return this.responseHeaders;
     }
 
-    public HttpStatus with(Response direction) {
+    public HttpStatus with(Renderable direction) {
         this.preRenderDirection = direction;
         return this;
     }

@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseFormatterAware;
 import org.analogweb.RequestContext;
@@ -44,7 +44,7 @@ public class DefaultResponseHandlerTest {
 
     @Test
     public void testHandleResult() throws Exception {
-        Response result = mock(Response.class);
+        Renderable result = mock(Renderable.class);
 
         handler.handleResult(result, null, context, response);
 
@@ -72,7 +72,7 @@ public class DefaultResponseHandlerTest {
 
     @Test
     public void testHandleResultWithIOException() throws Exception {
-        Response result = mock(Response.class);
+        Renderable result = mock(Renderable.class);
 
         thrown.expect(ResponseEvaluationException.class);
         thrown.expect(hasResponse(result));
@@ -82,9 +82,9 @@ public class DefaultResponseHandlerTest {
         handler.handleResult(result, null, context, response);
     }
 
-    private static Matcher<?> hasResponse(final Response actionResult) {
+    private static Matcher<?> hasResponse(final Renderable actionResult) {
 
-        return new BaseMatcher<Response>() {
+        return new BaseMatcher<Renderable>() {
 
             @Override
             public boolean matches(Object item) {

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -16,20 +16,20 @@ import org.analogweb.WebApplicationException;
 import org.analogweb.util.StringUtils;
 
 /**
- * リクエストヘッダ[Accept]に適合する{@link Response}を選択して
- * レンダリング処理を委譲する{@link Response}の実装です。<br/>
- * 委譲する{@link Response}は対応するメディアタイプをキーとしてマッピングされます。
+ * リクエストヘッダ[Accept]に適合する{@link Renderable}を選択して
+ * レンダリング処理を委譲する{@link Renderable}の実装です。<br/>
+ * 委譲する{@link Renderable}は対応するメディアタイプをキーとしてマッピングされます。
  * (例えば、[text/xml]や[application/xml]をキーとして{@link Xml}がマッピング
  * されています。)[*&#47;*](全てのメディアタイプ)にはデフォルトで{@link Json}が
  * マッピングされています。複数のメディアタイプがヘッダから検出される場合は、
  * <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC2616 Section 14.1</a>
- * に示される順序に従って、対応する{@link Response}を検索し、評価します。
+ * に示される順序に従って、対応する{@link Renderable}を検索し、評価します。
  * (この時、品質値(q)などの付加的なパラメータは全て加味されません。)<br/>
- * 評価する対象の{@link Response}が存在しない（マッピングされていない）場合は、
+ * 評価する対象の{@link Renderable}が存在しない（マッピングされていない）場合は、
  * {@link HttpStatus#NOT_ACCEPTABLE}を返します。
  * @author snowgoose
  */
-public class Acceptable implements Response {
+public class Acceptable implements Renderable {
 
     private Object source;
     protected static final Map<String, Creator> DEFAULT_MEDIA_TYPE_MAP = new HashMap<String, Creator>() {
@@ -45,7 +45,7 @@ public class Acceptable implements Response {
 
     /**
      * {@link Acceptable}のインスタンスを生成します。
-     * @param obj 委譲される{@link Response}に使用されるオブジェクト
+     * @param obj 委譲される{@link Renderable}に使用されるオブジェクト
      * @return {@link Acceptable}
      */
     public static Acceptable as(Object obj) {
@@ -54,7 +54,7 @@ public class Acceptable implements Response {
 
     /**
      * コンストラクタ
-     * @param obj 委譲される{@link Response}に使用されるオブジェクト
+     * @param obj 委譲される{@link Renderable}に使用されるオブジェクト
      */
     protected Acceptable(Object obj) {
         this.source = obj;
@@ -69,7 +69,7 @@ public class Acceptable implements Response {
             HttpStatus.NOT_ACCEPTABLE.render(context, response);
             return;
         }
-        Response d = selectResponse(mediaTypes, getSource());
+        Renderable d = selectResponse(mediaTypes, getSource());
         if (d == null) {
             HttpStatus.NOT_ACCEPTABLE.render(context, response);
             return;
@@ -79,28 +79,28 @@ public class Acceptable implements Response {
 
     /**
      * map(matchesAny,ANY_TYPE)のショートカットです。
-     * @param matchesAny 全てのメディアタイプに対応する{@link Response}
+     * @param matchesAny 全てのメディアタイプに対応する{@link Renderable}
      * @return 自身のインスタンス
      */
-    public Acceptable mapToAny(Response matchesAny) {
+    public Acceptable mapToAny(Renderable matchesAny) {
         return map(matchesAny, MediaTypes.WILDCARD);
     }
 
     /**
-     * 指定したメディアタイプが検出された場合に、処理を委譲する{@link Response}
+     * 指定したメディアタイプが検出された場合に、処理を委譲する{@link Renderable}
      * をマップします。既に同じメディアタイプでマップされている場合は上書きされます。
-     * @param matches 指定したメディアタイプに対応する{@link Response}
-     * @param mediaTypesStartWith この{@link Response}をマップする全てのメディアタイプ
+     * @param matches 指定したメディアタイプに対応する{@link Renderable}
+     * @param mediaTypesStartWith この{@link Renderable}をマップする全てのメディアタイプ
      * @return 自身のインスタンス
      */
-    public Acceptable map(Response matches, String... mediaTypesStartWith) {
+    public Acceptable map(Renderable matches, String... mediaTypesStartWith) {
         for (String mediaTypeStartWith : mediaTypesStartWith) {
             putToMediaTypeMap(mediaTypeStartWith, Creators.self(matches));
         }
         return this;
     }
 
-    private Response selectResponse(List<String> mediaTypes, Object source) {
+    private Renderable selectResponse(List<String> mediaTypes, Object source) {
         for (String mediaType : mediaTypes) {
             for (Entry<String, Creator> entry : getMediaTypeMap().entrySet()) {
                 if (StringUtils.trimToEmpty(mediaType).startsWith(entry.getKey())) {
@@ -161,13 +161,13 @@ public class Acceptable implements Response {
     }
 
     public static interface Creator {
-        Response create(Object source);
+        Renderable create(Object source);
     }
 
     public static class Creators {
         public static Creator json() {
             return new Creator() {
-                public Response create(Object source) {
+                public Renderable create(Object source) {
                     return Json.as(source);
                 }
 
@@ -179,7 +179,7 @@ public class Acceptable implements Response {
 
         public static Creator xml() {
             return new Creator() {
-                public Response create(Object source) {
+                public Renderable create(Object source) {
                     return Xml.as(source);
                 }
 
@@ -191,7 +191,7 @@ public class Acceptable implements Response {
 
         public static Creator text() {
             return new Creator() {
-                public Response create(Object source) {
+                public Renderable create(Object source) {
                     return Text.with(source != null ? source.toString() : StringUtils.EMPTY);
                 }
 
@@ -201,9 +201,9 @@ public class Acceptable implements Response {
             };
         }
 
-        public static Creator self(final Response d) {
+        public static Creator self(final Renderable d) {
             return new Creator() {
-                public Response create(Object source) {
+                public Renderable create(Object source) {
                     return d;
                 }
 

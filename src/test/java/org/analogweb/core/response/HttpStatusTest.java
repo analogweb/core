@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -69,7 +69,7 @@ public class HttpStatusTest {
     public void testRenderWithPreRenderResponse() throws Exception {
         when(response.getResponseHeaders()).thenReturn(headers);
 
-        Response direction = mock(Response.class);
+        Renderable direction = mock(Renderable.class);
 
         HttpStatus.OK.with(direction).render(requestContext, response);
 

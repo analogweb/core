@@ -10,7 +10,7 @@ import java.io.IOException;
  * レンダリングが行われます。
  * @author snowgoose
  */
-public interface Response {
+public interface Renderable {
 
     /**
      * エントリポイントを実行したの結果を、レスポンスにレンダリングします。

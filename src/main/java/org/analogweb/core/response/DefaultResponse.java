@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseContext.ResponseEntity;
 import org.analogweb.ResponseContext.ResponseWriter;
@@ -16,7 +16,7 @@ import org.analogweb.util.Maps;
 /**
  * @author snowgoose
  */
-public class DefaultResponse implements Response {
+public class DefaultResponse implements Renderable {
 
 	private Map<String, String> header = Maps.newEmptyHashMap();
 	private HttpStatus status;

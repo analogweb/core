@@ -5,7 +5,7 @@ import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -31,8 +31,8 @@ public class DefaultResponseResolverTest extends DefaultResponseResolver {
 
     @Test
     public void testResolve() {
-        Response invocationResult = mock(Response.class);
-        Response actual = resolver.resolve(invocationResult, metadata, context, response);
+        Renderable invocationResult = mock(Renderable.class);
+        Renderable actual = resolver.resolve(invocationResult, metadata, context, response);
 
         assertThat(actual, is(sameInstance(invocationResult)));
     }
@@ -65,7 +65,7 @@ public class DefaultResponseResolverTest extends DefaultResponseResolver {
 
     @Test
     public void testResolveWithoutResult() {
-        Response invocationResult = null;
+        Renderable invocationResult = null;
         HttpStatus actual = (HttpStatus) resolver.resolve(invocationResult, metadata, context,
                 response);
 

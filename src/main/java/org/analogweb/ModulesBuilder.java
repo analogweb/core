@@ -58,7 +58,7 @@ public interface ModulesBuilder {
 	ModulesBuilder clearRequestValueResolverClass();
 
 	ModulesBuilder addResponseFormatterClass(
-			Class<? extends Response> mapToResponseClass,
+			Class<? extends Renderable> mapToResponseClass,
 			Class<? extends ResponseFormatter> responseFormatterClass);
 
 	ModulesBuilder clearDirectionFormatterClass();

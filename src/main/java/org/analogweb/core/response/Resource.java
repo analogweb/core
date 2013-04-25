@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -20,7 +20,7 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
-public class Resource implements Response {
+public class Resource implements Renderable {
 
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";

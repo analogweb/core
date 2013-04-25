@@ -2,7 +2,7 @@ package org.analogweb.core;
 
 import java.io.IOException;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseFormatterAware;
 import org.analogweb.ResponseHandler;
@@ -15,7 +15,7 @@ import org.analogweb.WebApplicationException;
  */
 public class DefaultResponseHandler implements ResponseHandler {
 
-    public void handleResult(Response result, ResponseFormatter resultFormatter,
+    public void handleResult(Renderable result, ResponseFormatter resultFormatter,
             RequestContext context, ResponseContext response) throws IOException,
             WebApplicationException {
         try {

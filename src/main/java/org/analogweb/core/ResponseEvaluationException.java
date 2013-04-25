@@ -1,6 +1,6 @@
 package org.analogweb.core;
 
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 
 /**
  * @author snowgoose
@@ -8,14 +8,14 @@ import org.analogweb.Response;
 public class ResponseEvaluationException extends ApplicationRuntimeException {
 
     private static final long serialVersionUID = 1L;
-    private final Response result;
+    private final Renderable result;
 
-    public ResponseEvaluationException(Throwable cause, Response result) {
+    public ResponseEvaluationException(Throwable cause, Renderable result) {
         super(cause);
         this.result = result;
     }
 
-    public Response getActionResult() {
+    public Renderable getActionResult() {
         return this.result;
     }
 

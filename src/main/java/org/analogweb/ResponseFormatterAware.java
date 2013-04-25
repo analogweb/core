@@ -5,7 +5,7 @@ package org.analogweb;
  * 表します。
  * @author snowgoose
  */
-public interface ResponseFormatterAware<T extends Response> extends Response {
+public interface ResponseFormatterAware<T extends Renderable> extends Renderable {
     
     /**
      * {@link DirectionFormatter}を適用します。

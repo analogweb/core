@@ -19,6 +19,6 @@ public interface ResponseHandler extends Module {
      * @throws IOException {@link Direction}の評価時にI/Oエラーが発生した場合。
      * @throws WebApplicationException {@link Direction}の評価時に任意の例外が発生した場合。
      */
-    void handleResult(Response result, ResponseFormatter resultFormatter, RequestContext context,ResponseContext response) throws IOException, WebApplicationException;
+    void handleResult(Renderable result, ResponseFormatter resultFormatter, RequestContext context,ResponseContext response) throws IOException, WebApplicationException;
 
 }

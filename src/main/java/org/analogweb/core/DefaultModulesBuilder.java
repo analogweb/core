@@ -28,7 +28,7 @@ import org.analogweb.ModulesContainerAdaptorAware;
 import org.analogweb.MultiModule;
 import org.analogweb.RequestValueResolver;
 import org.analogweb.RequestValueResolvers;
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
 import org.analogweb.ResponseResolver;
@@ -55,7 +55,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
     private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
     private final List<Class<? extends RequestValueResolver>> requestValueResolverClasses;
-    private final Map<Class<? extends Response>, Class<? extends ResponseFormatter>> directionFormatterClasses;
+    private final Map<Class<? extends Renderable>, Class<? extends ResponseFormatter>> directionFormatterClasses;
     private final List<Class<? extends MultiModule>> ignoreClasses;
     private final List<MultiModule.Filter> ignoreFilters;
 
@@ -170,7 +170,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
             }
 
             @Override
-            public ResponseFormatter findResponseFormatter(Class<? extends Response> mapToResponse) {
+            public ResponseFormatter findResponseFormatter(Class<? extends Renderable> mapToResponse) {
                 Class<? extends ResponseFormatter> formatterClass = getResponseFormatterClass(mapToResponse);
                 if (formatterClass != null) {
                     return getComponentInstance(moduleContainerAdaptor, formatterClass);
@@ -419,7 +419,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     protected Class<? extends ResponseFormatter> getResponseFormatterClass(
-            Class<? extends Response> mapToResponse) {
+            Class<? extends Renderable> mapToResponse) {
         return this.directionFormatterClasses.get(mapToResponse);
     }
 
@@ -463,7 +463,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public ModulesBuilder addResponseFormatterClass(Class<? extends Response> mapToResponseClass,
+    public ModulesBuilder addResponseFormatterClass(Class<? extends Renderable> mapToResponseClass,
             Class<? extends ResponseFormatter> directionFormatterClass) {
         this.directionFormatterClasses.put(mapToResponseClass, directionFormatterClass);
         return this;

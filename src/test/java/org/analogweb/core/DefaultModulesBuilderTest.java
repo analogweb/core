@@ -27,7 +27,7 @@ import org.analogweb.Invoker;
 import org.analogweb.InvokerFactory;
 import org.analogweb.Modules;
 import org.analogweb.MultiModule;
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
 import org.analogweb.ResponseResolver;
@@ -119,7 +119,7 @@ public class DefaultModulesBuilderTest {
         builder.addAttributesHandlerClass(attributesHandler.getClass());
         builder.setExceptionHandlerClass(exceptionHandler.getClass());
         builder.setTypeMapperContextClass(typeMapperContext.getClass());
-        Response mapToResponse = mock(Response.class);
+        Renderable mapToResponse = mock(Renderable.class);
         builder.addResponseFormatterClass(mapToResponse.getClass(), directionFormatter.getClass());
         Modules modules = builder.buildModules(resolver, adaptor);
         assertSame(modules.getInvocationMetadataFactories().get(0), invocationMetadataFactory);

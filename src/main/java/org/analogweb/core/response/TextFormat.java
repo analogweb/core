@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 import org.analogweb.RequestContext;
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseContext.ResponseEntity;
 import org.analogweb.core.DefaultResponseEntity;
@@ -16,7 +16,7 @@ import org.analogweb.util.StringUtils;
  * 
  * @author snowgoose
  */
-public class TextFormat<T extends TextFormat<T>> extends DefaultResponse implements Response {
+public class TextFormat<T extends TextFormat<T>> extends DefaultResponse implements Renderable {
 
     private static final String DEFAULT_CHARSET = Charset.defaultCharset().displayName();
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";

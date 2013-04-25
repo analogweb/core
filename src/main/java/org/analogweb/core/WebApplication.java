@@ -29,7 +29,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
 import org.analogweb.RequestValueResolvers;
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
@@ -189,7 +189,7 @@ public class WebApplication implements Application {
             RequestContext context, ResponseContext responseContext) throws IOException,
             WebApplicationException {
         ResponseResolver resultResolver = modules.getResponseResolver();
-        Response resolved = resultResolver.resolve(result, metadata, context, responseContext);
+        Renderable resolved = resultResolver.resolve(result, metadata, context, responseContext);
         log.log(Markers.LIFECYCLE, "DL000008", result, result);
         ResponseFormatter resultFormatter = modules.findResponseFormatter(resolved.getClass());
         if (resultFormatter != null) {

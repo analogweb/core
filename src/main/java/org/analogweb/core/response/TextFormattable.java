@@ -7,7 +7,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 
 /**
- * テキストフォーマットが可能な{@link org.analogweb.Response}の実装です。
+ * テキストフォーマットが可能な{@link org.analogweb.Renderable}の実装です。
  * @param <T> フォーマットする{@link TextFormattable}の型
  * @author snowgoose
  */

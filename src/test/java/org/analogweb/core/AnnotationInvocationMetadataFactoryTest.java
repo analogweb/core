@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationMetadataFactory;
-import org.analogweb.Response;
+import org.analogweb.Renderable;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.Delete;
 import org.analogweb.annotation.Get;
@@ -235,21 +235,21 @@ public class AnnotationInvocationMetadataFactoryTest {
     public static class FooResource {
 
         @On("/something/done")
-        public Response doSomething() {
+        public Renderable doSomething() {
             return null;
         }
 
         @On("something/donewitharg")
-        public Response doSomethingWithArg(@As("arg") String arg) {
+        public Renderable doSomethingWithArg(@As("arg") String arg) {
             return null;
         }
 
-        public Response doSomethingNoDetectable(String arg, @As("foo") Integer foo) {
+        public Renderable doSomethingNoDetectable(String arg, @As("foo") Integer foo) {
             return null;
         }
 
         @On
-        public Response doSomethingNameBased(@As("arg") String arg) {
+        public Renderable doSomethingNameBased(@As("arg") String arg) {
             return null;
         }
     }
@@ -258,45 +258,45 @@ public class AnnotationInvocationMetadataFactoryTest {
     public static class BaaResource {
 
         @On("/something/done")
-        public Response doSomething() {
+        public Renderable doSomething() {
             return null;
         }
 
         @On("something/donewitharg")
-        public Response doSomethingWithArg(@As("arg") String arg) {
+        public Renderable doSomethingWithArg(@As("arg") String arg) {
             return null;
         }
 
-        public Response doSomethingNoDetectable(String arg, @As("foo") Integer foo) {
+        public Renderable doSomethingNoDetectable(String arg, @As("foo") Integer foo) {
             return null;
         }
 
         @On
-        public Response doSomethingNameBased(@As("arg") String arg) {
+        public Renderable doSomethingNameBased(@As("arg") String arg) {
             return null;
         }
 
         @On("/something/post")
         @Post
-        public Response doSomethingWithPostMethod() {
+        public Renderable doSomethingWithPostMethod() {
             return null;
         }
 
         @On("/something/get")
         @Get
-        public Response doSomethingWithGetMethod() {
+        public Renderable doSomethingWithGetMethod() {
             return null;
         }
 
         @On("/something/delete")
         @Delete
-        public Response doSomethingWithDeleteMethod(@As("arg") String arg) {
+        public Renderable doSomethingWithDeleteMethod(@As("arg") String arg) {
             return null;
         }
 
         @On("/something/put")
         @Put
-        public Response doSomethingWithPutMethod() {
+        public Renderable doSomethingWithPutMethod() {
             return null;
         }
     }
@@ -304,7 +304,7 @@ public class AnnotationInvocationMetadataFactoryTest {
     public static class BazResource {
 
         @On("/something/done")
-        public Response doSomething() {
+        public Renderable doSomething() {
             return null;
         }
     }

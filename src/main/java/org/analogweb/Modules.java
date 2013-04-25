@@ -32,6 +32,6 @@ public interface Modules extends Disposable {
 
     RequestValueResolvers getRequestValueResolvers();
 
-    ResponseFormatter findResponseFormatter(Class<? extends Response> mapToResponse);
+    ResponseFormatter findResponseFormatter(Class<? extends Renderable> mapToResponse);
     
 }

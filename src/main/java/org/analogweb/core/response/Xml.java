@@ -14,7 +14,7 @@ import org.analogweb.core.FormatFailureException;
 
 /**
  * オブジェクトをXMLにフォーマットしてレスポンスする
- * {@link org.analogweb.Response}の実装です。<br/>
+ * {@link org.analogweb.Renderable}の実装です。<br/>
  * デフォルトのContent-Typeは「application/xml; charset=UTF-8」です。
  * @author snowgoose
  */
