@@ -1,6 +1,8 @@
 package org.analogweb.core;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -10,7 +12,6 @@ import java.util.Map;
 
 import org.analogweb.MediaType;
 import org.analogweb.Parameters;
-import org.analogweb.RequestContext;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
@@ -20,27 +21,32 @@ import org.analogweb.util.StringUtils;
  */
 public class QueryParameters implements Parameters {
 
-    private final RequestContext context;
     private Map<String, String[]> extracted;
+    private final URI requestURI;
+    private final InputStream body;
+    private final MediaType contentType;
 
-    public QueryParameters(RequestContext context) {
-        this.context = context;
+    public QueryParameters(URI requestURI) {
+        this(requestURI,null,null);
     }
 
-    protected Map<String, String[]> extract(RequestContext context) {
+    public QueryParameters(URI requestURI, InputStream body, MediaType contentType) {
+        this.requestURI = requestURI;
+        this.body = body;
+        this.contentType = contentType;
+    }
 
+    protected Map<String, String[]> extract(URI requestURI, InputStream body, MediaType contentType) {
         Charset charset = Charset.defaultCharset();
-        MediaType mp = context.getContentType();
-        if (mp != null) {
-            String c = mp.getParameters().get("charset");
+        if (contentType != null) {
+            String c = contentType.getParameters().get("charset");
             if (StringUtils.isNotEmpty(c)) {
                 charset = Charset.forName(c);
             }
         }
-
         try {
-            String encoded = resolveEncodedParameters(context, charset);
-            return extractEncodedParams(encoded, charset);
+            String parameterParts = resolveParametersParts(requestURI, body, contentType, charset);
+            return extractEncodedParams(parameterParts, charset, getParameterSeparator());
         } catch (IllegalArgumentException e) {
             throw new ApplicationRuntimeException(e) {
                 // TODO
@@ -54,18 +60,22 @@ public class QueryParameters implements Parameters {
         }
     }
 
-    protected String resolveEncodedParameters(RequestContext context, Charset charset)
-            throws IOException {
-        return context.getRequestPath().getRequestURI().getQuery();
+    protected String resolveParametersParts(URI requestURI, InputStream body,
+            MediaType contentType, Charset charset) throws IOException {
+        return requestURI.getRawQuery();
     }
 
-    protected Map<String, String[]> extractEncodedParams(String encoded, Charset charset)
-            throws IOException {
+    protected char getParameterSeparator() {
+        return '&';
+    }
+
+    protected Map<String, String[]> extractEncodedParams(String encoded, Charset charset,
+            char separator) throws IOException {
         Map<String, String[]> map = Maps.newEmptyHashMap();
         if (StringUtils.isEmpty(encoded)) {
             return map;
         }
-        final List<String> tokenized = StringUtils.split(encoded, '&');
+        final List<String> tokenized = StringUtils.split(encoded, separator);
         for (String token : tokenized) {
             int idx = token.indexOf('=');
             if (idx < 0) {
@@ -90,7 +100,7 @@ public class QueryParameters implements Parameters {
     @Override
     public Map<String, String[]> asMap() {
         if (extracted == null) {
-            this.extracted = extract(getRequestContext());
+            this.extracted = extract(this.requestURI, this.body, this.contentType);
         }
         return extracted;
     }
@@ -102,9 +112,5 @@ public class QueryParameters implements Parameters {
             return Collections.emptyList();
         }
         return Arrays.asList(array);
-    }
-
-    protected RequestContext getRequestContext() {
-        return this.context;
     }
 }

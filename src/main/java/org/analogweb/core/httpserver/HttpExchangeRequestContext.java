@@ -12,6 +12,7 @@ import org.analogweb.Parameters;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.core.AcceptLanguages;
+import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.EmptyCookies;
 import org.analogweb.core.FormParameters;
 import org.analogweb.core.MediaTypes;
@@ -29,15 +30,14 @@ public class HttpExchangeRequestContext implements RequestContext {
 	private final HttpExchange ex;
 	private final RequestPath requestPath;
 	private final Parameters params;
-	private final Parameters formParams;
+	private Parameters formParams;
 	private final AcceptLanguages langs;
 	private final Locale defaultLocale;
 	
 	HttpExchangeRequestContext(HttpExchange ex, RequestPath requestPath, Locale defaultLocale) {
 		this.ex = ex;
 		this.requestPath = requestPath;
-		this.params = new QueryParameters(this);
-		this.formParams = new FormParameters(this);
+		this.params = new QueryParameters(getRequestPath().getRequestURI());
 		this.langs = new AcceptLanguages(this);
 		this.defaultLocale = defaultLocale;
 	}
@@ -69,10 +69,21 @@ public class HttpExchangeRequestContext implements RequestContext {
 		return this.params;
 	}
 
-	@Override
-	public Parameters getFormParameters() {
-		return this.formParams;
-	}
+    @Override
+    public Parameters getFormParameters() {
+        if (this.formParams == null) {
+            try {
+                this.formParams = new FormParameters(getRequestPath().getRequestURI(),
+                        getRequestBody(), getContentType());
+            } catch (IOException e) {
+                throw new ApplicationRuntimeException(e) {
+                    // TODO 
+                    private static final long serialVersionUID = 1L;
+                };
+            }
+        }
+        return this.formParams;
+    }
 
 	@Override
 	public InputStream getRequestBody() throws IOException {
