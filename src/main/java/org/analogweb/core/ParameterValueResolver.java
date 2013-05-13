@@ -20,9 +20,12 @@ public class ParameterValueResolver implements RequestValueResolver {
         }
         List<String> values = requestContext.getQueryParameters().getValues(name);
         if (values == null || values.isEmpty()) {
-            values = requestContext.getFormParameters().getValues(name);
+            values = requestContext.getMatrixParameters().getValues(name);
             if (values == null || values.isEmpty()) {
-                return null;
+                values = requestContext.getFormParameters().getValues(name);
+                if (values == null || values.isEmpty()) {
+                    return null;
+                }
             }
         }
         if (String[].class.equals(requiredType)) {

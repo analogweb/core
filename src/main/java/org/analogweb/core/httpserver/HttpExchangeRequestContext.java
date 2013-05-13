@@ -15,6 +15,7 @@ import org.analogweb.core.AcceptLanguages;
 import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.EmptyCookies;
 import org.analogweb.core.FormParameters;
+import org.analogweb.core.MatrixParameters;
 import org.analogweb.core.MediaTypes;
 import org.analogweb.core.QueryParameters;
 import org.analogweb.core.RequestCookies;
@@ -27,47 +28,54 @@ import com.sun.net.httpserver.HttpExchange;
  */
 public class HttpExchangeRequestContext implements RequestContext {
 
-	private final HttpExchange ex;
-	private final RequestPath requestPath;
-	private final Parameters params;
-	private Parameters formParams;
-	private final AcceptLanguages langs;
-	private final Locale defaultLocale;
-	
-	HttpExchangeRequestContext(HttpExchange ex, RequestPath requestPath, Locale defaultLocale) {
-		this.ex = ex;
-		this.requestPath = requestPath;
-		this.params = new QueryParameters(getRequestPath().getRequestURI());
-		this.langs = new AcceptLanguages(this);
-		this.defaultLocale = defaultLocale;
-	}
+    private final HttpExchange ex;
+    private final RequestPath requestPath;
+    private final Parameters params;
+    private final Parameters matrixParams;
+    private Parameters formParams;
+    private final AcceptLanguages langs;
+    private final Locale defaultLocale;
 
-	protected HttpExchange getHttpExchange() {
-		return this.ex;
-	}
+    HttpExchangeRequestContext(HttpExchange ex, RequestPath requestPath, Locale defaultLocale) {
+        this.ex = ex;
+        this.requestPath = requestPath;
+        this.params = new QueryParameters(getRequestPath().getRequestURI());
+        this.matrixParams = new MatrixParameters(getRequestPath().getRequestURI());
+        this.langs = new AcceptLanguages(this);
+        this.defaultLocale = defaultLocale;
+    }
 
-	@Override
-	public MediaType getContentType() {
-		List<String> header = getRequestHeaders().getValues("Content-Type");
-		if (CollectionUtils.isEmpty(header)) {
-			return null;
-		}
-		return MediaTypes.valueOf(header.get(0));
-	}
+    protected HttpExchange getHttpExchange() {
+        return this.ex;
+    }
 
-	@Override
-	public Cookies getCookies() {
-		List<String> cookieHeader = getRequestHeaders().getValues("Cookie");
-		if (CollectionUtils.isEmpty(cookieHeader)) {
-			return new EmptyCookies();
-		}
-		return new RequestCookies(cookieHeader.get(0));
-	}
+    @Override
+    public MediaType getContentType() {
+        List<String> header = getRequestHeaders().getValues("Content-Type");
+        if (CollectionUtils.isEmpty(header)) {
+            return null;
+        }
+        return MediaTypes.valueOf(header.get(0));
+    }
 
-	@Override
-	public Parameters getQueryParameters() {
-		return this.params;
-	}
+    @Override
+    public Cookies getCookies() {
+        List<String> cookieHeader = getRequestHeaders().getValues("Cookie");
+        if (CollectionUtils.isEmpty(cookieHeader)) {
+            return new EmptyCookies();
+        }
+        return new RequestCookies(cookieHeader.get(0));
+    }
+
+    @Override
+    public Parameters getQueryParameters() {
+        return this.params;
+    }
+
+    @Override
+    public Parameters getMatrixParameters() {
+        return this.matrixParams;
+    }
 
     @Override
     public Parameters getFormParameters() {
@@ -77,6 +85,7 @@ public class HttpExchangeRequestContext implements RequestContext {
                         getRequestBody(), getContentType());
             } catch (IOException e) {
                 throw new ApplicationRuntimeException(e) {
+
                     // TODO 
                     private static final long serialVersionUID = 1L;
                 };
@@ -85,29 +94,28 @@ public class HttpExchangeRequestContext implements RequestContext {
         return this.formParams;
     }
 
-	@Override
-	public InputStream getRequestBody() throws IOException {
-		return getHttpExchange().getRequestBody();
-	}
+    @Override
+    public InputStream getRequestBody() throws IOException {
+        return getHttpExchange().getRequestBody();
+    }
 
-	@Override
-	public Headers getRequestHeaders() {
-		return new HttpExchangeHeaders(getHttpExchange().getRequestHeaders());
-	}
+    @Override
+    public Headers getRequestHeaders() {
+        return new HttpExchangeHeaders(getHttpExchange().getRequestHeaders());
+    }
 
-	@Override
-	public RequestPath getRequestPath() {
-		return this.requestPath;
-	}
+    @Override
+    public RequestPath getRequestPath() {
+        return this.requestPath;
+    }
 
-	@Override
-	public List<Locale> getLocales() {
-		return this.langs.getLocales();
-	}
+    @Override
+    public List<Locale> getLocales() {
+        return this.langs.getLocales();
+    }
 
-	@Override
-	public Locale getLocale() {
-		return CollectionUtils.indexOf(getLocales(),0, this.defaultLocale);
-	}
-
+    @Override
+    public Locale getLocale() {
+        return CollectionUtils.indexOf(getLocales(), 0, this.defaultLocale);
+    }
 }

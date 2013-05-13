@@ -24,6 +24,7 @@ public class ParameterValueResolverTest {
     private RequestContext requestContext;
     private InvocationMetadata metadata;
     private Parameters params;
+    private Parameters matrixParams;
 
     @Before
     public void setUp() throws Exception {
@@ -31,6 +32,7 @@ public class ParameterValueResolverTest {
         requestContext = mock(RequestContext.class);
         metadata = mock(InvocationMetadata.class);
         params = mock(Parameters.class);
+        matrixParams = mock(Parameters.class);
     }
 
     @Test
@@ -45,6 +47,7 @@ public class ParameterValueResolverTest {
     public void testResolveAttributeValueViaFormParameters() {
         Parameters empty = mock(Parameters.class);
         when(requestContext.getQueryParameters()).thenReturn(empty);
+        when(requestContext.getMatrixParameters()).thenReturn(empty);
         when(requestContext.getFormParameters()).thenReturn(params);
         when(params.getValues("foo")).thenReturn(Arrays.asList("baa"));
         Object actual = resolver.resolveValue(requestContext, metadata, "foo", String.class);
@@ -71,9 +74,20 @@ public class ParameterValueResolverTest {
     @Test
     public void testResolveAttributeNoParameterValue() {
         when(requestContext.getQueryParameters()).thenReturn(params);
+        when(requestContext.getMatrixParameters()).thenReturn(params);
         when(requestContext.getFormParameters()).thenReturn(params);
         when(params.getValues("foo")).thenReturn(null);
         Object actual = resolver.resolveValue(requestContext, metadata, "foo", String[].class);
         assertNull(actual);
+    }
+
+    @Test
+    public void testResolveAttributeViaMatrixParam() {
+        when(requestContext.getQueryParameters()).thenReturn(params);
+        when(requestContext.getMatrixParameters()).thenReturn(matrixParams);
+        when(params.getValues("foo")).thenReturn(null);
+        when(params.getValues("foo")).thenReturn(Arrays.asList("baa"));
+        Object actual = resolver.resolveValue(requestContext, metadata, "foo", String[].class);
+        assertThat(((String[]) actual)[0], is("baa"));
     }
 }

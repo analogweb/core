@@ -36,6 +36,12 @@ public interface RequestContext {
     Parameters getQueryParameters();
 
     /**
+     * HTTPリクエストURIに含まれるマトリクスパラメータを保持する{@link Parameters}を取得します。
+     * @return {@link Parameters}
+     */
+    Parameters getMatrixParameters();
+
+    /**
      * リクエストボディを保持する{@link InputStream}を取得します。
      * @return {@link InputStream}
      * @throws IOException I/Oエラーが発生した場合
