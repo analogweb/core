@@ -25,11 +25,11 @@ import org.analogweb.Module;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.ModulesConfig;
+import org.analogweb.Renderable;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMapping;
 import org.analogweb.RequestValueResolvers;
-import org.analogweb.Renderable;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
@@ -88,6 +88,9 @@ public class WebApplication implements Application {
         Modules mod = null;
         List<ApplicationProcessor> processors = null;
         try {
+            mod = getModules();
+            processors = mod.getApplicationProcessors();
+            onProcessRequest(processors, context, requestedPath);
             RequestPathMapping mapping = getRequestPathMapping();
             log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
             metadata = mapping.findInvocationMetadata(requestedPath);
@@ -96,7 +99,6 @@ public class WebApplication implements Application {
                 return NOT_FOUND;
             }
             log.log(Markers.LIFECYCLE, "DL000006", requestedPath, metadata);
-            mod = getModules();
             ContainerAdaptor invocationInstances = mod.getInvocationInstanceProvider();
             RequestValueResolvers resolvers = mod.getRequestValueResolvers();
             TypeMapperContext typeMapperContext = mod.getTypeMapperContext();
@@ -104,7 +106,6 @@ public class WebApplication implements Application {
                     invocationInstances, metadata, context, responseContext, typeMapperContext,
                     resolvers);
             InvocationArguments arguments = invocation.getInvocationArguments();
-            processors = mod.getApplicationProcessors();
             prepareInvoke(processors, arguments, metadata, context, resolvers, typeMapperContext);
             try {
                 Object invocationResult = mod.getInvoker().invoke(invocation, metadata, context,
@@ -139,7 +140,19 @@ public class WebApplication implements Application {
         return PROCEEDED;
     }
 
-    protected Object prepareInvoke(List<ApplicationProcessor> processors, InvocationArguments args,
+    protected void onProcessRequest(List<ApplicationProcessor> processors, RequestContext request,
+            RequestPath requestedPath) {
+        log.log(Markers.LIFECYCLE, "DL000017");
+        Object interruption = ApplicationProcessor.NO_INTERRUPTION;
+        for (ApplicationProcessor processor : processors) {
+            interruption = processor.onProcessRequest(request, requestedPath);
+            if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
+                throw new InvokeInterruptedException(interruption);
+            }
+        }
+    }
+
+    protected void prepareInvoke(List<ApplicationProcessor> processors, InvocationArguments args,
             InvocationMetadata metadata, RequestContext request,
             RequestValueResolvers attributesHandlers, TypeMapperContext typeMapperContext) {
         log.log(Markers.LIFECYCLE, "DL000013");
@@ -152,7 +165,6 @@ public class WebApplication implements Application {
                 throw new InvokeInterruptedException(interruption);
             }
         }
-        return interruption;
     }
 
     protected void postInvoke(List<ApplicationProcessor> processors, Object invocationResult,
@@ -164,7 +176,7 @@ public class WebApplication implements Application {
         }
     }
 
-    protected Object onException(List<ApplicationProcessor> processors, Exception thrown,
+    protected void onException(List<ApplicationProcessor> processors, Exception thrown,
             InvocationArguments args, InvocationMetadata metadata, RequestContext request) {
         log.log(Markers.LIFECYCLE, "DL000015");
         Object interruption = ApplicationProcessor.NO_INTERRUPTION;
@@ -174,7 +186,6 @@ public class WebApplication implements Application {
                 throw new InvokeInterruptedException(interruption);
             }
         }
-        return interruption;
     }
 
     protected void afterCompletion(List<ApplicationProcessor> processors, RequestContext context,

@@ -15,6 +15,17 @@ public interface ApplicationProcessor extends MultiModule,Precedence {
      * の処理を中断しないことを表すフラグメントです。
      */
     Object NO_INTERRUPTION = new Object();
+    
+    /**
+     * {@link Application}のルーティング処理前に処理を追加します。<br/>
+     * 通常は、{@link #NO_INTERRUPTION}を返します。それ以外の
+     * 値をかえす場合は、処理の結果その戻り値を以って
+     * {@link Application}の処理を終了します。
+     * @param context {@link RequestContext}
+     * @param path {@link RequestPath}
+     * @return 実行処理を中断する結果({@link Direction}など。)
+     */
+    Object onProcessRequest(RequestContext request, RequestPath path);
 
     /**
      * {@link Application}の実行前に処理を追加します。<br/>

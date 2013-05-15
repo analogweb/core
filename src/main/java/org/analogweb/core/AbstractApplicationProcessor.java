@@ -8,6 +8,7 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.Precedence;
 import org.analogweb.PreparedInvocationArguments;
 import org.analogweb.RequestContext;
+import org.analogweb.RequestPath;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
@@ -16,6 +17,11 @@ import org.analogweb.TypeMapperContext;
  * @author snowgoose
  */
 public abstract class AbstractApplicationProcessor implements ApplicationProcessor {
+
+    @Override
+    public Object onProcessRequest(RequestContext request, RequestPath path) {
+        return NO_INTERRUPTION;
+    }
 
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,
