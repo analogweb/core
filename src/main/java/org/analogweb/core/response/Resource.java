@@ -19,7 +19,7 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
-public class Resource extends DefaultResponse {
+public class Resource extends BuildableResponse<Resource> {
 
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";

@@ -3,8 +3,8 @@ package org.analogweb.core.response;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import org.analogweb.RequestContext;
 import org.analogweb.Renderable;
+import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseContext.ResponseEntity;
 import org.analogweb.core.DefaultResponseEntity;
@@ -16,12 +16,11 @@ import org.analogweb.util.StringUtils;
  * 
  * @author snowgoose
  */
-public class TextFormat<T extends TextFormat<T>> extends DefaultResponse implements Renderable {
+public class TextFormat<T extends TextFormat<T>> extends BuildableResponse<T> implements Renderable {
 
     private static final String DEFAULT_CHARSET = Charset.defaultCharset().displayName();
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
     private final String responseText;
-
     private String contentType = DEFAULT_CONTENT_TYPE;
     private String charset = DEFAULT_CHARSET;
 
@@ -34,9 +33,8 @@ public class TextFormat<T extends TextFormat<T>> extends DefaultResponse impleme
     }
 
     protected TextFormat(String input, String contentType, String charset) {
-    	super();
-		this.responseText = StringUtils.isEmpty(input) ? StringUtils.EMPTY
-				: input;
+        super();
+        this.responseText = StringUtils.isEmpty(input) ? StringUtils.EMPTY : input;
         this.charset = charset;
         this.contentType = contentType;
     }
@@ -67,37 +65,36 @@ public class TextFormat<T extends TextFormat<T>> extends DefaultResponse impleme
     }
 
     @Override
-	protected ResponseEntity extractResponseEntity(RequestContext request,
-			ResponseContext response) {
-		Charset cs = getCharset();
-		if (cs == null) {
-			return new DefaultResponseEntity(getResponseText());
-		} else {
-			return new DefaultResponseEntity(getResponseText(), cs);
-		}
-	}
+    protected ResponseEntity extractResponseEntity(RequestContext request, ResponseContext response) {
+        Charset cs = getCharset();
+        if (cs == null) {
+            return new DefaultResponseEntity(getResponseText());
+        } else {
+            return new DefaultResponseEntity(getResponseText(), cs);
+        }
+    }
 
-	protected void mergeHeaders(RequestContext request,
-			ResponseContext response, Map<String, String> headers,
-			ResponseEntity entity) {
-		String contentType = resolveContentType();
-		if (StringUtils.isNotEmpty(contentType)) {
-			response.getResponseHeaders().putValue("Content-Type", contentType);
-		}
-		super.mergeHeaders(request, response, headers, entity);
-	}
+    @Override
+    protected void mergeHeaders(RequestContext request, ResponseContext response,
+            Map<String, String> headers, ResponseEntity entity) {
+        String contentType = resolveContentType();
+        if (StringUtils.isNotEmpty(contentType)) {
+            response.getResponseHeaders().putValue("Content-Type", contentType);
+        }
+        super.mergeHeaders(request, response, headers, entity);
+    }
 
-	protected String getResponseText() {
+    protected String getResponseText() {
         return this.responseText;
     }
 
-	public Charset getCharset() {
-		String cs = getCharsetAsText();
-		if (StringUtils.isEmpty(cs)) {
-			return null;
-		}
-		return Charset.forName(cs);
-	}
+    public Charset getCharset() {
+        String cs = getCharsetAsText();
+        if (StringUtils.isEmpty(cs)) {
+            return null;
+        }
+        return Charset.forName(cs);
+    }
 
     public final String getCharsetAsText() {
         return this.charset;
@@ -117,5 +114,4 @@ public class TextFormat<T extends TextFormat<T>> extends DefaultResponse impleme
     public String toString() {
         return responseText;
     }
-
 }

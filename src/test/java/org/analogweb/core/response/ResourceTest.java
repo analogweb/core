@@ -47,7 +47,7 @@ public class ResourceTest {
     public void testDefaultFileResource() throws Exception {
         File file = folder.newFile("text.log");
         writeStringTo(file);
-        Resource resource = Resource.as(file);
+        Resource resource = Resource.as(file).status(204);
 
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
