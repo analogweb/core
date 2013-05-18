@@ -9,7 +9,7 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.annotation.As;
-import org.analogweb.annotation.On;
+import org.analogweb.annotation.Route;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,26 +54,26 @@ public class DefaultInvocationTest {
 		assertThat(actual.toString(), is("foo is something!!"));
 	}
 
-	@On
+	@Route
 	public static class StubResource {
-		@On
+		@Route
 		private String doNothing() {
 			return null;
 		}
 
-		@On
+		@Route
 		public String doSomething(@As("foo") String foo) {
 			return String.format("%s is something!!", foo);
 		}
 
-		@On
+		@Route
 		public String doAnything(@As("foo") String foo, String baa,
 				@As("baz") Integer baz) {
 			return String
 					.format("No%s %s with %s is anything!!", baz, foo, baa);
 		}
 
-		@On
+		@Route
 		public String doSomethingWithException(@As("foo") String foo,
 				@As("baa") Long baa) {
 			throw new NullPointerException("oops!");

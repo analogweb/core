@@ -14,7 +14,7 @@ import org.analogweb.Renderable;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.Delete;
 import org.analogweb.annotation.Get;
-import org.analogweb.annotation.On;
+import org.analogweb.annotation.Route;
 import org.analogweb.annotation.Post;
 import org.analogweb.annotation.Put;
 import org.junit.Before;
@@ -231,15 +231,15 @@ public class AnnotationInvocationMetadataFactoryTest {
         assertThat(actionMethodMetadata, is(nullValue()));
     }
 
-    @On("/foo")
+    @Route("/foo")
     public static class FooResource {
 
-        @On("/something/done")
+        @Route("/something/done")
         public Renderable doSomething() {
             return null;
         }
 
-        @On("something/donewitharg")
+        @Route("something/donewitharg")
         public Renderable doSomethingWithArg(@As("arg") String arg) {
             return null;
         }
@@ -248,21 +248,21 @@ public class AnnotationInvocationMetadataFactoryTest {
             return null;
         }
 
-        @On
+        @Route
         public Renderable doSomethingNameBased(@As("arg") String arg) {
             return null;
         }
     }
 
-    @On
+    @Route
     public static class BaaResource {
 
-        @On("/something/done")
+        @Route("/something/done")
         public Renderable doSomething() {
             return null;
         }
 
-        @On("something/donewitharg")
+        @Route("something/donewitharg")
         public Renderable doSomethingWithArg(@As("arg") String arg) {
             return null;
         }
@@ -271,30 +271,30 @@ public class AnnotationInvocationMetadataFactoryTest {
             return null;
         }
 
-        @On
+        @Route
         public Renderable doSomethingNameBased(@As("arg") String arg) {
             return null;
         }
 
-        @On("/something/post")
+        @Route("/something/post")
         @Post
         public Renderable doSomethingWithPostMethod() {
             return null;
         }
 
-        @On("/something/get")
+        @Route("/something/get")
         @Get
         public Renderable doSomethingWithGetMethod() {
             return null;
         }
 
-        @On("/something/delete")
+        @Route("/something/delete")
         @Delete
         public Renderable doSomethingWithDeleteMethod(@As("arg") String arg) {
             return null;
         }
 
-        @On("/something/put")
+        @Route("/something/put")
         @Put
         public Renderable doSomethingWithPutMethod() {
             return null;
@@ -303,16 +303,16 @@ public class AnnotationInvocationMetadataFactoryTest {
 
     public static class BazResource {
 
-        @On("/something/done")
+        @Route("/something/done")
         public Renderable doSomething() {
             return null;
         }
     }
 
-    @On
+    @Route
     public static class Parent<T> {
 
-        @On
+        @Route
         public T resolve(T foo) {
             return null;
         }
@@ -322,7 +322,7 @@ public class AnnotationInvocationMetadataFactoryTest {
 
         // generate bridge method.
         @Override
-        @On
+        @Route
         public String resolve(String foo) {
             return "resolved!";
         }

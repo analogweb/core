@@ -15,6 +15,6 @@ import org.analogweb.core.CookieValueResolver;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER,ElementType.ANNOTATION_TYPE })
-@By(CookieValueResolver.class)
+@Resolver(CookieValueResolver.class)
 public @interface Cookie {
 }

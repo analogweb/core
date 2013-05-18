@@ -22,10 +22,10 @@ import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
-import org.analogweb.annotation.By;
+import org.analogweb.annotation.Resolver;
 import org.analogweb.annotation.Formats;
-import org.analogweb.annotation.MapWith;
-import org.analogweb.annotation.On;
+import org.analogweb.annotation.Convert;
+import org.analogweb.annotation.Route;
 import org.analogweb.util.ReflectionUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -170,29 +170,29 @@ public class ScopedParameterValueResolverTest {
         assertThat(actual, is(expected));
     }
 
-    @On
+    @Route
     private static final class StubResource {
-        @On
+        @Route
         public String doSomething(@As("foo") String foo, @As("baa") Date baa) {
             return "do something!";
         }
 
-        @On
+        @Route
         public String doNothing(String foo) {
             return "do nothing!";
         }
 
-        @On
-        public String doScope(@As("baz") @By(Session.class) String baz) {
+        @Route
+        public String doScope(@As("baz") @Resolver(Session.class) String baz) {
             return "do scope!";
         }
 
-        @On
+        @Route
         public String doCustomAnnotation(@As("foo") @Covered String foo) {
             return "do nothing!";
         }
 
-        @On
+        @Route
         public String doWithFormat(@As("foo") @Formats("###,###") BigDecimal amount) {
             return "do nothing!";
         }
@@ -204,8 +204,8 @@ public class ScopedParameterValueResolverTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.PARAMETER)
-    @By(Boo.class)
-    @MapWith(SomeTypeMapper.class)
+    @Resolver(Boo.class)
+    @Convert(SomeTypeMapper.class)
     static @interface Covered {
     }
 

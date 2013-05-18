@@ -15,6 +15,6 @@ import org.analogweb.core.PathVariableValueResolver;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER,ElementType.ANNOTATION_TYPE })
-@By(PathVariableValueResolver.class)
+@Resolver(PathVariableValueResolver.class)
 public @interface PathVariable {
 }

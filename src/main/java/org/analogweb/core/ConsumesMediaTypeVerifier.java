@@ -10,7 +10,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolver;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.annotation.By;
+import org.analogweb.annotation.Resolver;
 import org.analogweb.annotation.RequestFormats;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.util.AnnotationUtils;
@@ -54,7 +54,7 @@ public class ConsumesMediaTypeVerifier extends AbstractApplicationProcessor {
             RequestValueResolvers handlers) {
         Annotation[][] parameterAnn = method.getParameterAnnotations();
         for (Annotation[] pa : parameterAnn) {
-            By by = AnnotationUtils.findAnnotation(By.class, pa);
+            Resolver by = AnnotationUtils.findAnnotation(Resolver.class, pa);
             if (by != null) {
                 RequestValueResolver ha = handlers.findRequestValueResolver(by.value());
                 if (ha instanceof SpecificMediaTypeRequestValueResolver

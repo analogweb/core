@@ -14,6 +14,6 @@ import org.analogweb.core.HeaderValueResolver;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER,ElementType.ANNOTATION_TYPE })
-@By(HeaderValueResolver.class)
+@Resolver(HeaderValueResolver.class)
 public @interface Header {
 }

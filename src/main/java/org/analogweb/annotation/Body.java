@@ -15,6 +15,6 @@ import org.analogweb.core.RequestBodyValueResolver;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
-@By(RequestBodyValueResolver.class)
+@Resolver(RequestBodyValueResolver.class)
 public @interface Body {
 }

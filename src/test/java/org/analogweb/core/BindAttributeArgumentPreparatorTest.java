@@ -22,10 +22,10 @@ import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
-import org.analogweb.annotation.By;
+import org.analogweb.annotation.Resolver;
 import org.analogweb.annotation.Formats;
-import org.analogweb.annotation.MapWith;
-import org.analogweb.annotation.On;
+import org.analogweb.annotation.Convert;
+import org.analogweb.annotation.Route;
 import org.analogweb.util.ReflectionUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -123,24 +123,24 @@ public class BindAttributeArgumentPreparatorTest {
         verify(args).putInvocationArgument(0, expected);
     }
 
-    @On
+    @Route
     private static final class StubResource {
-        @On
+        @Route
         public String doSomething(@As("foo") String foo, @As("baa") String baa) {
             return "do something!";
         }
 
-        @On
-        public String doScope(@As("baz") @By(Foo.class) String baz) {
+        @Route
+        public String doScope(@As("baz") @Resolver(Foo.class) String baz) {
             return "do scope!";
         }
 
-        @On
+        @Route
         public String doWithCustomAnnotation(@As("foo") @Covered String foo) {
             return "do nothing!";
         }
 
-        @On
+        @Route
         public String doWithFormat(@As("foo") @Formats("###,###") BigDecimal amount) {
             return "do nothing!";
         }
@@ -159,8 +159,8 @@ public class BindAttributeArgumentPreparatorTest {
     
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.PARAMETER)
-    @By(Baa.class)
-    @MapWith(SomeTypeMapper.class)
+    @Resolver(Baa.class)
+    @Convert(SomeTypeMapper.class)
     static @interface Covered {
     }
 

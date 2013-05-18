@@ -9,7 +9,7 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.annotation.HttpMethod;
-import org.analogweb.annotation.On;
+import org.analogweb.annotation.Route;
 import org.analogweb.util.AnnotationUtils;
 import org.analogweb.util.CollectionUtils;
 import org.analogweb.util.StringUtils;
@@ -21,14 +21,14 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
 
     @Override
     public boolean containsInvocationClass(Class<?> clazz) {
-        return clazz.getAnnotation(On.class) != null;
+        return clazz.getAnnotation(Route.class) != null;
     }
 
     @Override
     public InvocationMetadata createInvocationMetadata(Class<?> invocationClass,
             Method invocationMethod) {
-        On typePathMapping = AnnotationUtils.findAnnotation(On.class, invocationClass);
-        On methodPathMapping = invocationMethod.getAnnotation(On.class);
+        Route typePathMapping = AnnotationUtils.findAnnotation(Route.class, invocationClass);
+        Route methodPathMapping = invocationMethod.getAnnotation(Route.class);
         if (typePathMapping != null && methodPathMapping != null) {
             return new DefaultInvocationMetadata(invocationClass, invocationMethod.getName(),
                     invocationMethod.getParameterTypes(), relativeRequestPath(invocationClass,
@@ -39,7 +39,7 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
     }
 
     protected RequestPathMetadata relativeRequestPath(Class<?> invocationClass,
-            Method invocationMethod, On typePathMapping, On methodPathMapping) {
+            Method invocationMethod, Route typePathMapping, Route methodPathMapping) {
         String editedRoot = typePathMapping.value();
         if (StringUtils.isEmpty(editedRoot)) {
             editedRoot = invocationClass.getSimpleName().replace("Resource", "").toLowerCase();

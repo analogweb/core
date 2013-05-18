@@ -1,11 +1,11 @@
 package jp.acme.test.actionsonly;
 
-import org.analogweb.annotation.On;
+import org.analogweb.annotation.Route;
 
-@On
+@Route
 public class BaaResource {
 
-    @On("anything")
+    @Route("anything")
     public String doAnything() {
         return "forward";
     }

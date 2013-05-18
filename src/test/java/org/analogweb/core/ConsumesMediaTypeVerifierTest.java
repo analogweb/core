@@ -16,8 +16,8 @@ import org.analogweb.RequestValueResolver;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
-import org.analogweb.annotation.By;
-import org.analogweb.annotation.On;
+import org.analogweb.annotation.Resolver;
+import org.analogweb.annotation.Route;
 import org.analogweb.annotation.RequestFormats;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.util.ReflectionUtils;
@@ -122,19 +122,19 @@ public class ConsumesMediaTypeVerifierTest {
     private static final class SomeResource {
 
         @RequestFormats(MediaTypes.APPLICATION_ATOM_XML)
-        @On
-        public String acceptsAtom(@By(Xml.class) @As Object anXml) {
+        @Route
+        public String acceptsAtom(@Resolver(Xml.class) @As Object anXml) {
             return "fake!";
         }
 
         @RequestFormats
-        @On
-        public String acceptsSvg(@By(Xml.class) @As Object anXml) {
+        @Route
+        public String acceptsSvg(@Resolver(Xml.class) @As Object anXml) {
             return "fake!";
         }
 
         @RequestFormats
-        @On
+        @Route
         public String acceptsParameter(@As("param") String param) {
             return "fake!";
         }

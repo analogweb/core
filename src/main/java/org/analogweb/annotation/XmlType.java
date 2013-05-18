@@ -14,6 +14,6 @@ import org.analogweb.core.XmlValueResolver;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER })
-@By(XmlValueResolver.class)
+@Resolver(XmlValueResolver.class)
 public @interface XmlType {
 }

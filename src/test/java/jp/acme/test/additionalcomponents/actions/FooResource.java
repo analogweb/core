@@ -1,16 +1,16 @@
 package jp.acme.test.additionalcomponents.actions;
 
-import org.analogweb.annotation.On;
+import org.analogweb.annotation.Route;
 
-@On
+@Route
 public class FooResource {
 
-    @On
+    @Route
     public String doSomething() {
         return "forward";
     }
 
-    @On("anything")
+    @Route("anything")
     public String doAnything() {
         return "forward";
     }

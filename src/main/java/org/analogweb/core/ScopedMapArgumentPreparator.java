@@ -14,14 +14,14 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.annotation.To;
+import org.analogweb.annotation.Attributes;
 import org.analogweb.util.AnnotationUtils;
 
 /**
- * {@link To}注釈が付与された{@link org.analogweb.annotation.On} メソッドの引数に対して、
+ * {@link Attributes}注釈が付与された{@link org.analogweb.annotation.Route} メソッドの引数に対して、
  * {@link Map}インスタンスを生成し、スコープを操作するためのインターフェースとして提供します。<br/>
- * スコープは{@link To#value()}属性に指定された値が適用されます。 適用されるメソッドの引数は{@link String}を キーとする
- * {@link Map}でなければなりません。{@link To}注釈を付与している場合でも、この条件を満たさない場合は {@link Map}
+ * スコープは{@link Attributes#value()}属性に指定された値が適用されます。 適用されるメソッドの引数は{@link String}を キーとする
+ * {@link Map}でなければなりません。{@link Attributes}注釈を付与している場合でも、この条件を満たさない場合は {@link Map}
  * インスタンスの適用はされません。
  * @author snowgoose
  */
@@ -34,8 +34,8 @@ public class ScopedMapArgumentPreparator extends AbstractApplicationProcessor {
         Annotation[][] argumentAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
-            To viewAttributes = AnnotationUtils
-                    .findAnnotation(To.class, argumentAnnotations[index]);
+            Attributes viewAttributes = AnnotationUtils
+                    .findAnnotation(Attributes.class, argumentAnnotations[index]);
             if (viewAttributes != null
                     && argTypes[index].getCanonicalName().equals(Map.class.getCanonicalName())) {
                 args.putInvocationArgument(index,

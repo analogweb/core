@@ -26,7 +26,7 @@ import org.analogweb.RequestValueResolvers;
 import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
-import org.analogweb.annotation.On;
+import org.analogweb.annotation.Route;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -115,10 +115,10 @@ public class DefaultInvokerTest {
         invoker.invoke(invocation, metadata, request, response);
     }
 
-    @On
+    @Route
     public static class StubResource {
 
-        @On
+        @Route
         public String doSomething(@As("foo") String foo) {
             return String.format("%s is something!!", foo);
         }

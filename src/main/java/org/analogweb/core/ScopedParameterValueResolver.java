@@ -9,9 +9,9 @@ import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
-import org.analogweb.annotation.By;
+import org.analogweb.annotation.Resolver;
 import org.analogweb.annotation.Formats;
-import org.analogweb.annotation.MapWith;
+import org.analogweb.annotation.Convert;
 import org.analogweb.util.AnnotationUtils;
 
 /**
@@ -25,7 +25,7 @@ public class ScopedParameterValueResolver implements AnnotatedInvocationParamete
             RequestValueResolvers handlers) {
         As bindAttribute = AnnotationUtils.findAnnotation(As.class, parameterAnnotations);
         if (bindAttribute != null) {
-            By scope = AnnotationUtils.findAnnotation(By.class, parameterAnnotations);
+            Resolver scope = AnnotationUtils.findAnnotation(Resolver.class, parameterAnnotations);
             RequestValueResolver handler;
             if(scope == null){
                 handler = handlers.findRequestValueResolver(null);
@@ -36,7 +36,7 @@ public class ScopedParameterValueResolver implements AnnotatedInvocationParamete
                 Object value = handler.resolveValue(context, metadata,
                         bindAttribute.value(), argType);
                 if (value != null) {
-                    MapWith mapWith = AnnotationUtils.findAnnotation(MapWith.class,
+                    Convert mapWith = AnnotationUtils.findAnnotation(Convert.class,
                             parameterAnnotations);
                     Class<? extends TypeMapper> mapperType = TypeMapper.class;
                     if (mapWith != null) {

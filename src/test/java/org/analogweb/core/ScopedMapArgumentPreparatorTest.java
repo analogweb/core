@@ -19,8 +19,8 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
-import org.analogweb.annotation.On;
-import org.analogweb.annotation.To;
+import org.analogweb.annotation.Route;
+import org.analogweb.annotation.Attributes;
 import org.analogweb.core.ScopedMapArgumentPreparator.ContextExtractor;
 import org.analogweb.util.ReflectionUtils;
 import org.junit.Before;
@@ -155,26 +155,26 @@ public class ScopedMapArgumentPreparatorTest {
         verify(handler).removeAttribute(context, "amount");
     }
 
-    @On
+    @Route
     private static class MockAction {
-        @On
-        public String doSomething(@To(Request.class) Map<String, ?> foo, @As("baa") String baa) {
+        @Route
+        public String doSomething(@Attributes(Request.class) Map<String, ?> foo, @As("baa") String baa) {
             return "do something!";
         }
 
-        @On
-        public String doSomethingElse(@To(Session.class) Map<String, Object> session,
+        @Route
+        public String doSomethingElse(@Attributes(Session.class) Map<String, Object> session,
                 @As("baa") String baa) {
             return "do something!";
         }
 
-        @On
+        @Route
         public String doNothing(HashMap<String, ?> foo, @As("baa") String baa) {
             return "do something!";
         }
 
-        @On
-        public String doAnything(@To(AttributesHandler.class) String notMap, @As("baa") String baa) {
+        @Route
+        public String doAnything(@Attributes(AttributesHandler.class) String notMap, @As("baa") String baa) {
             return "do something!";
         }
     }

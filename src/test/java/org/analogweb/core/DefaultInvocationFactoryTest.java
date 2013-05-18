@@ -23,7 +23,7 @@ import org.analogweb.RequestValueResolvers;
 import org.analogweb.ResponseContext;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
-import org.analogweb.annotation.On;
+import org.analogweb.annotation.Route;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.junit.Before;
 import org.junit.Rule;
@@ -148,15 +148,15 @@ public class DefaultInvocationFactoryTest {
 				converters, handlers);
 	}
 
-	@On
+	@Route
 	public static class StubResource {
-		@On
+		@Route
 		public String doSomething(@As("foo") String foo) {
 			return foo + " is anything!!";
 		}
 	}
 
-	@On
+	@Route
 	public static class StubResourceWithConstractor {
 
 		private final String value;
@@ -165,20 +165,20 @@ public class DefaultInvocationFactoryTest {
 			this.value = value;
 		}
 
-		@On
+		@Route
 		public String doSomething(@As("foo") String foo) {
 			return foo + " is anything!!";
 		}
 	}
 
-	@On
+	@Route
 	public static class StubResourceUnInstanticatable {
 
 		private StubResourceUnInstanticatable() {
 			// nop.
 		}
 
-		@On
+		@Route
 		public String doSomething(@As("foo") String foo) {
 			return foo + " is anything!!";
 		}
