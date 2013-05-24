@@ -2,10 +2,12 @@ package org.analogweb.util;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -109,9 +111,42 @@ public class AnnotationUtilsTest {
         assertThat(actual.get(0), is(instanceOf(SomeAnnotation.class)));
     }
 
+    @Test
+    public void testGetValue() throws Exception {
+        Method method = ManyIncludeClass.class.getMethod("doAnything");
+        List<SomeAnnotation> list = AnnotationUtils.findAnnotations(SomeAnnotation.class, method);
+        String actual = AnnotationUtils.getValue(list.get(1));
+        assertThat(actual, is("hoge"));
+    }
+
+    @Test
+    public void testGetValuesNotAvairableAttribute() throws Exception {
+        Method method = ManyIncludeClass.class.getMethod("doAnything");
+        List<SomeAnnotation> list = AnnotationUtils.findAnnotations(SomeAnnotation.class, method);
+        String actual = AnnotationUtils.getValue(list.get(1), "hoge");
+        assertThat(actual, is(nullValue()));
+    }
+
+    @Test
+    public void testIsDecleared() throws Exception {
+        boolean actual = AnnotationUtils.isDeclared(SomeAnnotation.class,
+                SomeAnnotationInclude.class);
+        assertThat(actual, is(true));
+        actual = AnnotationUtils.isDeclared(SomeAnnotation.class, SomeClass.class);
+        assertThat(actual, is(true));
+        actual = AnnotationUtils.isDeclared(SomeAnnotation.class, SomeAnnotation.class);
+        assertThat(actual, is(false));
+        actual = AnnotationUtils.isDeclared(SomeAnnotation.class, Documented.class);
+        assertThat(actual, is(false));
+        actual = AnnotationUtils.isDeclared(SomeAnnotationInclude.class, SomeClass.class);
+        assertThat(actual, is(false));
+    }
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD })
     private @interface SomeAnnotation {
+
+        String value() default "";
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -121,7 +156,7 @@ public class AnnotationUtilsTest {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ ElementType.TYPE, ElementType.METHOD})
+    @Target({ ElementType.TYPE, ElementType.METHOD })
     @SomeAnnotationInclude
     private @interface SomeAnnotationReInclude {
     }
@@ -165,7 +200,7 @@ public class AnnotationUtilsTest {
     private final class ManyIncludeClass {
 
         @SomeAnnotationInclude
-        @SomeAnnotation
+        @SomeAnnotation("hoge")
         public void doAnything() {
             // nop
         }

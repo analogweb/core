@@ -22,8 +22,8 @@ public final class AnnotationUtils {
     public static <T extends Annotation> T findAnnotation(Class<T> target,
             Class<?> annotationContainsClass) {
         Assertion.notNull(annotationContainsClass, "Class must not be null");
-        if(Annotation.class.isAssignableFrom(annotationContainsClass)
-                && !annotationContainsClass.getPackage().equals(Annotation.class.getPackage())){
+        if (Annotation.class.isAssignableFrom(annotationContainsClass)
+                && !annotationContainsClass.getPackage().equals(Annotation.class.getPackage())) {
             return findAnnotation(target, annotationContainsClass.getAnnotations());
         }
         T annotation = annotationContainsClass.getAnnotation(target);
@@ -81,5 +81,30 @@ public final class AnnotationUtils {
             }
         }
         return annotations;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getValue(Annotation annotation) {
+        return (T) getValue(annotation, "value");
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getValue(Annotation annotation, String attributeName) {
+        try {
+            Method method = annotation.annotationType().getDeclaredMethod(attributeName,
+                    new Class[0]);
+            return (T) method.invoke(annotation);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public static boolean isDeclared(Class<? extends Annotation> expectDeclared, Class<?> clazz) {
+        for (Annotation an : clazz.getDeclaredAnnotations()) {
+            if (an.annotationType().equals(expectDeclared)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
