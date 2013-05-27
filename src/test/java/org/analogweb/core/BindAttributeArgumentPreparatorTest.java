@@ -22,10 +22,11 @@ import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
-import org.analogweb.annotation.Resolver;
-import org.analogweb.annotation.Formats;
 import org.analogweb.annotation.Convert;
+import org.analogweb.annotation.Formats;
+import org.analogweb.annotation.Resolver;
 import org.analogweb.annotation.Route;
+import org.analogweb.annotation.Valiables;
 import org.analogweb.util.ReflectionUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,25 +59,54 @@ public class BindAttributeArgumentPreparatorTest {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class };
         final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doSomething",
                 argumentTypes);
-
         AttributesHandler handler = mock(AttributesHandler.class);
         when(handlers.findRequestValueResolver(null)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(handler.resolveValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
-                "foo!");
+        when(handler.resolveValue(context, metadata, "foo", argumentTypes[0])).thenReturn("foo!");
         when(typeMapper.mapToType(TypeMapper.class, "foo!", String.class, new String[0]))
                 .thenReturn("foo!");
-        when(handler.resolveValue(context, metadata, "baa", argumentTypes[1])).thenReturn(
-                "baa!");
+        when(handler.resolveValue(context, metadata, "baa", argumentTypes[1])).thenReturn("baa!");
         when(typeMapper.mapToType(TypeMapper.class, "baa!", String.class, new String[0]))
                 .thenReturn("baa!");
-
         Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
                 handlers);
         assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
-
         verify(args).putInvocationArgument(0, "foo!");
         verify(args).putInvocationArgument(1, "baa!");
+    }
+
+    @Test
+    public void testScope() {
+        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
+        final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doScope",
+                argumentTypes);
+        AttributesHandler handler = mock(AttributesHandler.class);
+        when(handlers.findRequestValueResolver(Foo.class)).thenReturn(handler);
+        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+        when(handler.resolveValue(context, metadata, "baz", argumentTypes[0])).thenReturn("foo!");
+        when(typeMapper.mapToType(TypeMapper.class, "foo!", String.class, new String[0]))
+                .thenReturn("foo!!");
+        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
+                handlers);
+        assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
+        verify(args).putInvocationArgument(0, "foo!!");
+    }
+
+    @Test
+    public void testInclusionScope() {
+        final Class<?>[] argumentTypes = new Class<?>[] { String.class };
+        final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doScopeVariable",
+                argumentTypes);
+        AttributesHandler handler = mock(AttributesHandler.class);
+        when(handlers.findRequestValueResolver(Foo.class)).thenReturn(handler);
+        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+        when(handler.resolveValue(context, metadata, "baz", argumentTypes[0])).thenReturn("foo!");
+        when(typeMapper.mapToType(TypeMapper.class, "foo!", String.class, new String[0]))
+                .thenReturn("foo!!");
+        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
+                handlers);
+        assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
+        verify(args).putInvocationArgument(0, "foo!!");
     }
 
     @Test
@@ -84,19 +114,15 @@ public class BindAttributeArgumentPreparatorTest {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
         final Method method = ReflectionUtils.getMethodQuietly(StubResource.class,
                 "doWithCustomAnnotation", argumentTypes);
-
         AttributesHandler handler = mock(AttributesHandler.class);
         when(handlers.findRequestValueResolver(Baa.class)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(handler.resolveValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
-                "boo!");
+        when(handler.resolveValue(context, metadata, "foo", argumentTypes[0])).thenReturn("boo!");
         when(typeMapper.mapToType(SomeTypeMapper.class, "boo!", String.class, new String[0]))
                 .thenReturn("booz!");
-
         Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
                 handlers);
         assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
-
         verify(args).putInvocationArgument(0, "booz!");
     }
 
@@ -105,26 +131,24 @@ public class BindAttributeArgumentPreparatorTest {
         final Class<?>[] argumentTypes = new Class<?>[] { BigDecimal.class };
         final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doWithFormat",
                 argumentTypes);
-
         AttributesHandler handler = mock(AttributesHandler.class);
         when(handlers.findRequestValueResolver(null)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
-        when(handler.resolveValue(context, metadata, "foo", argumentTypes[0])).thenReturn(
-                "100,000");
+        when(handler.resolveValue(context, metadata, "foo", argumentTypes[0]))
+                .thenReturn("100,000");
         BigDecimal expected = new BigDecimal(100000L);
         when(
                 typeMapper.mapToType(TypeMapper.class, "100,000", BigDecimal.class,
                         new String[] { "###,###" })).thenReturn(expected);
-
         Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
                 handlers);
         assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
-
         verify(args).putInvocationArgument(0, expected);
     }
 
     @Route
     private static final class StubResource {
+
         @Route
         public String doSomething(@As("foo") String foo, @As("baa") String baa) {
             return "do something!";
@@ -132,6 +156,11 @@ public class BindAttributeArgumentPreparatorTest {
 
         @Route
         public String doScope(@As("baz") @Resolver(Foo.class) String baz) {
+            return "do scope!";
+        }
+
+        @Route
+        public String doScopeVariable(@SomeScopedValue("baz") String baz) {
             return "do scope!";
         }
 
@@ -144,19 +173,17 @@ public class BindAttributeArgumentPreparatorTest {
         public String doWithFormat(@As("foo") @Formats("###,###") BigDecimal amount) {
             return "do nothing!";
         }
-
     }
 
     interface SomeTypeMapper extends TypeMapper {
     }
-    
+
     interface Foo extends RequestValueResolver {
     }
-    
+
     interface Baa extends RequestValueResolver {
     }
 
-    
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.PARAMETER)
     @Resolver(Baa.class)
@@ -164,4 +191,12 @@ public class BindAttributeArgumentPreparatorTest {
     static @interface Covered {
     }
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.PARAMETER)
+    @Resolver(Foo.class)
+    @Valiables
+    public static @interface SomeScopedValue {
+
+        String value();
+    }
 }
