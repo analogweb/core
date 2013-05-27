@@ -18,35 +18,19 @@ import org.analogweb.annotation.As;
  */
 public class BindAttributeArgumentPreparator extends AbstractApplicationProcessor {
 
-    private AnnotatedInvocationParameterValueResolver resolver;
-
-    public BindAttributeArgumentPreparator() {
-        this(new ScopedParameterValueResolver());
-    }
-
-    public BindAttributeArgumentPreparator(AnnotatedInvocationParameterValueResolver resolver) {
-        this.resolver = resolver;
-    }
-
     @Override
     public Object prepareInvoke(Method method, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
             RequestValueResolvers resolvers) {
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
-        AnnotatedInvocationParameterValueResolver resolver = getParameterValueResolver();
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
-            Object convertedValue = resolver.resolve(parameterAnnotations[index], argTypes[index],
-                    context, metadata, converters, resolvers);
+            Object convertedValue = AnnotatedArguments.resolveArguent(parameterAnnotations[index],
+                    argTypes[index], context, metadata, converters, resolvers);
             if (convertedValue != null) {
                 args.putInvocationArgument(index, convertedValue);
             }
         }
         return NO_INTERRUPTION;
     }
-
-    protected AnnotatedInvocationParameterValueResolver getParameterValueResolver() {
-        return this.resolver;
-    }
-
 }

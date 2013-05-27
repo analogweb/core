@@ -16,4 +16,7 @@ import org.analogweb.core.HeaderValueResolver;
 @Target({ ElementType.PARAMETER,ElementType.ANNOTATION_TYPE })
 @Resolver(HeaderValueResolver.class)
 public @interface Header {
+    
+    String value();
+
 }

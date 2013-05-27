@@ -17,4 +17,7 @@ import org.analogweb.core.CookieValueResolver;
 @Target({ ElementType.PARAMETER,ElementType.ANNOTATION_TYPE })
 @Resolver(CookieValueResolver.class)
 public @interface Cookie {
+    
+    String value();
+
 }

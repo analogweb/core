@@ -9,32 +9,32 @@ import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
-import org.analogweb.annotation.Resolver;
-import org.analogweb.annotation.Formats;
 import org.analogweb.annotation.Convert;
+import org.analogweb.annotation.Formats;
+import org.analogweb.annotation.Resolver;
+import org.analogweb.annotation.Valiables;
 import org.analogweb.util.AnnotationUtils;
 
-/**
- * @author snowgoose
- */
-public class ScopedParameterValueResolver implements AnnotatedInvocationParameterValueResolver {
+final class AnnotatedArguments {
 
-    @Override
-    public <T> T resolve(Annotation[] parameterAnnotations, Class<T> argType,
+    private AnnotatedArguments() {
+        // nop.
+    }
+
+    static <T> T resolveArguent(Annotation[] parameterAnnotations, Class<T> argType,
             RequestContext context, InvocationMetadata metadata, TypeMapperContext converters,
             RequestValueResolvers handlers) {
-        As bindAttribute = AnnotationUtils.findAnnotation(As.class, parameterAnnotations);
-        if (bindAttribute != null) {
+        String bindAttributeName = resolveName(parameterAnnotations);
+        if (bindAttributeName != null) {
             Resolver scope = AnnotationUtils.findAnnotation(Resolver.class, parameterAnnotations);
             RequestValueResolver handler;
-            if(scope == null){
+            if (scope == null) {
                 handler = handlers.findRequestValueResolver(null);
             } else {
                 handler = handlers.findRequestValueResolver(scope.value());
             }
             if (handler != null) {
-                Object value = handler.resolveValue(context, metadata,
-                        bindAttribute.value(), argType);
+                Object value = handler.resolveValue(context, metadata, bindAttributeName, argType);
                 if (value != null) {
                     Convert mapWith = AnnotationUtils.findAnnotation(Convert.class,
                             parameterAnnotations);
@@ -52,4 +52,16 @@ public class ScopedParameterValueResolver implements AnnotatedInvocationParamete
         return null;
     }
 
+    private static String resolveName(Annotation[] parameterAnnotations) {
+        for (Annotation an : parameterAnnotations) {
+            if (AnnotationUtils.isDeclared(Valiables.class, an.annotationType())) {
+                return AnnotationUtils.getValue(an);
+            }
+        }
+        As as = AnnotationUtils.findAnnotation(As.class, parameterAnnotations);
+        if (as != null) {
+            return as.value();
+        }
+        return null;
+    }
 }

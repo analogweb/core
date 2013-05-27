@@ -16,4 +16,7 @@ import org.analogweb.core.ParameterValueResolver;
 @Target({ ElementType.PARAMETER,ElementType.ANNOTATION_TYPE })
 @Resolver(ParameterValueResolver.class)
 public @interface Param {
+    
+    String value();
+
 }
