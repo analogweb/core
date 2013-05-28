@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.analogweb.core.CookieValueResolver;
+import org.analogweb.util.StringUtils;
 
 
 /**
@@ -16,8 +17,9 @@ import org.analogweb.core.CookieValueResolver;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER,ElementType.ANNOTATION_TYPE })
 @Resolver(CookieValueResolver.class)
+@Valiables
 public @interface Cookie {
     
-    String value();
+    String value() default StringUtils.EMPTY;
 
 }

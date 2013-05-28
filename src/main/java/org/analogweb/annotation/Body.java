@@ -12,6 +12,7 @@ import org.analogweb.core.RequestBodyValueResolver;
 /**
  * @author snowgooseyk
  */
+@As
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })

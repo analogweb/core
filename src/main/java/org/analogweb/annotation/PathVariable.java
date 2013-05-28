@@ -7,18 +7,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.analogweb.core.PathVariableValueResolver;
+import org.analogweb.util.StringUtils;
 
 
 /**
  * @author snowgooseyk
  */
 @Documented
-@Valiables
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER,ElementType.ANNOTATION_TYPE })
 @Resolver(PathVariableValueResolver.class)
+@Valiables
 public @interface PathVariable {
 
-    String value();
+    String value() default StringUtils.EMPTY;
 
 }

@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.analogweb.core.HeaderValueResolver;
+import org.analogweb.util.StringUtils;
 
 /**
  * @author snowgooseyk
@@ -15,8 +16,9 @@ import org.analogweb.core.HeaderValueResolver;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER,ElementType.ANNOTATION_TYPE })
 @Resolver(HeaderValueResolver.class)
+@Valiables
 public @interface Header {
     
-    String value();
+    String value() default StringUtils.EMPTY;
 
 }
