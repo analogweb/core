@@ -14,6 +14,7 @@ import org.analogweb.annotation.Formats;
 import org.analogweb.annotation.Resolver;
 import org.analogweb.annotation.Valiables;
 import org.analogweb.util.AnnotationUtils;
+import org.analogweb.util.StringUtils;
 
 final class AnnotatedArguments {
 
@@ -24,7 +25,17 @@ final class AnnotatedArguments {
     static <T> T resolveArguent(Annotation[] parameterAnnotations, Class<T> argType,
             RequestContext context, InvocationMetadata metadata, TypeMapperContext converters,
             RequestValueResolvers handlers) {
+        return resolveArguent(StringUtils.EMPTY, parameterAnnotations, argType, context, metadata,
+                converters, handlers);
+    }
+
+    static <T> T resolveArguent(String name, Annotation[] parameterAnnotations, Class<T> argType,
+            RequestContext context, InvocationMetadata metadata, TypeMapperContext converters,
+            RequestValueResolvers handlers) {
         String bindAttributeName = resolveName(parameterAnnotations);
+        if (StringUtils.isEmpty(bindAttributeName)) {
+            bindAttributeName = name;
+        }
         if (bindAttributeName != null) {
             Resolver scope = AnnotationUtils.findAnnotation(Resolver.class, parameterAnnotations);
             RequestValueResolver handler;

@@ -17,9 +17,6 @@ import org.analogweb.util.StringUtils;
  */
 public class PathVariableValueResolver implements RequestValueResolver {
 
-    static final String VALIABLES_CACHE_KEY = PathVariableValueResolver.class.getCanonicalName()
-            + "_VALIABLES_CACHE";
-
     @Override
     public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
             String name, Class<?> requiredType) {
