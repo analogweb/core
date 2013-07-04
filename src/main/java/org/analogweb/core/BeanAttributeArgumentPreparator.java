@@ -38,7 +38,7 @@ public class BeanAttributeArgumentPreparator extends AbstractApplicationProcesso
                 if (beanInstance != null) {
                     for (Field field : argTypes[index].getDeclaredFields()) {
                         Object convertedValue = AnnotatedArguments.resolveArguent(field.getName(),
-                                field.getAnnotations(), argTypes[index], context, metadata,
+                                field.getAnnotations(), field.getType(), context, metadata,
                                 converters, resolvers);
                         if (convertedValue != null) {
                             ReflectionUtils.writeValueToField(field, beanInstance, convertedValue);
