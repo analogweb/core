@@ -8,14 +8,13 @@ import java.lang.annotation.Target;
 
 import org.analogweb.core.RequestBodyValueResolver;
 
-
 /**
  * @author snowgooseyk
  */
 @As
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 @Resolver(RequestBodyValueResolver.class)
 public @interface Body {
 }
