@@ -3,7 +3,7 @@ package org.analogweb;
 import org.analogweb.ResponseContext.ResponseEntity;
 
 /**
- * レスポンスボディに、特定のフォーマットをレンダリング可能な{@link Direction}における、
+ * レスポンスボディに、特定のフォーマットをレンダリング可能な{@link Renderable}における、
  * フォーマット処理を定義します。
  * @author snowgoose
  */

@@ -11,7 +11,7 @@ import org.analogweb.core.DefaultResponseEntity;
 import org.analogweb.util.StringUtils;
 
 /**
- * テキストをレスポンスする{@link Direction}です。<br/>
+ * テキストをレスポンスする{@link Renderable}です。<br/>
  * レスポンスにおける既定のContent-Typeは「text/plain」であり 、文字セットは「UTF-8」です。
  * 
  * @author snowgoose

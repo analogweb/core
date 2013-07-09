@@ -2,7 +2,7 @@ package org.analogweb;
 
 /**
  * {@link Invocation#invoke()}実行前のパラメータを保持します。<br/>
- * 主に{@link InvocationProcessor}によって、パラメータの値が決定されます。
+ * 主に{@link ApplicationProcessor}によって、パラメータの値が決定されます。
  * @author snowgoose
  */
 public interface InvocationArguments extends PreparedInvocationArguments {

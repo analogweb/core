@@ -2,6 +2,7 @@ package org.analogweb;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Locale;
 
 import org.analogweb.util.ClassCollector;
 

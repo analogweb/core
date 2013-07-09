@@ -21,9 +21,9 @@ public interface ApplicationProcessor extends MultiModule,Precedence {
      * 通常は、{@link #NO_INTERRUPTION}を返します。それ以外の
      * 値をかえす場合は、処理の結果その戻り値を以って
      * {@link Application}の処理を終了します。
-     * @param context {@link RequestContext}
+     * @param request {@link RequestContext}
      * @param path {@link RequestPath}
-     * @return 実行処理を中断する結果({@link Direction}など。)
+     * @return 実行処理を中断する結果({@link Renderable}など。)
      */
     Object onProcessRequest(RequestContext request, RequestPath path);
 
@@ -38,7 +38,7 @@ public interface ApplicationProcessor extends MultiModule,Precedence {
      * @param context {@link RequestContext}
      * @param converters {@link TypeMapperContext}
      * @param resolvers {@link RequestValueResolvers}
-     * @return 実行処理を中断する結果({@link Direction}など。)
+     * @return 実行処理を中断する結果({@link Renderable}など。)
      */
     Object prepareInvoke(Method method, InvocationArguments args, InvocationMetadata metadata,
             RequestContext context, TypeMapperContext converters, RequestValueResolvers resolvers);
@@ -51,7 +51,7 @@ public interface ApplicationProcessor extends MultiModule,Precedence {
      * @param request {@link RequestContext}
      * @param args 例外が発生した対象の{@link InvocationArguments}
      * @param metadata {@link InvocationMetadata}
-     * @return 実行処理を中断する結果({@link Direction}など。)
+     * @return 実行処理を中断する結果({@link Renderable}など。)
      */
     Object processException(Exception ex, RequestContext request, PreparedInvocationArguments args,
             InvocationMetadata metadata);

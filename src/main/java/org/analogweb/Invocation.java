@@ -11,8 +11,8 @@ public interface Invocation {
 	
 	/**
      * リクエストされたエンドポイントとなるメソッドを実行します。<br/>
-     * {@link InvocationProcessor}により評価された内容を保持した状態で実行されます。
-     * @see InvocationProcessor
+     * {@link ApplicationProcessor}により評価された内容を保持した状態で実行されます。
+     * @see ApplicationProcessor
      * @return エンドポイントの実行結果
      */
     Object invoke();
