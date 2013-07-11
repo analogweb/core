@@ -22,8 +22,10 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.ResponseContext;
 import org.analogweb.core.InvocationFailureException;
+import org.analogweb.util.ApplicationPropertiesHolder;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,6 +54,11 @@ public class AnalogHandlerTest {
         props = mock(ApplicationProperties.class);
         handler = new AnalogHandler(app, resolver, props);
     }
+    
+    @After
+    public void tearDown(){
+        ApplicationPropertiesHolder.dispose(app);
+    }
 
     @Test
     @SuppressWarnings("unchecked")
@@ -66,6 +73,8 @@ public class AnalogHandlerTest {
 
     @Test
     public void testShutdown() {
+
+        handler = new AnalogHandler(app);
 
         doNothing().when(app).dispose();
 

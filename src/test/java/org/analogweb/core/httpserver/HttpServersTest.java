@@ -9,6 +9,7 @@ import static org.junit.Assume.assumeThat;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
+import java.security.SecureRandom;
 
 import org.junit.After;
 import org.junit.Test;
