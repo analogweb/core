@@ -118,7 +118,7 @@ public class HttpExchangeRequestContextTest {
 
     @Test
     public void testGetFormParametersRaiseException() {
-        thrown.expect(as(ApplicationRuntimeException.class,causedBy(IOException.class)));
+        thrown.expect(as(ApplicationRuntimeException.class, causedBy(IOException.class)));
         when(requestPath.getRequestURI()).thenReturn(URI.create("http://foo"));
         Headers headers = new Headers();
         headers.put("Content-Type", Arrays.asList("application/x-www-form-urlencoded"));

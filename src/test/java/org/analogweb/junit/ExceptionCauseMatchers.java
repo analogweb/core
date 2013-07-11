@@ -17,6 +17,11 @@ public class ExceptionCauseMatchers {
         return new As(t, causes);
     }
 
+    @SuppressWarnings("unchecked")
+    public static Causes causedBy(Class<? extends Throwable> t) {
+        return causedBy(new Class[] { t });
+    }
+
     public static Causes causedBy(Class<? extends Throwable>... t) {
         return new Causes(t);
     }
@@ -42,6 +47,7 @@ public class ExceptionCauseMatchers {
                     Throwable current = e.getCause();
                     for (Class<? extends Throwable> t : causes.causes()) {
                         if (current == null || t.isInstance(current) == false) {
+                            this.t = t;
                             return false;
                         }
                         current = current.getCause();
@@ -54,7 +60,7 @@ public class ExceptionCauseMatchers {
 
         @Override
         public void describeTo(Description description) {
-            // TODO Auto-generated method stub
+            description.appendValue(t);
         }
     }
 
