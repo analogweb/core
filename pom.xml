@@ -21,7 +21,7 @@
 	<groupId>org.analogweb</groupId>
 	<artifactId>analogweb-core</artifactId>
 	<packaging>jar</packaging>
-	<version>0.8.0-SNAPSHOT</version>
+	<version>0.8.0</version>
 	<name>analogweb-core</name>
 	<url>https://github.com/analogweb</url>
 	<organization>
