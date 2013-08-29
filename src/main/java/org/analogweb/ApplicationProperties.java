@@ -23,7 +23,9 @@ public interface ApplicationProperties {
      * アプリケーションに対するリクエストを特定する識別子を
      * 取得します。
      * @return 識別子
+     * @deprecated
      */
+    @Deprecated
     String getApplicationSpecifier();
 
     /**

@@ -28,6 +28,7 @@ public final class ApplicationPropertiesHolder {
      * {@link ApplicationProperties}を生成する為のコンポーネントです。
      * @author snowgoose
      */
+    @Deprecated
     public static interface Creator {
 
         /**
@@ -43,12 +44,28 @@ public final class ApplicationPropertiesHolder {
      * @param config {@link Creator}
      * @return 生成された{@link ApplicationProperties}
      */
+    @Deprecated
     public static ApplicationProperties configure(Application app, Creator config) {
         if (properties != null) {
             throw new ApplicationConfigurationException(
                     "re-configure ApplicationProperties not allowed.");
         }
         properties = config.create();
+        return properties;
+    }
+
+    /**
+     * {@link Creator}の設定に従って、{@link ApplicationProperties}を生成、設定します。
+     * @param app {@link Application}
+     * @param config {@link ApplicationProperties}
+     * @return {@link ApplicationProperties}
+     */
+    public static ApplicationProperties configure(Application app, ApplicationProperties config) {
+        if (properties != null) {
+            throw new ApplicationConfigurationException(
+                    "re-configure ApplicationProperties not allowed.");
+        }
+        properties = config;
         return properties;
     }
 
@@ -63,6 +80,7 @@ public final class ApplicationPropertiesHolder {
         properties = null;
     }
 
+    @Deprecated
     public static class DefaultCreator implements Creator {
 
         private final Collection<String> packageNames;
