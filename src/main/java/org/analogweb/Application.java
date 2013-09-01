@@ -21,6 +21,7 @@ public interface Application extends Disposable {
      * アプリケーションに対するリクエストであることを特定する為の
      * 識別子を指定するキー
      */
+    @Deprecated
     String INIT_PARAMETER_APPLICATION_SPECIFIER = "application.specifier";
     /**
      * アプリケーションが使用するテンポラリディレクトリを指定する指定するキー
@@ -89,6 +90,7 @@ public interface Application extends Disposable {
      * アプリケーションに対するリクエストであることを識別する識別子を取得します。
      * @return アプリケーションに対するリクエストであることを識別する識別子
      */
+    @Deprecated
     String getApplicationSpecifier();
 
 }

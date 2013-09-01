@@ -62,7 +62,6 @@ public class WebApplicationTest {
     @Test
     public void testInitApplication() throws Exception {
         ApplicationProperties props = mock(ApplicationProperties.class);
-        when(props.getApplicationSpecifier()).thenReturn(".rn");
         when(props.getComponentPackageNames())
                 .thenReturn(Arrays.asList("jp.acme.test.actionsonly"));
         File tempFolder = folder.newFolder("test");
@@ -75,13 +74,12 @@ public class WebApplicationTest {
         when(pathAnyThing.getMethod()).thenReturn("POST");
         InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(pathAnyThing);
         log.debug(metadataAnyThing.toString());
-        assertThat(application.getApplicationSpecifier(), is(".rn"));
     }
 
     @Test
     public void testInitApplicationWithoutMetadata() throws Exception {
         ApplicationProperties props = mock(ApplicationProperties.class);
-        when(props.getApplicationSpecifier()).thenReturn(null);
+        //        when(props.getApplicationSpecifier()).thenReturn(null);
         when(props.getComponentPackageNames())
                 .thenReturn(Arrays.asList("jp.acme.test.actionsonly"));
         File tempFolder = folder.newFolder("test");
@@ -94,13 +92,11 @@ public class WebApplicationTest {
         when(pathAnyThing.getMethod()).thenReturn("POST");
         InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(pathAnyThing);
         log.debug(metadataAnyThing.toString());
-        assertThat(application.getApplicationSpecifier(), is(nullValue()));
     }
 
     @Test
     public void testInitApplicationWithoutRootComponentPackages() throws Exception {
         ApplicationProperties props = mock(ApplicationProperties.class);
-        when(props.getApplicationSpecifier()).thenReturn(".do");
         when(props.getComponentPackageNames()).thenReturn(null);
         File tempFolder = folder.newFolder("test");
         when(props.getTempDir()).thenReturn(tempFolder);
@@ -111,7 +107,6 @@ public class WebApplicationTest {
     @Test
     public void testInitApplicationWithAdditionalComponents() throws Exception {
         ApplicationProperties props = mock(ApplicationProperties.class);
-        when(props.getApplicationSpecifier()).thenReturn(null);
         when(props.getComponentPackageNames()).thenReturn(
                 Arrays.asList("jp.acme.test.additionalcomponents"));
         File tempFolder = folder.newFolder("test");
@@ -140,7 +135,6 @@ public class WebApplicationTest {
     @Test
     public void testDispose() throws Exception {
         ApplicationProperties props = mock(ApplicationProperties.class);
-        when(props.getApplicationSpecifier()).thenReturn(null);
         when(props.getComponentPackageNames())
                 .thenReturn(Arrays.asList("jp.acme.test.actionsonly"));
         File tempFolder = folder.newFolder("test");
@@ -148,7 +142,6 @@ public class WebApplicationTest {
         application = new WebApplication();
         application.run(resolver, props, collectors, classLoader);
         application.dispose();
-        assertThat(application.getApplicationSpecifier(), is(nullValue()));
         assertThat(application.getModules(), is(nullValue()));
         assertThat(application.getRequestPathMapping(), is(nullValue()));
     }

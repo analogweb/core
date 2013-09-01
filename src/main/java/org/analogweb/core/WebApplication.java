@@ -56,7 +56,6 @@ public class WebApplication implements Application {
     private static final Log log = Logs.getLog(WebApplication.class);
     private Modules modules;
     private RequestPathMapping requestPathMapping;
-    private String applicationSpecifier;
     private ClassLoader classLoader;
     private ApplicationContextResolver resolver;
 
@@ -76,8 +75,7 @@ public class WebApplication implements Application {
         }
         modulesPackageNames.add(DEFAULT_PACKAGE_NAME);
         log.log(Markers.BOOT_APPLICATION, "DB000002", modulesPackageNames);
-        initApplication(collectors, modulesPackageNames, invocationPackageNames,
-                props.getApplicationSpecifier());
+        initApplication(collectors, modulesPackageNames, invocationPackageNames);
         log.log(Markers.BOOT_APPLICATION, "IB000002", sw.stop());
     }
 
@@ -213,8 +211,8 @@ public class WebApplication implements Application {
     }
 
     protected void initApplication(Collection<ClassCollector> collectors,
-            Set<String> modulePackageNames, Collection<String> invocationPackageNames,
-            String specifier) {
+            Set<String> modulePackageNames, Collection<String> invocationPackageNames/*,
+            String specifier*/) {
         Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames, collectors);
         ModulesBuilder modulesBuilder = processConfigPreparation(ReflectionUtils
                 .filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses));
@@ -231,7 +229,6 @@ public class WebApplication implements Application {
         }
         setRequestPathMapping(createRequestPathMapping(collectedInvocationClasses,
                 modules.getInvocationMetadataFactories()));
-        setApplicationSpecifier(specifier);
     }
 
     protected ModulesBuilder processConfigPreparation(List<Class<ModulesConfig>> configs) {
@@ -337,12 +334,13 @@ public class WebApplication implements Application {
     }
 
     @Override
+    @Deprecated
     public String getApplicationSpecifier() {
-        return applicationSpecifier;
+        return StringUtils.EMPTY;
     }
 
+    @Deprecated
     protected void setApplicationSpecifier(String suffix) {
-        this.applicationSpecifier = suffix;
     }
 
     protected final ApplicationContextResolver getApplicationContextResolver() {
@@ -353,7 +351,6 @@ public class WebApplication implements Application {
     public void dispose() {
         this.classLoader = null;
         this.resolver = null;
-        this.applicationSpecifier = null;
         if (this.modules != null) {
             this.modules.dispose();
             this.modules = null;

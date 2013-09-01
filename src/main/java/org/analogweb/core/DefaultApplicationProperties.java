@@ -23,11 +23,25 @@ public class DefaultApplicationProperties implements ApplicationProperties {
     private final String tempDirectoryPath;
     private final Locale defaultClientLocale;
 
-    public DefaultApplicationProperties() {
+    public static DefaultApplicationProperties defaultProperties() {
+        return new DefaultApplicationProperties();
+    }
+
+    public static DefaultApplicationProperties properties(String packageNames) {
+        return new DefaultApplicationProperties(packageNames, null, null, null);
+    }
+
+    public static DefaultApplicationProperties properties(String packageNames,
+            String tmpDirectoryPath, String defaultClientLocale) {
+        return new DefaultApplicationProperties(packageNames, null, tmpDirectoryPath,
+                defaultClientLocale);
+    }
+
+    protected DefaultApplicationProperties() {
         this(Application.class.getPackage().getName(), null, null, null);
     }
 
-    public DefaultApplicationProperties(String packageNames, String applicationSpecifier,
+    protected DefaultApplicationProperties(String packageNames, String applicationSpecifier,
             String tempDirectoryPath, String defaultClientLocale) {
         this.packageNames = createUserDefinedPackageNames(packageNames);
         this.applicationSpecifier = createApplicationSpecifier(applicationSpecifier);

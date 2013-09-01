@@ -1,5 +1,7 @@
 package org.analogweb.core.httpserver;
 
+import static org.analogweb.core.DefaultApplicationProperties.defaultProperties;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -40,8 +42,7 @@ public class AnalogHandler implements HttpHandler {
     }
 
     public AnalogHandler(Application app, ApplicationContextResolver contextResolver) {
-        this(app, contextResolver, ApplicationPropertiesHolder.configure(app,
-                new ApplicationPropertiesHolder.DefaultCreator()));
+        this(app, contextResolver, ApplicationPropertiesHolder.configure(app, defaultProperties()));
     }
 
     public AnalogHandler(Application app, ApplicationProperties props) {
@@ -100,7 +101,6 @@ public class AnalogHandler implements HttpHandler {
         InetSocketAddress addr = exc.getLocalAddress();
         URI baseURI = new URI((exc instanceof HttpsExchange) ? "https" : "http", null,
                 addr.getHostName(), addr.getPort(), basePath, null, null);
-
         URI requestURI = baseURI.resolve(exc.getRequestURI());
         return new DefaultRequestPath(baseURI, requestURI, exc.getRequestMethod());
     }
@@ -111,5 +111,4 @@ public class AnalogHandler implements HttpHandler {
         list.add(new FileClassCollector());
         return Collections.unmodifiableList(list);
     }
-
 }
