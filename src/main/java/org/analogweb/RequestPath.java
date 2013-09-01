@@ -15,6 +15,7 @@ public interface RequestPath extends RequestPathMetadata {
      * @param specifier 識別子
      * @return このコンポーネントが扱うべきリクエストでない場合は{@code true}
      */
+    @Deprecated
     boolean pathThrowgh(String specifier);
 
     /**

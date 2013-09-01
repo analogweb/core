@@ -8,6 +8,7 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
+@Deprecated
 public class ApplicationSpecifier implements Serializable {
 
     private static final long serialVersionUID = 8224555329789644389L;

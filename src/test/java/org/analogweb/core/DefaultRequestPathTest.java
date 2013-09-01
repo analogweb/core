@@ -1,7 +1,6 @@
 package org.analogweb.core;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -22,7 +21,6 @@ public class DefaultRequestPathTest {
 
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "GET");
         assertThat(actual.getActualPath(), is("/baa/baz"));
-        assertThat(actual.getSuffix(), is(ApplicationSpecifier.valueOf(".do")));
     }
 
     @Test
@@ -33,7 +31,6 @@ public class DefaultRequestPathTest {
 
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "GET");
         assertThat(actual.getActualPath(), is("/baa/baz"));
-        assertThat(actual.getSuffix(), is(ApplicationSpecifier.valueOf(".do")));
     }
 
     @Test
@@ -44,7 +41,6 @@ public class DefaultRequestPathTest {
 
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "GET");
         assertThat(actual.getActualPath(), is("/baa/baz"));
-        assertThat(actual.getSuffix(), is(ApplicationSpecifier.valueOf(".do")));
         assertThat(actual.getMethod(), is("GET"));
     }
 
@@ -56,7 +52,6 @@ public class DefaultRequestPathTest {
 
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "POST");
         assertThat(actual.getActualPath(), is("/baa/baz"));
-        assertThat(actual.getSuffix(), is(ApplicationSpecifier.NONE));
     }
 
     @Test
@@ -68,7 +63,6 @@ public class DefaultRequestPathTest {
 
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "POST");
         assertThat(actual.getActualPath(), is("/baa"));
-        assertThat(actual.getSuffix(), is(ApplicationSpecifier.valueOf(".do")));
     }
 
     @Test
@@ -79,7 +73,7 @@ public class DefaultRequestPathTest {
         URI baseUri = new URI("http://somehost:8080/foo");
 
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "POST");
-        assertTrue(actual.pathThrowgh(""));
+//        assertTrue(actual.pathThrowgh(""));
     }
 
     @Test
@@ -89,7 +83,7 @@ public class DefaultRequestPathTest {
         URI baseUri = new URI("http://somehost:8080/foo");
 
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "Post");
-        assertFalse(actual.pathThrowgh(".do"));
+//        assertFalse(actual.pathThrowgh(".do"));
     }
 
     @Test
@@ -98,7 +92,6 @@ public class DefaultRequestPathTest {
 
         DefaultRequestPath actual = new DefaultRequestPath(null, uri, "Post");
         assertThat(actual.getActualPath(), is("/baa"));
-        assertThat(actual.getSuffix(), is(ApplicationSpecifier.valueOf("")));
     }
 
     @Test

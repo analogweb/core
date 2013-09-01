@@ -11,8 +11,6 @@ import org.analogweb.util.StringUtils;
  */
 public class DefaultRequestPath extends AbstractRequestPathMetadata implements RequestPath {
 
-    private final ApplicationSpecifier suffix;
-
     private final String actualPath;
     private final String requestMethod;
     private final URI requestURI;
@@ -28,7 +26,6 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
         this.actualPath = getFormattedPath(path, this.baseURI.getPath());
         Assertion.notNull(requestMethod, "Request method.");
         this.requestMethod = requestMethod.toUpperCase();
-        this.suffix = extractSuffix(path);
     }
 
     @Override
@@ -41,23 +38,10 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
         return getActualPath().equals(requestPath.getActualPath());
     }
 
-    private ApplicationSpecifier extractSuffix(String requestUri) {
-        String uri = removeJsessionId(requestUri);
-        int lastIndexOfSuffixSeparator = uri.lastIndexOf('.');
-        if (uri.lastIndexOf('/') < lastIndexOfSuffixSeparator) {
-            return ApplicationSpecifier.valueOf(uri.substring(lastIndexOfSuffixSeparator));
-        } else {
-            return ApplicationSpecifier.NONE;
-        }
-    }
-
     @Override
+    @Deprecated
     public boolean pathThrowgh(String specifier) {
-        return this.suffix.getSuffix().equals(specifier) == false;
-    }
-
-    public ApplicationSpecifier getSuffix() {
-        return this.suffix;
+        return false;
     }
 
     private String getFormattedPath(String requestUri, String contextPath) {
@@ -101,5 +85,4 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
     public URI getBaseURI() {
         return this.baseURI;
     }
-
 }
