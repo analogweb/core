@@ -270,18 +270,14 @@ public class WebApplication implements Application {
         for (Class<?> clazz : collectedClasses) {
             for (InvocationMetadataFactory factory : factories) {
                 if (factory.containsInvocationClass(clazz)) {
-                    Method[] methods = ReflectionUtils.getMethods(clazz);
-                    for (Method method : methods) {
-                        InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(
-                                clazz, method);
-                        if (actionMethodMetadata != null) {
-                            log.log(Markers.BOOT_APPLICATION, "IB000004",
-                                    actionMethodMetadata.getDefinedPath(),
-                                    actionMethodMetadata.getInvocationClass(),
-                                    actionMethodMetadata.getMethodName());
-                            mapping.mapInvocationMetadata(actionMethodMetadata.getDefinedPath(),
-                                    actionMethodMetadata);
-                        }
+                    for (InvocationMetadata actionMethodMetadata : factory
+                            .createInvocationMetadatas(clazz)) {
+                        log.log(Markers.BOOT_APPLICATION, "IB000004",
+                                actionMethodMetadata.getDefinedPath(),
+                                actionMethodMetadata.getInvocationClass(),
+                                actionMethodMetadata.getMethodName());
+                        mapping.mapInvocationMetadata(actionMethodMetadata.getDefinedPath(),
+                                actionMethodMetadata);
                     }
                 }
             }

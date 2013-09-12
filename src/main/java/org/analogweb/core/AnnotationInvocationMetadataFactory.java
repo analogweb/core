@@ -3,6 +3,7 @@ package org.analogweb.core;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.analogweb.InvocationMetadata;
@@ -12,6 +13,7 @@ import org.analogweb.annotation.HttpMethod;
 import org.analogweb.annotation.Route;
 import org.analogweb.util.AnnotationUtils;
 import org.analogweb.util.CollectionUtils;
+import org.analogweb.util.ReflectionUtils;
 import org.analogweb.util.StringUtils;
 
 /**
@@ -22,6 +24,20 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
     @Override
     public boolean containsInvocationClass(Class<?> clazz) {
         return clazz.getAnnotation(Route.class) != null;
+    }
+
+    @Override
+    public Collection<InvocationMetadata> createInvocationMetadatas(Class<?> invocationClass) {
+        Method[] methods = ReflectionUtils.getMethods(invocationClass);
+        List<InvocationMetadata> metadatas = new ArrayList<InvocationMetadata>();
+        for (Method method : methods) {
+            InvocationMetadata metadata = createInvocationMetadata(
+                    invocationClass, method);
+            if (metadata != null) {
+                metadatas.add(metadata);
+            }
+        }
+        return metadatas;
     }
 
     @Override
