@@ -28,12 +28,12 @@ import org.analogweb.ModulesConfig;
 import org.analogweb.Renderable;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
-import org.analogweb.RequestPathMapping;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
 import org.analogweb.ResponseResolver;
+import org.analogweb.RouteRegistry;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.WebApplicationException;
 import org.analogweb.util.ApplicationPropertiesHolder;
@@ -55,7 +55,7 @@ public class WebApplication implements Application {
 
     private static final Log log = Logs.getLog(WebApplication.class);
     private Modules modules;
-    private RequestPathMapping requestPathMapping;
+    private RouteRegistry routes;
     private ClassLoader classLoader;
     private ApplicationContextResolver resolver;
 
@@ -89,7 +89,7 @@ public class WebApplication implements Application {
             mod = getModules();
             processors = mod.getApplicationProcessors();
             onProcessRequest(processors, context, requestedPath);
-            RequestPathMapping mapping = getRequestPathMapping();
+            RouteRegistry mapping = getRouteRegistry();
             log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
             metadata = mapping.findInvocationMetadata(requestedPath);
             if (metadata == null) {
@@ -227,7 +227,7 @@ public class WebApplication implements Application {
         } else {
             collectedInvocationClasses = collectClasses(invocationPackageNames, collectors);
         }
-        setRequestPathMapping(createRequestPathMapping(collectedInvocationClasses,
+        setRouteRegistry(createRouteRegistry(collectedInvocationClasses,
                 modules.getInvocationMetadataFactories()));
     }
 
@@ -264,9 +264,9 @@ public class WebApplication implements Application {
         return adaptor;
     }
 
-    protected RequestPathMapping createRequestPathMapping(Collection<Class<?>> collectedClasses,
+    protected RouteRegistry createRouteRegistry(Collection<Class<?>> collectedClasses,
             List<InvocationMetadataFactory> factories) {
-        RequestPathMapping mapping = new DefaultRequestPathMapping();
+        RouteRegistry mapping = new DefaultRouteRegistry();
         for (Class<?> clazz : collectedClasses) {
             for (InvocationMetadataFactory factory : factories) {
                 if (factory.containsInvocationClass(clazz)) {
@@ -312,12 +312,12 @@ public class WebApplication implements Application {
     }
 
     @Override
-    public RequestPathMapping getRequestPathMapping() {
-        return requestPathMapping;
+    public RouteRegistry getRouteRegistry() {
+        return routes;
     }
 
-    protected void setRequestPathMapping(RequestPathMapping requestPathMapping) {
-        this.requestPathMapping = requestPathMapping;
+    protected void setRouteRegistry(RouteRegistry registry) {
+        this.routes = registry;
     }
 
     @Override
@@ -351,9 +351,9 @@ public class WebApplication implements Application {
             this.modules.dispose();
             this.modules = null;
         }
-        if (this.requestPathMapping != null) {
-            this.requestPathMapping.dispose();
-            this.requestPathMapping = null;
+        if (this.routes != null) {
+            this.routes.dispose();
+            this.routes = null;
         }
         ApplicationPropertiesHolder.dispose(this);
     }

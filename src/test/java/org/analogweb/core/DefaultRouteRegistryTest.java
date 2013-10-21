@@ -14,13 +14,13 @@ import org.junit.Test;
 /**
  * @author snowgoose
  */
-public class DefaultRequestPathMappingTest {
+public class DefaultRouteRegistryTest {
 
-	private DefaultRequestPathMapping mapping;
+	private DefaultRouteRegistry registry;
 
 	@Before
 	public void setUp() throws Exception {
-		mapping = new DefaultRequestPathMapping();
+		registry= new DefaultRouteRegistry();
 	}
 
 	@Test
@@ -45,13 +45,13 @@ public class DefaultRequestPathMappingTest {
 		when(requestPath2.fulfill(requestPath2)).thenReturn(false);
 		when(requestPath3.fulfill(requestPath3)).thenReturn(false);
 
-		mapping.mapInvocationMetadata(requestPath1, metadata1);
-		mapping.mapInvocationMetadata(requestPath2, metadata2);
-		mapping.mapInvocationMetadata(requestPath3, metadata3);
+		registry.mapInvocationMetadata(requestPath1, metadata1);
+		registry.mapInvocationMetadata(requestPath2, metadata2);
+		registry.mapInvocationMetadata(requestPath3, metadata3);
 
-		assertThat(mapping.findInvocationMetadata(requestPath1), is(metadata1));
-		assertThat(mapping.findInvocationMetadata(requestPath2), is(metadata2));
-		assertThat(mapping.findInvocationMetadata(requestPath3), is(metadata3));
+		assertThat(registry.findInvocationMetadata(requestPath1), is(metadata1));
+		assertThat(registry.findInvocationMetadata(requestPath2), is(metadata2));
+		assertThat(registry.findInvocationMetadata(requestPath3), is(metadata3));
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class DefaultRequestPathMappingTest {
 		RequestPath requestPath2 = mock(RequestPath.class);
 
 		InvocationMetadata metadata1 = mock(InvocationMetadata.class);
-		mapping.mapInvocationMetadata(requestPath1, metadata1);
+		registry.mapInvocationMetadata(requestPath1, metadata1);
 
 		when(requestPath1.match(requestPath1)).thenReturn(true);
 
@@ -68,8 +68,8 @@ public class DefaultRequestPathMappingTest {
 
 		when(requestPath1.fulfill(requestPath1)).thenReturn(false);
 
-		assertThat(mapping.findInvocationMetadata(requestPath1), is(metadata1));
-		assertNull(mapping.findInvocationMetadata(requestPath2));
+		assertThat(registry.findInvocationMetadata(requestPath1), is(metadata1));
+		assertNull(registry.findInvocationMetadata(requestPath2));
 	}
 
 	@Test
@@ -78,13 +78,13 @@ public class DefaultRequestPathMappingTest {
 		RequestPath requestPath2 = mock(RequestPath.class);
 
 		InvocationMetadata metadata1 = mock(InvocationMetadata.class);
-		mapping.mapInvocationMetadata(requestPath1, metadata1);
+		registry.mapInvocationMetadata(requestPath1, metadata1);
 
 		when(requestPath1.match(requestPath1)).thenReturn(true);
 
-		mapping.dispose();
-		assertNull(mapping.findInvocationMetadata(requestPath1));
-		assertNull(mapping.findInvocationMetadata(requestPath2));
+		registry.dispose();
+		assertNull(registry.findInvocationMetadata(requestPath1));
+		assertNull(registry.findInvocationMetadata(requestPath2));
 	}
 
 }

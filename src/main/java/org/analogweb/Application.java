@@ -84,7 +84,7 @@ public interface Application extends Disposable {
      * {@link RequestPathMapping}を取得します。
      * @return {@link RequestPathMapping}
      */
-    RequestPathMapping getRequestPathMapping();
+    RouteRegistry getRouteRegistry();
 
     /**
      * アプリケーションに対するリクエストであることを識別する識別子を取得します。

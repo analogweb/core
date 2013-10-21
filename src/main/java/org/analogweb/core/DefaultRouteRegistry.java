@@ -5,14 +5,14 @@ import java.util.Map.Entry;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestPath;
-import org.analogweb.RequestPathMapping;
 import org.analogweb.RequestPathMetadata;
+import org.analogweb.RouteRegistry;
 import org.analogweb.util.Maps;
 
 /**
  * @author snowgoose
  */
-public class DefaultRequestPathMapping implements RequestPathMapping {
+public class DefaultRouteRegistry implements RouteRegistry {
 
     private final Map<RequestPathMetadata, InvocationMetadata> actionMetadataMap = Maps
             .newConcurrentHashMap();

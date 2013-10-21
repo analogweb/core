@@ -20,7 +20,7 @@ import org.analogweb.ApplicationProperties;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.Modules;
 import org.analogweb.RequestPath;
-import org.analogweb.RequestPathMapping;
+import org.analogweb.RouteRegistry;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.analogweb.util.ClassCollector;
 import org.analogweb.util.FileClassCollector;
@@ -68,7 +68,7 @@ public class WebApplicationTest {
         when(props.getTempDir()).thenReturn(tempFolder);
         application = new WebApplication();
         application.run(resolver, props, collectors, classLoader);
-        RequestPathMapping mapping = application.getRequestPathMapping();
+        RouteRegistry mapping = application.getRouteRegistry();
         RequestPath pathAnyThing = mock(RequestPath.class);
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
         when(pathAnyThing.getMethod()).thenReturn("POST");
@@ -86,7 +86,7 @@ public class WebApplicationTest {
         when(props.getTempDir()).thenReturn(tempFolder);
         application = new WebApplication();
         application.run(resolver, props, collectors, classLoader);
-        RequestPathMapping mapping = application.getRequestPathMapping();
+        RouteRegistry mapping = application.getRouteRegistry();
         RequestPath pathAnyThing = mock(RequestPath.class);
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
         when(pathAnyThing.getMethod()).thenReturn("POST");
@@ -143,6 +143,6 @@ public class WebApplicationTest {
         application.run(resolver, props, collectors, classLoader);
         application.dispose();
         assertThat(application.getModules(), is(nullValue()));
-        assertThat(application.getRequestPathMapping(), is(nullValue()));
+        assertThat(application.getRouteRegistry(), is(nullValue()));
     }
 }

@@ -4,7 +4,7 @@ package org.analogweb;
  * {@link RequestPathMetadata}をキーとして、{@link InvocationMetadata}を保持するハッシュです。
  * @author snowgoose
  */
-public interface RequestPathMapping extends Disposable {
+public interface RouteRegistry extends Disposable {
 
     /**
      * リクエストされたパス({@link RequestPath})に一致する{@link InvocationMetadata}を取得します。<br/>
