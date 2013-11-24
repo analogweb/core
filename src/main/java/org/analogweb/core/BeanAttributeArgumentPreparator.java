@@ -13,6 +13,7 @@ import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.Bean;
 import org.analogweb.annotation.Resolver;
 import org.analogweb.util.AnnotationUtils;
+import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ReflectionUtils;
 import org.analogweb.util.StringUtils;
 
@@ -27,6 +28,9 @@ public class BeanAttributeArgumentPreparator extends AbstractApplicationProcesso
             RequestValueResolvers resolvers) {
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
+        if(method == null || ArrayUtils.isEmpty(argTypes) || ArrayUtils.isEmpty(parameterAnnotations)){
+            return NO_INTERRUPTION;
+        }
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
             Bean beanAnnotation = AnnotationUtils.findAnnotation(Bean.class,
                     parameterAnnotations[index]);

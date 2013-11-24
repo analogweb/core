@@ -9,6 +9,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.As;
+import org.analogweb.util.ArrayUtils;
 
 /**
  * エントリポイントメソッドの引数から{@link As}が付与されている引数を検知し、 {@link As}
@@ -24,6 +25,9 @@ public class BindAttributeArgumentPreparator extends AbstractApplicationProcesso
             RequestValueResolvers resolvers) {
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
+        if(method == null || ArrayUtils.isEmpty(parameterAnnotations) || ArrayUtils.isEmpty(argTypes)){
+            return NO_INTERRUPTION;
+        }
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
             Object convertedValue = AnnotatedArguments.resolveArguent(parameterAnnotations[index],
                     argTypes[index], context, metadata, converters, resolvers);

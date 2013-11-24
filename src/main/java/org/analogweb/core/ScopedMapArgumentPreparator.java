@@ -16,6 +16,7 @@ import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.annotation.Attributes;
 import org.analogweb.util.AnnotationUtils;
+import org.analogweb.util.ArrayUtils;
 
 /**
  * {@link Attributes}注釈が付与された{@link org.analogweb.annotation.Route} メソッドの引数に対して、
@@ -33,6 +34,9 @@ public class ScopedMapArgumentPreparator extends AbstractApplicationProcessor {
             RequestValueResolvers handlers) {
         Annotation[][] argumentAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
+        if(method == null || ArrayUtils.isEmpty(argTypes) || ArrayUtils.isEmpty(argumentAnnotations)){
+            return NO_INTERRUPTION;
+        }
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
             Attributes viewAttributes = AnnotationUtils
                     .findAnnotation(Attributes.class, argumentAnnotations[index]);
@@ -59,8 +63,8 @@ public class ScopedMapArgumentPreparator extends AbstractApplicationProcessor {
     static final class ContextExtractor<V> extends HashMap<String, V> {
 
         private static final long serialVersionUID = -944143676425859153L;
-        private Set<String> removedKeys = new HashSet<String>();
-        private Class<? extends AttributesHandler> handlerClass;
+        private final Set<String> removedKeys = new HashSet<String>();
+        private final Class<? extends AttributesHandler> handlerClass;
 
         ContextExtractor(Class<? extends AttributesHandler> handlerClass) {
             super();
