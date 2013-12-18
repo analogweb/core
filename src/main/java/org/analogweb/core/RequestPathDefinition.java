@@ -149,6 +149,25 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
         return getActualPath();
     }
 
+    @Override
+    public int hashCode(){
+    	int hash = super.hashCode();
+    	for(String method : getRequestMethods()){
+    		hash += method.hashCode();
+    	}
+    	return hash;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof RequestPath) {
+        	RequestPath rp = (RequestPath)other;
+        	return rp.getActualPath().equals(getActualPath())
+        			&& containsRequestMethod(rp);
+        }
+       return super.equals(other);
+    }
+
     private static final class EmptyDefinePath extends RequestPathDefinition {
 
         private EmptyDefinePath() {
