@@ -10,8 +10,8 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolver;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.TypeMapperContext;
-import org.analogweb.annotation.Resolver;
 import org.analogweb.annotation.RequestFormats;
+import org.analogweb.annotation.Resolver;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.util.AnnotationUtils;
 import org.analogweb.util.ArrayUtils;
@@ -25,12 +25,15 @@ public class ConsumesMediaTypeVerifier extends AbstractApplicationProcessor {
     public Object prepareInvoke(Method method, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
             RequestValueResolvers resolvers) {
+        if (method == null) {
+            return NO_INTERRUPTION;
+        }
         Annotation[] ann = method.getAnnotations();
         RequestFormats formats = AnnotationUtils.findAnnotation(RequestFormats.class, ann);
         if (formats != null) {
             String[] expectMimes = formats.value();
             MediaType contentType = context.getContentType();
-            if(contentType == null){
+            if (contentType == null) {
                 return HttpStatus.UNSUPPORTED_MEDIA_TYPE;
             }
             if (ArrayUtils.isEmpty(expectMimes)) {

@@ -155,7 +155,7 @@ public class WebApplication implements Application {
             RequestValueResolvers attributesHandlers, TypeMapperContext typeMapperContext) {
         log.log(Markers.LIFECYCLE, "DL000013");
         Object interruption = ApplicationProcessor.NO_INTERRUPTION;
-        Method method = ReflectionUtils.getInvocationMethod(metadata);
+        Method method = ReflectionUtils.getInvocationMethodDefault(metadata);
         for (ApplicationProcessor processor : processors) {
             interruption = processor.prepareInvoke(method, args, metadata, request,
                     typeMapperContext, attributesHandlers);
@@ -212,7 +212,7 @@ public class WebApplication implements Application {
 
     protected void initApplication(Collection<ClassCollector> collectors,
             Set<String> modulePackageNames, Collection<String> invocationPackageNames/*,
-            String specifier*/) {
+                                                                                     String specifier*/) {
         Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames, collectors);
         ModulesBuilder modulesBuilder = processConfigPreparation(ReflectionUtils
                 .filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses));

@@ -50,8 +50,7 @@ public final class ReflectionUtils {
         return null;
     }
 
-    public static Object getInstanceQuietly(Constructor<?> constructor,
-            Object... args){
+    public static Object getInstanceQuietly(Constructor<?> constructor, Object... args) {
         return getInstanceQuietly(Object.class, constructor, args);
     }
 
@@ -98,10 +97,12 @@ public final class ReflectionUtils {
     }
 
     public interface TypeFilter {
+
         <T> Class<T> filterType(Class<?> actualClass, Class<T> filteringType);
     }
 
     private static final TypeFilter ASSIGNABLE_FROM_FILTER = new TypeFilter() {
+
         @Override
         @SuppressWarnings("unchecked")
         public <T> Class<T> filterType(Class<?> actualClass, Class<T> filteringType) {
@@ -156,6 +157,7 @@ public final class ReflectionUtils {
 
     public static void setAccessible(final Field field) {
         AccessController.doPrivileged(new PrivilegedAction<Field>() {
+
             @Override
             public Field run() {
                 try {
@@ -174,6 +176,7 @@ public final class ReflectionUtils {
     public static Object getValueOfField(final String fieldName, final int modifier,
             final Object instance) {
         return AccessController.doPrivileged(new PrivilegedAction<Object>() {
+
             @Override
             public Object run() {
                 try {
@@ -216,11 +219,24 @@ public final class ReflectionUtils {
         }
         return null;
     }
-    
-	public static Method getInvocationMethod(InvocationMetadata metadata) {
-		return getMethodQuietly(metadata.getInvocationClass(),
-				metadata.getMethodName(), metadata.getArgumentTypes());
-	}
+
+    public static Method getInvocationMethodDefault(InvocationMetadata metadata) {
+        Method method = getMethodQuietly(metadata.getInvocationClass(), metadata.getMethodName(),
+                metadata.getArgumentTypes());
+        if (method == null) {
+            return getMethodQuietly(ReflectionUtils.class, "nop", new Class<?>[0]);
+        }
+        return method;
+    }
+
+    public void nop() {
+        // nop.
+    }
+
+    public static Method getInvocationMethod(InvocationMetadata metadata) {
+        return getMethodQuietly(metadata.getInvocationClass(), metadata.getMethodName(),
+                metadata.getArgumentTypes());
+    }
 
     public static Set<Class<?>> findAllImplementsInterfacesRecursivery(Class<?> find) {
         Set<Class<?>> result = new HashSet<Class<?>>();
@@ -245,5 +261,4 @@ public final class ReflectionUtils {
         }
         return result;
     }
-
 }

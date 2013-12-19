@@ -26,9 +26,12 @@ public class BeanAttributeArgumentPreparator extends AbstractApplicationProcesso
     public Object prepareInvoke(Method method, InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
             RequestValueResolvers resolvers) {
-        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
-        if(method == null || ArrayUtils.isEmpty(argTypes) || ArrayUtils.isEmpty(parameterAnnotations)){
+        if (method == null || ArrayUtils.isEmpty(argTypes)) {
+            return NO_INTERRUPTION;
+        }
+        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+        if (ArrayUtils.isEmpty(parameterAnnotations)) {
             return NO_INTERRUPTION;
         }
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
