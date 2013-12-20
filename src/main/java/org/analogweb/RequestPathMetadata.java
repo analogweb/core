@@ -27,6 +27,4 @@ public interface RequestPathMetadata {
      */
     boolean match(RequestPath requestPath);
 
-    boolean fulfill(RequestPath requestPath);
-
 }

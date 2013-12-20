@@ -7,12 +7,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
-import org.analogweb.core.InvalidRequestPathException;
-import org.analogweb.core.RequestMethodUnsupportedException;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
@@ -57,11 +53,9 @@ public class RequestPathDefinitionTest {
         String path = "/baa/something";
         String[] requestMethods = { "POST", "GET" };
         RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path, requestMethods);
-
         RequestPath other = mock(RequestPath.class);
         when(other.getActualPath()).thenReturn("/foo/baa/something");
         when(other.getRequestMethod()).thenReturn("POST");
-
         assertTrue(mappedPath.match(other));
     }
 
@@ -71,11 +65,9 @@ public class RequestPathDefinitionTest {
         String path = "/baa/something";
         String[] requestMethods = { "POST", "GET" };
         RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path, requestMethods);
-
         RequestPath other = mock(RequestPath.class);
         when(other.getActualPath()).thenReturn("/foo/baa/something");
         when(other.getRequestMethod()).thenReturn("DELETE");
-
         assertFalse(mappedPath.match(other));
     }
 
@@ -94,6 +86,7 @@ public class RequestPathDefinitionTest {
     @Test
     public void testDefineContainsAsterisc() {
         thrown.expect(new NoDescribeMatcher<InvalidRequestPathException>() {
+
             @Override
             public boolean matches(Object arg0) {
                 if (arg0 instanceof InvalidRequestPathException) {
@@ -245,7 +238,6 @@ public class RequestPathDefinitionTest {
         String path = "/baa/{baz}";
         String expected = "/foo/baa/{something";
         assertMatch(root, path, expected);
-
         root = "/foo";
         path = "/baa/{something";
         assertMatch(root, path, expected);
@@ -289,7 +281,6 @@ public class RequestPathDefinitionTest {
         String path = "/{hoge}/{baz}";
         String expected = "/foo/baa";
         assertNotMatch(root, path, expected);
-
         expected = "/foo/baa/baz/bad";
         assertNotMatch(root, path, expected);
     }
@@ -308,11 +299,9 @@ public class RequestPathDefinitionTest {
         String path = "/baa/something";
         RequestPathMetadata actual = RequestPathDefinition.define(root, path, new String[] {
                 "POST", "GET" });
-
         RequestPath actualSame = mock(RequestPath.class);
         when(actualSame.getActualPath()).thenReturn("/foo/baa/something");
         when(actualSame.getRequestMethod()).thenReturn("PUT");
-
         assertFalse(actual.match(actualSame));
     }
 
@@ -330,7 +319,6 @@ public class RequestPathDefinitionTest {
         String path = "/baa/{baz";
         String expected = "/foo/baa/{something";
         assertNotMatch(root, path, expected);
-
         expected = "/foo/baa/baz}";
         assertNotMatch(root, path, expected);
     }
@@ -345,11 +333,9 @@ public class RequestPathDefinitionTest {
 
     void assertPath(String root, String path, String expected, boolean expectMatch) {
         RequestPathMetadata actual = RequestPathDefinition.define(root, path);
-
         RequestPath actualSame = mock(RequestPath.class);
         when(actualSame.getActualPath()).thenReturn(expected);
         when(actualSame.getRequestMethod()).thenReturn("GET");
-
         log.debug("actual path : " + actual);
         log.debug("other actual path : " + actualSame);
         if (expectMatch) {
@@ -358,45 +344,4 @@ public class RequestPathDefinitionTest {
             assertFalse(actual.match(actualSame));
         }
     }
-
-    @Test
-    public void testFulFillSatisfied() {
-        String root = "/foo";
-        String path = "/baa/something";
-        RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path,
-                new String[] { "GET" });
-
-        RequestPath requestPath = mock(RequestPath.class);
-        when(requestPath.getRequestMethod()).thenReturn("GET");
-
-        // do nothing.
-        mappedPath.fulfill(requestPath);
-    }
-
-    @Test
-    public void testFulFillUnSatisfied() {
-        thrown.expect(new NoDescribeMatcher<RequestMethodUnsupportedException>() {
-            @Override
-            public boolean matches(Object arg0) {
-                if (arg0 instanceof RequestMethodUnsupportedException) {
-                    RequestMethodUnsupportedException ex = (RequestMethodUnsupportedException) arg0;
-                    assertThat(ex.getMetadata().getActualPath(), is("/foo/baa/something"));
-                    assertThat(ex.getRequestedMethod(), is("GET"));
-                    assertThat(ex.getDefinedMethods().containsAll(Arrays.asList("POST")), is(true));
-                    return true;
-                }
-                return false;
-            }
-        });
-        String root = "/foo";
-        String path = "/baa/something";
-        RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path,
-                new String[] { "POST" });
-
-        RequestPath requestPath = mock(RequestPath.class);
-        when(requestPath.getRequestMethod()).thenReturn("GET");
-
-        mappedPath.fulfill(requestPath);
-    }
-
 }

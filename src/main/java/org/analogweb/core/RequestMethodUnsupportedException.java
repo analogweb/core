@@ -11,11 +11,11 @@ import org.analogweb.RequestPathMetadata;
 public class RequestMethodUnsupportedException extends UnsatisfiedRequestPathException {
 
     private static final long serialVersionUID = -5103029925778697441L;
-    private List<String> definedMethods;
-    private String requestedMethod;
+    private final List<String> definedMethods;
+    private final String requestedMethod;
 
-    public RequestMethodUnsupportedException(RequestPathMetadata metadata, List<String> definedMethods,
-            String requestedMethod) {
+    public RequestMethodUnsupportedException(RequestPathMetadata metadata,
+            List<String> definedMethods, String requestedMethod) {
         super(metadata);
         this.definedMethods = definedMethods;
         this.requestedMethod = requestedMethod;
@@ -36,5 +36,4 @@ public class RequestMethodUnsupportedException extends UnsatisfiedRequestPathExc
     public String getRequestedMethod() {
         return requestedMethod;
     }
-
 }

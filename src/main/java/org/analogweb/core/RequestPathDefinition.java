@@ -12,8 +12,7 @@ import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.StringUtils;
 
 /**
- * アクションを起動するリクエストパスを定義します。<br/>
- * リクエストパスはアクションを起動可能なすべてのリクエストのパターンを 定義する事ができます。
+ * Define {@link RequestPath} that enable entry-point to invoke.
  * @author snowgoose
  */
 public class RequestPathDefinition extends AbstractRequestPathMetadata {
@@ -38,14 +37,12 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
     }
 
     public static RequestPathDefinition define(String root, String path, String[] requestMethods) {
-
         if (StringUtils.isEmpty(root)) {
             root = StringUtils.EMPTY;
         }
         if (StringUtils.isEmpty(path)) {
             throw new InvalidRequestPathException(root, path);
         }
-
         StringBuilder editedRoot = editRoot(root, path);
         StringBuilder editedPath = editPath(root, path);
         return new RequestPathDefinition(editedRoot.append(editedPath).toString(), requestMethods);
@@ -82,12 +79,6 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
         return this.actualPath;
     }
 
-    /**
-     * リクエストパスを実行可能なメソッドのリストを取得します。<br/>
-     * リクエストされたメソッドがこのリストに含まれない場合は、
-     * この{@link RequestPathDefinition}は適合しません。
-     * @return リクエストパスを実行可能なメソッドのリスト
-     */
     @Override
     public List<String> getRequestMethods() {
         return this.requestMethods;
@@ -150,40 +141,10 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
         return getActualPath();
     }
 
-    @Override
-    public int hashCode(){
-    	int hash = super.hashCode();
-    	for(String method : getRequestMethods()){
-    		hash += method.hashCode();
-    	}
-    	return hash;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof RequestPath) {
-        	RequestPath rp = (RequestPath)other;
-        	return rp.getActualPath().equals(getActualPath())
-        			&& containsRequestMethod(rp);
-        }
-       return super.equals(other);
-    }
-
     private static final class EmptyDefinePath extends RequestPathDefinition {
 
         private EmptyDefinePath() {
             super(StringUtils.EMPTY, new String[0]);
         }
-
     }
-
-    @Override
-    public boolean fulfill(RequestPath requestPath) {
-    	String requestMethod = requestPath.getRequestMethod();
-        if (getRequestMethods().contains(requestMethod) == false) {
-            throw new RequestMethodUnsupportedException(this, getRequestMethods(),requestMethod);
-        }
-        return super.fulfill(requestPath);
-    }
-
 }

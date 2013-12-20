@@ -1,6 +1,5 @@
 package org.analogweb.core;
 
-import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 
 /**
@@ -11,21 +10,19 @@ public abstract class AbstractRequestPathMetadata implements RequestPathMetadata
     @Override
     public boolean equals(Object other) {
         if (other instanceof RequestPathMetadata) {
-        	RequestPathMetadata rpm = (RequestPathMetadata) other;
+            RequestPathMetadata rpm = (RequestPathMetadata) other;
             return getActualPath().equals(rpm.getActualPath())
-            		&& getRequestMethods().containsAll(rpm.getRequestMethods());
+                    && getRequestMethods().containsAll(rpm.getRequestMethods());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return getActualPath().hashCode();
+        int hash = getActualPath().hashCode();
+        for (String method : getRequestMethods()) {
+            hash = 31 * hash + (method != null ? method.hashCode() : 0);
+        }
+        return hash;
     }
-
-    @Override
-    public boolean fulfill(RequestPath requestPath) throws UnsatisfiedRequestPathException {
-    	return false;
-    }
-
 }
