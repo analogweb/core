@@ -100,7 +100,12 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
     }
 
     private boolean containsRequestMethod(RequestPath other) {
-        return getRequestMethods().contains(other.getRequestMethod());
+        boolean contains = getRequestMethods().contains(other.getRequestMethod());
+        if (contains == false) {
+            throw new RequestMethodUnsupportedException(this, getRequestMethods(),
+                    other.getRequestMethod());
+        }
+        return contains;
     }
 
     private boolean matchPlaceHolder(String requestedPath) {

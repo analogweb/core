@@ -61,6 +61,7 @@ public class RequestPathDefinitionTest {
 
     @Test
     public void testDefineWithMethodNotEquals() {
+        thrown.expect(RequestMethodUnsupportedException.class);
         String root = "/foo";
         String path = "/baa/something";
         String[] requestMethods = { "POST", "GET" };
@@ -68,7 +69,7 @@ public class RequestPathDefinitionTest {
         RequestPath other = mock(RequestPath.class);
         when(other.getActualPath()).thenReturn("/foo/baa/something");
         when(other.getRequestMethod()).thenReturn("DELETE");
-        assertFalse(mappedPath.match(other));
+        mappedPath.match(other);
     }
 
     @Test
@@ -295,6 +296,7 @@ public class RequestPathDefinitionTest {
 
     @Test
     public void testNotMatchWithRequestMethods() {
+        thrown.expect(RequestMethodUnsupportedException.class);
         String root = "/foo";
         String path = "/baa/something";
         RequestPathMetadata actual = RequestPathDefinition.define(root, path, new String[] {
@@ -302,7 +304,7 @@ public class RequestPathDefinitionTest {
         RequestPath actualSame = mock(RequestPath.class);
         when(actualSame.getActualPath()).thenReturn("/foo/baa/something");
         when(actualSame.getRequestMethod()).thenReturn("PUT");
-        assertFalse(actual.match(actualSame));
+        actual.match(actualSame);
     }
 
     @Test
