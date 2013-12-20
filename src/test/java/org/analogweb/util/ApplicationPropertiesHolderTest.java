@@ -4,19 +4,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Locale;
-
 import org.analogweb.Application;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.core.ApplicationConfigurationException;
-import org.analogweb.util.ApplicationPropertiesHolder.DefaultCreator;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -25,7 +17,6 @@ import org.junit.rules.TemporaryFolder;
 public class ApplicationPropertiesHolderTest {
 
     private Application app;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     @Rule
@@ -71,59 +62,4 @@ public class ApplicationPropertiesHolderTest {
         ApplicationPropertiesHolder.dispose(app);
         ApplicationPropertiesHolder.current();
     }
-
-    @Test
-    @Deprecated
-    @Ignore
-    public void testUsingDefaultCreator() throws IOException {
-        DefaultCreator creator = new DefaultCreator();
-        ApplicationProperties actual = ApplicationPropertiesHolder.configure(app, creator);
-        assertThat(actual.getApplicationSpecifier(), is(StringUtils.EMPTY));
-        Collection<String> actualPackageNames = actual.getComponentPackageNames();
-        assertThat(actualPackageNames.size(), is(1));
-        assertThat(actualPackageNames.contains(Application.class.getPackage().getName()), is(true));
-        assertThat(actual.getTempDir().getPath(),
-                is(new File(SystemProperties.tmpDir() + SystemProperties.fileSeparator()
-                        + Application.class.getCanonicalName()).getPath()));
-    }
-
-    @Test
-    @Deprecated
-    @Ignore
-    public void testUsingConfiguredDefaultCreator() throws IOException {
-        File dir = folder.newFolder();
-        String packageNames = "foo.baa,baz.boo";
-        String applicationSpecifier = ".do";
-        String locale = "en-us";
-        String tempDirectoryPath = dir.getPath();
-        DefaultCreator creator = new DefaultCreator(packageNames, applicationSpecifier,
-                tempDirectoryPath,locale);
-        ApplicationProperties actual = ApplicationPropertiesHolder.configure(app, creator);
-        assertThat(actual.getApplicationSpecifier(), is(applicationSpecifier));
-        Collection<String> actualPackageNames = actual.getComponentPackageNames();
-        assertThat(actualPackageNames.size(), is(2));
-        assertThat(actualPackageNames.containsAll(Arrays.asList("foo.baa", "baz.boo")), is(true));
-        assertThat(
-                actual.getTempDir().getPath(),
-                is(new File(dir.getPath() + SystemProperties.fileSeparator()
-                        + Application.class.getCanonicalName()).getPath()));
-        assertThat(actual.getDefaultClientLocale(),is(Locale.US));
-    }
-
-    @Test
-    @Deprecated
-    @Ignore
-    public void testUsingConfiguredDefaultCreatorWithEmptyPackageNames() throws IOException {
-        File dir = folder.newFolder();
-        String packageNames = "";
-        String applicationSpecifier = ".do";
-        String tempDirectoryPath = dir.getPath();
-        String locale = "";
-        DefaultCreator creator = new DefaultCreator(packageNames, applicationSpecifier,
-                tempDirectoryPath,locale);
-        ApplicationProperties actual = ApplicationPropertiesHolder.configure(app, creator);
-        assertThat(actual.getComponentPackageNames().isEmpty(), is(true));
-        assertThat(actual.getDefaultClientLocale(),is(Locale.getDefault()));
-    }
-
 }
