@@ -20,7 +20,7 @@ public class DefaultRouteRegistryTest {
 
 	@Before
 	public void setUp() throws Exception {
-		registry= new DefaultRouteRegistry();
+		registry = new DefaultRouteRegistry();
 	}
 
 	@Test
@@ -45,9 +45,9 @@ public class DefaultRouteRegistryTest {
 		when(requestPath2.fulfill(requestPath2)).thenReturn(false);
 		when(requestPath3.fulfill(requestPath3)).thenReturn(false);
 
-		registry.mapInvocationMetadata(requestPath1, metadata1);
-		registry.mapInvocationMetadata(requestPath2, metadata2);
-		registry.mapInvocationMetadata(requestPath3, metadata3);
+		registry.register(metadata1);
+		registry.register(metadata2);
+		registry.register(metadata3);
 
 		assertThat(registry.findInvocationMetadata(requestPath1), is(metadata1));
 		assertThat(registry.findInvocationMetadata(requestPath2), is(metadata2));
@@ -60,7 +60,8 @@ public class DefaultRouteRegistryTest {
 		RequestPath requestPath2 = mock(RequestPath.class);
 
 		InvocationMetadata metadata1 = mock(InvocationMetadata.class);
-		registry.mapInvocationMetadata(requestPath1, metadata1);
+		when(metadata1.getDefinedPath()).thenReturn(requestPath1);
+		registry.register(metadata1);
 
 		when(requestPath1.match(requestPath1)).thenReturn(true);
 
@@ -78,9 +79,10 @@ public class DefaultRouteRegistryTest {
 		RequestPath requestPath2 = mock(RequestPath.class);
 
 		InvocationMetadata metadata1 = mock(InvocationMetadata.class);
-		registry.mapInvocationMetadata(requestPath1, metadata1);
-
+		when(metadata1.getDefinedPath()).thenReturn(requestPath1);
 		when(requestPath1.match(requestPath1)).thenReturn(true);
+
+		registry.register(metadata1);
 
 		registry.dispose();
 		assertNull(registry.findInvocationMetadata(requestPath1));

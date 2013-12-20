@@ -1,25 +1,23 @@
 package org.analogweb;
 
 /**
- * {@link RequestPathMetadata}をキーとして、{@link InvocationMetadata}を保持するハッシュです。
+ * Registry of {@link InvocationMetadata}.
  * @author snowgoose
  */
 public interface RouteRegistry extends Disposable {
 
     /**
-     * リクエストされたパス({@link RequestPath})に一致する{@link InvocationMetadata}を取得します。<br/>
-     * キーに該当する{@link InvocationMetadata}が存在しない場合はnullを返します。
-     * @param requestPath {@link RequestPathMetadata}
-     * @return キーにより特定された{@link InvocationMetadata}
+    * Find matched {@link InvocationMetadata}.<br/>
+    * @param requestPath {@link RequestPathMetadata}
+    * @return {@link InvocationMetadata}
      */
     InvocationMetadata findInvocationMetadata(RequestPath requestPath);
 
     /**
-     * {@link RequestPathMetadata}をキーとして、{@link InvocationMetadata}をマッピングします。
-     * @param requestPath {@link RequestPathMetadata}
+     * Register {@link InvocationMetadata}.
      * @param invocationMetadata {@link InvocationMetadata}
      */
-    void mapInvocationMetadata(RequestPathMetadata requestPath,
+    void register(
             InvocationMetadata invocationMetadata);
 
 }

@@ -53,308 +53,341 @@ import org.analogweb.util.logging.Markers;
  */
 public class WebApplication implements Application {
 
-    private static final Log log = Logs.getLog(WebApplication.class);
-    private Modules modules;
-    private RouteRegistry routes;
-    private ClassLoader classLoader;
-    private ApplicationContextResolver resolver;
+	private static final Log log = Logs.getLog(WebApplication.class);
+	private Modules modules;
+	private RouteRegistry routes;
+	private ClassLoader classLoader;
+	private ApplicationContextResolver resolver;
 
-    @Override
-    public void run(ApplicationContextResolver resolver, ApplicationProperties props,
-            Collection<ClassCollector> collectors, ClassLoader classLoader) {
-        StopWatch sw = new StopWatch();
-        sw.start();
-        this.resolver = resolver;
-        this.classLoader = classLoader;
-        log.log(Markers.BOOT_APPLICATION, "IB000001");
-        Collection<String> invocationPackageNames = props.getComponentPackageNames();
-        log.log(Markers.BOOT_APPLICATION, "DB000001", invocationPackageNames);
-        Set<String> modulesPackageNames = new HashSet<String>();
-        if (CollectionUtils.isNotEmpty(invocationPackageNames)) {
-            modulesPackageNames.addAll(invocationPackageNames);
-        }
-        modulesPackageNames.add(DEFAULT_PACKAGE_NAME);
-        log.log(Markers.BOOT_APPLICATION, "DB000002", modulesPackageNames);
-        initApplication(collectors, modulesPackageNames, invocationPackageNames);
-        log.log(Markers.BOOT_APPLICATION, "IB000002", sw.stop());
-    }
+	@Override
+	public void run(ApplicationContextResolver resolver,
+			ApplicationProperties props, Collection<ClassCollector> collectors,
+			ClassLoader classLoader) {
+		StopWatch sw = new StopWatch();
+		sw.start();
+		this.resolver = resolver;
+		this.classLoader = classLoader;
+		log.log(Markers.BOOT_APPLICATION, "IB000001");
+		Collection<String> invocationPackageNames = props
+				.getComponentPackageNames();
+		log.log(Markers.BOOT_APPLICATION, "DB000001", invocationPackageNames);
+		Set<String> modulesPackageNames = new HashSet<String>();
+		if (CollectionUtils.isNotEmpty(invocationPackageNames)) {
+			modulesPackageNames.addAll(invocationPackageNames);
+		}
+		modulesPackageNames.add(DEFAULT_PACKAGE_NAME);
+		log.log(Markers.BOOT_APPLICATION, "DB000002", modulesPackageNames);
+		initApplication(collectors, modulesPackageNames, invocationPackageNames);
+		log.log(Markers.BOOT_APPLICATION, "IB000002", sw.stop());
+	}
 
-    @Override
-    public int processRequest(RequestPath requestedPath, RequestContext context,
-            ResponseContext responseContext) throws IOException, WebApplicationException {
-        InvocationMetadata metadata = null;
-        Modules mod = null;
-        List<ApplicationProcessor> processors = null;
-        try {
-            mod = getModules();
-            processors = mod.getApplicationProcessors();
-            onProcessRequest(processors, context, requestedPath);
-            RouteRegistry mapping = getRouteRegistry();
-            log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
-            metadata = mapping.findInvocationMetadata(requestedPath);
-            if (metadata == null) {
-                log.log(Markers.LIFECYCLE, "DL000005", requestedPath);
-                return NOT_FOUND;
-            }
-            log.log(Markers.LIFECYCLE, "DL000006", requestedPath, metadata);
-            ContainerAdaptor invocationInstances = mod.getInvocationInstanceProvider();
-            RequestValueResolvers resolvers = mod.getRequestValueResolvers();
-            TypeMapperContext typeMapperContext = mod.getTypeMapperContext();
-            Invocation invocation = mod.getInvocationFactory().createInvocation(
-                    invocationInstances, metadata, context, responseContext, typeMapperContext,
-                    resolvers);
-            InvocationArguments arguments = invocation.getInvocationArguments();
-            prepareInvoke(processors, arguments, metadata, context, resolvers, typeMapperContext);
-            try {
-                Object invocationResult = mod.getInvoker().invoke(invocation, metadata, context,
-                        responseContext);
-                log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(),
-                        invocationResult);
-                postInvoke(processors, invocationResult, arguments, metadata, context, resolvers);
-                handleResponse(mod, invocationResult, metadata, context, responseContext);
-            } catch (Exception e) {
-                log.log(Markers.LIFECYCLE, "DL000012", invocation.getInvocationInstance(), e);
-                onException(processors, e, arguments, metadata, context);
-                List<Object> args = arguments.asList();
-                throw new InvocationFailureException(e, metadata, args.toArray(new Object[args
-                        .size()]));
-            }
-            afterCompletion(processors, context, responseContext, null);
-        } catch (InvokeInterruptedException e) {
-            handleResponse(mod, e.getInterruption(), metadata, context, responseContext);
-            afterCompletion(processors, context, responseContext, e);
-        } catch (Exception e) {
-            ExceptionHandler handler = mod.getExceptionHandler();
-            log.log(Markers.LIFECYCLE, "DL000009", (Object) e, handler);
-            Object exceptionResult = handler.handleException(e);
-            if (exceptionResult != null) {
-                handleResponse(mod, exceptionResult, metadata, context, responseContext);
-                afterCompletion(processors, context, responseContext, e);
-            } else {
-                afterCompletion(processors, context, responseContext, e);
-                throw new WebApplicationException(e);
-            }
-        }
-        return PROCEEDED;
-    }
+	@Override
+	public int processRequest(RequestPath requestedPath,
+			RequestContext context, ResponseContext responseContext)
+			throws IOException, WebApplicationException {
+		InvocationMetadata metadata = null;
+		Modules mod = null;
+		List<ApplicationProcessor> processors = null;
+		try {
+			mod = getModules();
+			processors = mod.getApplicationProcessors();
+			onProcessRequest(processors, context, requestedPath);
+			RouteRegistry mapping = getRouteRegistry();
+			log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
+			metadata = mapping.findInvocationMetadata(requestedPath);
+			if (metadata == null) {
+				log.log(Markers.LIFECYCLE, "DL000005", requestedPath);
+				return NOT_FOUND;
+			}
+			log.log(Markers.LIFECYCLE, "DL000006", requestedPath, metadata);
+			ContainerAdaptor invocationInstances = mod
+					.getInvocationInstanceProvider();
+			RequestValueResolvers resolvers = mod.getRequestValueResolvers();
+			TypeMapperContext typeMapperContext = mod.getTypeMapperContext();
+			Invocation invocation = mod.getInvocationFactory()
+					.createInvocation(invocationInstances, metadata, context,
+							responseContext, typeMapperContext, resolvers);
+			InvocationArguments arguments = invocation.getInvocationArguments();
+			prepareInvoke(processors, arguments, metadata, context, resolvers,
+					typeMapperContext);
+			try {
+				Object invocationResult = mod.getInvoker().invoke(invocation,
+						metadata, context, responseContext);
+				log.log(Markers.LIFECYCLE, "DL000007",
+						invocation.getInvocationInstance(), invocationResult);
+				postInvoke(processors, invocationResult, arguments, metadata,
+						context, resolvers);
+				handleResponse(mod, invocationResult, metadata, context,
+						responseContext);
+			} catch (Exception e) {
+				log.log(Markers.LIFECYCLE, "DL000012",
+						invocation.getInvocationInstance(), e);
+				onException(processors, e, arguments, metadata, context);
+				List<Object> args = arguments.asList();
+				throw new InvocationFailureException(e, metadata,
+						args.toArray(new Object[args.size()]));
+			}
+			afterCompletion(processors, context, responseContext, null);
+		} catch (InvokeInterruptedException e) {
+			handleResponse(mod, e.getInterruption(), metadata, context,
+					responseContext);
+			afterCompletion(processors, context, responseContext, e);
+		} catch (Exception e) {
+			ExceptionHandler handler = mod.getExceptionHandler();
+			log.log(Markers.LIFECYCLE, "DL000009", (Object) e, handler);
+			Object exceptionResult = handler.handleException(e);
+			if (exceptionResult != null) {
+				handleResponse(mod, exceptionResult, metadata, context,
+						responseContext);
+				afterCompletion(processors, context, responseContext, e);
+			} else {
+				afterCompletion(processors, context, responseContext, e);
+				throw new WebApplicationException(e);
+			}
+		}
+		return PROCEEDED;
+	}
 
-    protected void onProcessRequest(List<ApplicationProcessor> processors, RequestContext request,
-            RequestPath requestedPath) {
-        log.log(Markers.LIFECYCLE, "DL000017");
-        Object interruption = ApplicationProcessor.NO_INTERRUPTION;
-        for (ApplicationProcessor processor : processors) {
-            interruption = processor.onProcessRequest(request, requestedPath);
-            if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
-                throw new InvokeInterruptedException(interruption);
-            }
-        }
-    }
+	protected void onProcessRequest(List<ApplicationProcessor> processors,
+			RequestContext request, RequestPath requestedPath) {
+		log.log(Markers.LIFECYCLE, "DL000017");
+		Object interruption = ApplicationProcessor.NO_INTERRUPTION;
+		for (ApplicationProcessor processor : processors) {
+			interruption = processor.onProcessRequest(request, requestedPath);
+			if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
+				throw new InvokeInterruptedException(interruption);
+			}
+		}
+	}
 
-    protected void prepareInvoke(List<ApplicationProcessor> processors, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext request,
-            RequestValueResolvers attributesHandlers, TypeMapperContext typeMapperContext) {
-        log.log(Markers.LIFECYCLE, "DL000013");
-        Object interruption = ApplicationProcessor.NO_INTERRUPTION;
-        Method method = ReflectionUtils.getInvocationMethodDefault(metadata);
-        for (ApplicationProcessor processor : processors) {
-            interruption = processor.prepareInvoke(method, args, metadata, request,
-                    typeMapperContext, attributesHandlers);
-            if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
-                throw new InvokeInterruptedException(interruption);
-            }
-        }
-    }
+	protected void prepareInvoke(List<ApplicationProcessor> processors,
+			InvocationArguments args, InvocationMetadata metadata,
+			RequestContext request, RequestValueResolvers attributesHandlers,
+			TypeMapperContext typeMapperContext) {
+		log.log(Markers.LIFECYCLE, "DL000013");
+		Object interruption = ApplicationProcessor.NO_INTERRUPTION;
+		Method method = ReflectionUtils.getInvocationMethodDefault(metadata);
+		for (ApplicationProcessor processor : processors) {
+			interruption = processor.prepareInvoke(method, args, metadata,
+					request, typeMapperContext, attributesHandlers);
+			if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
+				throw new InvokeInterruptedException(interruption);
+			}
+		}
+	}
 
-    protected void postInvoke(List<ApplicationProcessor> processors, Object invocationResult,
-            InvocationArguments args, InvocationMetadata metadata, RequestContext request,
-            RequestValueResolvers attributesHandlers) {
-        log.log(Markers.LIFECYCLE, "DL000014");
-        for (ApplicationProcessor processor : processors) {
-            processor.postInvoke(invocationResult, args, metadata, request, attributesHandlers);
-        }
-    }
+	protected void postInvoke(List<ApplicationProcessor> processors,
+			Object invocationResult, InvocationArguments args,
+			InvocationMetadata metadata, RequestContext request,
+			RequestValueResolvers attributesHandlers) {
+		log.log(Markers.LIFECYCLE, "DL000014");
+		for (ApplicationProcessor processor : processors) {
+			processor.postInvoke(invocationResult, args, metadata, request,
+					attributesHandlers);
+		}
+	}
 
-    protected void onException(List<ApplicationProcessor> processors, Exception thrown,
-            InvocationArguments args, InvocationMetadata metadata, RequestContext request) {
-        log.log(Markers.LIFECYCLE, "DL000015");
-        Object interruption = ApplicationProcessor.NO_INTERRUPTION;
-        for (ApplicationProcessor processor : processors) {
-            interruption = processor.processException(thrown, request, args, metadata);
-            if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
-                throw new InvokeInterruptedException(interruption);
-            }
-        }
-    }
+	protected void onException(List<ApplicationProcessor> processors,
+			Exception thrown, InvocationArguments args,
+			InvocationMetadata metadata, RequestContext request) {
+		log.log(Markers.LIFECYCLE, "DL000015");
+		Object interruption = ApplicationProcessor.NO_INTERRUPTION;
+		for (ApplicationProcessor processor : processors) {
+			interruption = processor.processException(thrown, request, args,
+					metadata);
+			if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
+				throw new InvokeInterruptedException(interruption);
+			}
+		}
+	}
 
-    protected void afterCompletion(List<ApplicationProcessor> processors, RequestContext context,
-            ResponseContext responseContext, Exception e) {
-        log.log(Markers.LIFECYCLE, "DL000016");
-        for (ApplicationProcessor processor : processors) {
-            processor.afterCompletion(context, responseContext, e);
-        }
-    }
+	protected void afterCompletion(List<ApplicationProcessor> processors,
+			RequestContext context, ResponseContext responseContext, Exception e) {
+		log.log(Markers.LIFECYCLE, "DL000016");
+		for (ApplicationProcessor processor : processors) {
+			processor.afterCompletion(context, responseContext, e);
+		}
+	}
 
-    protected void handleResponse(Modules modules, Object result, InvocationMetadata metadata,
-            RequestContext context, ResponseContext responseContext) throws IOException,
-            WebApplicationException {
-        ResponseResolver resultResolver = modules.getResponseResolver();
-        Renderable resolved = resultResolver.resolve(result, metadata, context, responseContext);
-        log.log(Markers.LIFECYCLE, "DL000008", result, result);
-        ResponseFormatter resultFormatter = modules.findResponseFormatter(resolved.getClass());
-        if (resultFormatter != null) {
-            log.log(Markers.LIFECYCLE, "DL000010", result, resultFormatter);
-        } else {
-            log.log(Markers.LIFECYCLE, "DL000011", result);
-        }
-        ResponseHandler resultHandler = modules.getResponseHandler();
-        resultHandler.handleResult(resolved, resultFormatter, context, responseContext);
-    }
+	protected void handleResponse(Modules modules, Object result,
+			InvocationMetadata metadata, RequestContext context,
+			ResponseContext responseContext) throws IOException,
+			WebApplicationException {
+		ResponseResolver resultResolver = modules.getResponseResolver();
+		Renderable resolved = resultResolver.resolve(result, metadata, context,
+				responseContext);
+		log.log(Markers.LIFECYCLE, "DL000008", result, result);
+		ResponseFormatter resultFormatter = modules
+				.findResponseFormatter(resolved.getClass());
+		if (resultFormatter != null) {
+			log.log(Markers.LIFECYCLE, "DL000010", result, resultFormatter);
+		} else {
+			log.log(Markers.LIFECYCLE, "DL000011", result);
+		}
+		ResponseHandler resultHandler = modules.getResponseHandler();
+		resultHandler.handleResult(resolved, resultFormatter, context,
+				responseContext);
+	}
 
-    protected void initApplication(Collection<ClassCollector> collectors,
-            Set<String> modulePackageNames, Collection<String> invocationPackageNames/*,
-                                                                                     String specifier*/) {
-        Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames, collectors);
-        ModulesBuilder modulesBuilder = processConfigPreparation(ReflectionUtils
-                .filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses));
-        ApplicationContextResolver resolver = getApplicationContextResolver();
-        ContainerAdaptor defaultContainer = setUpDefaultContainer(resolver, moduleClasses);
-        Modules modules = modulesBuilder.buildModules(resolver, defaultContainer);
-        setModules(modules);
-        log.log(Markers.BOOT_APPLICATION, "DB000003", modules);
-        Collection<Class<?>> collectedInvocationClasses;
-        if (CollectionUtils.isEmpty(invocationPackageNames)) {
-            collectedInvocationClasses = collectAllClasses(collectors);
-        } else {
-            collectedInvocationClasses = collectClasses(invocationPackageNames, collectors);
-        }
-        setRouteRegistry(createRouteRegistry(collectedInvocationClasses,
-                modules.getInvocationMetadataFactories()));
-    }
+	protected void initApplication(Collection<ClassCollector> collectors,
+			Set<String> modulePackageNames,
+			Collection<String> invocationPackageNames/*
+													 * , String specifier
+													 */) {
+		Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames,
+				collectors);
+		ModulesBuilder modulesBuilder = processConfigPreparation(ReflectionUtils
+				.filterClassAsImplementsInterface(ModulesConfig.class,
+						moduleClasses));
+		ApplicationContextResolver resolver = getApplicationContextResolver();
+		ContainerAdaptor defaultContainer = setUpDefaultContainer(resolver,
+				moduleClasses);
+		Modules modules = modulesBuilder.buildModules(resolver,
+				defaultContainer);
+		setModules(modules);
+		log.log(Markers.BOOT_APPLICATION, "DB000003", modules);
+		Collection<Class<?>> collectedInvocationClasses;
+		if (CollectionUtils.isEmpty(invocationPackageNames)) {
+			collectedInvocationClasses = collectAllClasses(collectors);
+		} else {
+			collectedInvocationClasses = collectClasses(invocationPackageNames,
+					collectors);
+		}
+		setRouteRegistry(createRouteRegistry(collectedInvocationClasses,
+				modules.getInvocationMetadataFactories()));
+	}
 
-    protected ModulesBuilder processConfigPreparation(List<Class<ModulesConfig>> configs) {
-        ModulesBuilder modulesBuilder = new DefaultModulesBuilder();
-        List<ModulesConfig> moduleConfigInstances = new ArrayList<ModulesConfig>();
-        for (Class<ModulesConfig> configClass : configs) {
-            ModulesConfig config = ReflectionUtils.getInstanceQuietly(configClass);
-            if (config != null) {
-                moduleConfigInstances.add(config);
-            }
-        }
-        Collections.sort(moduleConfigInstances, getModulesConfigComparator());
-        for (ModulesConfig config : moduleConfigInstances) {
-            log.log(Markers.BOOT_APPLICATION, "IB000003", config);
-            modulesBuilder = config.prepare(modulesBuilder);
-        }
-        return modulesBuilder;
-    }
+	protected ModulesBuilder processConfigPreparation(
+			List<Class<ModulesConfig>> configs) {
+		ModulesBuilder modulesBuilder = new DefaultModulesBuilder();
+		List<ModulesConfig> moduleConfigInstances = new ArrayList<ModulesConfig>();
+		for (Class<ModulesConfig> configClass : configs) {
+			ModulesConfig config = ReflectionUtils
+					.getInstanceQuietly(configClass);
+			if (config != null) {
+				moduleConfigInstances.add(config);
+			}
+		}
+		Collections.sort(moduleConfigInstances, getModulesConfigComparator());
+		for (ModulesConfig config : moduleConfigInstances) {
+			log.log(Markers.BOOT_APPLICATION, "IB000003", config);
+			modulesBuilder = config.prepare(modulesBuilder);
+		}
+		return modulesBuilder;
+	}
 
-    protected Comparator<ModulesConfig> getModulesConfigComparator() {
-        return new ModulesConfigComparator();
-    }
+	protected Comparator<ModulesConfig> getModulesConfigComparator() {
+		return new ModulesConfigComparator();
+	}
 
-    protected ContainerAdaptor setUpDefaultContainer(ApplicationContextResolver resolver,
-            Collection<Class<?>> rootModuleClasses) {
-        StaticMappingContainerAdaptorFactory factory = new StaticMappingContainerAdaptorFactory();
-        StaticMappingContainerAdaptor adaptor = factory.createContainerAdaptor(resolver);
-        for (Class<?> moduleClass : rootModuleClasses) {
-            if (Module.class.isAssignableFrom(moduleClass)) {
-                adaptor.register(moduleClass);
-            }
-        }
-        return adaptor;
-    }
+	protected ContainerAdaptor setUpDefaultContainer(
+			ApplicationContextResolver resolver,
+			Collection<Class<?>> rootModuleClasses) {
+		StaticMappingContainerAdaptorFactory factory = new StaticMappingContainerAdaptorFactory();
+		StaticMappingContainerAdaptor adaptor = factory
+				.createContainerAdaptor(resolver);
+		for (Class<?> moduleClass : rootModuleClasses) {
+			if (Module.class.isAssignableFrom(moduleClass)) {
+				adaptor.register(moduleClass);
+			}
+		}
+		return adaptor;
+	}
 
-    protected RouteRegistry createRouteRegistry(Collection<Class<?>> collectedClasses,
-            List<InvocationMetadataFactory> factories) {
-        RouteRegistry mapping = new DefaultRouteRegistry();
-        for (Class<?> clazz : collectedClasses) {
-            for (InvocationMetadataFactory factory : factories) {
-                if (factory.containsInvocationClass(clazz)) {
-                    for (InvocationMetadata actionMethodMetadata : factory
-                            .createInvocationMetadatas(clazz)) {
-                        log.log(Markers.BOOT_APPLICATION, "IB000004",
-                                actionMethodMetadata.getDefinedPath(),
-                                actionMethodMetadata.getInvocationClass(),
-                                actionMethodMetadata.getMethodName());
-                        mapping.mapInvocationMetadata(actionMethodMetadata.getDefinedPath(),
-                                actionMethodMetadata);
-                    }
-                }
-            }
-        }
-        return mapping;
-    }
+	protected RouteRegistry createRouteRegistry(
+			Collection<Class<?>> collectedClasses,
+			List<InvocationMetadataFactory> factories) {
+		RouteRegistry mapping = new DefaultRouteRegistry();
+		for (Class<?> clazz : collectedClasses) {
+			for (InvocationMetadataFactory factory : factories) {
+				if (factory.containsInvocationClass(clazz)) {
+					for (InvocationMetadata actionMethodMetadata : factory
+							.createInvocationMetadatas(clazz)) {
+						log.log(Markers.BOOT_APPLICATION, "IB000004",
+								actionMethodMetadata.getDefinedPath(),
+								actionMethodMetadata.getInvocationClass(),
+								actionMethodMetadata.getMethodName());
+						mapping.register(actionMethodMetadata);
+					}
+				}
+			}
+		}
+		return mapping;
+	}
 
-    protected Collection<Class<?>> collectAllClasses(Collection<ClassCollector> collectors) {
-        Collection<Class<?>> collectedClasses = new HashSet<Class<?>>();
-        for (String resourceName : SystemProperties.classPathes()) {
-            URL resourceURL = ResourceUtils.findResource(resourceName);
-            for (ClassCollector collector : collectors) {
-                collectedClasses.addAll(collector.collect(StringUtils.EMPTY, resourceURL,
-                        classLoader));
-            }
-        }
-        return collectedClasses;
-    }
+	protected Collection<Class<?>> collectAllClasses(
+			Collection<ClassCollector> collectors) {
+		Collection<Class<?>> collectedClasses = new HashSet<Class<?>>();
+		for (String resourceName : SystemProperties.classPathes()) {
+			URL resourceURL = ResourceUtils.findResource(resourceName);
+			for (ClassCollector collector : collectors) {
+				collectedClasses.addAll(collector.collect(StringUtils.EMPTY,
+						resourceURL, classLoader));
+			}
+		}
+		return collectedClasses;
+	}
 
-    protected Collection<Class<?>> collectClasses(Collection<String> rootPackageNames,
-            Collection<ClassCollector> collectors) {
-        Collection<Class<?>> collectedClasses = new HashSet<Class<?>>();
-        for (String packageName : rootPackageNames) {
-            for (URL resourceURL : ResourceUtils.findPackageResources(packageName, classLoader)) {
-                for (ClassCollector collector : collectors) {
-                    collectedClasses.addAll(collector
-                            .collect(packageName, resourceURL, classLoader));
-                }
-            }
-        }
-        return collectedClasses;
-    }
+	protected Collection<Class<?>> collectClasses(
+			Collection<String> rootPackageNames,
+			Collection<ClassCollector> collectors) {
+		Collection<Class<?>> collectedClasses = new HashSet<Class<?>>();
+		for (String packageName : rootPackageNames) {
+			for (URL resourceURL : ResourceUtils.findPackageResources(
+					packageName, classLoader)) {
+				for (ClassCollector collector : collectors) {
+					collectedClasses.addAll(collector.collect(packageName,
+							resourceURL, classLoader));
+				}
+			}
+		}
+		return collectedClasses;
+	}
 
-    @Override
-    public RouteRegistry getRouteRegistry() {
-        return routes;
-    }
+	@Override
+	public RouteRegistry getRouteRegistry() {
+		return routes;
+	}
 
-    protected void setRouteRegistry(RouteRegistry registry) {
-        this.routes = registry;
-    }
+	protected void setRouteRegistry(RouteRegistry registry) {
+		this.routes = registry;
+	}
 
-    @Override
-    public Modules getModules() {
-        return this.modules;
-    }
+	@Override
+	public Modules getModules() {
+		return this.modules;
+	}
 
-    protected void setModules(Modules modules) {
-        this.modules = modules;
-    }
+	protected void setModules(Modules modules) {
+		this.modules = modules;
+	}
 
-    @Override
-    @Deprecated
-    public String getApplicationSpecifier() {
-        return StringUtils.EMPTY;
-    }
+	@Override
+	@Deprecated
+	public String getApplicationSpecifier() {
+		return StringUtils.EMPTY;
+	}
 
-    @Deprecated
-    protected void setApplicationSpecifier(String suffix) {
-    }
+	@Deprecated
+	protected void setApplicationSpecifier(String suffix) {
+	}
 
-    protected final ApplicationContextResolver getApplicationContextResolver() {
-        return this.resolver;
-    }
+	protected final ApplicationContextResolver getApplicationContextResolver() {
+		return this.resolver;
+	}
 
-    @Override
-    public void dispose() {
-        this.classLoader = null;
-        this.resolver = null;
-        if (this.modules != null) {
-            this.modules.dispose();
-            this.modules = null;
-        }
-        if (this.routes != null) {
-            this.routes.dispose();
-            this.routes = null;
-        }
-        ApplicationPropertiesHolder.dispose(this);
-    }
+	@Override
+	public void dispose() {
+		this.classLoader = null;
+		this.resolver = null;
+		if (this.modules != null) {
+			this.modules.dispose();
+			this.modules = null;
+		}
+		if (this.routes != null) {
+			this.routes.dispose();
+			this.routes = null;
+		}
+		ApplicationPropertiesHolder.dispose(this);
+	}
 }

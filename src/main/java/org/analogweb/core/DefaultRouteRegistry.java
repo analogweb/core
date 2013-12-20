@@ -14,43 +14,43 @@ import org.analogweb.util.Maps;
  */
 public class DefaultRouteRegistry implements RouteRegistry {
 
-    private final Map<RequestPathMetadata, InvocationMetadata> actionMetadataMap = Maps
-            .newConcurrentHashMap();
+	private final Map<RequestPathMetadata, InvocationMetadata> actionMetadataMap = Maps
+			.newConcurrentHashMap();
 
-    @Override
-    public InvocationMetadata findInvocationMetadata(RequestPath requestPath) {
-        // direct match
-        InvocationMetadata found = actionMetadataMap.get(requestPath);
-        if (found != null) {
-            found.getDefinedPath().fulfill(requestPath);
-            return found;
-        }
-        // pattern match
-        for (Entry<RequestPathMetadata, InvocationMetadata> pathEntry : actionMetadataMap
-                .entrySet()) {
-            if (pathEntry.getKey().match(requestPath)) {
-                found = pathEntry.getValue();
-                found.getDefinedPath().fulfill(requestPath);
-                return found;
-            }
-        }
-        return null;
-    }
+	@Override
+	public InvocationMetadata findInvocationMetadata(RequestPath requestPath) {
+		// direct match
+		InvocationMetadata found = actionMetadataMap.get(requestPath);
+		if (found != null) {
+			found.getDefinedPath().fulfill(requestPath);
+			return found;
+		}
+		// pattern match
+		for (Entry<RequestPathMetadata, InvocationMetadata> pathEntry : actionMetadataMap
+				.entrySet()) {
+			if (pathEntry.getKey().match(requestPath)) {
+				found = pathEntry.getValue();
+				found.getDefinedPath().fulfill(requestPath);
+				return found;
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public void mapInvocationMetadata(RequestPathMetadata requestPath,
-            InvocationMetadata actionMethodMetadata) {
-        this.actionMetadataMap.put(requestPath, actionMethodMetadata);
-    }
+	@Override
+	public void register(InvocationMetadata actionMethodMetadata) {
+		this.actionMetadataMap.put(actionMethodMetadata.getDefinedPath(),
+				actionMethodMetadata);
+	}
 
-    @Override
-    public void dispose() {
-        this.actionMetadataMap.clear();
-    }
+	@Override
+	public void dispose() {
+		this.actionMetadataMap.clear();
+	}
 
-    @Override
-    public String toString() {
-        return this.actionMetadataMap.toString();
-    }
+	@Override
+	public String toString() {
+		return this.actionMetadataMap.toString();
+	}
 
 }
