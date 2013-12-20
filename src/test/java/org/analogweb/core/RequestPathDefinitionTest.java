@@ -60,7 +60,7 @@ public class RequestPathDefinitionTest {
 
         RequestPath other = mock(RequestPath.class);
         when(other.getActualPath()).thenReturn("/foo/baa/something");
-        when(other.getMethod()).thenReturn("POST");
+        when(other.getRequestMethod()).thenReturn("POST");
 
         assertTrue(mappedPath.match(other));
     }
@@ -74,7 +74,7 @@ public class RequestPathDefinitionTest {
 
         RequestPath other = mock(RequestPath.class);
         when(other.getActualPath()).thenReturn("/foo/baa/something");
-        when(other.getMethod()).thenReturn("DELETE");
+        when(other.getRequestMethod()).thenReturn("DELETE");
 
         assertFalse(mappedPath.match(other));
     }
@@ -311,7 +311,7 @@ public class RequestPathDefinitionTest {
 
         RequestPath actualSame = mock(RequestPath.class);
         when(actualSame.getActualPath()).thenReturn("/foo/baa/something");
-        when(actualSame.getMethod()).thenReturn("PUT");
+        when(actualSame.getRequestMethod()).thenReturn("PUT");
 
         assertFalse(actual.match(actualSame));
     }
@@ -348,7 +348,7 @@ public class RequestPathDefinitionTest {
 
         RequestPath actualSame = mock(RequestPath.class);
         when(actualSame.getActualPath()).thenReturn(expected);
-        when(actualSame.getMethod()).thenReturn("GET");
+        when(actualSame.getRequestMethod()).thenReturn("GET");
 
         log.debug("actual path : " + actual);
         log.debug("other actual path : " + actualSame);
@@ -367,7 +367,7 @@ public class RequestPathDefinitionTest {
                 new String[] { "GET" });
 
         RequestPath requestPath = mock(RequestPath.class);
-        when(requestPath.getMethod()).thenReturn("GET");
+        when(requestPath.getRequestMethod()).thenReturn("GET");
 
         // do nothing.
         mappedPath.fulfill(requestPath);
@@ -394,7 +394,7 @@ public class RequestPathDefinitionTest {
                 new String[] { "POST" });
 
         RequestPath requestPath = mock(RequestPath.class);
-        when(requestPath.getMethod()).thenReturn("GET");
+        when(requestPath.getRequestMethod()).thenReturn("GET");
 
         mappedPath.fulfill(requestPath);
     }

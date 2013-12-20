@@ -1,6 +1,8 @@
 package org.analogweb.core;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 
 import org.analogweb.RequestPath;
 import org.analogweb.util.Assertion;
@@ -67,8 +69,13 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
     }
 
     @Override
-    public String getMethod() {
+    public String getRequestMethod() {
         return requestMethod;
+    }
+
+    @Override
+    public List<String> getRequestMethods() {
+        return Arrays.asList(getRequestMethod());
     }
 
     @Override

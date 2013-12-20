@@ -22,7 +22,7 @@ public interface RequestPath extends RequestPathMetadata {
      * リクエストされたパスを実行するメソッドを取得します。
      * @return リクエストされたパスを実行するメソッド
      */
-    String getMethod();
+    String getRequestMethod();
 
     /**
      * リクエストされたパスを表す{@link URI}を取得します。

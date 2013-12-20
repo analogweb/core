@@ -41,7 +41,7 @@ public class DefaultRequestPathTest {
 
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "GET");
         assertThat(actual.getActualPath(), is("/baa/baz"));
-        assertThat(actual.getMethod(), is("GET"));
+        assertThat(actual.getRequestMethod(), is("GET"));
     }
 
     @Test

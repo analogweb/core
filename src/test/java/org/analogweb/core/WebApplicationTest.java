@@ -71,7 +71,7 @@ public class WebApplicationTest {
         RouteRegistry mapping = application.getRouteRegistry();
         RequestPath pathAnyThing = mock(RequestPath.class);
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
-        when(pathAnyThing.getMethod()).thenReturn("POST");
+        when(pathAnyThing.getRequestMethod()).thenReturn("POST");
         InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(pathAnyThing);
         log.debug(metadataAnyThing.toString());
     }
@@ -89,7 +89,7 @@ public class WebApplicationTest {
         RouteRegistry mapping = application.getRouteRegistry();
         RequestPath pathAnyThing = mock(RequestPath.class);
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
-        when(pathAnyThing.getMethod()).thenReturn("POST");
+        when(pathAnyThing.getRequestMethod()).thenReturn("POST");
         InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(pathAnyThing);
         log.debug(metadataAnyThing.toString());
     }

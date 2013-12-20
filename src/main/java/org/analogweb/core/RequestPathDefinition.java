@@ -88,7 +88,8 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
      * この{@link RequestPathDefinition}は適合しません。
      * @return リクエストパスを実行可能なメソッドのリスト
      */
-    protected List<String> getRequestMethods() {
+    @Override
+    public List<String> getRequestMethods() {
         return this.requestMethods;
     }
 
@@ -108,7 +109,7 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
     }
 
     private boolean containsRequestMethod(RequestPath other) {
-        return getRequestMethods().contains(other.getMethod());
+        return getRequestMethods().contains(other.getRequestMethod());
     }
 
     private boolean matchPlaceHolder(String requestedPath) {
@@ -178,9 +179,9 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
 
     @Override
     public boolean fulfill(RequestPath requestPath) {
-        if (getRequestMethods().contains(requestPath.getMethod()) == false) {
-            throw new RequestMethodUnsupportedException(this, getRequestMethods(),
-                    requestPath.getMethod());
+    	String requestMethod = requestPath.getRequestMethod();
+        if (getRequestMethods().contains(requestMethod) == false) {
+            throw new RequestMethodUnsupportedException(this, getRequestMethods(),requestMethod);
         }
         return super.fulfill(requestPath);
     }
