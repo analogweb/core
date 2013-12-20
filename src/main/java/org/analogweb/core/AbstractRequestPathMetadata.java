@@ -11,7 +11,9 @@ public abstract class AbstractRequestPathMetadata implements RequestPathMetadata
     @Override
     public boolean equals(Object other) {
         if (other instanceof RequestPathMetadata) {
-            return getActualPath().equals(((RequestPathMetadata) other).getActualPath());
+        	RequestPathMetadata rpm = (RequestPathMetadata) other;
+            return getActualPath().equals(rpm.getActualPath())
+            		&& getRequestMethods().containsAll(rpm.getRequestMethods());
         }
         return false;
     }
