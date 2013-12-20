@@ -9,14 +9,13 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.Renderable;
 import org.analogweb.annotation.As;
 import org.analogweb.annotation.Delete;
 import org.analogweb.annotation.Get;
-import org.analogweb.annotation.Route;
 import org.analogweb.annotation.Post;
 import org.analogweb.annotation.Put;
+import org.analogweb.annotation.Route;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,7 +24,7 @@ import org.junit.Test;
  */
 public class AnnotationInvocationMetadataFactoryTest {
 
-    private InvocationMetadataFactory factory;
+    private AnnotationInvocationMetadataFactory factory;
 
     @Before
     public void setUp() {

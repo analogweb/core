@@ -40,8 +40,7 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
         return metadatas;
     }
 
-    @Override
-    public InvocationMetadata createInvocationMetadata(Class<?> invocationClass,
+    InvocationMetadata createInvocationMetadata(Class<?> invocationClass,
             Method invocationMethod) {
         Route typePathMapping = AnnotationUtils.findAnnotation(Route.class, invocationClass);
         Route methodPathMapping = invocationMethod.getAnnotation(Route.class);

@@ -1,6 +1,5 @@
 package org.analogweb;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 
 /**
@@ -25,14 +24,5 @@ public interface InvocationMetadataFactory extends MultiModule {
      * @return {@link InvocationMetadata}
      */
     Collection<InvocationMetadata> createInvocationMetadatas(Class<?> clazz);
-
-    /**
-     * 新しい{@link InvocationMetadata}のインスタンスを生成します。
-     * @param clazz 任意の型
-     * @param method {@link InvocationMetadata}を生成する対象の{@link Method}
-     * @return {@link InvocationMetadata}
-     */
-    @Deprecated
-    InvocationMetadata createInvocationMetadata(Class<?> clazz, Method method);
 
 }
