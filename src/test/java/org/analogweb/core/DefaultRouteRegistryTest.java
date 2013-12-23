@@ -6,8 +6,11 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
+
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestPath;
+import org.analogweb.RequestPathMetadata;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -69,5 +72,28 @@ public class DefaultRouteRegistryTest {
         registry.dispose();
         assertNull(registry.findInvocationMetadata(requestPath1));
         assertNull(registry.findInvocationMetadata(requestPath2));
+    }
+
+    @Test
+    public void testDuplicatePath() {
+        InvocationMetadata meta1 = mock(InvocationMetadata.class);
+        InvocationMetadata meta2 = mock(InvocationMetadata.class);
+        RequestPathMetadata path1 = RequestPathDefinition.define("/", "/path",
+                new String[] { "GET" });
+        when(meta1.getDefinedPath()).thenReturn(path1);
+        RequestPathMetadata path2 = RequestPathDefinition.define("/", "/path",
+                new String[] { "POST" });
+        when(meta2.getDefinedPath()).thenReturn(path2);
+        registry.register(meta1);
+        registry.register(meta2);
+        RequestPath requestPath1 = new DefaultRequestPath(URI.create("/"), URI.create("/path"),
+                "GET");
+        when(meta2.getDefinedPath()).thenReturn(path2);
+        InvocationMetadata actual = registry.findInvocationMetadata(requestPath1);
+        assertThat(actual, is(meta1));
+        RequestPath requestPath2 = new DefaultRequestPath(URI.create("/"), URI.create("/path"),
+                "POST");
+        actual = registry.findInvocationMetadata(requestPath2);
+        assertThat(actual, is(meta2));
     }
 }
