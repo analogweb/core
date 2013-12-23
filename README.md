@@ -1,7 +1,8 @@
-Analog Web Framework
+Analogweb Framework
 ===============================================
 
-AnalogWeb is a tiny HTTP orientied framework and it operated on Java 6+.
+Analogweb is a tiny HTTP oriented framework.
+It depends only Java 6+.
 
 ## Example
 
@@ -13,7 +14,7 @@ import org.analogweb.annotation.Route;
 @Route("/")
 public class Hello {
 
-  @Route("/")
+  @Route
   public String hello() {
     return "Hello World";
   }
