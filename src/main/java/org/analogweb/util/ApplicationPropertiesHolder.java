@@ -5,7 +5,7 @@ import org.analogweb.ApplicationProperties;
 import org.analogweb.core.ApplicationConfigurationException;
 
 /**
- * 唯一の{@link ApplicationProperties}のインスタンスを保持、管理します。
+ * Holds {@link ApplicationProperties} instance.
  * @author snowgoose
  */
 public final class ApplicationPropertiesHolder {
@@ -17,7 +17,7 @@ public final class ApplicationPropertiesHolder {
     private static ApplicationProperties properties;
 
     /**
-     * {@link Creator}の設定に従って、{@link ApplicationProperties}を生成、設定します。
+     * Set up {@link ApplicationProperties}.
      * @param app {@link Application}
      * @param config {@link ApplicationProperties}
      * @return {@link ApplicationProperties}

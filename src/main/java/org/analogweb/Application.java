@@ -7,7 +7,7 @@ import java.util.Locale;
 import org.analogweb.util.ClassCollector;
 
 /**
- * アプリケーションを表します。
+ * An Analogweb application.
  * @author snowgoose
  */
 public interface Application extends Disposable {
@@ -80,9 +80,8 @@ public interface Application extends Disposable {
     Modules getModules();
 
     /**
-     * アプリケーションに定義されたエントリポイントの一覧を表す
-     * {@link RequestPathMapping}を取得します。
-     * @return {@link RequestPathMapping}
+     * Obtain {@link RouteRegistry}.
+     * @return {@link RouteRegistry}
      */
     RouteRegistry getRouteRegistry();
 
