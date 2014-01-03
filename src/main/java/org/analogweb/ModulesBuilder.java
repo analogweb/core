@@ -7,7 +7,7 @@ package org.analogweb;
  */
 public interface ModulesBuilder {
 
-	Modules buildModules(ApplicationContextResolver resolver,
+	Modules buildModules(ApplicationContext resolver,
 			ContainerAdaptor defaultContainer);
 
 	ModulesBuilder setModulesProviderClass(

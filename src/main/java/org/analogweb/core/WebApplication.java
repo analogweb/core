@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.analogweb.Application;
-import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationContext;
 import org.analogweb.ApplicationProcessor;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.ContainerAdaptor;
@@ -57,10 +57,10 @@ public class WebApplication implements Application {
     private Modules modules;
     private RouteRegistry routes;
     private ClassLoader classLoader;
-    private ApplicationContextResolver resolver;
+    private ApplicationContext resolver;
 
     @Override
-    public void run(ApplicationContextResolver resolver, ApplicationProperties props,
+    public void run(ApplicationContext resolver, ApplicationProperties props,
             Collection<ClassCollector> collectors, ClassLoader classLoader) {
         StopWatch sw = new StopWatch();
         sw.start();
@@ -217,7 +217,7 @@ public class WebApplication implements Application {
         Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames, collectors);
         ModulesBuilder modulesBuilder = processConfigPreparation(ReflectionUtils
                 .filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses));
-        ApplicationContextResolver resolver = getApplicationContextResolver();
+        ApplicationContext resolver = getApplicationContextResolver();
         ContainerAdaptor defaultContainer = setUpDefaultContainer(resolver, moduleClasses);
         Modules modules = modulesBuilder.buildModules(resolver, defaultContainer);
         setModules(modules);
@@ -253,7 +253,7 @@ public class WebApplication implements Application {
         return new ModulesConfigComparator();
     }
 
-    protected ContainerAdaptor setUpDefaultContainer(ApplicationContextResolver resolver,
+    protected ContainerAdaptor setUpDefaultContainer(ApplicationContext resolver,
             Collection<Class<?>> rootModuleClasses) {
         StaticMappingContainerAdaptorFactory factory = new StaticMappingContainerAdaptorFactory();
         StaticMappingContainerAdaptor adaptor = factory.createContainerAdaptor(resolver);
@@ -329,7 +329,7 @@ public class WebApplication implements Application {
         this.modules = modules;
     }
 
-    protected final ApplicationContextResolver getApplicationContextResolver() {
+    protected final ApplicationContext getApplicationContextResolver() {
         return this.resolver;
     }
 

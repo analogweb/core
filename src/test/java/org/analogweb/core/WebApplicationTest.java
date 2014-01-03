@@ -14,7 +14,7 @@ import java.util.List;
 
 import jp.acme.test.additionalcomponents.StubPreProcessor;
 
-import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationContext;
 import org.analogweb.ApplicationProcessor;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.InvocationMetadata;
@@ -44,7 +44,7 @@ public class WebApplicationTest {
     public TemporaryFolder folder = new TemporaryFolder();
     private WebApplication application;
     private ClassLoader classLoader;
-    private ApplicationContextResolver resolver;
+    private ApplicationContext resolver;
     private Collection<ClassCollector> collectors;
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -52,7 +52,7 @@ public class WebApplicationTest {
     @Before
     public void setUp() {
         classLoader = Thread.currentThread().getContextClassLoader();
-        resolver = mock(ApplicationContextResolver.class);
+        resolver = mock(ApplicationContext.class);
         List<ClassCollector> collectors = new ArrayList<ClassCollector>();
         collectors.add(new JarClassCollector());
         collectors.add(new FileClassCollector());

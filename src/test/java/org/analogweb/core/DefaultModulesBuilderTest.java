@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationContext;
 import org.analogweb.ApplicationProcessor;
 import org.analogweb.AttributesHandler;
 import org.analogweb.ContainerAdaptor;
@@ -50,7 +50,7 @@ public class DefaultModulesBuilderTest {
     public ExpectedException thrown = ExpectedException.none();
     private static final Log log = Logs.getLog(DefaultModulesBuilderTest.class);
     private DefaultModulesBuilder builder;
-    private ApplicationContextResolver resolver;
+    private ApplicationContext resolver;
     // relative mocks.
     private static MockModulesProvidingContainerAdaptor adaptor = new MockModulesProvidingContainerAdaptor();
     private InvocationMetadataFactory invocationMetadataFactory;
@@ -72,7 +72,7 @@ public class DefaultModulesBuilderTest {
     @Before
     public void setUp() {
         builder = new DefaultModulesBuilder();
-        resolver = mock(ApplicationContextResolver.class);
+        resolver = mock(ApplicationContext.class);
         invocationMetadataFactory = mock(InvocationMetadataFactory.class);
         invokerFactory = mock(InvokerFactory.class);
         containerAdaptorFactory = mock(ContainerAdaptorFactory.class);
@@ -274,7 +274,7 @@ public class DefaultModulesBuilderTest {
             ContainerAdaptorFactory<ContainerAdaptor> {
 
         @Override
-        public ContainerAdaptor createContainerAdaptor(ApplicationContextResolver resolver) {
+        public ContainerAdaptor createContainerAdaptor(ApplicationContext resolver) {
             return ca;
         }
     }
@@ -398,7 +398,7 @@ public class DefaultModulesBuilderTest {
 
         @Override
         public MockModulesProvidingContainerAdaptor createContainerAdaptor(
-                ApplicationContextResolver resolver) {
+                ApplicationContext resolver) {
             return adaptor;
         }
     }
@@ -408,7 +408,7 @@ public class DefaultModulesBuilderTest {
 
         @Override
         public MockModulesProvidingContainerAdaptor createContainerAdaptor(
-                ApplicationContextResolver resolver) {
+                ApplicationContext resolver) {
             return null;
         }
     }

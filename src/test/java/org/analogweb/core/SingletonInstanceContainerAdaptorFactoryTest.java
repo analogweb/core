@@ -4,7 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.mockito.Mockito.mock;
 
-import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,11 +13,11 @@ import org.junit.Test;
  */
 public class SingletonInstanceContainerAdaptorFactoryTest {
 
-    private ApplicationContextResolver resolver;
+    private ApplicationContext resolver;
 
     @Before
     public void setUp() {
-        resolver = mock(ApplicationContextResolver.class);
+        resolver = mock(ApplicationContext.class);
     }
 
     @Test

@@ -1,6 +1,6 @@
 package org.analogweb.core;
 
-import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationContext;
 import org.analogweb.ContainerAdaptorFactory;
 
 /**
@@ -12,7 +12,7 @@ public class StaticMappingContainerAdaptorFactory implements
     private static StaticMappingContainerAdaptor adaptor;
 
     @Override
-    public StaticMappingContainerAdaptor createContainerAdaptor(ApplicationContextResolver resolver) {
+    public StaticMappingContainerAdaptor createContainerAdaptor(ApplicationContext resolver) {
         if (adaptor == null) {
             adaptor = new StaticMappingContainerAdaptor();
         }

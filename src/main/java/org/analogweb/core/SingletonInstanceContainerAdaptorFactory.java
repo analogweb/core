@@ -1,6 +1,6 @@
 package org.analogweb.core;
 
-import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationContext;
 import org.analogweb.ContainerAdaptorFactory;
 
 /**
@@ -11,7 +11,7 @@ public class SingletonInstanceContainerAdaptorFactory implements
 
     @Override
     public SingletonInstanceContainerAdaptor createContainerAdaptor(
-            ApplicationContextResolver resolver) {
+            ApplicationContext resolver) {
         return new SingletonInstanceContainerAdaptor();
     }
 

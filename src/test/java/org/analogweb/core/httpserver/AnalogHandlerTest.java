@@ -16,7 +16,7 @@ import java.net.URI;
 import java.util.Collection;
 
 import org.analogweb.Application;
-import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationContext;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
@@ -41,7 +41,7 @@ public class AnalogHandlerTest {
     private AnalogHandler handler;
 
     private Application app;
-    private ApplicationContextResolver resolver;
+    private ApplicationContext resolver;
     private ApplicationProperties props;
 
     @Rule
@@ -50,7 +50,7 @@ public class AnalogHandlerTest {
     @Before
     public void setUp() {
         app = mock(Application.class);
-        resolver = mock(ApplicationContextResolver.class);
+        resolver = mock(ApplicationContext.class);
         props = mock(ApplicationProperties.class);
         handler = new AnalogHandler(app, resolver, props);
     }

@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.analogweb.Application;
-import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationContext;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
@@ -34,14 +34,14 @@ import com.sun.net.httpserver.HttpsExchange;
 public class AnalogHandler implements HttpHandler {
 
     private final Application app;
-    private final ApplicationContextResolver resolver;
+    private final ApplicationContext resolver;
     private final ApplicationProperties props;
 
     public AnalogHandler(Application app) {
-        this(app, (ApplicationContextResolver) null);
+        this(app, (ApplicationContext) null);
     }
 
-    public AnalogHandler(Application app, ApplicationContextResolver contextResolver) {
+    public AnalogHandler(Application app, ApplicationContext contextResolver) {
         this(app, contextResolver, ApplicationPropertiesHolder.configure(app, defaultProperties()));
     }
 
@@ -49,7 +49,7 @@ public class AnalogHandler implements HttpHandler {
         this(app, null, props);
     }
 
-    public AnalogHandler(Application app, ApplicationContextResolver contextResolver,
+    public AnalogHandler(Application app, ApplicationContext contextResolver,
             ApplicationProperties props) {
         Assertion.notNull(app, Application.class.getName());
         this.app = app;

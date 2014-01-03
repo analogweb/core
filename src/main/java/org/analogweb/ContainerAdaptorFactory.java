@@ -9,9 +9,9 @@ public interface ContainerAdaptorFactory<T extends ContainerAdaptor> extends Mod
 
     /**
      * 新しい{@link ContainerAdaptor}を生成します。
-     * @param resolver {@link ApplicationContextResolver}
+     * @param resolver {@link ApplicationContext}
      * @return 新しい{@link ContainerAdaptor}のインスタンス。
      */
-    T createContainerAdaptor(ApplicationContextResolver resolver);
+    T createContainerAdaptor(ApplicationContext resolver);
 
 }

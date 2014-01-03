@@ -45,18 +45,18 @@ public interface Application extends Disposable {
 
     /**
      * このアプリケーションインスタンスを起動します。
-     * @param resolver {@link ApplicationContextResolver}
+     * @param resolver {@link ApplicationContext}
      * @param collectors {@link ClassCollector}
      * @param props {@link ApplicationProperties}
      * @param classLoader {@link ClassLoader}
      */
-    void run(ApplicationContextResolver resolver, ApplicationProperties props,
+    void run(ApplicationContext resolver, ApplicationProperties props,
             Collection<ClassCollector> collectors, ClassLoader classLoader);
 
     /**
      * {@link Application}に対する1つのリクエストを処理します。<br/>
      * このメソッドを実行する前に
-     * {@link #run(ApplicationContextResolver, ApplicationProperties, Collection, ClassLoader)}
+     * {@link #run(ApplicationContext, ApplicationProperties, Collection, ClassLoader)}
      * が実行され、{@link Application}が起動している必要があります。
      * @param path {@link RequestPath}
      * @param context {@link RequestContext}

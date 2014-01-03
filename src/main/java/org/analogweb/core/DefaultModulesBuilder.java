@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationContext;
 import org.analogweb.ApplicationProcessor;
 import org.analogweb.AttributesHandler;
 import org.analogweb.ContainerAdaptor;
@@ -71,7 +71,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public Modules buildModules(final ApplicationContextResolver resolver,
+    public Modules buildModules(final ApplicationContext resolver,
             final ContainerAdaptor defaultContainer) {
         Assertion.notNull(getModulesProviderClass(), "ModulesProviderClass");
         final ContainerAdaptor moduleContainerAdaptor = createModuleContainerAdaptor(resolver,
@@ -273,7 +273,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     protected ContainerAdaptor createModuleContainerAdaptor(
-            final ApplicationContextResolver resolver, final ContainerAdaptor defaultContainer) {
+            final ApplicationContext resolver, final ContainerAdaptor defaultContainer) {
         if (getModulesProviderClass().equals(StaticMappingContainerAdaptorFactory.class)) {
             return defaultContainer;
         } else {

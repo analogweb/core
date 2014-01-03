@@ -3,7 +3,7 @@ package org.analogweb.core;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 
-import org.analogweb.ApplicationContextResolver;
+import org.analogweb.ApplicationContext;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,12 +14,12 @@ public class StaticMappingContainerAdaptorFactoryTest {
 
     private StaticMappingContainerAdaptorFactory factory;
 
-    private ApplicationContextResolver resolver;
+    private ApplicationContext resolver;
 
     @Before
     public void setUp() throws Exception {
         factory = new StaticMappingContainerAdaptorFactory();
-        resolver = mock(ApplicationContextResolver.class);
+        resolver = mock(ApplicationContext.class);
     }
 
     @Test
