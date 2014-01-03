@@ -329,16 +329,6 @@ public class WebApplication implements Application {
         this.modules = modules;
     }
 
-    @Override
-    @Deprecated
-    public String getApplicationSpecifier() {
-        return StringUtils.EMPTY;
-    }
-
-    @Deprecated
-    protected void setApplicationSpecifier(String suffix) {
-    }
-
     protected final ApplicationContextResolver getApplicationContextResolver() {
         return this.resolver;
     }

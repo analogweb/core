@@ -18,12 +18,6 @@ public interface Application extends Disposable {
      */
     String INIT_PARAMETER_ROOT_COMPONENT_PACKAGES = "application.packages";
     /**
-     * アプリケーションに対するリクエストであることを特定する為の
-     * 識別子を指定するキー
-     */
-    @Deprecated
-    String INIT_PARAMETER_APPLICATION_SPECIFIER = "application.specifier";
-    /**
      * アプリケーションが使用するテンポラリディレクトリを指定する指定するキー
      */
     String INIT_PARAMETER_APPLICATION_TEMPORARY_DIR = "application.tmpdir";
@@ -74,7 +68,7 @@ public interface Application extends Disposable {
             throws IOException, WebApplicationException;
 
     /**
-     * アプリケーションを構成している{@link Modules}を取得します。
+     * Obtain {@link Modules}.
      * @return {@link Modules}
      */
     Modules getModules();
@@ -84,12 +78,5 @@ public interface Application extends Disposable {
      * @return {@link RouteRegistry}
      */
     RouteRegistry getRouteRegistry();
-
-    /**
-     * アプリケーションに対するリクエストであることを識別する識別子を取得します。
-     * @return アプリケーションに対するリクエストであることを識別する識別子
-     */
-    @Deprecated
-    String getApplicationSpecifier();
 
 }
