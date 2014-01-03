@@ -21,6 +21,10 @@ public final class HttpServers {
         // nop.
     }
 
+    public static HttpServer create(String uri) {
+        return create(URI.create(uri));
+    }
+
     public static HttpServer create(URI uri) {
         return create(uri, new AnalogHandler(new WebApplication()));
     }
