@@ -44,7 +44,6 @@ public class AcceptableTest {
 
     @Test
     public void testRenderAcceptableXML() throws Exception {
-
         final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/xml", m);
         assertThat(
@@ -54,7 +53,6 @@ public class AcceptableTest {
 
     @Test
     public void testRenderAcceptableXMLWithReplacedFormatter() throws Exception {
-
         final Member m = new Member("snowgoose", 34);
         Acceptable a = Acceptable.as(m);
         a.map(new Renderable() {
@@ -71,7 +69,6 @@ public class AcceptableTest {
 
     @Test
     public void testRenderAcceptableSecondXML() throws Exception {
-
         final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/x-dvi; q=0.8, application/xml, */*", m);
         assertThat(
@@ -81,7 +78,6 @@ public class AcceptableTest {
 
     @Test
     public void testRenderAcceptableXMLWithQuality() throws Exception {
-
         final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/x-dvi; q=0.8, text/xml; q=6, */*", m);
         assertThat(
@@ -91,7 +87,6 @@ public class AcceptableTest {
 
     @Test
     public void testRenderAcceptableJSON() throws Exception {
-
         final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" application/json, application/xml", m);
         assertThat(actual, is("{\"age\": 34,\"name\": \"snowgoose\"}"));
@@ -99,7 +94,6 @@ public class AcceptableTest {
 
     @Test
     public void testRenderAcceptableAny() throws Exception {
-
         final Member m = new Member("snowgoose", 34);
         //        final String accept = " text/x-dvi,image/png, */*";
         when(context.getRequestHeaders()).thenReturn(headers);
@@ -115,7 +109,6 @@ public class AcceptableTest {
 
     @Test
     public void testRenderSwitAcceptableAny() throws Exception {
-
         final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/x-dvi,image/png, */*", m);
         // mapped json.
@@ -124,7 +117,6 @@ public class AcceptableTest {
 
     @Test
     public void testRenderSwitAcceptableAnyWithReplacedFormatter() throws Exception {
-
         final Member m = new Member("snowgoose", 34);
         Acceptable a = Acceptable.as(m);
         a.mapToAny(new Renderable() {
@@ -142,7 +134,6 @@ public class AcceptableTest {
 
     @Test
     public void testRenderSwitchedAcceptable() throws Exception {
-
         final Member m = new Member("snowgoose", 34);
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Accept")).thenReturn(
@@ -155,8 +146,38 @@ public class AcceptableTest {
     }
 
     @Test
-    public void testRenderNotAcceptable() throws Exception {
+    public void testSelectAcceptableOne() throws Exception {
+        final Member m = new Member("snowgoose", 34);
+        when(context.getRequestHeaders()).thenReturn(headers);
+        when(headers.getValues("Accept")).thenReturn(
+                Arrays.asList("text/html", "text/x-dvi", "image/png", "application/json"));
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
+        final Renderable jsonResponse = mock(Renderable.class);
+        final Renderable htmlResponse = mock(Renderable.class);
+        Acceptable acceptable = Acceptable.as(m).map(jsonResponse, "application/json")
+                .map(htmlResponse, "text/html");
+        Renderable actual = acceptable.selectAcceptableOne(context);
+        assertThat(actual, is(htmlResponse));
+    }
 
+    @Test
+    public void testSelectAcceptableNoOne() throws Exception {
+        final Member m = new Member("snowgoose", 34);
+        when(context.getRequestHeaders()).thenReturn(headers);
+        when(headers.getValues("Accept")).thenReturn(Arrays.asList("text/x-dvi", "image/png"));
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
+        final Renderable jsonResponse = mock(Renderable.class);
+        final Renderable htmlResponse = mock(Renderable.class);
+        Acceptable acceptable = Acceptable.as(m).map(jsonResponse, "application/json")
+                .map(htmlResponse, "text/html");
+        Renderable actual = acceptable.selectAcceptableOne(context);
+        assertThat(actual, is((Renderable) HttpStatus.NOT_ACCEPTABLE));
+    }
+
+    @Test
+    public void testRenderNotAcceptable() throws Exception {
         final Member m = new Member("snowgoose", 34);
         final String actual = schenarioRender(" text/x-dvi,image/png, text/*", m);
         assertThat(actual, is(""));
@@ -165,7 +186,6 @@ public class AcceptableTest {
 
     @Test
     public void testRenderNotAcceptable2() throws Exception {
-
         final Member m = new Member("snowgoose", 34);
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Accept")).thenReturn(
@@ -181,7 +201,6 @@ public class AcceptableTest {
 
     private String schenarioRender(final String accept, final Member m, final Acceptable a)
             throws Exception {
-
         when(context.getRequestHeaders()).thenReturn(headers);
         Headers responseHeaders = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(responseHeaders);
@@ -189,7 +208,6 @@ public class AcceptableTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-
         a.render(context, response);
         ResponseEntity entity = writer.getEntity();
         if (entity != null) {
@@ -214,6 +232,7 @@ public class AcceptableTest {
 
     @XmlRootElement
     public static class Member {
+
         @XmlElement
         private String name;
         @XmlElement
@@ -236,6 +255,5 @@ public class AcceptableTest {
         public int getAge() {
             return age;
         }
-
     }
 }

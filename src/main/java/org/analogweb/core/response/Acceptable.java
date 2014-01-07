@@ -33,6 +33,7 @@ public class Acceptable implements Renderable {
 
     private Object source;
     protected static final Map<String, Creator> DEFAULT_MEDIA_TYPE_MAP = new HashMap<String, Creator>() {
+
         private static final long serialVersionUID = 1L;
         {
             put(MediaTypes.APPLICATION_JSON, Creators.json());
@@ -100,6 +101,14 @@ public class Acceptable implements Renderable {
         return this;
     }
 
+    public Renderable selectAcceptableOne(RequestContext context) {
+        Renderable r = selectResponse(getAcceptableMediaType(context), getSource());
+        if (r == null) {
+            return HttpStatus.NOT_ACCEPTABLE;
+        }
+        return r;
+    }
+
     private Renderable selectResponse(List<String> mediaTypes, Object source) {
         for (String mediaType : mediaTypes) {
             for (Entry<String, Creator> entry : getMediaTypeMap().entrySet()) {
@@ -129,14 +138,15 @@ public class Acceptable implements Renderable {
     }
 
     static final class AcceptHeaderComparator implements Comparator<String> {
+
         @Override
         public int compare(String arg0, String arg1) {
             if (arg0.contains("*")) {
                 if (arg1.contains("*")) {
-                    if (StringUtils.trimToEmpty(arg0).startsWith("*/")){
-                    	return 1;
-                    } else if(StringUtils.trimToEmpty(arg1).startsWith("*/")){
-                    	return -1;
+                    if (StringUtils.trimToEmpty(arg0).startsWith("*/")) {
+                        return 1;
+                    } else if (StringUtils.trimToEmpty(arg1).startsWith("*/")) {
+                        return -1;
                     }
                     List<String> s0 = StringUtils.split(arg0, ';');
                     List<String> s1 = StringUtils.split(arg1, ';');
@@ -161,12 +171,15 @@ public class Acceptable implements Renderable {
     }
 
     public static interface Creator {
+
         Renderable create(Object source);
     }
 
     public static class Creators {
+
         public static Creator json() {
             return new Creator() {
+
                 public Renderable create(Object source) {
                     return Json.as(source);
                 }
@@ -179,6 +192,7 @@ public class Acceptable implements Renderable {
 
         public static Creator xml() {
             return new Creator() {
+
                 public Renderable create(Object source) {
                     return Xml.as(source);
                 }
@@ -191,6 +205,7 @@ public class Acceptable implements Renderable {
 
         public static Creator text() {
             return new Creator() {
+
                 public Renderable create(Object source) {
                     return Text.with(source != null ? source.toString() : StringUtils.EMPTY);
                 }
@@ -203,6 +218,7 @@ public class Acceptable implements Renderable {
 
         public static Creator self(final Renderable d) {
             return new Creator() {
+
                 public Renderable create(Object source) {
                     return d;
                 }
@@ -213,5 +229,4 @@ public class Acceptable implements Renderable {
             };
         }
     }
-
 }

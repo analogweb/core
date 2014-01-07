@@ -5,6 +5,7 @@ import org.analogweb.ResponseResolver;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.core.response.Acceptable;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.core.response.Text;
 
@@ -20,6 +21,9 @@ public class DefaultResponseResolver implements ResponseResolver {
             return nullToResponse(metadata, context);
         }
         Class<?> type = invocationResult.getClass();
+        if (Acceptable.class.isAssignableFrom(type)) {
+            return ((Acceptable) invocationResult).selectAcceptableOne(context);
+        }
         if (Renderable.class.isAssignableFrom(type)) {
             return (Renderable) invocationResult;
         }
@@ -49,5 +53,4 @@ public class DefaultResponseResolver implements ResponseResolver {
             RequestContext context) {
         throw new UnresolvableResultException(invocationResult);
     }
-
 }
