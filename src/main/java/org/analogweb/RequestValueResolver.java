@@ -10,6 +10,6 @@ public interface RequestValueResolver extends MultiModule {
      * @param requiredType スコープから取得する対象の型
      * @return スコープに関連付けられた属性値
      */
-    Object resolveValue(RequestContext request,InvocationMetadata metadata, String query, Class<?> requiredType);
-
+    Object resolveValue(RequestContext request, InvocationMetadata metadata, String query,
+            Class<?> requiredType);
 }

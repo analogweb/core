@@ -30,13 +30,11 @@ public interface Application extends Disposable {
      * 既定のパッケージ名
      */
     String DEFAULT_PACKAGE_NAME = Application.class.getPackage().getName();
-
     /**
      * 指定された{@link RequestPath}に対応する処理が実行された場合に
      * 返されるステータスです。
      */
     int PROCEEDED = 1;
-
     /**
      * 指定された{@link RequestPath}が存在しない場合に返される
      * ステータスです。
@@ -78,5 +76,4 @@ public interface Application extends Disposable {
      * @return {@link RouteRegistry}
      */
     RouteRegistry getRouteRegistry();
-
 }

@@ -22,5 +22,4 @@ public @interface Formats {
      * @return 取得した値を特定のフォーマットに変換する際のルールを表す文字列
      */
     String[] value() default {};
-
 }

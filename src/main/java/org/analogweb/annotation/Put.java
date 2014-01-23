@@ -17,5 +17,4 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD })
 @HttpMethod("PUT")
 public @interface Put {
-
 }

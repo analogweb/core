@@ -53,15 +53,13 @@ public class Json extends TextFormattable<Json> {
 
     static class DefaultFormatter implements ResponseFormatter {
 
-		@Override
-		public ResponseEntity formatAndWriteInto(RequestContext request,
-				ResponseContext response, String charset, Object source)
-				throws FormatFailureException {
-			StringBuilder buffer = new StringBuilder();
-			format(buffer, source);
-			return new DefaultResponseEntity(buffer.toString(),
-					Charset.forName(charset));
-		}
+        @Override
+        public ResponseEntity formatAndWriteInto(RequestContext request, ResponseContext response,
+                String charset, Object source) throws FormatFailureException {
+            StringBuilder buffer = new StringBuilder();
+            format(buffer, source);
+            return new DefaultResponseEntity(buffer.toString(), Charset.forName(charset));
+        }
 
         private void format(StringBuilder buffer, Object source) throws FormatFailureException {
             Class<?> clazz = source.getClass();
@@ -165,5 +163,4 @@ public class Json extends TextFormattable<Json> {
     public ResponseFormatter getDefaultFormatter() {
         return new Json.DefaultFormatter();
     }
-
 }

@@ -7,7 +7,7 @@ import java.io.InputStream;
  * @author snowgoose
  */
 public interface Multipart {
-    
+
     /**
      * このファイルをアップロードした時のパラメータ名を取得する。
      * @return パラメータ名
@@ -37,5 +37,4 @@ public interface Multipart {
      * @return アップロードされたファイルのコンテンツタイプ
      */
     String getContentType();
-
 }

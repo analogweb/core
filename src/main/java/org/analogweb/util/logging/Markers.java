@@ -8,11 +8,8 @@ import org.analogweb.util.Assertion;
 public class Markers {
 
     public static final Marker BOOT_APPLICATION = SimpleMarker.valueOf("BootApplication");
-
     public static final Marker INIT_COMPONENT = SimpleMarker.valueOf("InitComponent");
-
     public static final Marker LIFECYCLE = SimpleMarker.valueOf("Lifecycle");
-
     public static final Marker VARIABLE_ACCESS = SimpleMarker.valueOf("VariableAccess");
 
     public static class SimpleMarker implements Marker {
@@ -46,5 +43,4 @@ public class Markers {
             return getName().hashCode();
         }
     }
-
 }

@@ -24,5 +24,4 @@ public class DefaultExceptionHandler implements ExceptionHandler {
     protected void logThrowable(Exception exception) {
         log.warn(exception.toString());
     }
-
 }

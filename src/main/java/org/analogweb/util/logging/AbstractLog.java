@@ -1,6 +1,5 @@
 package org.analogweb.util.logging;
 
-
 import org.analogweb.util.MessageResource;
 import org.analogweb.util.PropertyResourceBundleMessageResource;
 import org.analogweb.util.StringUtils;
@@ -18,7 +17,7 @@ public abstract class AbstractLog implements Log {
         this.name = name;
         this.defaultMessageResource = createDefaultMessageResource(classLoader);
     }
-    
+
     protected final String getName() {
         return this.name;
     }
@@ -88,33 +87,33 @@ public abstract class AbstractLog implements Log {
             Throwable t, Object[] args) {
         char prefix = message.charAt(0);
         switch (prefix) {
-            case 'T':
-                if (isTraceEnabled(marker)) {
-                    trace(marker, createMessage(messageResource, message, args), t);
-                }
-                break;
-            case 'D':
-                if (isDebugEnabled(marker)) {
-                    debug(marker, createMessage(messageResource, message, args), t);
-                }
-                break;
-            case 'I':
-                if (isInfoEnabled(marker)) {
-                    info(marker, createMessage(messageResource, message, args), t);
-                }
-                break;
-            case 'W':
-                if (isWarnEnabled(marker)) {
-                    warn(marker, createMessage(messageResource, message, args), t);
-                }
-                break;
-            case 'E':
-                if (isErrorEnabled(marker)) {
-                    error(marker, createMessage(messageResource, message, args), t);
-                }
-                break;
-            default:
-                break;
+        case 'T':
+            if (isTraceEnabled(marker)) {
+                trace(marker, createMessage(messageResource, message, args), t);
+            }
+            break;
+        case 'D':
+            if (isDebugEnabled(marker)) {
+                debug(marker, createMessage(messageResource, message, args), t);
+            }
+            break;
+        case 'I':
+            if (isInfoEnabled(marker)) {
+                info(marker, createMessage(messageResource, message, args), t);
+            }
+            break;
+        case 'W':
+            if (isWarnEnabled(marker)) {
+                warn(marker, createMessage(messageResource, message, args), t);
+            }
+            break;
+        case 'E':
+            if (isErrorEnabled(marker)) {
+                error(marker, createMessage(messageResource, message, args), t);
+            }
+            break;
+        default:
+            break;
         }
     }
 
@@ -154,5 +153,4 @@ public abstract class AbstractLog implements Log {
     public void error(String message) {
         error(message, new Object[0]);
     }
-
 }

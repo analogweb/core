@@ -29,5 +29,4 @@ public interface InvocationMetadata {
      * @return このエントリポイントがマッピングされているパスを表す{@link RequestPathMetadata}
      */
     RequestPathMetadata getDefinedPath();
-
 }

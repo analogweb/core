@@ -8,7 +8,7 @@ import java.util.Map;
  * @author snowgoose
  */
 public interface Parameters {
-    
+
     /**
      * キーに一致するリクエストパラメータを取得します。
      * @param key リクエストパラメータのキー
@@ -21,5 +21,4 @@ public interface Parameters {
      * @return {@link Map}
      */
     Map<String, String[]> asMap();
-
 }

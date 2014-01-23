@@ -73,5 +73,4 @@ public interface RequestContext {
      * @return {@link Locale}
      */
     List<Locale> getLocales();
-
 }

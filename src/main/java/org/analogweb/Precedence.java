@@ -25,5 +25,4 @@ public interface Precedence {
      * @return このコンポーネントの優先度
      */
     int getPrecedence();
-
 }

@@ -18,6 +18,6 @@ public interface ResponseResolver extends Module {
      * @param responseContext {@link ResponseContext}
      * @return 実行結果から特定された{@link Renderable}
      */
-    Renderable resolve(Object invocationResult, InvocationMetadata metadata, RequestContext context, ResponseContext responseContext);
-
+    Renderable resolve(Object invocationResult, InvocationMetadata metadata,
+            RequestContext context, ResponseContext responseContext);
 }

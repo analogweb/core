@@ -82,8 +82,8 @@ public class AnnotationInvocationMetadataFactoryTest {
     @Test
     public void testDetectAnnotatedActionWithGetMethod() throws Exception {
         Class<?> actionsClass = BaaResource.class;
-        Method actionMethod = BaaResource.class
-                .getMethod("doSomethingWithGetMethod", (Class[]) null);
+        Method actionMethod = BaaResource.class.getMethod("doSomethingWithGetMethod",
+                (Class[]) null);
         assertTrue(factory.containsInvocationClass(BaaResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
@@ -101,8 +101,8 @@ public class AnnotationInvocationMetadataFactoryTest {
     @Test
     public void testDetectAnnotatedActionWithPutMethod() throws Exception {
         Class<?> actionsClass = BaaResource.class;
-        Method actionMethod = BaaResource.class
-                .getMethod("doSomethingWithPutMethod", (Class[]) null);
+        Method actionMethod = BaaResource.class.getMethod("doSomethingWithPutMethod",
+                (Class[]) null);
         assertTrue(factory.containsInvocationClass(BaaResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
@@ -158,8 +158,8 @@ public class AnnotationInvocationMetadataFactoryTest {
     @Test
     public void testDetectAnnotatedActionNoDetectable() throws Exception {
         Class<?> actionsClass = FooResource.class;
-        Method actionMethod = FooResource.class.getMethod("doSomethingNoDetectable", new Class<?>[] {
-                String.class, Integer.class });
+        Method actionMethod = FooResource.class.getMethod("doSomethingNoDetectable",
+                new Class<?>[] { String.class, Integer.class });
         assertTrue(factory.containsInvocationClass(FooResource.class));
         assertThat(factory.createInvocationMetadata(actionsClass, actionMethod), is(nullValue()));
     }

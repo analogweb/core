@@ -73,5 +73,4 @@ class HttpServerDelegate extends HttpServer {
         }
         delegate.stop(arg0);
     }
-
 }

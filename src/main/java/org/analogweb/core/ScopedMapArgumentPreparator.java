@@ -34,12 +34,13 @@ public class ScopedMapArgumentPreparator extends AbstractApplicationProcessor {
             RequestValueResolvers handlers) {
         Annotation[][] argumentAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
-        if(method == null || ArrayUtils.isEmpty(argTypes) || ArrayUtils.isEmpty(argumentAnnotations)){
+        if (method == null || ArrayUtils.isEmpty(argTypes)
+                || ArrayUtils.isEmpty(argumentAnnotations)) {
             return NO_INTERRUPTION;
         }
         for (int index = 0, limit = argTypes.length; index < limit; index++) {
-            Attributes viewAttributes = AnnotationUtils
-                    .findAnnotation(Attributes.class, argumentAnnotations[index]);
+            Attributes viewAttributes = AnnotationUtils.findAnnotation(Attributes.class,
+                    argumentAnnotations[index]);
             if (viewAttributes != null
                     && argTypes[index].getCanonicalName().equals(Map.class.getCanonicalName())) {
                 args.putInvocationArgument(index,
@@ -93,7 +94,5 @@ public class ScopedMapArgumentPreparator extends AbstractApplicationProcessor {
                 }
             }
         }
-
     }
-
 }

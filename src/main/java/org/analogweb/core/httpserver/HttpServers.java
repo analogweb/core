@@ -17,7 +17,7 @@ import com.sun.net.httpserver.HttpServer;
  */
 public final class HttpServers {
 
-    private HttpServers(){
+    private HttpServers() {
         // nop.
     }
 
@@ -33,18 +33,18 @@ public final class HttpServers {
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(uri.getPort()), 0);
             String basePath = uri.getPath();
-            if(StringUtils.isEmpty(basePath)){
+            if (StringUtils.isEmpty(basePath)) {
                 basePath = "/";
             }
             server.createContext(basePath, handler);
             server.setExecutor(Executors.newCachedThreadPool());
-            return new HttpServerDelegate(server,handler);
+            return new HttpServerDelegate(server, handler);
         } catch (IOException e) {
             // TODO replace
             throw new ApplicationRuntimeException(e) {
+
                 private static final long serialVersionUID = 1L;
             };
         }
     }
-
 }

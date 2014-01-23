@@ -3,13 +3,14 @@ package org.analogweb.core;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 
-public abstract class ContextSpecificAttributesHandler<T extends RequestContext> extends AbstractAttributesHandler {
+public abstract class ContextSpecificAttributesHandler<T extends RequestContext> extends
+        AbstractAttributesHandler {
 
     @Override
     @SuppressWarnings("unchecked")
     public final Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
             String key, Class<?> requiredType) {
-        return this.resolveAttributeValueOnContext((T)requestContext, metadata, key, requiredType);
+        return this.resolveAttributeValueOnContext((T) requestContext, metadata, key, requiredType);
     }
 
     protected Object resolveAttributeValueOnContext(T requestContext, InvocationMetadata metadata,
@@ -20,7 +21,7 @@ public abstract class ContextSpecificAttributesHandler<T extends RequestContext>
     @Override
     @SuppressWarnings("unchecked")
     public final void putAttributeValue(RequestContext requestContext, String query, Object value) {
-        this.putAttributeValueOnContext((T)requestContext, query, value);
+        this.putAttributeValueOnContext((T) requestContext, query, value);
     }
 
     protected void putAttributeValueOnContext(T requestContext, String query, Object value) {
@@ -30,11 +31,10 @@ public abstract class ContextSpecificAttributesHandler<T extends RequestContext>
     @Override
     @SuppressWarnings("unchecked")
     public final void removeAttribute(RequestContext requestContext, String query) {
-        this.removeAttributeOnContext((T)requestContext, query);
+        this.removeAttributeOnContext((T) requestContext, query);
     }
 
     protected void removeAttributeOnContext(T requestContext, String query) {
         // nop.
     }
-
 }

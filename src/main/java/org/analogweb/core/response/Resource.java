@@ -24,7 +24,6 @@ public class Resource extends BuildableResponse<Resource> {
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
     protected static final String CONTENT_DISPOSITION = "Content-Disposition";
-
     private String contentType = DEFAULT_CONTENT_TYPE;
     private String charset = DEFAULT_CHARSET;
     private final String fileName;
@@ -62,32 +61,32 @@ public class Resource extends BuildableResponse<Resource> {
             return new Resource(new FileInputStream(file), file.getName());
         } catch (FileNotFoundException e) {
             throw new ApplicationRuntimeException(e) {
+
                 private static final long serialVersionUID = 1L;
             };
         }
     }
 
     @Override
-	protected void mergeHeaders(RequestContext request,
-			ResponseContext response, Map<String, String> headers,
-			ResponseEntity entity) {
+    protected void mergeHeaders(RequestContext request, ResponseContext response,
+            Map<String, String> headers, ResponseEntity entity) {
         headers.put("Content-Type", getContentType());
-        try{
+        try {
             headers.put(CONTENT_DISPOSITION, createContentDisposition());
-        } catch(UnsupportedEncodingException e){
-        	throw new ApplicationRuntimeException(e) {
-        		// TODO 
-				private static final long serialVersionUID = 1L;
-			};
-        }
-		super.mergeHeaders(request, response, headers, entity);
-	}
+        } catch (UnsupportedEncodingException e) {
+            throw new ApplicationRuntimeException(e) {
 
-	@Override
-	protected ResponseEntity extractResponseEntity(RequestContext request,
-			ResponseContext response) {
-		return new DefaultResponseEntity(getInputStream());
-	}
+                // TODO 
+                private static final long serialVersionUID = 1L;
+            };
+        }
+        super.mergeHeaders(request, response, headers, entity);
+    }
+
+    @Override
+    protected ResponseEntity extractResponseEntity(RequestContext request, ResponseContext response) {
+        return new DefaultResponseEntity(getInputStream());
+    }
 
     protected String createContentDisposition() throws UnsupportedEncodingException {
         StringBuilder buffer = new StringBuilder();
@@ -124,5 +123,4 @@ public class Resource extends BuildableResponse<Resource> {
         this.disposition = "inline";
         return this;
     }
-
 }

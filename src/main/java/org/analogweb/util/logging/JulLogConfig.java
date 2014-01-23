@@ -25,6 +25,7 @@ public abstract class JulLogConfig {
      * {@link JulLogConfig}です。
      */
     public static final JulLogConfig SIMPLE = new JulLogConfig() {
+
         @Override
         public void configure(ClassLoader classLoader) {
             // nop.
@@ -77,5 +78,4 @@ public abstract class JulLogConfig {
         console.setLevel(Level.INFO);
         return console;
     }
-
 }

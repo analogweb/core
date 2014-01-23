@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
  * において、任意の処理を付加するコンポーネント<br/>
  * @author snowgoose
  */
-public interface ApplicationProcessor extends MultiModule,Precedence {
+public interface ApplicationProcessor extends MultiModule, Precedence {
 
     /**
      * {@link ApplicationProcessor}の各ライフサイクルにおいて
@@ -15,7 +15,7 @@ public interface ApplicationProcessor extends MultiModule,Precedence {
      * の処理を中断しないことを表すフラグメントです。
      */
     Object NO_INTERRUPTION = new Object();
-    
+
     /**
      * {@link Application}のルーティング処理前に処理を追加します。<br/>
      * 通常は、{@link #NO_INTERRUPTION}を返します。それ以外の
@@ -67,8 +67,8 @@ public interface ApplicationProcessor extends MultiModule,Precedence {
      * @param context {@link RequestContext}
      * @param resolvers {@link RequestValueResolvers}
      */
-    void postInvoke(Object invocationResult, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context, RequestValueResolvers resolvers);
+    void postInvoke(Object invocationResult, InvocationArguments args, InvocationMetadata metadata,
+            RequestContext context, RequestValueResolvers resolvers);
 
     /**
      * {@link Application}実行後に処理を追加します。<br/>
@@ -79,6 +79,5 @@ public interface ApplicationProcessor extends MultiModule,Precedence {
      * @param response {@link ResponseContext}
      * @param e {@link Exception}
      */
-    void afterCompletion(RequestContext request, ResponseContext response,Exception e);
-
+    void afterCompletion(RequestContext request, ResponseContext response, Exception e);
 }

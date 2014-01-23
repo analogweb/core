@@ -15,5 +15,4 @@ public interface TypeMapper extends Module {
      * @return 変換された型の新しいインスタンス
      */
     Object mapToType(Object from, Class<?> requiredType, String[] formats);
-
 }

@@ -14,12 +14,11 @@ class JulLog extends AbstractLog {
     private static final String DEFAULT_LOG_CONFIG_IMPLEMENTATION = AbstractLog.class.getPackage()
             .getName() + ".JulLogConfigImpl";
     private static JulLogConfig runtimeConfig;
-
     private final Logger log;
 
     JulLog(String name, ClassLoader classLoader) {
         super(name, classLoader);
-        if(runtimeConfig == null){
+        if (runtimeConfig == null) {
             runtimeConfig = configureViaRuntimeClass(classLoader);
         }
         log = runtimeConfig.createLogger(name);
@@ -214,8 +213,7 @@ class JulLog extends AbstractLog {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Logger Facade for java.util.logging.Logger";
     }
-
 }

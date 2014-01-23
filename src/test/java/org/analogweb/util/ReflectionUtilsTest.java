@@ -83,15 +83,12 @@ public class ReflectionUtilsTest {
 
     @Test
     public void testFilterClassAsImplementsInterface() {
-
         Collection<Class<?>> classes = new ArrayList<Class<?>>();
         classes.add(MockIIObject.class);
         classes.add(MockIIObjectExt.class);
         classes.add(MockObject.class);
-
         List<Class<IIMockObject>> result = ReflectionUtils.filterClassAsImplementsInterface(
                 IIMockObject.class, classes);
-
         assertThat(result.size(), is(2));
         assertTrue(result.contains(MockIIObject.class));
         assertTrue(result.contains(MockIIObjectExt.class));
@@ -109,7 +106,6 @@ public class ReflectionUtilsTest {
         MockObject obj = new MockObject();
         ReflectionUtils.writeValueToField("noexists", obj, "fuga");
         assertNull(obj.hoge);
-
     }
 
     @Test
@@ -167,10 +163,10 @@ public class ReflectionUtilsTest {
     }
 
     public interface IIMockObject extends IMockObject {
-
     }
 
     public static class MockObject implements IMockObject {
+
         private String hoge;
 
         public String doSomething(@Foo String foo) {
@@ -179,9 +175,7 @@ public class ReflectionUtilsTest {
 
         public String doSomethingWithException(@Foo String foo) {
             throw new RuntimeException();
-
         }
-
     }
 
     public static class MockIIObject implements IIMockObject {
@@ -194,12 +188,14 @@ public class ReflectionUtilsTest {
     }
 
     public static class MockObjectWithConstractorArg extends MockObject {
+
         public MockObjectWithConstractorArg(String boo) {
             // nop.
         }
     }
 
     public static class MockObjectWithPrivateConstractor extends MockObject {
+
         private MockObjectWithPrivateConstractor(String boo) {
             // nop.
         }
@@ -208,6 +204,5 @@ public class ReflectionUtilsTest {
     @Target({ ElementType.PARAMETER, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     private static @interface Foo {
-
     }
 }

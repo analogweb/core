@@ -21,64 +21,53 @@ public final class MediaTypes {
     public final static MediaType WILDCARD_TYPE = new DefaultMediaType();
     /** "*&#47;*" */
     public final static String WILDCARD = "*/*";
-
     /** "application/xml" */
     public final static String APPLICATION_XML = "application/xml";
     /** "application/xml" */
     public final static MediaType APPLICATION_XML_TYPE = new DefaultMediaType("application", "xml");
-
     /** "application/atom+xml" */
     public final static String APPLICATION_ATOM_XML = "application/atom+xml";
     /** "application/atom+xml" */
     public final static MediaType APPLICATION_ATOM_XML_TYPE = new DefaultMediaType("application",
             "atom+xml");
-
     /** "application/xhtml+xml" */
     public final static String APPLICATION_XHTML_XML = "application/xhtml+xml";
     /** "application/xhtml+xml" */
     public final static MediaType APPLICATION_XHTML_XML_TYPE = new DefaultMediaType("application",
             "xhtml+xml");
-
     /** "application/svg+xml" */
     public final static String APPLICATION_SVG_XML = "application/svg+xml";
     /** "application/svg+xml" */
     public final static MediaType APPLICATION_SVG_XML_TYPE = new DefaultMediaType("application",
             "svg+xml");
-
     /** "application/json" */
     public final static String APPLICATION_JSON = "application/json";
     /** "application/json" */
     public final static MediaType APPLICATION_JSON_TYPE = new DefaultMediaType("application",
             "json");
-
     /** "application/x-www-form-urlencoded" */
     public final static String APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded";
     /** "application/x-www-form-urlencoded" */
     public final static MediaType APPLICATION_FORM_URLENCODED_TYPE = new DefaultMediaType(
             "application", "x-www-form-urlencoded");
-
     /** "multipart/form-data" */
     public final static String MULTIPART_FORM_DATA = "multipart/form-data";
     /** "multipart/form-data" */
     public final static MediaType MULTIPART_FORM_DATA_TYPE = new DefaultMediaType("multipart",
             "form-data");
-
     /** "application/octet-stream" */
     public final static String APPLICATION_OCTET_STREAM = "application/octet-stream";
     /** "application/octet-stream" */
     public final static MediaType APPLICATION_OCTET_STREAM_TYPE = new DefaultMediaType(
             "application", "octet-stream");
-
     /** "text/plain" */
     public final static String TEXT_PLAIN = "text/plain";
     /** "text/plain" */
     public final static MediaType TEXT_PLAIN_TYPE = new DefaultMediaType("text", "plain");
-
     /** "text/xml" */
     public final static String TEXT_XML = "text/xml";
     /** "text/xml" */
     public final static MediaType TEXT_XML_TYPE = new DefaultMediaType("text", "xml");
-
     /** "text/html" */
     public final static String TEXT_HTML = "text/html";
     /** "text/html" */
@@ -110,6 +99,7 @@ public final class MediaTypes {
 
         private Map<String, String> initParameters(Map<String, String> parameters) {
             Map<String, String> map = new TreeMap<String, String>(new Comparator<String>() {
+
                 public int compare(String o1, String o2) {
                     return o1.compareToIgnoreCase(o2);
                 }
@@ -160,7 +150,6 @@ public final class MediaTypes {
             }
             return this.value;
         }
-
     }
 
     public static MediaType valueOf(String value) {

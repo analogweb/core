@@ -27,5 +27,4 @@ public interface ContainerAdaptor extends Module {
      * @return 指定した型に一致する全てのインスタンス
      */
     <T> List<T> getInstancesOfType(Class<T> type);
-
 }

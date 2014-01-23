@@ -17,7 +17,6 @@ public class StopWatchTest {
 
     private StopWatch sw;
     private Ticker ticker;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -55,5 +54,4 @@ public class StopWatchTest {
     private long nanosec(long millsec) {
         return millsec * 1000 * 1000;
     }
-
 }

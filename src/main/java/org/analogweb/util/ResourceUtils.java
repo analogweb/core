@@ -19,7 +19,6 @@ import org.analogweb.util.logging.Logs;
 public final class ResourceUtils {
 
     private static final Log log = Logs.getLog(ResourceUtils.class);
-
     private static final List<ResourceFinder> DEFAULT_STRATEGIES = Arrays
             .asList(new ResourceFinder[] { FindResourceStrategies.CLASSPATH,
                     FindResourceStrategies.URL, FindResourceStrategies.FILE });
@@ -62,11 +61,14 @@ public final class ResourceUtils {
     }
 
     public interface ResourceFinder {
+
         URL find(String name);
     }
 
     public interface FindResourceStrategies {
+
         static final ResourceFinder FILE = new ResourceFinder() {
+
             @Override
             public URL find(String filename) {
                 try {
@@ -93,6 +95,7 @@ public final class ResourceUtils {
             }
         };
         static final ResourceFinder CLASSPATH = new ResourceFinder() {
+
             @Override
             public URL find(String name) {
                 URL resource = Thread.currentThread().getContextClassLoader().getResource(name);
@@ -104,9 +107,9 @@ public final class ResourceUtils {
                     return null;
                 }
             }
-
         };
         static final ResourceFinder URL = new ResourceFinder() {
+
             @Override
             public URL find(String name) {
                 try {
@@ -120,5 +123,4 @@ public final class ResourceUtils {
             }
         };
     }
-
 }

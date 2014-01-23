@@ -14,5 +14,4 @@ public interface ExceptionHandler extends Module {
      * @return 例外をハンドルした結果、示されるレスポンス({@link Renderable}など)
      */
     Object handleException(Exception exception) throws WebApplicationException;
-
 }

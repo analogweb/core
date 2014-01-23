@@ -40,17 +40,13 @@ public class XmlTest {
 
     @Test
     public void testRender() throws Exception {
-
         String charset = "UTF-8";
-
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-
         Xml xml = Xml.as(new Foo());
         xml.render(context, response);
-
         writer.getEntity().writeInto(out);
         String actual = new String(out.toByteArray(), charset);
         assertThat(
@@ -61,22 +57,20 @@ public class XmlTest {
 
     @Test
     public void testRenderWithInvalidType() throws Exception {
-
         thrown.expect(FormatFailureException.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-
         // render miss mapped type.
         Xml xml = Xml.as(new Hoge());
         xml.render(context, response);
-
         writer.getEntity().writeInto(out);
     }
 
     @XmlRootElement
     static class Foo {
+
         @XmlElement
         private String baa = "baz!";
     }
@@ -84,8 +78,8 @@ public class XmlTest {
     // miss mapping.
     @XmlType
     static class Hoge {
+
         @XmlElement
         private String baa = "baz!";
     }
-
 }

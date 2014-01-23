@@ -11,5 +11,4 @@ package org.analogweb;
  * @author snowgoose
  */
 public interface Module {
-
 }

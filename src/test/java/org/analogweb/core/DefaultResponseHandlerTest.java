@@ -24,10 +24,8 @@ import org.junit.rules.ExpectedException;
 public class DefaultResponseHandlerTest {
 
     private DefaultResponseHandler handler;
-
     private RequestContext context;
     private ResponseContext response;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -45,17 +43,13 @@ public class DefaultResponseHandlerTest {
     @Test
     public void testHandleResult() throws Exception {
         Renderable result = mock(Renderable.class);
-
         handler.handleResult(result, null, context, response);
-
         verify(result).render(context, response);
-
     }
 
     @Test
     public void testHandleResultWithoutResponseResult() throws Exception {
         thrown.expect(ResponseEvaluationException.class);
-
         handler.handleResult(null, null, context, response);
     }
 
@@ -63,9 +57,7 @@ public class DefaultResponseHandlerTest {
     public void testHandleResultWithResponseFormatterAware() throws Exception {
         ResponseFormatterAware<?> result = mock(ResponseFormatterAware.class);
         ResponseFormatter formatter = mock(ResponseFormatter.class);
-
         handler.handleResult(result, formatter, context, response);
-
         verify(result).attach(formatter);
         verify(result).render(context, response);
     }
@@ -73,17 +65,13 @@ public class DefaultResponseHandlerTest {
     @Test
     public void testHandleResultWithIOException() throws Exception {
         Renderable result = mock(Renderable.class);
-
         thrown.expect(ResponseEvaluationException.class);
         thrown.expect(hasResponse(result));
-
         doThrow(new IOException()).when(result).render(context, response);
-
         handler.handleResult(result, null, context, response);
     }
 
     private static Matcher<?> hasResponse(final Renderable actionResult) {
-
         return new BaseMatcher<Renderable>() {
 
             @Override
@@ -100,5 +88,4 @@ public class DefaultResponseHandlerTest {
             }
         };
     }
-
 }

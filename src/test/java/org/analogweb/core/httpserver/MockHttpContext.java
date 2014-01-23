@@ -13,7 +13,7 @@ import com.sun.net.httpserver.HttpServer;
  * @author snowgoose
  */
 public class MockHttpContext extends HttpContext {
-    
+
     private String path;
 
     /* (non-Javadoc)
@@ -81,11 +81,9 @@ public class MockHttpContext extends HttpContext {
     @Override
     public void setHandler(HttpHandler arg0) {
         // TODO Auto-generated method stub
-
     }
 
     public void setPath(String path) {
         this.path = path;
     }
-
 }

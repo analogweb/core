@@ -38,8 +38,7 @@ public class CookieValueResolverTest {
         when(cookie2.getValue()).thenReturn("baz");
         when(requestContext.getCookies()).thenReturn(cookies);
         when(cookies.getCookie("foo")).thenReturn(cookie1);
-
-        Object actual = resolver.resolveValue(requestContext, metadata, "foo",null);
+        Object actual = resolver.resolveValue(requestContext, metadata, "foo", null);
         assertThat((String) actual, is("baa"));
     }
 
@@ -51,8 +50,8 @@ public class CookieValueResolverTest {
         when(cookie2.getValue()).thenReturn("baz");
         when(requestContext.getCookies()).thenReturn(cookies);
         when(cookies.getCookie("foo")).thenReturn(cookie1);
-
-        Object actual = resolver.resolveValue(requestContext, metadata, "foo",Cookies.Cookie.class);
+        Object actual = resolver
+                .resolveValue(requestContext, metadata, "foo", Cookies.Cookie.class);
         assertThat(((Cookies.Cookie) actual).getValue(), is("baa"));
     }
 
@@ -60,17 +59,14 @@ public class CookieValueResolverTest {
     public void testResolveAttributeValueNotMatchCookie() {
         when(requestContext.getCookies()).thenReturn(cookies);
         when(cookies.getCookie("baa")).thenReturn(null);
-
-        Object actual = resolver.resolveValue(requestContext, metadata, "baa",null);
+        Object actual = resolver.resolveValue(requestContext, metadata, "baa", null);
         assertNull(actual);
     }
 
     @Test
     public void testResolveAttributeValueCookiesNotAvairable() {
         when(requestContext.getCookies()).thenReturn(null);
-
-        Object actual = resolver.resolveValue(requestContext, metadata, "foo",null);
+        Object actual = resolver.resolveValue(requestContext, metadata, "foo", null);
         assertNull(actual);
     }
-
 }

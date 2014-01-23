@@ -42,7 +42,8 @@ public class DefaultModulesConfigTest {
                 .thenReturn(modulesBuilder);
         when(modulesBuilder.setInvocationFactoryClass(InvocationFactory.class)).thenReturn(
                 modulesBuilder);
-        when(modulesBuilder.setInvokerFactoryClass(InvokerFactory.class)).thenReturn(modulesBuilder);
+        when(modulesBuilder.setInvokerFactoryClass(InvokerFactory.class))
+                .thenReturn(modulesBuilder);
         when(modulesBuilder.setResponseHandlerClass(ResponseHandler.class)).thenReturn(
                 modulesBuilder);
         when(modulesBuilder.setResponseResolverClass(ResponseResolver.class)).thenReturn(
@@ -59,7 +60,6 @@ public class DefaultModulesConfigTest {
                 .thenReturn(modulesBuilder);
         when(modulesBuilder.addAttributesHandlerClass(AttributesHandler.class)).thenReturn(
                 modulesBuilder);
-
         config.prepare(modulesBuilder);
     }
 
@@ -68,5 +68,4 @@ public class DefaultModulesConfigTest {
         thrown.expect(AssertionFailureException.class);
         config.prepare(null);
     }
-
 }

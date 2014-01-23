@@ -87,10 +87,8 @@ public class DefaultCookie implements Cookies.Cookie {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-
         b.append(getName()).append('=');
         appendQuotedIfWhitespace(b, getValue());
-
         if (getPath() != null) {
             b.append(";Path=");
             appendQuotedIfWhitespace(b, getPath());

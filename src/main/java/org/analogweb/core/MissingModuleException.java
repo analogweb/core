@@ -16,5 +16,4 @@ public class MissingModuleException extends ApplicationConfigurationException {
     public Class<?> getRequiredModuleClass() {
         return this.requiredModuleClass;
     }
-
 }

@@ -48,6 +48,7 @@ public interface ResponseContext {
      * @author snowgoose
      */
     public static interface ResponseWriter {
+
         /**
          * レスポンスボディに書き込む対象のエンティティ
          * である{@link InputStream}を設定します。
@@ -78,7 +79,7 @@ public interface ResponseContext {
          * @param entity {@link ResponseEntity}
          */
         void writeEntity(ResponseEntity entity);
-        
+
         /**
          * レスポンスボディに書き込む対象のエンティティ
          * を取得します。
@@ -94,14 +95,14 @@ public interface ResponseContext {
      * @author snowgoose
      */
     public static interface ResponseEntity {
+
         /**
          * レスポンスボディにエンティティを書き込みます。
          * @param responseBody {@link OutputStream}
          * @throws {@link IOException}
          */
-        void writeInto(OutputStream responseBody) throws IOException ;
+        void writeInto(OutputStream responseBody) throws IOException;
 
         long getContentLength();
     }
-
 }

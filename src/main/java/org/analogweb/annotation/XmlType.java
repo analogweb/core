@@ -13,7 +13,7 @@ import org.analogweb.core.XmlValueResolver;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER,ElementType.FIELD })
+@Target({ ElementType.PARAMETER, ElementType.FIELD })
 @Resolver(XmlValueResolver.class)
 @As
 public @interface XmlType {

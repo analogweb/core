@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.analogweb.InvocationMetadata;
 
-
 /**
  * @author snowgoose
  */
@@ -39,5 +38,4 @@ public class InvocationFailureException extends ApplicationRuntimeException {
         }
         return th;
     }
-
 }

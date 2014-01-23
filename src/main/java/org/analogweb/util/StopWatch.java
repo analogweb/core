@@ -36,7 +36,9 @@ public class StopWatch {
     }
 
     public static interface Ticker {
+
         Ticker SYSTEM = new Ticker() {
+
             @Override
             public long now() {
                 return System.nanoTime();
@@ -45,5 +47,4 @@ public class StopWatch {
 
         long now();
     }
-
 }

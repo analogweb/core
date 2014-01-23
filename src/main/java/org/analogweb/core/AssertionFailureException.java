@@ -16,5 +16,4 @@ public class AssertionFailureException extends ApplicationRuntimeException {
     public String getRequiredName() {
         return this.requiredName;
     }
-
 }

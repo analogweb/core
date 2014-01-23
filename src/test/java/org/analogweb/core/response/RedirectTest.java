@@ -43,47 +43,36 @@ public class RedirectTest {
 
     @Test
     public void testRender() throws Exception {
-
         Redirect.to("/some/foo.rn").render(context, response);
-
         verify(response).setStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn");
     }
 
     @Test
     public void testRenderWithNotReturnCode() throws Exception {
-
         // not redirect response code.
         Redirect.to("/some/foo.rn").resoposeCode(404).render(context, response);
-
         verify(response).setStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn");
     }
 
     @Test
     public void testRenderWithNullContext() throws Exception {
-
         thrown.expect(AssertionFailureException.class);
-
         Redirect.to("/some/foo.rn").render(null, response);
-
     }
 
     @Test
     public void testRenderWithParameter() throws Exception {
-
         Redirect.to("/some/foo.rn").addParameter("foo", "baa").addParameter("hoge", "fuga")
                 .render(context, response);
-
         verify(response).setStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn?foo=baa&hoge=fuga");
     }
 
     @Test
     public void testRenderWithScheme() throws Exception {
-
         Redirect.to("https://github.com/").addParameter("foo", "baa").render(context, response);
-
         verify(response).setStatus(302);
         verify(responseHeader).putValue("Location", "https://github.com/?foo=baa");
     }
@@ -93,15 +82,14 @@ public class RedirectTest {
         // sort parameter name by natural order.
         Redirect.to("/some/foo.rn?boo=baz").addParameter("hoge", "fuga").addParameter("foo", "baa")
                 .encodeWith("ISO-8859-1").render(context, response);
-
         verify(response).setStatus(302);
         verify(responseHeader).putValue("Location", "/some/foo.rn?boo=baz&foo=baa&hoge=fuga");
-
     }
 
     @Test
     public void testRenderWithEmptyPath() throws Exception {
         thrown.expect(new NoDescribeMatcher<MissingRequirmentsException>() {
+
             @Override
             public boolean matches(Object arg0) {
                 if (arg0 instanceof MissingRequirmentsException) {
@@ -113,7 +101,6 @@ public class RedirectTest {
                 return false;
             }
         });
-
         Redirect.to(null);
     }
 
@@ -128,5 +115,4 @@ public class RedirectTest {
         assertThat(Redirect.to("/foo/bar").hashCode(), is(Redirect.to("/foo/bar").hashCode()));
         assertThat(Redirect.to("/foo/bar").hashCode(), is(not(Redirect.to("/foo/bar2").hashCode())));
     }
-
 }

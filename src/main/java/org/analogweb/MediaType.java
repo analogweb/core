@@ -34,5 +34,4 @@ public interface MediaType {
      * @return この{@link MediaType}に対する互換性がある場合は{@code true}
      */
     boolean isCompatible(MediaType other);
-
 }

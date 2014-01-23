@@ -15,5 +15,4 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD })
 @HttpMethod("DELETE")
 public @interface Delete {
-
 }

@@ -47,7 +47,6 @@ public class Redirect implements Renderable {
     public void render(RequestContext context, ResponseContext response) throws IOException,
             WebApplicationException {
         Assertion.notNull(context, RequestContext.class.getCanonicalName());
-
         String path = getParametarizedPath();
         sendRedirect(context, response, URI.create(path), getResponseCode());
     }
@@ -164,5 +163,4 @@ public class Redirect implements Renderable {
         result = multiplier * result + hash;
         return result;
     }
-
 }

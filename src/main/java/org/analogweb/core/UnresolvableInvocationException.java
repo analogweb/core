@@ -19,5 +19,4 @@ public class UnresolvableInvocationException extends ApplicationRuntimeException
     public InvocationMetadata getSourceMetadata() {
         return this.sourceMetadata;
     }
-
 }

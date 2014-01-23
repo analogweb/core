@@ -17,7 +17,5 @@ public interface RouteRegistry extends Disposable {
      * Register {@link InvocationMetadata}.
      * @param invocationMetadata {@link InvocationMetadata}
      */
-    void register(
-            InvocationMetadata invocationMetadata);
-
+    void register(InvocationMetadata invocationMetadata);
 }

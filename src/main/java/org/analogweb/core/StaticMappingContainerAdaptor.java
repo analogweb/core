@@ -10,14 +10,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.ReflectionUtils;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
-
 
 /**
  * @author snowgoose
@@ -86,6 +84,7 @@ public final class StaticMappingContainerAdaptor implements ContainerAdaptor {
     }
 
     static class AssignableFromClassKey implements Serializable {
+
         private static final long serialVersionUID = 6877097524294606292L;
         private final Class<?> key;
 
@@ -118,6 +117,7 @@ public final class StaticMappingContainerAdaptor implements ContainerAdaptor {
     }
 
     private static class Values implements Serializable {
+
         private static final long serialVersionUID = 7232656030740922324L;
         private final Set<Object> values;
 
@@ -132,6 +132,5 @@ public final class StaticMappingContainerAdaptor implements ContainerAdaptor {
         Collection<Object> collection() {
             return this.values;
         }
-
     }
 }

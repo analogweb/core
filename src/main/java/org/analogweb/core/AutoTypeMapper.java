@@ -127,6 +127,7 @@ public class AutoTypeMapper implements TypeMapper {
     }
 
     private static final class StringToCharactor extends TypeSafeTypeMapper<String, Character> {
+
         @Override
         public Character mapToTypeInternal(String from, Class<Character> requiredType,
                 String[] formats) {
@@ -144,10 +145,10 @@ public class AutoTypeMapper implements TypeMapper {
             return ((from.equalsIgnoreCase("true") || from.equalsIgnoreCase("yes") || from
                     .equalsIgnoreCase("on")));
         }
-
     }
 
     private static final class StringToShort extends TypeSafeTypeMapper<String, Short> {
+
         @Override
         public Short mapToTypeInternal(String from, Class<Short> requiredType, String[] formats) {
             if (StringUtils.isNotEmpty(from)) {
@@ -163,6 +164,7 @@ public class AutoTypeMapper implements TypeMapper {
     }
 
     private static final class StringToFloat extends TypeSafeTypeMapper<String, Float> {
+
         @Override
         public Float mapToTypeInternal(String from, Class<Float> requiredType, String[] formats) {
             if (StringUtils.isNotEmpty(from)) {
@@ -178,6 +180,7 @@ public class AutoTypeMapper implements TypeMapper {
     }
 
     private static final class StringToDouble extends TypeSafeTypeMapper<String, Double> {
+
         @Override
         public Double mapToTypeInternal(String from, Class<Double> requiredType, String[] formats) {
             if (StringUtils.isNotEmpty(from)) {
@@ -193,6 +196,7 @@ public class AutoTypeMapper implements TypeMapper {
     }
 
     private static final class StringToInteger extends TypeSafeTypeMapper<String, Integer> {
+
         @Override
         public Integer mapToTypeInternal(String from, Class<Integer> requiredType, String[] formats) {
             if (StringUtils.isNotEmpty(from)) {
@@ -208,6 +212,7 @@ public class AutoTypeMapper implements TypeMapper {
     }
 
     private static final class StringToLong extends TypeSafeTypeMapper<String, Long> {
+
         @Override
         public Long mapToTypeInternal(String from, Class<Long> requiredType, String[] formats) {
             if (StringUtils.isNotEmpty(from)) {
@@ -223,6 +228,7 @@ public class AutoTypeMapper implements TypeMapper {
     }
 
     private static final class StringToBigDecimal extends TypeSafeTypeMapper<String, BigDecimal> {
+
         @Override
         public BigDecimal mapToTypeInternal(String from, Class<BigDecimal> requiredType,
                 String[] formats) {
@@ -265,10 +271,10 @@ public class AutoTypeMapper implements TypeMapper {
             }
             return null;
         }
-
     }
 
     private static final class StringArrayToString extends TypeSafeTypeMapper<String[], String> {
+
         @Override
         public String mapToTypeInternal(String[] from, Class<String> requiredType, String[] formats) {
             if (ArrayUtils.isNotEmpty(from)) {
@@ -277,5 +283,4 @@ public class AutoTypeMapper implements TypeMapper {
             return null;
         }
     }
-
 }

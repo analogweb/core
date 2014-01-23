@@ -61,5 +61,4 @@ public class JarClassCollector extends AbstractClassCollector {
         }
         return collectedClasses;
     }
-
 }

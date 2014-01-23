@@ -8,8 +8,8 @@ package org.analogweb;
  * @author snowgoose
  */
 public interface Invocation {
-	
-	/**
+
+    /**
      * リクエストされたエンドポイントとなるメソッドを実行します。<br/>
      * {@link ApplicationProcessor}により評価された内容を保持した状態で実行されます。
      * @see ApplicationProcessor
@@ -29,5 +29,4 @@ public interface Invocation {
      * @return {@link InvocationArguments}
      */
     InvocationArguments getInvocationArguments();
-
 }

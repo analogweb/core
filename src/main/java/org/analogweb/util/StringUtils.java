@@ -136,5 +136,4 @@ public final class StringUtils {
     public static String trimToEmpty(String value) {
         return isEmpty(value) ? EMPTY : value.trim();
     }
-
 }

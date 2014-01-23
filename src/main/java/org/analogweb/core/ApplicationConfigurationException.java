@@ -10,5 +10,4 @@ public class ApplicationConfigurationException extends ApplicationRuntimeExcepti
     public ApplicationConfigurationException(String message) {
         super(message);
     }
-
 }

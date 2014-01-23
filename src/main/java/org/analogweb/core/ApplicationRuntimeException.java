@@ -18,5 +18,4 @@ public abstract class ApplicationRuntimeException extends RuntimeException {
     public ApplicationRuntimeException(Throwable cause) {
         super(cause);
     }
-
 }

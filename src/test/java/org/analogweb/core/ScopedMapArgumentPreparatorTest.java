@@ -60,9 +60,7 @@ public class ScopedMapArgumentPreparatorTest {
         Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doSomething",
                 parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-
         preparator.prepareInvoke(doSomething, args, metadata, context, typeMapper, handlers);
-
         verify(args).putInvocationArgument(eq(0), isA(ContextExtractor.class));
     }
 
@@ -72,7 +70,6 @@ public class ScopedMapArgumentPreparatorTest {
         Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doAnything",
                 parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-
         preparator.prepareInvoke(doSomething, args, metadata, context, typeMapper, handlers);
     }
 
@@ -82,10 +79,9 @@ public class ScopedMapArgumentPreparatorTest {
         Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doNothing",
                 parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-
         preparator.prepareInvoke(doSomething, args, metadata, context, typeMapper, handlers);
     }
-    
+
     interface Session extends AttributesHandler {
     }
 
@@ -95,17 +91,12 @@ public class ScopedMapArgumentPreparatorTest {
                 Session.class);
         BigDecimal amount = new BigDecimal("1000");
         scopedMap.put("amount", amount);
-
         when(handlers.findAttributesHandler(Session.class)).thenReturn(handler);
-
         ArrayList<Object> list = new ArrayList<Object>();
         list.add(scopedMap);
         when(args.asList()).thenReturn(list);
-
         Object invocationResult = new Object();
-
         preparator.postInvoke(invocationResult, args, metadata, context, handlers);
-
         verify(handler).putAttributeValue(context, "amount", amount);
     }
 
@@ -115,23 +106,20 @@ public class ScopedMapArgumentPreparatorTest {
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testExtractToScopeFirstArgument() {
-
         when(metadata.getInvocationClass()).thenReturn((Class) MockAction.class);
         when(metadata.getMethodName()).thenReturn("doSomething");
         Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
         ArrayList<Object> list = new ArrayList<Object>();
-        Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(Request.class);
+        Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(
+                Request.class);
         BigDecimal amount = new BigDecimal("1000");
         scopedMap.put("amount", amount);
         list.add(scopedMap);
         when(args.asList()).thenReturn(list);
         when(handlers.findAttributesHandler(Request.class)).thenReturn(handler);
-
         Object invocationResult = new Object();
-
         preparator.postInvoke(invocationResult, args, metadata, context, handlers);
-
         verify(handler).putAttributeValue(context, "amount", amount);
     }
 
@@ -140,25 +128,22 @@ public class ScopedMapArgumentPreparatorTest {
         Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(
                 Session.class);
         scopedMap.remove("amount");
-
         when(handlers.findAttributesHandler(Session.class)).thenReturn(handler);
-
         ArrayList<Object> list = new ArrayList<Object>();
         list.add("boobaa");
         list.add(scopedMap);
         when(args.asList()).thenReturn(list);
-
         Object invocationResult = new Object();
-
         preparator.postInvoke(invocationResult, args, metadata, context, handlers);
-
         verify(handler).removeAttribute(context, "amount");
     }
 
     @Route
     private static class MockAction {
+
         @Route
-        public String doSomething(@Attributes(Request.class) Map<String, ?> foo, @As("baa") String baa) {
+        public String doSomething(@Attributes(Request.class) Map<String, ?> foo,
+                @As("baa") String baa) {
             return "do something!";
         }
 
@@ -174,9 +159,9 @@ public class ScopedMapArgumentPreparatorTest {
         }
 
         @Route
-        public String doAnything(@Attributes(AttributesHandler.class) String notMap, @As("baa") String baa) {
+        public String doAnything(@Attributes(AttributesHandler.class) String notMap,
+                @As("baa") String baa) {
             return "do something!";
         }
     }
-
 }

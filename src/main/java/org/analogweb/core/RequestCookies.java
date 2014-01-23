@@ -10,6 +10,7 @@ import org.analogweb.util.StringUtils;
  * @author snowgoose
  */
 public class RequestCookies extends EmptyCookies {
+
     private final String header;
     private Map<String, Cookie> map;
 
@@ -46,5 +47,4 @@ public class RequestCookies extends EmptyCookies {
         }
         return map;
     }
-
 }

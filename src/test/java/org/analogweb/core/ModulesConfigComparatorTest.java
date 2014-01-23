@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 import org.analogweb.ModulesConfig;
 import org.analogweb.PluginModulesConfig;
 import org.analogweb.UserModulesConfig;
@@ -26,12 +25,10 @@ import org.junit.rules.ExpectedException;
 public class ModulesConfigComparatorTest {
 
     private ModulesConfigComparator comparator;
-
     private RootModulesConfig modulesConfig;
     private PluginModulesConfig pluginModulesConfig;
     private UserModulesConfig userModulesConfig;
     private ModulesConfig otherModulesConfig;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -103,13 +100,10 @@ public class ModulesConfigComparatorTest {
         configs.add(modulesConfig);
         configs.add(pluginModulesConfig);
         configs.add(otherModulesConfig);
-
         Collections.sort(configs, comparator);
-
         assertThat(configs.get(0), is((ModulesConfig) modulesConfig));
         assertThat(configs.get(1), is((ModulesConfig) pluginModulesConfig));
         assertThat(configs.get(2), is((ModulesConfig) userModulesConfig));
         assertThat(configs.get(3), is(otherModulesConfig));
     }
-
 }

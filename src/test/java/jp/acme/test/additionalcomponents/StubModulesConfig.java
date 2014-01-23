@@ -13,5 +13,4 @@ public class StubModulesConfig implements UserModulesConfig {
         builder.addApplicationProcessorClass(StubPreProcessor.class);
         return builder;
     }
-
 }

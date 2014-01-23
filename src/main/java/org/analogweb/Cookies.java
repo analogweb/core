@@ -19,7 +19,7 @@ public interface Cookies {
      * @param name {@link Cookie}を特定するキー
      * @param value 更新する{@link Cookie}の値
      */
-    void putCookie(String name,Object value);
+    void putCookie(String name, Object value);
 
     /**
      * 指定した{@link Cookie}を追加、又は更新します。
@@ -32,14 +32,21 @@ public interface Cookies {
      * @author snowgoose
      */
     interface Cookie {
+
         String getName();
+
         String getValue();
+
         String getComment();
+
         String getPath();
+
         int getMaxAge();
+
         boolean isSecure();
+
         int getVersion();
+
         String getDomain();
     }
-
 }

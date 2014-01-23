@@ -25,7 +25,8 @@ public final class RootModulesConfig implements ModulesConfig {
         Assertion.notNull(builder, ModulesBuilder.class.getCanonicalName());
         return builder.setModulesProviderClass(StaticMappingContainerAdaptorFactory.class)
                 .setInvocationInstanceProviderClass(SingletonInstanceContainerAdaptorFactory.class)
-                .setInvocationFactoryClass(InvocationFactory.class).setInvokerFactoryClass(InvokerFactory.class)
+                .setInvocationFactoryClass(InvocationFactory.class)
+                .setInvokerFactoryClass(InvokerFactory.class)
                 .setResponseHandlerClass(ResponseHandler.class)
                 .setResponseResolverClass(ResponseResolver.class)
                 .setExceptionHandlerClass(ExceptionHandler.class)
@@ -35,5 +36,4 @@ public final class RootModulesConfig implements ModulesConfig {
                 .addAttributesHandlerClass(AttributesHandler.class)
                 .addRequestValueResolverClass(RequestValueResolver.class);
     }
-
 }

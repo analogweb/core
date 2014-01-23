@@ -31,6 +31,7 @@ public class DefaultResponseWriter implements ResponseWriter {
     @Override
     public void writeEntity(final InputStream entity) {
         writeEntity(new ResponseEntity() {
+
             @Override
             public void writeInto(OutputStream responseBody) throws IOException {
                 try {
@@ -39,19 +40,21 @@ public class DefaultResponseWriter implements ResponseWriter {
                     IOUtils.closeQuietly(entity);
                 }
             }
+
             private long length = Long.MIN_VALUE;
-			@Override
-			public long getContentLength() {
-				if(this.length == Long.MIN_VALUE){
-			    	if(ByteArrayInputStream.class.isInstance(entity)
-			    			|| FileInputStream.class.isInstance(entity)){
-			    		length = IOUtils.avairable(entity);
-			    	} else {
-			    		length = -1;
-			    	}
-				}
-				return length;
-			}
+
+            @Override
+            public long getContentLength() {
+                if (this.length == Long.MIN_VALUE) {
+                    if (ByteArrayInputStream.class.isInstance(entity)
+                            || FileInputStream.class.isInstance(entity)) {
+                        length = IOUtils.avairable(entity);
+                    } else {
+                        length = -1;
+                    }
+                }
+                return length;
+            }
         });
     }
 
@@ -64,5 +67,4 @@ public class DefaultResponseWriter implements ResponseWriter {
     public ResponseEntity getEntity() {
         return entity;
     }
-
 }

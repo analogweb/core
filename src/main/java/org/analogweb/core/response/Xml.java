@@ -33,40 +33,37 @@ public class Xml extends TextFormattable<Xml> {
         super.withCharset(DEFAULT_CHARSET);
     }
 
-	static class DefaultFormatter implements ResponseFormatter {
-		@Override
-		public ResponseEntity formatAndWriteInto(RequestContext request,
-				ResponseContext response, String charset, final Object source)
-				throws FormatFailureException {
-			return new ResponseEntity() {
-				@Override
-				public void writeInto(OutputStream responseBody) throws IOException {
-					try {
-						final JAXBContext jaxb = JAXBContext.newInstance(source
-								.getClass());
-						try {
-							jaxb.createMarshaller().marshal(source, responseBody);
-						} catch (JAXBException e) {
-							throw new FormatFailureException(e, source, getClass()
-									.getName());
-						}
-					} catch (JAXBException e) {
-						throw new FormatFailureException(e, source, getClass()
-								.getName());
-					}
-				}
-				@Override
-				public long getContentLength() {
-					return -1;
-				}
-			};
-		}
+    static class DefaultFormatter implements ResponseFormatter {
 
-	}
+        @Override
+        public ResponseEntity formatAndWriteInto(RequestContext request, ResponseContext response,
+                String charset, final Object source) throws FormatFailureException {
+            return new ResponseEntity() {
+
+                @Override
+                public void writeInto(OutputStream responseBody) throws IOException {
+                    try {
+                        final JAXBContext jaxb = JAXBContext.newInstance(source.getClass());
+                        try {
+                            jaxb.createMarshaller().marshal(source, responseBody);
+                        } catch (JAXBException e) {
+                            throw new FormatFailureException(e, source, getClass().getName());
+                        }
+                    } catch (JAXBException e) {
+                        throw new FormatFailureException(e, source, getClass().getName());
+                    }
+                }
+
+                @Override
+                public long getContentLength() {
+                    return -1;
+                }
+            };
+        }
+    }
 
     @Override
     protected ResponseFormatter getDefaultFormatter() {
         return new Xml.DefaultFormatter();
     }
-
 }

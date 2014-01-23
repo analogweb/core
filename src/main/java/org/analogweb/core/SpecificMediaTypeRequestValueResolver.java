@@ -18,5 +18,4 @@ public interface SpecificMediaTypeRequestValueResolver extends RequestValueResol
      * @return 値が取得可能な場合は{@code true}
      */
     boolean supports(MediaType mediaType);
-
 }

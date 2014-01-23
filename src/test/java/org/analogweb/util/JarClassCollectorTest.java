@@ -52,6 +52,7 @@ public class JarClassCollectorTest {
         final URL resource = Thread.currentThread().getContextClassLoader()
                 .getResource(getClass().getCanonicalName().replace('.', '/') + ".jar");
         smallClassLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+
             @Override
             public ClassLoader run() {
                 return new URLClassLoader(new URL[] { resource });
@@ -62,13 +63,11 @@ public class JarClassCollectorTest {
         assertThat(scannedClassNames.size(), is(2));
         assertThat(scannedClassNames.contains("a.b.c.Foo"), is(true));
         assertThat(scannedClassNames.contains("a.b.c.Foo.FooBaa"), is(true));
-
         scannedClassNames = classNames(collector.collect("a.b.d", ResourceUtils
                 .findPackageResources("a.b.d", smallClassLoader).get(0), smallClassLoader));
         assertThat(scannedClassNames.size(), is(2));
         assertThat(scannedClassNames.contains("a.b.d.Baa"), is(true));
         assertThat(scannedClassNames.contains("a.b.d.BaaImpl"), is(true));
-
         scannedClassNames = classNames(collector.collect("a.b.e", ResourceUtils
                 .findPackageResources("a.b.e", smallClassLoader).get(0), smallClassLoader));
         assertThat(scannedClassNames.size(), is(1));
@@ -80,6 +79,7 @@ public class JarClassCollectorTest {
         final URL resource = Thread.currentThread().getContextClassLoader()
                 .getResource(getClass().getCanonicalName().replace('.', '/') + ".jar");
         smallClassLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+
             @Override
             public ClassLoader run() {
                 return new URLClassLoader(new URL[] { resource });
@@ -90,10 +90,8 @@ public class JarClassCollectorTest {
         assertThat(scannedClassNames.size(), is(5));
         assertThat(scannedClassNames.contains("a.b.c.Foo"), is(true));
         assertThat(scannedClassNames.contains("a.b.c.Foo.FooBaa"), is(true));
-
         assertThat(scannedClassNames.contains("a.b.d.Baa"), is(true));
         assertThat(scannedClassNames.contains("a.b.d.BaaImpl"), is(true));
-
         assertThat(scannedClassNames.contains("a.b.e.Baz"), is(true));
     }
 
@@ -124,6 +122,7 @@ public class JarClassCollectorTest {
         final URL resource = Thread.currentThread().getContextClassLoader()
                 .getResource(getClass().getCanonicalName().replace('.', '/') + ".jar");
         smallClassLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+
             @Override
             public ClassLoader run() {
                 return new URLClassLoader(new URL[] { resource });
@@ -146,5 +145,4 @@ public class JarClassCollectorTest {
         thrown.expect(AssertionFailureException.class);
         collector.collect(PACKAGE_NAME, null, null);
     }
-
 }

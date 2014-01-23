@@ -18,5 +18,4 @@ public class ResponseEvaluationException extends ApplicationRuntimeException {
     public Renderable getActionResult() {
         return this.result;
     }
-
 }

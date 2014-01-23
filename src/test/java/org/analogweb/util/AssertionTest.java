@@ -28,5 +28,4 @@ public class AssertionTest {
         Assertion.notNull("baa", "foo");
         // nothing to do.
     }
-
 }

@@ -74,5 +74,4 @@ public final class Logs {
     private static AbstractLog defaultImplementation(String name, ClassLoader classLoader) {
         return new JulLog(name, classLoader);
     }
-
 }

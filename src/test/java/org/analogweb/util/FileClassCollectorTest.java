@@ -24,7 +24,6 @@ import org.junit.rules.ExpectedException;
 public class FileClassCollectorTest {
 
     private FileClassCollector collector;
-
     private static final String PACKAGE_NAME = FileClassCollectorTest.class.getPackage().getName()
             + ".classcollector";
     private ClassLoader classLoader;
@@ -41,7 +40,6 @@ public class FileClassCollectorTest {
     public void testCollect() throws Exception {
         Collection<Class<?>> collectedClasses = collector.collect(PACKAGE_NAME,
                 getPackageURL(PACKAGE_NAME), classLoader);
-
         assertContainsInstanceOfTypes(collectedClasses, new Class<?>[] { Foo.class, Baa.class,
                 Baz.class, Boo.class, Bee.class });
     }

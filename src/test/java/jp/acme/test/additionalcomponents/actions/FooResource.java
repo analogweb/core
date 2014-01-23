@@ -14,5 +14,4 @@ public class FooResource {
     public String doAnything() {
         return "forward";
     }
-
 }

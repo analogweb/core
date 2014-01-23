@@ -13,5 +13,4 @@ public interface ModulesConfig {
      * @return 設定を行った{@link ModulesBuilder}
      */
     ModulesBuilder prepare(ModulesBuilder builder);
-
 }

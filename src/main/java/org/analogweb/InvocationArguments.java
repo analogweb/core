@@ -19,5 +19,4 @@ public interface InvocationArguments extends PreparedInvocationArguments {
      * @param arg エンドポイントとなるメソッドの引数として適用する値
      */
     void putInvocationArgument(int index, Object arg);
-
 }

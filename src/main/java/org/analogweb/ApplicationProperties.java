@@ -11,7 +11,7 @@ import java.util.Locale;
  * @author snowgoose
  */
 public interface ApplicationProperties {
-    
+
     /**
      * アプリケーションを構成するコンポーネントが存在する
      * すべてのパッケージ名を取得します。

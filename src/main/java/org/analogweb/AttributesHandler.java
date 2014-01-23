@@ -22,5 +22,4 @@ public interface AttributesHandler extends RequestValueResolver {
      * @param query 属性値を削除するクエリ
      */
     void removeAttribute(RequestContext requestContext, String query);
-
 }

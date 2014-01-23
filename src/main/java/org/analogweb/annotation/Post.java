@@ -17,5 +17,4 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD })
 @HttpMethod("POST")
 public @interface Post {
-
 }

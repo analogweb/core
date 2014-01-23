@@ -17,9 +17,8 @@ public class StubPreProcessor extends AbstractApplicationProcessor {
 
     @Override
     public Invocation prepareInvoke(Method method, InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context,
-            TypeMapperContext converters,RequestValueResolvers handlers) {
+            InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
+            RequestValueResolvers handlers) {
         return null;
     }
-
 }

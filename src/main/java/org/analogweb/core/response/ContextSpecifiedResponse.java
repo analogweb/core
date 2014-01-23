@@ -11,10 +11,11 @@ public abstract class ContextSpecifiedResponse<T extends RequestContext> impleme
 
     @Override
     @SuppressWarnings("unchecked")
-    public void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException {
-        renderInternal((T) context,response);
+    public void render(RequestContext context, ResponseContext response) throws IOException,
+            WebApplicationException {
+        renderInternal((T) context, response);
     }
 
-    protected abstract void renderInternal(T context,ResponseContext response) throws IOException, WebApplicationException;
-
+    protected abstract void renderInternal(T context, ResponseContext response) throws IOException,
+            WebApplicationException;
 }

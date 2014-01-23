@@ -15,41 +15,40 @@ import org.analogweb.util.IOUtils;
  */
 public class DefaultResponseEntity implements ResponseEntity {
 
-	private final InputStream entity;
-	private long length = Long.MIN_VALUE;
+    private final InputStream entity;
+    private long length = Long.MIN_VALUE;
 
-	public DefaultResponseEntity(String entity) {
-		this(entity, Charset.defaultCharset());
-	}
+    public DefaultResponseEntity(String entity) {
+        this(entity, Charset.defaultCharset());
+    }
 
-	public DefaultResponseEntity(String entity, Charset charset) {
-		this(new ByteArrayInputStream(entity.getBytes(charset)));
-	}
+    public DefaultResponseEntity(String entity, Charset charset) {
+        this(new ByteArrayInputStream(entity.getBytes(charset)));
+    }
 
-	public DefaultResponseEntity(InputStream entity) {
-		this.entity = entity;
-	}
+    public DefaultResponseEntity(InputStream entity) {
+        this.entity = entity;
+    }
 
-	@Override
-	public void writeInto(OutputStream responseBody) throws IOException {
-		try {
-			IOUtils.copy(entity, responseBody);
-		} finally {
-			IOUtils.closeQuietly(entity);
-		}
-	}
+    @Override
+    public void writeInto(OutputStream responseBody) throws IOException {
+        try {
+            IOUtils.copy(entity, responseBody);
+        } finally {
+            IOUtils.closeQuietly(entity);
+        }
+    }
 
-	@Override
-	public long getContentLength() {
-		if (this.length == Long.MIN_VALUE) {
-			if (ByteArrayInputStream.class.isInstance(entity)
-					|| FileInputStream.class.isInstance(entity)) {
-				length = IOUtils.avairable(entity);
-			} else {
-				length = -1;
-			}
-		}
-		return length;
-	}
-
+    @Override
+    public long getContentLength() {
+        if (this.length == Long.MIN_VALUE) {
+            if (ByteArrayInputStream.class.isInstance(entity)
+                    || FileInputStream.class.isInstance(entity)) {
+                length = IOUtils.avairable(entity);
+            } else {
+                length = -1;
+            }
+        }
+        return length;
+    }
 }

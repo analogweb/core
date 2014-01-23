@@ -10,5 +10,4 @@ public class MissingModulesProviderException extends ApplicationConfigurationExc
     public MissingModulesProviderException() {
         super((String) null);
     }
-
 }

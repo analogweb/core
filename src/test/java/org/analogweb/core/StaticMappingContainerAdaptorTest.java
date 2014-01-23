@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.analogweb.core.StaticMappingContainerAdaptor;
 import org.analogweb.core.StaticMappingContainerAdaptor.AssignableFromClassKey;
 import org.analogweb.core.AssertionFailureException;
@@ -27,7 +26,6 @@ import org.junit.rules.ExpectedException;
 public class StaticMappingContainerAdaptorTest {
 
     private StaticMappingContainerAdaptor adaptor;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -123,21 +121,17 @@ public class StaticMappingContainerAdaptorTest {
     }
 
     interface MockInterface {
-
     }
 
     public static class FooObject implements MockInterface {
-
     }
 
     public static class BaaObject implements MockInterface {
-
     }
 
     public static abstract class BazObject implements MockInterface {
     }
 
     public static class BazChildObject extends BazObject {
-
     }
 }

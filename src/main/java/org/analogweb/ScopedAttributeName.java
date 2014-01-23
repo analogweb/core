@@ -17,5 +17,4 @@ public interface ScopedAttributeName {
      * @return 属性名
      */
     String getName();
-
 }

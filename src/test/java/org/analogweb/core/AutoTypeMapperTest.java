@@ -201,42 +201,33 @@ public class AutoTypeMapperTest {
         Date expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/09");
         Date actual = (Date) typeMapper.mapToType("2010-12-09", Date.class, null);
         assertThat(actual, is(expected));
-
         actual = (Date) typeMapper.mapToType("2010-12-09", Date.class, new String[0]);
         assertThat(actual, is(expected));
-
         expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/10");
         actual = (Date) typeMapper.mapToType("2010/12/10", Date.class, null);
         assertThat(actual, is(expected));
-
         expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/10");
         actual = (Date) typeMapper.mapToType("2010_12_10", Date.class, null);
         assertNull(actual);
-
         expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/11");
         actual = (Date) typeMapper.mapToType("2010/12/11", Date.class,
                 new String[] { "yyyy/MM/dd" });
         assertThat(actual, is(expected));
-
         expected = new SimpleDateFormat("yyyy/MM/dd").parse("2010/12/11");
         actual = (Date) typeMapper.mapToType("2010/12/11", Date.class, new String[] { "yyyy-MM-dd",
                 "yyyy=MM=dd" });
         assertNull(actual);
-
     }
 
     @Test
     public void testMapToTypeToBigDecimal() throws Exception {
         BigDecimal actual = (BigDecimal) typeMapper.mapToType("1001.1", BigDecimal.class, null);
         assertThat(actual, is(new BigDecimal("1001.1")));
-
         actual = (BigDecimal) typeMapper.mapToType("1001.1", BigDecimal.class, new String[0]);
         assertThat(actual, is(new BigDecimal("1001.1")));
-
         actual = (BigDecimal) typeMapper.mapToType("57,311,001.11", BigDecimal.class,
                 new String[] { "#,###,###" });
         assertThat(actual, is(new BigDecimal("57311001.11")));
-
         actual = (BigDecimal) typeMapper.mapToType("57,311,001.11", BigDecimal.class,
                 new String[] { "invalid-format" });
         assertThat(actual, is(nullValue()));
@@ -246,10 +237,8 @@ public class AutoTypeMapperTest {
     public void testMapToTypeArrayToString() throws Exception {
         String actual = (String) typeMapper.mapToType(new String[] { "a" }, String.class, null);
         assertThat(actual, is("a"));
-
         actual = (String) typeMapper.mapToType(new String[] { "a", "b" }, String.class, null);
         assertThat(actual, is("a"));
-
         actual = (String) typeMapper.mapToType(new String[0], String.class, null);
         assertThat(actual, is(nullValue()));
     }
@@ -261,13 +250,10 @@ public class AutoTypeMapperTest {
         ClassPair pair3 = ClassPair.valueOf(String.class, int.class);
         ClassPair pair4 = ClassPair.valueOf(Integer.class, String.class);
         ClassPair pair5 = ClassPair.valueOf(String.class, Integer.class);
-
         assertFalse(pair1.equals(pair2));
         assertFalse(pair1.equals(pair3));
         assertFalse(pair1.equals(pair4));
         assertFalse(pair1.equals(new Object()));
-
         assertTrue(pair1.equals(pair5));
     }
-
 }

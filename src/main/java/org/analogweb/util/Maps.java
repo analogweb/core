@@ -27,5 +27,4 @@ public final class Maps {
         ConcurrentHashMap<K, V> map = new ConcurrentHashMap<K, V>();
         return map;
     }
-
 }

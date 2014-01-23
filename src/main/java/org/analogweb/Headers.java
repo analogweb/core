@@ -7,7 +7,7 @@ import java.util.List;
  * @author snowgoose
  */
 public interface Headers {
-    
+
     /**
      * 指定されたキーに対応するヘッダの値を取得します。
      * @param name ヘッダの値を取得する為のキー
@@ -20,13 +20,13 @@ public interface Headers {
      * @return 全てのヘッダのキー名
      */
     List<String> getNames();
-    
+
     /**
      * 指定したキーに対するヘッダの値を追加又は更新します。
      * @param name ヘッダの値に対するキー
      * @param value 追加又は更新するヘッダの値
      */
-    void putValue(String name,String value);
+    void putValue(String name, String value);
 
     /**
      * 指定したキーがヘッダに存在する場合は{@code true}を返します。
@@ -34,5 +34,4 @@ public interface Headers {
      * @return キーがヘッダに存在する場合は{@code true}
      */
     boolean contains(String name);
-
 }

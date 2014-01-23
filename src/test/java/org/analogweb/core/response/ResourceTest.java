@@ -48,17 +48,13 @@ public class ResourceTest {
         File file = folder.newFile("text.log");
         writeStringTo(file);
         Resource resource = Resource.as(file).status(204);
-
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-
         resource.render(context, response);
-
         writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is("this is test log."));
-
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "attachment; filename=text.log");
     }
@@ -74,17 +70,13 @@ public class ResourceTest {
         File file = folder.newFile("text.log");
         writeStringTo(file);
         Resource resource = Resource.as(file).inline();
-
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-
         resource.render(context, response);
-
         writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is("this is test log."));
-
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "inline; filename=text.log");
     }
@@ -100,17 +92,13 @@ public class ResourceTest {
         File file = folder.newFile("text.log");
         writeStringTo(file);
         Resource resource = Resource.asFilePath(file.getPath());
-
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-
         resource.render(context, response);
-
         writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is("this is test log."));
-
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "attachment; filename=text.log");
     }
@@ -126,17 +114,13 @@ public class ResourceTest {
         File file = folder.newFile("text.log");
         writeStringTo(file);
         Resource resource = Resource.as(new FileInputStream(file));
-
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         ResponseWriter writer = new DefaultResponseWriter();
         when(response.getResponseWriter()).thenReturn(writer);
-
         resource.render(context, response);
-
         writer.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is("this is test log."));
-
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "attachment");
     }
@@ -153,5 +137,4 @@ public class ResourceTest {
         fileOut.flush();
         fileOut.close();
     }
-
 }

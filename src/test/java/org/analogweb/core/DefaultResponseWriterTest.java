@@ -16,7 +16,6 @@ import org.junit.rules.ExpectedException;
 public class DefaultResponseWriterTest {
 
     private DefaultResponseWriter writer;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -48,6 +47,7 @@ public class DefaultResponseWriterTest {
     public void testWriteStringEntityFailed() throws IOException {
         thrown.expect(IOException.class);
         InputStream entity = new InputStream() {
+
             @Override
             public int read() throws IOException {
                 throw new IOException();
@@ -57,5 +57,4 @@ public class DefaultResponseWriterTest {
         ByteArrayOutputStream responseBody = new ByteArrayOutputStream();
         writer.getEntity().writeInto(responseBody);
     }
-
 }

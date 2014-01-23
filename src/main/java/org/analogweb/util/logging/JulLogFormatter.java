@@ -17,5 +17,4 @@ public class JulLogFormatter extends Formatter {
         return String.format("%s %s %s {%s} - %s\n", currentTime, record.getLoggerName(),
                 record.getLevel(), record.getThreadID(), record.getMessage());
     }
-
 }

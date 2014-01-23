@@ -34,5 +34,4 @@ public final class SystemProperties {
     private static String get(String name) {
         return System.getProperty(name);
     }
-
 }

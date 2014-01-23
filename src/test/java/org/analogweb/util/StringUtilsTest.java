@@ -45,7 +45,6 @@ public class StringUtilsTest {
         assertThat(StringUtils.split("a..b.c", '.'), is(Arrays.asList("a", "b", "c")));
         assertThat(StringUtils.split("a:b:c", '.'), is(Arrays.asList("a:b:c")));
         assertThat(StringUtils.split("a b c", ' '), is(Arrays.asList("a", "b", "c")));
-
     }
 
     @Test
@@ -55,25 +54,21 @@ public class StringUtilsTest {
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is("request"));
         assertThat(actual.get(1), is("hoge"));
-
         target = "request";
         actual = StringUtils.partition(1, ':', target);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is("request"));
         assertNull(actual.get(1));
-
         target = "request:hoge:attr";
         actual = StringUtils.partition(1, ':', target);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is("request"));
         assertThat(actual.get(1), is("hoge:attr"));
-
         target = "request:hoge:attr:bar";
         actual = StringUtils.partition(1, ':', target);
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0), is("request"));
         assertThat(actual.get(1), is("hoge:attr:bar"));
-
         target = "request:hoge:attr";
         actual = StringUtils.partition(2, ':', target);
         assertThat(actual.size(), is(2));
@@ -92,7 +87,6 @@ public class StringUtilsTest {
         assertThat(actual, is(""));
         actual = StringUtils.substring(target, 4);
         assertNull(actual);
-
         actual = StringUtils.substring(target, 0, 1);
         assertThat(actual, is("a"));
         actual = StringUtils.substring(target, 0, 2);
@@ -101,7 +95,6 @@ public class StringUtilsTest {
         assertThat(actual, is("abc"));
         actual = StringUtils.substring(target, 0, 4);
         assertThat(actual, is("abc"));
-
         actual = StringUtils.substring(target, 1, 1);
         assertThat(actual, is(""));
         actual = StringUtils.substring(target, 1, 2);
@@ -110,7 +103,6 @@ public class StringUtilsTest {
         assertThat(actual, is("bc"));
         actual = StringUtils.substring(target, 1, 4);
         assertThat(actual, is("bc"));
-
         actual = StringUtils.substring(target, 2, 1);
         assertNull(actual);
         actual = StringUtils.substring(target, 2, 2);
@@ -132,27 +124,26 @@ public class StringUtilsTest {
         actual = StringUtils.substring(null, 1, 0);
         assertNull(actual);
     }
-    
+
     @Test
-    public void testTrimToEmpty(){
-        assertThat(StringUtils.trimToEmpty("foo "),is("foo"));
-        assertThat(StringUtils.trimToEmpty(" "),is(StringUtils.EMPTY));
-        assertThat(StringUtils.trimToEmpty("           "),is(StringUtils.EMPTY));
-        assertThat(StringUtils.trimToEmpty(" foo"),is("foo"));
-        assertThat(StringUtils.trimToEmpty(" foo "),is("foo"));
-        assertThat(StringUtils.trimToEmpty("          foo            "),is("foo"));
-        assertThat(StringUtils.trimToEmpty(null),is(StringUtils.EMPTY));
-        assertThat(StringUtils.trimToEmpty(""),is(StringUtils.EMPTY));
+    public void testTrimToEmpty() {
+        assertThat(StringUtils.trimToEmpty("foo "), is("foo"));
+        assertThat(StringUtils.trimToEmpty(" "), is(StringUtils.EMPTY));
+        assertThat(StringUtils.trimToEmpty("           "), is(StringUtils.EMPTY));
+        assertThat(StringUtils.trimToEmpty(" foo"), is("foo"));
+        assertThat(StringUtils.trimToEmpty(" foo "), is("foo"));
+        assertThat(StringUtils.trimToEmpty("          foo            "), is("foo"));
+        assertThat(StringUtils.trimToEmpty(null), is(StringUtils.EMPTY));
+        assertThat(StringUtils.trimToEmpty(""), is(StringUtils.EMPTY));
     }
 
     @Test
-    public void testCharAt(){
+    public void testCharAt() {
         String value = "foo";
-        assertThat(StringUtils.charAt(0, value),is('f'));
-        assertThat(StringUtils.charAt(1, value),is('o'));
-        assertThat(StringUtils.charAt(3, value),is(Character.MIN_VALUE));
-        assertThat(StringUtils.charAt(-1, value),is(Character.MIN_VALUE));
-        assertThat(StringUtils.charAt(0, null),is(Character.MIN_VALUE));
+        assertThat(StringUtils.charAt(0, value), is('f'));
+        assertThat(StringUtils.charAt(1, value), is('o'));
+        assertThat(StringUtils.charAt(3, value), is(Character.MIN_VALUE));
+        assertThat(StringUtils.charAt(-1, value), is(Character.MIN_VALUE));
+        assertThat(StringUtils.charAt(0, null), is(Character.MIN_VALUE));
     }
-        
 }

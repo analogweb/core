@@ -26,5 +26,4 @@ public interface RequestPathMetadata {
      * @return {@code true} - if matched {@link RequestPath}
      */
     boolean match(RequestPath requestPath);
-
 }

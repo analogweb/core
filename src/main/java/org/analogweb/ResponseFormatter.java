@@ -17,7 +17,6 @@ public interface ResponseFormatter extends MultiModule {
      * @param source フォーマットを行うオブジェクト
      * @return {@link ResponseEntity}
      */
-	ResponseEntity formatAndWriteInto(RequestContext request,
-			ResponseContext response, String charset, Object source);
-
+    ResponseEntity formatAndWriteInto(RequestContext request, ResponseContext response,
+            String charset, Object source);
 }

@@ -16,5 +16,4 @@ public interface ApplicationContext {
      * @return コンテキストによって保持されているオブジェクト
      */
     <T> T getAttribute(Class<T> requiredType, String contextKey);
-
 }

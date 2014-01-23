@@ -35,5 +35,4 @@ public class RequestCookiesTest {
         actual = cookies.getCookie("someID");
         assertThat(actual, is(nullValue()));
     }
-
 }

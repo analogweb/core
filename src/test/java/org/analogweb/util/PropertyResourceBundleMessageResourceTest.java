@@ -95,5 +95,4 @@ public class PropertyResourceBundleMessageResourceTest {
         System.out.println(String.format("get [%s] messages on [%s] ms.", i, end - start));
         assertThat(actual, is("baa"));
     }
-
 }

@@ -17,11 +17,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-
 public class DefaultApplicationPropertiesTest {
 
     private DefaultApplicationProperties properties;
-    
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     @Rule
@@ -47,7 +45,7 @@ public class DefaultApplicationPropertiesTest {
         String locale = "en-us";
         String tempDirectoryPath = dir.getPath();
         properties = new DefaultApplicationProperties(packageNames, applicationSpecifier,
-                tempDirectoryPath,locale);
+                tempDirectoryPath, locale);
         Collection<String> actualPackageNames = properties.getComponentPackageNames();
         assertThat(actualPackageNames.size(), is(2));
         assertThat(actualPackageNames.containsAll(Arrays.asList("foo.baa", "baz.boo")), is(true));
@@ -55,7 +53,7 @@ public class DefaultApplicationPropertiesTest {
                 properties.getTempDir().getPath(),
                 is(new File(dir.getPath() + SystemProperties.fileSeparator()
                         + Application.class.getCanonicalName()).getPath()));
-        assertThat(properties.getDefaultClientLocale(),is(Locale.US));
+        assertThat(properties.getDefaultClientLocale(), is(Locale.US));
     }
 
     @Test
@@ -66,8 +64,8 @@ public class DefaultApplicationPropertiesTest {
         String tempDirectoryPath = dir.getPath();
         String locale = "";
         properties = new DefaultApplicationProperties(packageNames, applicationSpecifier,
-                tempDirectoryPath,locale);
+                tempDirectoryPath, locale);
         assertThat(properties.getComponentPackageNames().isEmpty(), is(true));
-        assertThat(properties.getDefaultClientLocale(),is(Locale.getDefault()));
+        assertThat(properties.getDefaultClientLocale(), is(Locale.getDefault()));
     }
 }

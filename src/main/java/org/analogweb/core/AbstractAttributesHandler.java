@@ -27,5 +27,4 @@ public abstract class AbstractAttributesHandler implements AttributesHandler {
     public void removeAttribute(RequestContext requestContext, String query) {
         // nop
     }
-
 }

@@ -60,5 +60,4 @@ public class FileClassCollector extends AbstractClassCollector {
         }
         return classes;
     }
-
 }

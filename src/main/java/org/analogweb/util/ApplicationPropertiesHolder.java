@@ -41,5 +41,4 @@ public final class ApplicationPropertiesHolder {
     public static void dispose(Application app) {
         properties = null;
     }
-
 }

@@ -12,5 +12,4 @@ public final class Assertion {
             throw new AssertionFailureException(name);
         }
     }
-
 }

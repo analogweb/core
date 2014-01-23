@@ -30,5 +30,4 @@ public class MarkersTest extends Markers {
         thrown.expect(AssertionFailureException.class);
         SimpleMarker.valueOf(null);
     }
-
 }

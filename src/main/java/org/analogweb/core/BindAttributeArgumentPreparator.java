@@ -25,7 +25,8 @@ public class BindAttributeArgumentPreparator extends AbstractApplicationProcesso
             RequestValueResolvers resolvers) {
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
-        if(method == null || ArrayUtils.isEmpty(parameterAnnotations) || ArrayUtils.isEmpty(argTypes)){
+        if (method == null || ArrayUtils.isEmpty(parameterAnnotations)
+                || ArrayUtils.isEmpty(argTypes)) {
             return NO_INTERRUPTION;
         }
         for (int index = 0, limit = argTypes.length; index < limit; index++) {

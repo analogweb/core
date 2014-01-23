@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD,ElementType.TYPE })
+@Target({ ElementType.METHOD, ElementType.TYPE })
 public @interface RequestFormats {
 
     /**
@@ -27,5 +27,4 @@ public @interface RequestFormats {
      * @return リクエストを受け付ける全てのフォーマット（メディアタイプを表す文字列）
      */
     String[] value() default {};
-
 }

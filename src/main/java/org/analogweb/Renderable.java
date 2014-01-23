@@ -19,6 +19,6 @@ public interface Renderable {
      * @throws IOException レスポンスへのレンダリング時にI/Oエラーが発生した場合。
      * @throws WebApplicationException レスポンスへのレンダリング時に任意の例外が発生した場合。
      */
-    void render(RequestContext context,ResponseContext response) throws IOException, WebApplicationException;
-
+    void render(RequestContext context, ResponseContext response) throws IOException,
+            WebApplicationException;
 }

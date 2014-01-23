@@ -100,7 +100,6 @@ public class ArrayUtilsTest {
     public void testAddToArray() {
         String[] expected = { "a", "b", "c", "d" };
         String[] actual = ArrayUtils.add(String.class, "d", "a", "b", "c");
-
         assertArrayEquals(actual, expected);
     }
 
@@ -110,7 +109,6 @@ public class ArrayUtilsTest {
         String[] actual = ArrayUtils.add(String.class, "d", "a", "b", "c");
         actual = ArrayUtils.add(String.class, "e", actual);
         actual = ArrayUtils.add(String.class, "f", actual);
-
         assertArrayEquals(actual, expected);
     }
 
@@ -118,7 +116,6 @@ public class ArrayUtilsTest {
     public void testAddNullToArray() {
         String[] expected = { "a", "b", "c", null };
         String[] actual = ArrayUtils.add(String.class, null, "a", "b", "c");
-
         assertArrayEquals(actual, expected);
     }
 }

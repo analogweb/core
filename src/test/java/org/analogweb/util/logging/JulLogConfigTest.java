@@ -33,7 +33,6 @@ public class JulLogConfigTest extends JulLogConfig {
     public void testConfigure() {
         config.configure(Thread.currentThread().getContextClassLoader());
         Logger actual = config.createLogger(getClass().getCanonicalName());
-
         // assert default configuration.
         assertThat(actual.getLevel(), is(Level.INFO));
         assertThat(actual.getHandlers().length, is(1));
@@ -42,5 +41,4 @@ public class JulLogConfigTest extends JulLogConfig {
         assertThat(handler.getLevel(), is(Level.INFO));
         assertThat(JulLogFormatter.class.isInstance(handler.getFormatter()), is(true));
     }
-
 }

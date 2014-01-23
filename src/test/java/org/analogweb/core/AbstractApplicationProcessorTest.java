@@ -34,7 +34,6 @@ public class AbstractApplicationProcessorTest {
     private RequestContext context;
     private ResponseContext response;
     private TypeMapperContext converters;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -76,9 +75,9 @@ public class AbstractApplicationProcessorTest {
         final Throwable th = new Throwable();
         final Object[] messages = { "action invocation failure." };
         InvocationFailureException ex = new InvocationFailureException(th, metadata, messages);
-
         thrown.expect(is(sameInstance(ex)));
         thrown.expect(new NoDescribeMatcher<InvocationFailureException>() {
+
             @Override
             public boolean matches(Object arg0) {
                 if (arg0 instanceof InvocationFailureException) {
@@ -91,7 +90,6 @@ public class AbstractApplicationProcessorTest {
                 return false;
             }
         });
-
         processor.processException(ex, context, args, metadata);
     }
 
@@ -101,9 +99,9 @@ public class AbstractApplicationProcessorTest {
         final InvocationTargetException th = new InvocationTargetException(cause);
         final Object[] messages = { "action invocation failure." };
         InvocationFailureException ex = new InvocationFailureException(th, metadata, messages);
-
         thrown.expect(is(sameInstance(ex)));
         thrown.expect(new NoDescribeMatcher<InvocationFailureException>() {
+
             @Override
             public boolean matches(Object arg0) {
                 if (arg0 instanceof InvocationFailureException) {
@@ -116,16 +114,13 @@ public class AbstractApplicationProcessorTest {
                 return false;
             }
         });
-
         processor.processException(ex, context, args, metadata);
     }
 
     @Test
     public void testProcessExceptionWithAnotherException() {
         Exception ex = new Exception();
-
         Object actual = processor.processException(ex, context, args, metadata);
         assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
     }
-
 }

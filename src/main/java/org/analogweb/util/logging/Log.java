@@ -111,5 +111,4 @@ public interface Log {
     boolean isErrorEnabled();
 
     boolean isErrorEnabled(Marker marker);
-
 }

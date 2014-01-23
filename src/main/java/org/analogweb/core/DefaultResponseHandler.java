@@ -26,7 +26,5 @@ public class DefaultResponseHandler implements ResponseHandler {
         } catch (Exception e) {
             throw new ResponseEvaluationException(e, result);
         }
-
     }
-
 }

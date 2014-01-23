@@ -1,10 +1,8 @@
 package org.analogweb.core;
 
-
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.util.ArrayUtils;
-
 
 /**
  * {@link InvocationMetadata}の既定の実装です。
@@ -50,5 +48,4 @@ public class DefaultInvocationMetadata implements InvocationMetadata {
     public String toString() {
         return String.format(super.toString() + " on %s", getDefinedPath().toString());
     }
-
 }

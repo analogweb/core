@@ -24,5 +24,4 @@ public interface InvocationMetadataFactory extends MultiModule {
      * @return {@link InvocationMetadata}
      */
     Collection<InvocationMetadata> createInvocationMetadatas(Class<?> clazz);
-
 }

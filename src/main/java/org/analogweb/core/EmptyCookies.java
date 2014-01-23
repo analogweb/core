@@ -22,5 +22,4 @@ public class EmptyCookies implements Cookies {
     public void putCookie(String name, Object value) {
         // nop.
     }
-
 }

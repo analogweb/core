@@ -5,9 +5,9 @@ package org.analogweb;
  * @author snowgoose
  */
 public interface MultiModule extends Module {
-    
+
     interface Filter {
+
         <T extends MultiModule> boolean isAppreciable(T aMultiModule);
     }
-
 }

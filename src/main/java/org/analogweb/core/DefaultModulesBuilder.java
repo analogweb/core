@@ -272,8 +272,8 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         };
     }
 
-    protected ContainerAdaptor createModuleContainerAdaptor(
-            final ApplicationContext resolver, final ContainerAdaptor defaultContainer) {
+    protected ContainerAdaptor createModuleContainerAdaptor(final ApplicationContext resolver,
+            final ContainerAdaptor defaultContainer) {
         if (getModulesProviderClass().equals(StaticMappingContainerAdaptorFactory.class)) {
             return defaultContainer;
         } else {

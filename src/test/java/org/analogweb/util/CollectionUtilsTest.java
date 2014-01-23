@@ -30,10 +30,10 @@ public class CollectionUtilsTest {
     }
 
     @Test
-    public void testIndexOf(){
-    	assertThat(CollectionUtils.indexOf(Arrays.asList("a","b","c"), 1),is("b"));
-    	assertThat(CollectionUtils.indexOf(Arrays.asList("a","b","c"), 3),is(nullValue()));
-    	assertThat(CollectionUtils.indexOf(Arrays.asList("a","b","c"), -1),is(nullValue()));
-    	assertThat(CollectionUtils.indexOf(Arrays.asList("a","b","c"), 3, "d"),is("d"));
+    public void testIndexOf() {
+        assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), 1), is("b"));
+        assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), 3), is(nullValue()));
+        assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), -1), is(nullValue()));
+        assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), 3, "d"), is("d"));
     }
 }

@@ -22,7 +22,5 @@ public class HtmlTest {
         RequestContext context = mock(RequestContext.class);
         ResponseContext response = mock(ResponseContext.class);
         html.render(context, response);
-
     }
-
 }

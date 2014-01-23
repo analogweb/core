@@ -10,9 +10,7 @@ public class SingletonInstanceContainerAdaptorFactory implements
         ContainerAdaptorFactory<SingletonInstanceContainerAdaptor> {
 
     @Override
-    public SingletonInstanceContainerAdaptor createContainerAdaptor(
-            ApplicationContext resolver) {
+    public SingletonInstanceContainerAdaptor createContainerAdaptor(ApplicationContext resolver) {
         return new SingletonInstanceContainerAdaptor();
     }
-
 }

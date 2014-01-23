@@ -18,5 +18,4 @@ public class StaticMappingContainerAdaptorFactory implements
         }
         return adaptor;
     }
-
 }

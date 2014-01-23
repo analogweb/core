@@ -14,5 +14,4 @@ public interface PreparedInvocationArguments {
      * @return パラメータのリスト
      */
     List<Object> asList();
-
 }

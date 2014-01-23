@@ -39,15 +39,12 @@ public class ResourceUtilsTest {
 
     @Test
     public void testFindURLViaFile() throws Exception {
-
         File tempFile = folder.newFile("hellow.log");
         OutputStream out = new FileOutputStream(tempFile);
         out.write("hello!".getBytes());
         out.flush();
         out.close();
-
         URL url = ResourceUtils.findResource(tempFile.getCanonicalPath());
-
         InputStream in = url.openStream();
         StringBuilder actual = new StringBuilder();
         int c;
@@ -59,29 +56,23 @@ public class ResourceUtilsTest {
 
     @Test
     public void testFindURLViaFileIsNotExists() throws Exception {
-
         File tempFile = folder.newFile("hellow.log");
         OutputStream out = new FileOutputStream(tempFile);
         out.write("hello!".getBytes());
         out.flush();
         out.close();
-
         URL url = ResourceUtils.findResource(tempFile.getCanonicalPath() + ".noexists");
-
         assertNull(url);
     }
 
     @Test
     public void testFindURLNoRootFileResource() throws Exception {
-
         File noRootTestFileResource = folder.newFile("noRoot.log");
         OutputStream out = new FileOutputStream(noRootTestFileResource);
         out.write("hello!".getBytes());
         out.flush();
         out.close();
-
         URL url = ResourceUtils.findResource(noRootTestFileResource.getPath());
-
         InputStream in = url.openStream();
         StringBuilder actual = new StringBuilder();
         int c;
@@ -93,7 +84,6 @@ public class ResourceUtilsTest {
 
     @Test
     public void testFindURLViaHttp() throws Exception {
-
         try {
             assumeThat(
                     ((HttpURLConnection) new URL("http://example.com/").openConnection())
@@ -102,11 +92,8 @@ public class ResourceUtilsTest {
         } catch (UnknownHostException e) {
             assumeNoException(e);
         }
-
         URL url = ResourceUtils.findResource("http://example.com/");
-
         assertNotNull(url);
-
         InputStream in = url.openStream();
         StringBuilder actual = new StringBuilder();
         int c;
@@ -118,18 +105,13 @@ public class ResourceUtilsTest {
 
     @Test
     public void testFindURLInvalidScheme() throws Exception {
-
         URL url = ResourceUtils.findResource("invalid://example.com/invalid://root");
-
         assertNull(url);
-
     }
 
     @Test
     public void testFindURLArgIsNull() throws Exception {
-
         URL actual = ResourceUtils.findResource(null);
-
         assertNull(actual);
     }
 
@@ -139,5 +121,4 @@ public class ResourceUtilsTest {
                 .getContextClassLoader());
         assertThat(found.size(), is(2));
     }
-
 }

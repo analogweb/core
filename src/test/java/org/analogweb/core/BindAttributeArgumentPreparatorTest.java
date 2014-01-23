@@ -95,8 +95,8 @@ public class BindAttributeArgumentPreparatorTest {
     @Test
     public void testInclusionScope() {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class };
-        final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doScopeVariable",
-                argumentTypes);
+        final Method method = ReflectionUtils.getMethodQuietly(StubResource.class,
+                "doScopeVariable", argumentTypes);
         AttributesHandler handler = mock(AttributesHandler.class);
         when(handlers.findRequestValueResolver(Foo.class)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);

@@ -27,7 +27,7 @@ public class QueryParameters implements Parameters {
     private final MediaType contentType;
 
     public QueryParameters(URI requestURI) {
-        this(requestURI,null,null);
+        this(requestURI, null, null);
     }
 
     public QueryParameters(URI requestURI, InputStream body, MediaType contentType) {
@@ -49,11 +49,13 @@ public class QueryParameters implements Parameters {
             return extractEncodedParams(parameterParts, charset, getParameterSeparator());
         } catch (IllegalArgumentException e) {
             throw new ApplicationRuntimeException(e) {
+
                 // TODO
                 private static final long serialVersionUID = 1L;
             };
         } catch (IOException e) {
             throw new ApplicationRuntimeException(e) {
+
                 // TODO
                 private static final long serialVersionUID = 1L;
             };

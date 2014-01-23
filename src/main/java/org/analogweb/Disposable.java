@@ -5,10 +5,9 @@ package org.analogweb;
  * @author snowgoose
  */
 public interface Disposable {
-    
+
     /**
      * 内部的な状態やリソースを全て破棄します。
      */
     void dispose();
-
 }

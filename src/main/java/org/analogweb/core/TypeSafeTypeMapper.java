@@ -23,5 +23,4 @@ public abstract class TypeSafeTypeMapper<F, T> implements TypeMapper {
      * @return 変換された型の新しいインスタンス
      */
     public abstract T mapToTypeInternal(F from, Class<T> requiredType, String[] formats);
-
 }

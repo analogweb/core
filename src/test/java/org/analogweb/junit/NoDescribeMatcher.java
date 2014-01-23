@@ -12,5 +12,4 @@ public abstract class NoDescribeMatcher<T> extends BaseMatcher<T> {
     public void describeTo(Description arg0) {
         // nop.
     }
-
 }

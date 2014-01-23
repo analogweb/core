@@ -4,10 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.util.Maps;
-
 
 /**
  * @author snowgoose
@@ -40,5 +38,4 @@ public class SingletonInstanceContainerAdaptor implements ContainerAdaptor {
     public <T> T getInstanceOfId(String id) {
         throw new UnsupportedOperationException();
     }
-
 }

@@ -16,13 +16,13 @@ import org.junit.Test;
 public class AbstractAttributesHandlerTest {
 
     private AbstractAttributesHandler handler;
-
     private RequestContext requestContext;
     private InvocationMetadata metadata;
 
     @Before
     public void setUp() throws Exception {
-        handler = new AbstractAttributesHandler() {};
+        handler = new AbstractAttributesHandler() {
+        };
         requestContext = mock(RequestContext.class);
         metadata = mock(InvocationMetadata.class);
     }
@@ -34,5 +34,4 @@ public class AbstractAttributesHandlerTest {
         handler.putAttributeValue(requestContext, "foo", new Object());
         handler.removeAttribute(requestContext, "foo");
     }
-
 }

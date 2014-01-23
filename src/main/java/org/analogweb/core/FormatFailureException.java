@@ -16,7 +16,7 @@ public class FormatFailureException extends ApplicationRuntimeException {
      * @param formattingObject フォーマットする対象のインスタンス
      * @param format 変換するフォーマット
      */
-    public FormatFailureException(Throwable cause,Object formattingObject,String format) {
+    public FormatFailureException(Throwable cause, Object formattingObject, String format) {
         super(cause);
         this.format = format;
         this.formattingObject = formattingObject;
@@ -37,5 +37,4 @@ public class FormatFailureException extends ApplicationRuntimeException {
     public Object getFormattingObject() {
         return formattingObject;
     }
-
 }

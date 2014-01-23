@@ -59,35 +59,26 @@ public class LogsTest {
     public void testLevelsLog() throws Exception {
         loadConfig("FINEST");
         log = Logs.getLog(LogsTest.class);
-
         log.trace(SimpleMarker.valueOf("marker"), "trace message!");
         LogRecord actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.FINEST));
         assertThat(actual.getMessage(), is("trace message!"));
-
         StubHandler.clearRecord();
-
         log.debug(SimpleMarker.valueOf("marker"), "debug message!");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.FINE));
         assertThat(actual.getMessage(), is("debug message!"));
-
         StubHandler.clearRecord();
-
         log.info(SimpleMarker.valueOf("marker"), "info message!");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.INFO));
         assertThat(actual.getMessage(), is("info message!"));
-
         StubHandler.clearRecord();
-
         log.warn(SimpleMarker.valueOf("marker"), "warn message!");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.WARNING));
         assertThat(actual.getMessage(), is("warn message!"));
-
         StubHandler.clearRecord();
-
         log.error(SimpleMarker.valueOf("marker"), "error message!");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.SEVERE));
@@ -98,39 +89,30 @@ public class LogsTest {
     public void testLevelsLogWithArgs() throws Exception {
         loadConfig("FINEST");
         log = Logs.getLog(LogsTest.class);
-
         log.trace(SimpleMarker.valueOf("marker"), "log message!", "trace");
         LogRecord actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.FINEST));
         assertThat(actual.getMessage(), is("log message!"));
         assertThat(actual.getParameters()[0].toString(), is("trace"));
-
         StubHandler.clearRecord();
-
         log.debug(SimpleMarker.valueOf("marker"), "log message!", "debug");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.FINE));
         assertThat(actual.getMessage(), is("log message!"));
         assertThat(actual.getParameters()[0].toString(), is("debug"));
-
         StubHandler.clearRecord();
-
         log.info(SimpleMarker.valueOf("marker"), "log message!", "info");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.INFO));
         assertThat(actual.getMessage(), is("log message!"));
         assertThat(actual.getParameters()[0].toString(), is("info"));
-
         StubHandler.clearRecord();
-
         log.warn(SimpleMarker.valueOf("marker"), "log message!", "warn");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.WARNING));
         assertThat(actual.getMessage(), is("log message!"));
         assertThat(actual.getParameters()[0].toString(), is("warn"));
-
         StubHandler.clearRecord();
-
         log.error(SimpleMarker.valueOf("marker"), "log message!", "error");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.SEVERE));
@@ -142,35 +124,26 @@ public class LogsTest {
     public void testLog() throws Exception {
         loadConfig("FINEST");
         log = Logs.getLog(LogsTest.class);
-
         log.log("T001");
         LogRecord actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.FINEST));
         assertThat(actual.getMessage(), is("T001"));
-
         StubHandler.clearRecord();
-
         log.log("D001");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.FINE));
         assertThat(actual.getMessage(), is("D001"));
-
         StubHandler.clearRecord();
-
         log.log("I001");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.INFO));
         assertThat(actual.getMessage(), is("I001"));
-
         StubHandler.clearRecord();
-
         log.log("W001");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.WARNING));
         assertThat(actual.getMessage(), is("W001"));
-
         StubHandler.clearRecord();
-
         log.log("E001");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.SEVERE));
@@ -181,34 +154,24 @@ public class LogsTest {
     public void testLogUntilWarnDisabled() throws Exception {
         loadConfig("WARNING");
         log = Logs.getLog(LogsTest.class);
-
         StubHandler.clearRecord();
-
         log.log("T001");
         LogRecord actual = StubHandler.actualRecord();
         assertNull(actual);
-
         StubHandler.clearRecord();
-
         log.log("D001");
         actual = StubHandler.actualRecord();
         assertNull(actual);
-
         StubHandler.clearRecord();
-
         log.log("I001");
         actual = StubHandler.actualRecord();
         assertNull(actual);
-
         StubHandler.clearRecord();
-
         log.log("W001");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.WARNING));
         assertThat(actual.getMessage(), is("W001"));
-
         StubHandler.clearRecord();
-
         log.log("E001");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.SEVERE));
@@ -219,33 +182,23 @@ public class LogsTest {
     public void testLogUntilAllDisabled() throws Exception {
         loadConfig("OFF");
         log = Logs.getLog(LogsTest.class);
-
         StubHandler.clearRecord();
-
         log.log("T001");
         LogRecord actual = StubHandler.actualRecord();
         assertNull(actual);
-
         StubHandler.clearRecord();
-
         log.log("D001");
         actual = StubHandler.actualRecord();
         assertNull(actual);
-
         StubHandler.clearRecord();
-
         log.log("I001");
         actual = StubHandler.actualRecord();
         assertNull(actual);
-
         StubHandler.clearRecord();
-
         log.log("W001");
         actual = StubHandler.actualRecord();
         assertNull(actual);
-
         StubHandler.clearRecord();
-
         log.log("E001");
         actual = StubHandler.actualRecord();
         assertNull(actual);
@@ -256,39 +209,30 @@ public class LogsTest {
         Throwable th = new IllegalStateException();
         loadConfig("FINEST");
         log = Logs.getLog(LogsTest.class);
-
         log.log(SimpleMarker.valueOf("marker"), "T001", th);
         LogRecord actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.FINEST));
         assertThat(actual.getMessage(), is("T001"));
         assertThat(actual.getThrown(), is(th));
-
         StubHandler.clearRecord();
-
         log.log("D001", th, "debug!");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.FINE));
         assertThat(actual.getMessage(), is("D001"));
         assertThat(actual.getThrown(), is(th));
-
         StubHandler.clearRecord();
-
         log.log("I001", th);
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.INFO));
         assertThat(actual.getMessage(), is("I001"));
         assertThat(actual.getThrown(), is(th));
-
         StubHandler.clearRecord();
-
         log.log(SimpleMarker.valueOf("marker"), "W001", th, "warn!");
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.WARNING));
         assertThat(actual.getMessage(), is("W001"));
         assertThat(actual.getThrown(), is(th));
-
         StubHandler.clearRecord();
-
         log.log(SimpleMarker.valueOf("marker"), "E001", th);
         actual = StubHandler.actualRecord();
         assertThat(actual.getLevel(), is(Level.SEVERE));
@@ -353,12 +297,14 @@ public class LogsTest {
     }
 
     public static class NoInstanticatableLogImpl extends StubLogImpl {
+
         public NoInstanticatableLogImpl() {
             super("", null);
         }
     }
 
     public static class FailInstanticatableLogImpl extends StubLogImpl {
+
         public FailInstanticatableLogImpl(String name, ClassLoader l) {
             super(name, l);
             throw new RuntimeException();
@@ -613,7 +559,6 @@ public class LogsTest {
                 Object... args) {
             // nop.
         }
-
     }
 
     public static final class StubHandler extends Handler {
@@ -640,7 +585,6 @@ public class LogsTest {
         static void clearRecord() {
             publishedRecord = null;
         }
-
     }
 
     public static final class NoConstractorLogImpl extends AbstractLog {
@@ -891,7 +835,5 @@ public class LogsTest {
                 Object... args) {
             // nop.
         }
-
     }
-
 }

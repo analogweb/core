@@ -6,12 +6,11 @@ package org.analogweb;
  * @author snowgoose
  */
 public interface ResponseFormatterAware<T extends Renderable> extends Renderable {
-    
+
     /**
      * {@link ResponseFormatter}を適用します。
      * @param formatter {@link ResponseFormatter}
      * @return フォーマッタが適用された{@link Renderable}の自身のインスタンス
      */
     T attach(ResponseFormatter formatter);
-
 }

@@ -14,7 +14,6 @@ public interface Invoker extends Module {
      * @param response {@link ResponseContext}
      * @return エントリポイントとなるメソッド(通常は{@link Invocation})の実行結果
      */
-	Object invoke(Invocation invocation, InvocationMetadata metadata,
-			RequestContext request, ResponseContext response);
-
+    Object invoke(Invocation invocation, InvocationMetadata metadata, RequestContext request,
+            ResponseContext response);
 }

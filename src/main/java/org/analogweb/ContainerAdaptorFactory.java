@@ -13,5 +13,4 @@ public interface ContainerAdaptorFactory<T extends ContainerAdaptor> extends Mod
      * @return 新しい{@link ContainerAdaptor}のインスタンス。
      */
     T createContainerAdaptor(ApplicationContext resolver);
-
 }

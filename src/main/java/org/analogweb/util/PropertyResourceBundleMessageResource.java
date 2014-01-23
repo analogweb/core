@@ -115,6 +115,7 @@ public class PropertyResourceBundleMessageResource implements MessageResource {
     }
 
     protected static final class MessageFormatKey implements Serializable {
+
         private static final long serialVersionUID = 1L;
         private final Locale locale;
         private final String format;
@@ -167,7 +168,6 @@ public class PropertyResourceBundleMessageResource implements MessageResource {
                 try {
                     Class<? extends ResourceBundle> bundleClass = (Class<? extends ResourceBundle>) loader
                             .loadClass(bundleName);
-
                     // If the class isn't a ResourceBundle subclass, throw a
                     // ClassCastException.
                     if (ResourceBundle.class.isAssignableFrom(bundleClass)) {
@@ -187,6 +187,7 @@ public class PropertyResourceBundleMessageResource implements MessageResource {
                 try {
                     stream = AccessController
                             .doPrivileged(new PrivilegedExceptionAction<InputStream>() {
+
                                 public InputStream run() throws IOException {
                                     InputStream is = null;
                                     if (reloadFlag) {

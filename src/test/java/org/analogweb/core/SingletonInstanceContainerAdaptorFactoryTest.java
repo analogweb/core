@@ -28,5 +28,4 @@ public class SingletonInstanceContainerAdaptorFactoryTest {
         SingletonInstanceContainerAdaptor otherAdaptor = factory.createContainerAdaptor(resolver);
         assertNotSame(adaptor, otherAdaptor);
     }
-
 }

@@ -13,7 +13,6 @@ import org.junit.Test;
 public class StaticMappingContainerAdaptorFactoryTest {
 
     private StaticMappingContainerAdaptorFactory factory;
-
     private ApplicationContext resolver;
 
     @Before
@@ -28,5 +27,4 @@ public class StaticMappingContainerAdaptorFactoryTest {
         StaticMappingContainerAdaptor adaptor2 = factory.createContainerAdaptor(resolver);
         assertSame(adaptor, adaptor2);
     }
-
 }

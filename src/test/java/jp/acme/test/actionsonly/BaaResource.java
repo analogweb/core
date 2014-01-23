@@ -13,5 +13,4 @@ public class BaaResource {
     public String notAction() {
         return "no!";
     }
-
 }

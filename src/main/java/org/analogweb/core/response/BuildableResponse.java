@@ -35,5 +35,4 @@ public abstract class BuildableResponse<T extends Renderable> extends DefaultRes
         super.setResponseEntity(entity);
         return (T) this;
     }
-
 }

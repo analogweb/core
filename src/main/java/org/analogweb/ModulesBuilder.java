@@ -7,64 +7,57 @@ package org.analogweb;
  */
 public interface ModulesBuilder {
 
-	Modules buildModules(ApplicationContext resolver,
-			ContainerAdaptor defaultContainer);
+    Modules buildModules(ApplicationContext resolver, ContainerAdaptor defaultContainer);
 
-	ModulesBuilder setModulesProviderClass(
-			Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> modulesProviderClass);
+    ModulesBuilder setModulesProviderClass(
+            Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> modulesProviderClass);
 
-	ModulesBuilder setInvocationInstanceProviderClass(
-			Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> invocationInstanceProviderClass);
+    ModulesBuilder setInvocationInstanceProviderClass(
+            Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> invocationInstanceProviderClass);
 
-	ModulesBuilder setInvocationFactoryClass(
-			Class<? extends InvocationFactory> invocationFactoryClass);
+    ModulesBuilder setInvocationFactoryClass(
+            Class<? extends InvocationFactory> invocationFactoryClass);
 
-	ModulesBuilder setInvokerFactoryClass(
-			Class<? extends InvokerFactory> invokerFactoryClass);
+    ModulesBuilder setInvokerFactoryClass(Class<? extends InvokerFactory> invokerFactoryClass);
 
-	ModulesBuilder setResponseResolverClass(
-			Class<? extends ResponseResolver> responseResolverClass);
+    ModulesBuilder setResponseResolverClass(Class<? extends ResponseResolver> responseResolverClass);
 
-	ModulesBuilder setExceptionHandlerClass(
-			Class<? extends ExceptionHandler> exceptionHandlerClass);
+    ModulesBuilder setExceptionHandlerClass(Class<? extends ExceptionHandler> exceptionHandlerClass);
 
-	ModulesBuilder setResponseHandlerClass(
-			Class<? extends ResponseHandler> responseHandlerClass);
+    ModulesBuilder setResponseHandlerClass(Class<? extends ResponseHandler> responseHandlerClass);
 
-	ModulesBuilder setTypeMapperContextClass(
-			Class<? extends TypeMapperContext> typeMapperContextClass);
+    ModulesBuilder setTypeMapperContextClass(
+            Class<? extends TypeMapperContext> typeMapperContextClass);
 
-	ModulesBuilder addInvocationMetadataFactoriesClass(
-			Class<? extends InvocationMetadataFactory> invocationMetadataFactoryClass);
+    ModulesBuilder addInvocationMetadataFactoriesClass(
+            Class<? extends InvocationMetadataFactory> invocationMetadataFactoryClass);
 
-	ModulesBuilder clearInvocationMetadataFactoriesClass();
+    ModulesBuilder clearInvocationMetadataFactoriesClass();
 
-	ModulesBuilder addApplicationProcessorClass(
-			Class<? extends ApplicationProcessor> applicationProcessorClass);
+    ModulesBuilder addApplicationProcessorClass(
+            Class<? extends ApplicationProcessor> applicationProcessorClass);
 
-	ModulesBuilder addInvocationInterceptorClass(
-			Class<? extends InvocationInterceptor> invocationInterceptorClass);
+    ModulesBuilder addInvocationInterceptorClass(
+            Class<? extends InvocationInterceptor> invocationInterceptorClass);
 
-	ModulesBuilder clearApplicationProcessorClass();
+    ModulesBuilder clearApplicationProcessorClass();
 
-	ModulesBuilder addAttributesHandlerClass(
-			Class<? extends AttributesHandler> attributesHandlerClass);
+    ModulesBuilder addAttributesHandlerClass(
+            Class<? extends AttributesHandler> attributesHandlerClass);
 
-	ModulesBuilder clearAttributesHanderClass();
+    ModulesBuilder clearAttributesHanderClass();
 
-	ModulesBuilder addRequestValueResolverClass(
-			Class<? extends RequestValueResolver> requestValueResolverClass);
+    ModulesBuilder addRequestValueResolverClass(
+            Class<? extends RequestValueResolver> requestValueResolverClass);
 
-	ModulesBuilder clearRequestValueResolverClass();
+    ModulesBuilder clearRequestValueResolverClass();
 
-	ModulesBuilder addResponseFormatterClass(
-			Class<? extends Renderable> mapToResponseClass,
-			Class<? extends ResponseFormatter> responseFormatterClass);
+    ModulesBuilder addResponseFormatterClass(Class<? extends Renderable> mapToResponseClass,
+            Class<? extends ResponseFormatter> responseFormatterClass);
 
-	ModulesBuilder clearDirectionFormatterClass();
+    ModulesBuilder clearDirectionFormatterClass();
 
-	ModulesBuilder ignore(Class<? extends MultiModule> multiModuleClass);
+    ModulesBuilder ignore(Class<? extends MultiModule> multiModuleClass);
 
-	ModulesBuilder filter(MultiModule.Filter multiModuleFilter);
-
+    ModulesBuilder filter(MultiModule.Filter multiModuleFilter);
 }

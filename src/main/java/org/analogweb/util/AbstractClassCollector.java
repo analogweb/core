@@ -13,5 +13,4 @@ public abstract class AbstractClassCollector implements ClassCollector {
     public Collection<Class<?>> collect(URL source, ClassLoader classLoader) {
         return collect(StringUtils.EMPTY, source, classLoader);
     }
-
 }

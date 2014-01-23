@@ -19,5 +19,4 @@ public class Text extends TextFormat<Text> {
     public static Text with(final String responseText) {
         return new Text(responseText);
     }
-
 }

@@ -38,5 +38,4 @@ public interface MessageResource {
      * @return メッセージキーに一致するメッセージ
      */
     String getMessage(String key, Locale locale, Object... args);
-
 }

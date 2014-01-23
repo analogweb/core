@@ -43,7 +43,6 @@ public class IOUtilsTest {
     public void testCloseQuierlyWithoutResource() throws IOException {
         Closeable closeable = null;
         IOUtils.closeQuietly(closeable);
-
     }
 
     @Test
@@ -66,6 +65,7 @@ public class IOUtilsTest {
     public void testCopyQuietlyOnException() throws Exception {
         InputStream in = new ByteArrayInputStream("this is test!".getBytes());
         ByteArrayOutputStream out = new ByteArrayOutputStream() {
+
             @Override
             public void flush() throws IOException {
                 write(" with exception!".getBytes());
@@ -81,6 +81,7 @@ public class IOUtilsTest {
         thrown.expect(IOException.class);
         InputStream in = new ByteArrayInputStream("this is test!".getBytes());
         ByteArrayOutputStream out = new ByteArrayOutputStream() {
+
             @Override
             public void flush() throws IOException {
                 write(" with exception!".getBytes());
@@ -97,5 +98,4 @@ public class IOUtilsTest {
         String actual = IOUtils.toString(new InputStreamReader(in));
         assertThat(actual, is(expected));
     }
-
 }

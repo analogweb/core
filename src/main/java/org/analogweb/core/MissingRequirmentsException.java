@@ -16,5 +16,4 @@ public class MissingRequirmentsException extends UnresolvableResultException {
     public String getRequirment() {
         return this.requirment;
     }
-
 }

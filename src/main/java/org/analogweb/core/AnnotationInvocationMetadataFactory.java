@@ -31,8 +31,7 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
         Method[] methods = ReflectionUtils.getMethods(invocationClass);
         List<InvocationMetadata> metadatas = new ArrayList<InvocationMetadata>();
         for (Method method : methods) {
-            InvocationMetadata metadata = createInvocationMetadata(
-                    invocationClass, method);
+            InvocationMetadata metadata = createInvocationMetadata(invocationClass, method);
             if (metadata != null) {
                 metadatas.add(metadata);
             }
@@ -40,8 +39,7 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
         return metadatas;
     }
 
-    InvocationMetadata createInvocationMetadata(Class<?> invocationClass,
-            Method invocationMethod) {
+    InvocationMetadata createInvocationMetadata(Class<?> invocationClass, Method invocationMethod) {
         Route typePathMapping = AnnotationUtils.findAnnotation(Route.class, invocationClass);
         Route methodPathMapping = invocationMethod.getAnnotation(Route.class);
         if (typePathMapping != null && methodPathMapping != null) {

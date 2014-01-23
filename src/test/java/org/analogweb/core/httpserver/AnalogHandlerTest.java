@@ -39,11 +39,9 @@ import com.sun.net.httpserver.Headers;
 public class AnalogHandlerTest {
 
     private AnalogHandler handler;
-
     private Application app;
     private ApplicationContext resolver;
     private ApplicationProperties props;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -54,9 +52,9 @@ public class AnalogHandlerTest {
         props = mock(ApplicationProperties.class);
         handler = new AnalogHandler(app, resolver, props);
     }
-    
+
     @After
-    public void tearDown(){
+    public void tearDown() {
         ApplicationPropertiesHolder.dispose(app);
     }
 
@@ -65,21 +63,15 @@ public class AnalogHandlerTest {
     public void testRun() {
         doNothing().when(app).run(eq(resolver), eq(props), isA(Collection.class),
                 isA(ClassLoader.class));
-
         handler.run();
-
         verify(app).run(eq(resolver), eq(props), isA(Collection.class), isA(ClassLoader.class));
     }
 
     @Test
     public void testShutdown() {
-
         handler = new AnalogHandler(app);
-
         doNothing().when(app).dispose();
-
         handler.shutdown();
-
         verify(app).dispose();
     }
 
@@ -95,9 +87,7 @@ public class AnalogHandlerTest {
         when(
                 app.processRequest(isA(RequestPath.class), isA(RequestContext.class),
                         isA(ResponseContext.class))).thenReturn(Application.PROCEEDED);
-
         handler.handle(exc);
-
         assertThat(exc.getSendStatus(), is(HttpURLConnection.HTTP_OK));
         assertThat(exc.getResponseContentLength(), is(0L));
     }
@@ -115,9 +105,7 @@ public class AnalogHandlerTest {
         when(
                 app.processRequest(isA(RequestPath.class), isA(RequestContext.class),
                         isA(ResponseContext.class))).thenReturn(Application.NOT_FOUND);
-
         handler.handle(exc);
-
         assertThat(exc.getSendStatus(), is(HttpURLConnection.HTTP_NOT_FOUND));
         assertThat(exc.getResponseContentLength(), is(-1L));
     }
@@ -127,6 +115,7 @@ public class AnalogHandlerTest {
     public void testHandleWithException() throws Exception {
         final MockHttpExchange exc = new MockHttpExchange();
         thrown.expect(new BaseMatcher<IOException>() {
+
             @Override
             public boolean matches(Object item) {
                 if (item instanceof IOException) {
@@ -141,7 +130,6 @@ public class AnalogHandlerTest {
             public void describeTo(Description description) {
                 description.appendValue(exc);
             }
-
         });
         exc.setRequestURI(URI.create("/context/foo/baa"));
         exc.setLocalAddress(InetSocketAddress.createUnresolved("0.0.0.0", 8080));
@@ -153,8 +141,6 @@ public class AnalogHandlerTest {
         when(
                 app.processRequest(isA(RequestPath.class), isA(RequestContext.class),
                         isA(ResponseContext.class))).thenThrow(InvocationFailureException.class);
-
         handler.handle(exc);
     }
-
 }

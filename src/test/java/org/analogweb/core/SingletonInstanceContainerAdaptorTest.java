@@ -5,7 +5,6 @@ import static org.junit.Assert.assertSame;
 
 import java.util.List;
 
-
 import org.analogweb.core.SingletonInstanceContainerAdaptor;
 import org.junit.Before;
 import org.junit.Rule;
@@ -73,6 +72,7 @@ public class SingletonInstanceContainerAdaptorTest {
     }
 
     public static final class HasntDefaultConstractorCompoent {
+
         @SuppressWarnings("unused")
         private final String foo;
 
@@ -82,8 +82,8 @@ public class SingletonInstanceContainerAdaptorTest {
     }
 
     private static final class DoNotAccessableCompoent {
+
         private DoNotAccessableCompoent() {
         }
     }
-
 }

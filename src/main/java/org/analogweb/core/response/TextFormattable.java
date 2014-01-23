@@ -44,28 +44,27 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
     protected ResponseFormatter getFormatter() {
         return this.formatter;
     }
-    
+
     /**
           * デフォルトの{@link ResponseFormatter}によって特定のフォーマットへのレンダリングを行います。<br/>
           * この{@link ResponseFormatter}は全ての{@link TextFormattable}のインスタンスに適用されます。
      */
     protected abstract ResponseFormatter getDefaultFormatter();
 
-	@Override
-	protected ResponseEntity extractResponseEntity(
-			RequestContext request, ResponseContext response) {
-		Object source = getSource();
-		if (source == null) {
-			return super.extractResponseEntity(request, response);
-		}
-		ResponseFormatter formatter = getFormatter();
-		if(formatter == null){
-			formatter = getDefaultFormatter();
-		}
-		return formatter.formatAndWriteInto(request, response, getCharsetAsText(), source);
-	}
+    @Override
+    protected ResponseEntity extractResponseEntity(RequestContext request, ResponseContext response) {
+        Object source = getSource();
+        if (source == null) {
+            return super.extractResponseEntity(request, response);
+        }
+        ResponseFormatter formatter = getFormatter();
+        if (formatter == null) {
+            formatter = getDefaultFormatter();
+        }
+        return formatter.formatAndWriteInto(request, response, getCharsetAsText(), source);
+    }
 
-	/**
+    /**
      * 指定した{@link ResponseFormatter}によって特定のフォーマットのレンダリングを行います。<br/>
      * 既に{@link ResponseFormatter}が指定されている場合は無視されます。
      * @param formatter {@link ResponseFormatter}
@@ -85,5 +84,4 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
         return String.format("%s with %s", getClass(),
                 (f = getFormatter()) == null ? "default-formatter" : f);
     }
-
 }

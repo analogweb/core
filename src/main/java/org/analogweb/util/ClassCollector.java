@@ -37,5 +37,4 @@ public interface ClassCollector {
      * @return リソースからロード可能な全ての{@link Class}
      */
     Collection<Class<?>> collect(String packageName, URL source, ClassLoader classLoader);
-
 }

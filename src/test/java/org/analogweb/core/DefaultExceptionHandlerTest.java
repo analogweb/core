@@ -49,6 +49,7 @@ public class DefaultExceptionHandlerTest {
     }
 
     public static class SomeException extends ApplicationRuntimeException {
+
         private static final long serialVersionUID = 1L;
     }
 
@@ -71,5 +72,4 @@ public class DefaultExceptionHandlerTest {
             }
         };
     }
-
 }
