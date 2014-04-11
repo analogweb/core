@@ -27,12 +27,6 @@
 	<organization>
 		<name>Analog Web Framework Development Team</name>
 	</organization>
-	<properties>
-		<maven.compiler.target>1.6</maven.compiler.target>
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	</properties>
 	<issueManagement />
 	<ciManagement />
 	<inceptionYear>2012</inceptionYear>
@@ -52,7 +46,7 @@
 	<parent>
 		<groupId>org.analogweb</groupId>
 		<artifactId>analogweb-parent-modules</artifactId>
-		<version>4</version>
+		<version>5</version>
 		<relativePath />
 	</parent>
 	<dependencies>
