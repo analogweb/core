@@ -40,7 +40,7 @@ final class AnnotatedArguments {
             Resolver scope = AnnotationUtils.findAnnotation(Resolver.class, parameterAnnotations);
             RequestValueResolver handler;
             if (scope == null) {
-                handler = handlers.findRequestValueResolver(null);
+                handler = handlers.findDefaultRequestValueResolver();
             } else {
                 handler = handlers.findRequestValueResolver(scope.value());
             }

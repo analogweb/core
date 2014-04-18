@@ -26,6 +26,11 @@ public class DefaultReqestValueResolvers implements RequestValueResolvers {
     }
 
     @Override
+    public RequestValueResolver findDefaultRequestValueResolver() {
+    	return findRequestValueResolver(getDefaultRequestValueResolverClass());
+    }
+
+    @Override
     public RequestValueResolver findRequestValueResolver(
             Class<? extends RequestValueResolver> resolverClass) {
         if (resolverClass == null) {

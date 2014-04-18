@@ -60,7 +60,7 @@ public class BindAttributeArgumentPreparatorTest {
         final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doSomething",
                 argumentTypes);
         AttributesHandler handler = mock(AttributesHandler.class);
-        when(handlers.findRequestValueResolver(null)).thenReturn(handler);
+        when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(handler.resolveValue(context, metadata, "foo", argumentTypes[0])).thenReturn("foo!");
         when(typeMapper.mapToType(TypeMapper.class, "foo!", String.class, new String[0]))
@@ -132,7 +132,7 @@ public class BindAttributeArgumentPreparatorTest {
         final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doWithFormat",
                 argumentTypes);
         AttributesHandler handler = mock(AttributesHandler.class);
-        when(handlers.findRequestValueResolver(null)).thenReturn(handler);
+        when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
         when(handler.resolveValue(context, metadata, "foo", argumentTypes[0]))
                 .thenReturn("100,000");
