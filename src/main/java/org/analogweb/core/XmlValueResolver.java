@@ -10,11 +10,10 @@ import javax.xml.bind.Unmarshaller;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.MediaType;
 import org.analogweb.RequestContext;
-import org.analogweb.TypeMapper;
 
 /**
  * JAXBによる変換により、リクエストされたXMLを任意のオブジェクト
- * のインスタンスに変換する{@link TypeMapper}の実装です。<br/>
+ * のインスタンスに変換する{@link SpecificMediaTypeRequestValueResolver}の実装です。<br/>
  * 変換元の値として、リクエストされたXMLを保持する{@link InputStream}
  * (リクエストボディ)が指定されている必要があります。
  * @author snowgoose
