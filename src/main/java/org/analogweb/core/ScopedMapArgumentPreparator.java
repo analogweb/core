@@ -85,7 +85,7 @@ public class ScopedMapArgumentPreparator extends AbstractApplicationProcessor {
         void extract(RequestContext context, RequestValueResolvers handlers) {
             AttributesHandler handler = handlers.findAttributesHandler(getHandlerClass());
             if (handler != null) {
-                for (Entry<String, ?> entry : entrySet()) {
+                for (java.util.Map.Entry<String, ?> entry : entrySet()) {
                     handler.putAttributeValue(context, entry.getKey(), entry.getValue());
                 }
                 for (String removedKey : removedKeys) {
