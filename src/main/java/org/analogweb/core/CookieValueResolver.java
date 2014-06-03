@@ -1,5 +1,7 @@
 package org.analogweb.core;
 
+import java.lang.annotation.Annotation;
+
 import org.analogweb.Cookies;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
@@ -12,7 +14,7 @@ public class CookieValueResolver implements RequestValueResolver {
 
     @Override
     public Object resolveValue(RequestContext requestContext, InvocationMetadata metadatan,
-            String key, Class<?> requiredType) {
+            String key, Class<?> requiredType,Annotation[] annotations) {
         Cookies cookies = requestContext.getCookies();
         if (cookies != null) {
             Cookies.Cookie cookie = cookies.getCookie(key);

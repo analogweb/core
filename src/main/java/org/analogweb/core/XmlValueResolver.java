@@ -2,6 +2,7 @@ package org.analogweb.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -22,7 +23,7 @@ public class XmlValueResolver implements SpecificMediaTypeRequestValueResolver {
 
     @Override
     public Object resolveValue(RequestContext context, InvocationMetadata metadata, String key,
-            Class<?> requiredType) {
+            Class<?> requiredType,Annotation[] annotations) {
         try {
             return unmershall(createUnmarshaller(requiredType), context.getRequestBody());
         } catch (IOException e) {

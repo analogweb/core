@@ -5,6 +5,8 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.lang.annotation.Annotation;
+
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.junit.Before;
@@ -29,7 +31,7 @@ public class AbstractAttributesHandlerTest {
 
     @Test
     public void testNop() {
-        assertThat(handler.resolveValue(requestContext, metadata, "foo", String.class),
+        assertThat(handler.resolveValue(requestContext, metadata, "foo", String.class, new Annotation[0]),
                 is(nullValue()));
         handler.putAttributeValue(requestContext, "foo", new Object());
         handler.removeAttribute(requestContext, "foo");

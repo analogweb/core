@@ -22,95 +22,105 @@ import org.junit.Test;
 
 public class XmlValueResolverTest {
 
-    private XmlValueResolver mapper;
-    private RequestContext context;
-    private Headers headers;
+	private XmlValueResolver mapper;
+	private RequestContext context;
+	private Headers headers;
 
-    @Before
-    public void setUp() throws Exception {
-        mapper = new XmlValueResolver();
-        context = mock(RequestContext.class);
-        headers = mock(Headers.class);
-    }
+	@Before
+	public void setUp() throws Exception {
+		mapper = new XmlValueResolver();
+		context = mock(RequestContext.class);
+		headers = mock(Headers.class);
+	}
 
-    @Test
-    public void testMapToTypeByStream() throws Exception {
-        when(context.getRequestHeaders()).thenReturn(headers);
-        when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("text/xml"));
-        byte[] xmlBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><hello><world>snowgoose</world></hello>"
-                .getBytes();
-        InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        when(context.getRequestBody()).thenReturn(xmlBody);
-        Hello actual = (Hello) mapper.resolveValue(context, null, null, Hello.class);
-        assertThat(actual.getWorld(), is("snowgoose"));
-    }
+	@Test
+	public void testMapToTypeByStream() throws Exception {
+		when(context.getRequestHeaders()).thenReturn(headers);
+		when(headers.getValues("Content-Type")).thenReturn(
+				Arrays.asList("text/xml"));
+		byte[] xmlBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><hello><world>snowgoose</world></hello>"
+				.getBytes();
+		InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
+		when(context.getRequestBody()).thenReturn(xmlBody);
+		Hello actual = (Hello) mapper.resolveValue(context, null, null,
+				Hello.class, null);
+		assertThat(actual.getWorld(), is("snowgoose"));
+	}
 
-    @Test
-    public void testMapToTypeIllegalClassType() throws Exception {
-        when(context.getRequestHeaders()).thenReturn(headers);
-        when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("text/xml"));
-        byte[] xmlBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><hello><world>snowgoose</world></hello>"
-                .getBytes();
-        InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        when(context.getRequestBody()).thenReturn(xmlBody);
-        UnHello actual = (UnHello) mapper.resolveValue(context, null, null, UnHello.class);
-        assertThat(actual, is(nullValue()));
-    }
+	@Test
+	public void testMapToTypeIllegalClassType() throws Exception {
+		when(context.getRequestHeaders()).thenReturn(headers);
+		when(headers.getValues("Content-Type")).thenReturn(
+				Arrays.asList("text/xml"));
+		byte[] xmlBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><hello><world>snowgoose</world></hello>"
+				.getBytes();
+		InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
+		when(context.getRequestBody()).thenReturn(xmlBody);
+		UnHello actual = (UnHello) mapper.resolveValue(context, null, null,
+				UnHello.class, null);
+		assertThat(actual, is(nullValue()));
+	}
 
-    @Test
-    public void testMapToTypeIllegalContentType() throws Exception {
-        when(context.getRequestHeaders()).thenReturn(headers);
-        when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("application/json"));
-        byte[] xmlBytes = "{\"hello\":\"world\"}".getBytes();
-        InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        when(context.getRequestBody()).thenReturn(xmlBody);
-        UnHello actual = (UnHello) mapper.resolveValue(context, null, null, UnHello.class);
-        assertThat(actual, is(nullValue()));
-    }
+	@Test
+	public void testMapToTypeIllegalContentType() throws Exception {
+		when(context.getRequestHeaders()).thenReturn(headers);
+		when(headers.getValues("Content-Type")).thenReturn(
+				Arrays.asList("application/json"));
+		byte[] xmlBytes = "{\"hello\":\"world\"}".getBytes();
+		InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
+		when(context.getRequestBody()).thenReturn(xmlBody);
+		UnHello actual = (UnHello) mapper.resolveValue(context, null, null,
+				UnHello.class, null);
+		assertThat(actual, is(nullValue()));
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testMapToTypeWithoutContentType() throws Exception {
-        when(context.getRequestHeaders()).thenReturn(headers);
-        when(headers.getValues("Content-Type")).thenReturn(Collections.EMPTY_LIST);
-        byte[] xmlBytes = "plain text".getBytes();
-        InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        when(context.getRequestBody()).thenReturn(xmlBody);
-        UnHello actual = (UnHello) mapper.resolveValue(context, null, null, UnHello.class);
-        assertThat(actual, is(nullValue()));
-    }
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testMapToTypeWithoutContentType() throws Exception {
+		when(context.getRequestHeaders()).thenReturn(headers);
+		when(headers.getValues("Content-Type")).thenReturn(
+				Collections.EMPTY_LIST);
+		byte[] xmlBytes = "plain text".getBytes();
+		InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
+		when(context.getRequestBody()).thenReturn(xmlBody);
+		UnHello actual = (UnHello) mapper.resolveValue(context, null, null,
+				UnHello.class, null);
+		assertThat(actual, is(nullValue()));
+	}
 
-    @Test
-    public void testSupports() {
-        assertThat(mapper.supports(MediaTypes.TEXT_XML_TYPE), is(true));
-        assertThat(mapper.supports(MediaTypes.APPLICATION_XML_TYPE), is(true));
-        assertThat(mapper.supports(MediaTypes.APPLICATION_SVG_XML_TYPE), is(true));
-        assertThat(mapper.supports(MediaTypes.APPLICATION_ATOM_XML_TYPE), is(true));
-        assertThat(mapper.supports(MediaTypes.APPLICATION_JSON_TYPE), is(false));
-        assertThat(mapper.supports(MediaTypes.TEXT_PLAIN_TYPE), is(false));
-    }
+	@Test
+	public void testSupports() {
+		assertThat(mapper.supports(MediaTypes.TEXT_XML_TYPE), is(true));
+		assertThat(mapper.supports(MediaTypes.APPLICATION_XML_TYPE), is(true));
+		assertThat(mapper.supports(MediaTypes.APPLICATION_SVG_XML_TYPE),
+				is(true));
+		assertThat(mapper.supports(MediaTypes.APPLICATION_ATOM_XML_TYPE),
+				is(true));
+		assertThat(mapper.supports(MediaTypes.APPLICATION_JSON_TYPE), is(false));
+		assertThat(mapper.supports(MediaTypes.TEXT_PLAIN_TYPE), is(false));
+	}
 
-    @XmlRootElement
-    static class Hello implements Serializable {
+	@XmlRootElement
+	static class Hello implements Serializable {
 
-        private static final long serialVersionUID = 1L;
-        @XmlElement
-        private String world;
+		private static final long serialVersionUID = 1L;
+		@XmlElement
+		private String world;
 
-        public String getWorld() {
-            return this.world;
-        }
-    }
+		public String getWorld() {
+			return this.world;
+		}
+	}
 
-    @XmlRootElement
-    static class UnHello implements Serializable {
+	@XmlRootElement
+	static class UnHello implements Serializable {
 
-        private static final long serialVersionUID = 1L;
-        @XmlElement
-        private String world;
+		private static final long serialVersionUID = 1L;
+		@XmlElement
+		private String world;
 
-        public String getWorld() {
-            return this.world;
-        }
-    }
+		public String getWorld() {
+			return this.world;
+		}
+	}
 }

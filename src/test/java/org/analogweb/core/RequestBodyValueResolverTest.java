@@ -17,32 +17,32 @@ import org.junit.Test;
 
 public class RequestBodyValueResolverTest {
 
-    private RequestBodyValueResolver resolver;
-    private RequestContext requestContext;
-    private InvocationMetadata metadata;
+	private RequestBodyValueResolver resolver;
+	private RequestContext requestContext;
+	private InvocationMetadata metadata;
 
-    @Before
-    public void setUp() throws Exception {
-        resolver = new RequestBodyValueResolver();
-        requestContext = mock(RequestContext.class);
-        metadata = mock(InvocationMetadata.class);
-    }
+	@Before
+	public void setUp() throws Exception {
+		resolver = new RequestBodyValueResolver();
+		requestContext = mock(RequestContext.class);
+		metadata = mock(InvocationMetadata.class);
+	}
 
-    @Test
-    public void testResolveAttributeValue() throws Exception {
-        InputStream expected = new ByteArrayInputStream(new byte[0]);
-        when(requestContext.getRequestBody()).thenReturn(expected);
-        InputStream actual = (InputStream) resolver
-                .resolveValue(requestContext, metadata, "", null);
-        assertThat(actual, is(expected));
-    }
+	@Test
+	public void testResolveAttributeValue() throws Exception {
+		InputStream expected = new ByteArrayInputStream(new byte[0]);
+		when(requestContext.getRequestBody()).thenReturn(expected);
+		InputStream actual = (InputStream) resolver.resolveValue(
+				requestContext, metadata, "", null, null);
+		assertThat(actual, is(expected));
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testResolveAttributeValueWithException() throws Exception {
-        when(requestContext.getRequestBody()).thenThrow(IOException.class);
-        InputStream actual = (InputStream) resolver
-                .resolveValue(requestContext, metadata, "", null);
-        assertThat(actual, is(nullValue()));
-    }
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testResolveAttributeValueWithException() throws Exception {
+		when(requestContext.getRequestBody()).thenThrow(IOException.class);
+		InputStream actual = (InputStream) resolver.resolveValue(
+				requestContext, metadata, "", null, null);
+		assertThat(actual, is(nullValue()));
+	}
 }

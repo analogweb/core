@@ -1,5 +1,7 @@
 package org.analogweb.core;
 
+import java.lang.annotation.Annotation;
+
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 
@@ -9,7 +11,7 @@ public abstract class ContextSpecificAttributesHandler<T extends RequestContext>
     @Override
     @SuppressWarnings("unchecked")
     public final Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
-            String key, Class<?> requiredType) {
+            String key, Class<?> requiredType,Annotation[] annotations) {
         return this.resolveAttributeValueOnContext((T) requestContext, metadata, key, requiredType);
     }
 

@@ -1,5 +1,6 @@
 package org.analogweb.core;
 
+import java.lang.annotation.Annotation;
 import org.analogweb.AttributesHandler;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
@@ -13,7 +14,7 @@ public abstract class AbstractAttributesHandler implements AttributesHandler {
 
     @Override
     public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
-            String key, Class<?> requiredType) {
+            String key, Class<?> requiredType,Annotation[] annotations) {
         // nop
         return null;
     }
