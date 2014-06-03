@@ -27,7 +27,7 @@ import org.junit.Test;
 
 public class BeanAttributeArgumentPreparatorTest {
 
-	private BeanAttributeArgumentPreparator preparator;
+	private BeanAttributeValueResolver preparator;
 	private TypeMapperContext converters = mock(TypeMapperContext.class);
 	private RequestValueResolvers resolvers = mock(RequestValueResolvers.class);
 	private ContainerAdaptor container;
@@ -45,7 +45,7 @@ public class BeanAttributeArgumentPreparatorTest {
 
 	@Test
 	public void test() throws Exception {
-		preparator = new BeanAttributeArgumentPreparator();
+		preparator = new BeanAttributeValueResolver();
 		preparator.setModulesContainerAdaptor(container);
 		InvocationMetadata metadata = mock(InvocationMetadata.class);
 		when(metadata.getArgumentTypes()).thenReturn(
@@ -88,7 +88,7 @@ public class BeanAttributeArgumentPreparatorTest {
 
 	@Test
 	public void testWithResolver() throws Exception {
-		preparator = new BeanAttributeArgumentPreparator();
+		preparator = new BeanAttributeValueResolver();
 		preparator.setModulesContainerAdaptor(container);
 		InvocationMetadata metadata = mock(InvocationMetadata.class);
 		when(metadata.getArgumentTypes()).thenReturn(

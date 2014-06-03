@@ -18,7 +18,7 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
-public class BeanAttributeArgumentPreparator implements RequestValueResolver,
+public class BeanAttributeValueResolver implements RequestValueResolver,
 		ModulesContainerAdaptorAware {
 
 	private ContainerAdaptor container;
