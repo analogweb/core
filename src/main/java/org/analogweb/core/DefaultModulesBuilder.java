@@ -201,7 +201,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return result;
             }
 
-            @SuppressWarnings("unchecked")
             private <T extends MultiModule> List<T> getComponentInstances(ContainerAdaptor adaptor,
                     List<Class<? extends T>> componentClasses) {
                 List<T> instances = new ArrayList<T>();
