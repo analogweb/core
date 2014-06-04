@@ -63,7 +63,9 @@ public class BeanAttributeValueResolver implements RequestValueResolver,
 					.value();
 			RequestValueResolver resolver = resolvers
 					.findRequestValueResolver(resolverClass);
-			if (resolver != null) {
+			if (resolver != null
+					&& BeanAttributeValueResolver.class.equals(resolver
+							.getClass()) == false) {
 				return resolver.resolveValue(context, metadata,
 						StringUtils.EMPTY, clazz, parameterAnnotations);
 			}
@@ -72,14 +74,15 @@ public class BeanAttributeValueResolver implements RequestValueResolver,
 	}
 
 	@Override
+	public void dispose() {
+		this.converters = null;
+		this.resolvers = null;
+	}
+
+	@Override
 	public void setModules(Modules modules) {
 		this.converters = modules.getTypeMapperContext();
 		this.resolvers = modules.getRequestValueResolvers();
 	}
 
-	@Override
-	public void dispose() {
-		this.converters = null;
-		this.resolvers = null;
-	}
 }
