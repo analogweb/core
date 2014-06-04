@@ -11,8 +11,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-import org.analogweb.ContainerAdaptor;
 import org.analogweb.InvocationMetadata;
+import org.analogweb.Modules;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolver;
 import org.analogweb.RequestValueResolvers;
@@ -30,23 +30,23 @@ public class BeanAttributeArgumentPreparatorTest {
 	private BeanAttributeValueResolver preparator;
 	private TypeMapperContext converters = mock(TypeMapperContext.class);
 	private RequestValueResolvers resolvers = mock(RequestValueResolvers.class);
-	private ContainerAdaptor container;
+	private Modules modules;
 
 	@Before
 	public void setUp() {
 		converters = mock(TypeMapperContext.class);
 		resolvers = mock(RequestValueResolvers.class);
-		container = mock(ContainerAdaptor.class);
-		when(container.getInstanceOfType(TypeMapperContext.class)).thenReturn(
+		modules = mock(Modules.class);
+		when(modules.getTypeMapperContext()).thenReturn(
 				converters);
-		when(container.getInstanceOfType(RequestValueResolvers.class))
+		when(modules.getRequestValueResolvers())
 				.thenReturn(resolvers);
 	}
 
 	@Test
 	public void test() throws Exception {
 		preparator = new BeanAttributeValueResolver();
-		preparator.setModulesContainerAdaptor(container);
+		preparator.setModules(modules);
 		InvocationMetadata metadata = mock(InvocationMetadata.class);
 		when(metadata.getArgumentTypes()).thenReturn(
 				new Class[] { SomeBean.class, String.class });
@@ -89,7 +89,7 @@ public class BeanAttributeArgumentPreparatorTest {
 	@Test
 	public void testWithResolver() throws Exception {
 		preparator = new BeanAttributeValueResolver();
-		preparator.setModulesContainerAdaptor(container);
+		preparator.setModules(modules);
 		InvocationMetadata metadata = mock(InvocationMetadata.class);
 		when(metadata.getArgumentTypes()).thenReturn(
 				new Class[] { SomeBean.class, String.class });

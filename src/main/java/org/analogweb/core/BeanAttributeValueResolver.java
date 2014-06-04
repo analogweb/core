@@ -3,9 +3,9 @@ package org.analogweb.core;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-import org.analogweb.ContainerAdaptor;
 import org.analogweb.InvocationMetadata;
-import org.analogweb.ModulesContainerAdaptorAware;
+import org.analogweb.Modules;
+import org.analogweb.ModulesAware;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolver;
 import org.analogweb.RequestValueResolvers;
@@ -19,9 +19,10 @@ import org.analogweb.util.StringUtils;
  * @author snowgoose
  */
 public class BeanAttributeValueResolver implements RequestValueResolver,
-		ModulesContainerAdaptorAware {
+		ModulesAware {
 
-	private ContainerAdaptor container;
+	private RequestValueResolvers resolvers;
+	private TypeMapperContext converters;
 
 	@Override
 	public Object resolveValue(RequestContext context,
@@ -46,12 +47,12 @@ public class BeanAttributeValueResolver implements RequestValueResolver,
 		return beanInstance;
 	}
 
-	protected TypeMapperContext getTypeMapperContext() {
-		return container.getInstanceOfType(TypeMapperContext.class);
+	protected final TypeMapperContext getTypeMapperContext() {
+		return this.converters;
 	}
 
-	protected RequestValueResolvers getRequestValueResolvers() {
-		return container.getInstanceOfType(RequestValueResolvers.class);
+	protected final RequestValueResolvers getRequestValueResolvers() {
+		return this.resolvers;
 	}
 
 	private Object instanticate(Class<?> clazz, Resolver resolverAnn,
@@ -71,7 +72,14 @@ public class BeanAttributeValueResolver implements RequestValueResolver,
 	}
 
 	@Override
-	public void setModulesContainerAdaptor(ContainerAdaptor container) {
-		this.container = container;
+	public void setModules(Modules modules) {
+		this.converters = modules.getTypeMapperContext();
+		this.resolvers = modules.getRequestValueResolvers();
+	}
+
+	@Override
+	public void dispose() {
+		this.converters = null;
+		this.resolvers = null;
 	}
 }
