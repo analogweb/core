@@ -46,7 +46,7 @@
 	<parent>
 		<groupId>org.analogweb</groupId>
 		<artifactId>analogweb-parent-modules</artifactId>
-		<version>5</version>
+		<version>6</version>
 		<relativePath />
 	</parent>
 	<dependencies>
