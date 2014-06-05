@@ -191,7 +191,14 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 			}
 
 			// prevent cyclic reference.
-			private Set<String> alreadyInjected = new HashSet<String>();
+			private Set<String> alreadyInjected;
+			
+			private Set<String> getAlreadyInjectedTypeNames(){
+				if(this.alreadyInjected == null){
+					this.alreadyInjected = new HashSet<String>();
+				}
+				return this.alreadyInjected;
+			}
 
 			private <T> T getComponentInstance(ContainerAdaptor adaptor,
 					Class<T> componentClass) {
@@ -208,10 +215,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 					((ModulesContainerAdaptorAware) instance)
 							.setModulesContainerAdaptor(getModulesContainerAdaptor());
 				}
-				if (alreadyInjected.contains(componentClass.getCanonicalName()) == false
+				Set<String> ai = getAlreadyInjectedTypeNames();
+				if (ai.contains(componentClass.getCanonicalName()) == false
 						&& instance instanceof ModulesAware) {
-					System.out.println(alreadyInjected);
-					alreadyInjected.add(componentClass.getCanonicalName());
+					ai.add(componentClass.getCanonicalName());
 					((ModulesAware) instance).setModules(this);
 				}
 				return instance;
@@ -246,9 +253,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 									((ModulesContainerAdaptorAware) clazzInstance)
 											.setModulesContainerAdaptor(getModulesContainerAdaptor());
 								}
-								if (alreadyInjected.contains(clazz.getCanonicalName()) == false
+								Set<String> ai = getAlreadyInjectedTypeNames();
+								if (ai.contains(clazz.getCanonicalName()) == false
 										&& clazzInstance instanceof ModulesAware) {
-									alreadyInjected.add(clazz.getCanonicalName());
+									ai.add(clazz.getCanonicalName());
 									((ModulesAware) clazzInstance).setModules(this);
 								}
 								instances.add(clazzInstance);
@@ -287,8 +295,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 					this.invocationInterceptors.clear();
 					this.invocationInterceptors = null;
 				}
-				this.alreadyInjected.clear();
-				this.alreadyInjected = null;
+				if(this.alreadyInjected != null){
+					this.alreadyInjected.clear();
+					this.alreadyInjected = null;
+				}
 			}
 
 			private RequestValueResolvers resolvers;

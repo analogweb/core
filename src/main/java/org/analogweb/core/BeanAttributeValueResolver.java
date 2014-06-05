@@ -64,6 +64,7 @@ public class BeanAttributeValueResolver implements RequestValueResolver,
 			RequestValueResolver resolver = resolvers
 					.findRequestValueResolver(resolverClass);
 			if (resolver != null
+					// Cyclic reference limitation.
 					&& BeanAttributeValueResolver.class.equals(resolver
 							.getClass()) == false) {
 				return resolver.resolveValue(context, metadata,
