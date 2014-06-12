@@ -8,6 +8,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.core.DefaultResponseWriter;
 import org.analogweb.core.ApplicationRuntimeException;
+import org.analogweb.core.MapHeaders;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -76,7 +77,7 @@ public class HttpExchangeResponseContext implements ResponseContext {
 
     @Override
     public Headers getResponseHeaders() {
-        return new HttpExchangeHeaders(getHttpExchange().getResponseHeaders());
+        return new MapHeaders(getHttpExchange().getResponseHeaders());
     }
 
     @Override

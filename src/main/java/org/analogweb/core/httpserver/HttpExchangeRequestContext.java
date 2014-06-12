@@ -15,6 +15,7 @@ import org.analogweb.core.AcceptLanguages;
 import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.EmptyCookies;
 import org.analogweb.core.FormParameters;
+import org.analogweb.core.MapHeaders;
 import org.analogweb.core.MatrixParameters;
 import org.analogweb.core.MediaTypes;
 import org.analogweb.core.QueryParameters;
@@ -101,7 +102,7 @@ public class HttpExchangeRequestContext implements RequestContext {
 
     @Override
     public Headers getRequestHeaders() {
-        return new HttpExchangeHeaders(getHttpExchange().getRequestHeaders());
+        return new MapHeaders(getHttpExchange().getRequestHeaders());
     }
 
     @Override
