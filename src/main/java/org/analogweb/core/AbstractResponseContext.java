@@ -15,6 +15,10 @@ public abstract class AbstractResponseContext implements ResponseContext {
     private final ResponseWriter writer;
     private final Headers headers;
 
+    public AbstractResponseContext() {
+        this(new DefaultResponseWriter(),new MapHeaders());
+    }
+
     public AbstractResponseContext(ResponseWriter writer) {
         this(writer,new MapHeaders());
     }
