@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.analogweb.Headers;
 import org.analogweb.util.CollectionUtils;
+import org.analogweb.util.Maps;
 
 /**
  * @author snowgoose
@@ -15,6 +16,10 @@ import org.analogweb.util.CollectionUtils;
 public class MapHeaders implements Headers {
 
 	private final Map<String, List<String>> source;
+
+	public MapHeaders() {
+		this(Maps.<String, List<String>> newEmptyHashMap());
+	}
 
 	public MapHeaders(Map<String, List<String>> source) {
 		this.source = source;

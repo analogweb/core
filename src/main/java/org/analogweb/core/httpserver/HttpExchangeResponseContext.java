@@ -3,9 +3,8 @@ package org.analogweb.core.httpserver;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import org.analogweb.Headers;
 import org.analogweb.RequestContext;
-import org.analogweb.ResponseContext;
+import org.analogweb.core.AbstractResponseContext;
 import org.analogweb.core.DefaultResponseWriter;
 import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.MapHeaders;
@@ -15,19 +14,17 @@ import com.sun.net.httpserver.HttpExchange;
 /**
  * @author snowgoose
  */
-public class HttpExchangeResponseContext implements ResponseContext {
+public class HttpExchangeResponseContext extends AbstractResponseContext {
 
     protected static long NO_CONTENT = -1;
     protected static long CHUNKED = 0;
     private final HttpExchange exc;
-    private int status = HttpURLConnection.HTTP_OK;
-    private long length = -1;
-    private final ResponseWriter writer;
 
-    public HttpExchangeResponseContext(HttpExchange exc) {
-        this.exc = exc;
-        this.writer = new DefaultResponseWriter();
-    }
+	public HttpExchangeResponseContext(HttpExchange exc) {
+		super(new DefaultResponseWriter(), new MapHeaders(
+				exc.getResponseHeaders()));
+		this.exc = exc;
+	}
 
     protected HttpExchange getHttpExchange() {
         return this.exc;
@@ -75,31 +72,4 @@ public class HttpExchangeResponseContext implements ResponseContext {
         }
     }
 
-    @Override
-    public Headers getResponseHeaders() {
-        return new MapHeaders(getHttpExchange().getResponseHeaders());
-    }
-
-    @Override
-    public ResponseWriter getResponseWriter() {
-        return this.writer;
-    }
-
-    protected long getContentLength() {
-        return this.length;
-    }
-
-    @Override
-    public void setContentLength(long length) {
-        this.length = length;
-    }
-
-    protected int getStatus() {
-        return this.status;
-    }
-
-    @Override
-    public void setStatus(int status) {
-        this.status = status;
-    }
 }
