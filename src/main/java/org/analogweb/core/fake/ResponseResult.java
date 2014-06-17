@@ -1,16 +1,19 @@
 package org.analogweb.core.fake;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.Map;
+
+import org.analogweb.util.Maps;
 
 /**
  * @author snowgooseyk
  */
 public class ResponseResult {
 
-	private int status;
-	private OutputStream responseBody;
-	private Map<String, String> responseHeader;
+	private int status = 200;
+	private OutputStream responseBody = new ByteArrayOutputStream();
+	private Map<String, String> responseHeader = Maps.newEmptyHashMap();
 
 	public int getStatus() {
 		return status;
