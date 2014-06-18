@@ -104,6 +104,10 @@ public class FakeApplication {
 			@Override
 			public void commmit(RequestContext context) {
 				commitHeadersAndStatus(result, context);
+				Headers headers = getResponseHeaders();
+				if(headers instanceof MapHeaders){
+					result.setResponseHeader(((MapHeaders)headers).toMap());
+				}
 				try {
 					ResponseEntity entity = getResponseWriter().getEntity();
 					// no content.
@@ -122,15 +126,15 @@ public class FakeApplication {
 				int status = getStatus();
 				if (status == 204) {
 					ex.setStatus(204);
-					ex.getResponseHeader().put("Content-Length", "0");
+					ex.add("Content-Length", "0");
 				} else {
 					long length = getContentLength();
 					if (length == 0) {
 						ex.setStatus(204);
-						ex.getResponseHeader().put("Content-Length", "0");
+						ex.add("Content-Length", "0");
 					} else {
 						ex.setStatus(status);
-						ex.getResponseHeader().put("Content-Length",
+						ex.add("Content-Length",
 								String.valueOf(length));
 					}
 				}
@@ -144,9 +148,8 @@ public class FakeApplication {
 		try {
 			int resultCode = app.processRequest(requestPath, request, response);
 			if (resultCode == WebApplication.NOT_FOUND) {
-				throw new ApplicationRuntimeException("No path spec matched.") {
-					private static final long serialVersionUID = 1L;
-				};
+				result.setStatus(404);
+				return result;
 			}
 			response.commmit(request);
 		} catch (Exception e) {

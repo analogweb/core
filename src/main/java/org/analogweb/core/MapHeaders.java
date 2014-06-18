@@ -53,4 +53,8 @@ public class MapHeaders implements Headers {
 		values.add(value);
 		this.source.put(name, values);
 	}
+	
+	public Map<String,List<String>> toMap(){
+		return this.source;
+	}
 }
