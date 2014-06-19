@@ -24,60 +24,60 @@ import org.analogweb.core.response.Xml;
 @Route("/")
 public class HelloWorld {
 
-    @Route
-    @Get
-    public String helloworld() {
-        return "Hello World";
-    }
+	@Route
+	@Get
+	public String helloworld() {
+		return "Hello World";
+	}
 
-    @Route("hello/{name}/world")
-    @Get
-    public Text helloworld(@PathVariable("name") String name) {
-        return text(String.format("Hello %s World", name));
-    }
+	@Route("hello/{name}/world")
+	@Get
+	public Text helloworld(@PathVariable("name") String name) {
+		return text(String.format("Hello %s World", name));
+	}
 
-    @Route
-    @Get
-    public Text helloUserAgent(@UserAgent String userAgent) {
-        return text(String.format("Hello World %s", userAgent));
-    }
+	@Route
+	@Get
+	public Text helloUserAgent(@UserAgent String userAgent) {
+		return text(String.format("Hello World %s", userAgent));
+	}
 
-    @Route
-    @Get
-    public Xml helloXml() {
-        FooBean foo = new FooBean();
-        return xml(foo);
-    }
+	@Route
+	@Get
+	public Xml helloXml() {
+		FooBean foo = new FooBean();
+		return xml(foo);
+	}
 
-    @Route
-    @RequestFormats
-    @Put
-    public Renderable helloXmlValue(@XmlType FooBean foo) {
-        if (foo == null) {
-            return HttpStatus.BAD_REQUEST.byReasonOf("XML entity required.");
-        }
-        return text("Hello World " + foo.getBaa());
-    }
+	@Route
+	@RequestFormats
+	@Put
+	public Renderable helloXmlValue(@XmlType FooBean foo) {
+		if (foo == null) {
+			return HttpStatus.BAD_REQUEST.byReasonOf("XML entity required.");
+		}
+		return text("Hello World " + foo.getBaa());
+	}
 
-    @Route
-    @RequestFormats(MediaTypes.APPLICATION_FORM_URLENCODED)
-    @Put
-    @Post
-    public Xml helloBean(@Bean FooBean foo) {
-        return xml(foo);
-    }
+	@Route
+	@RequestFormats(MediaTypes.APPLICATION_FORM_URLENCODED)
+	@Put
+	@Post
+	public Xml helloBean(@Bean FooBean foo) {
+		return xml(foo);
+	}
 
-    @Route
-    @Get
-    public void helloNothing() {
-        // Return no content(204)
-    }
+	@Route
+	@Get
+	public void helloNothing() {
+		// Return no content(204)
+	}
 
-    @Route
-    @Get
-    public Renderable helloNull() {
-        // Return no content(204)
-        return null;
-    }
+	@Route
+	@Get
+	public Renderable helloNull() {
+		// Return no content(204)
+		return null;
+	}
 
 }

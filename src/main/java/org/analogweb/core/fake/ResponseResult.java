@@ -34,9 +34,9 @@ public class ResponseResult {
 		return responseHeader;
 	}
 
-	public void add(String key,String value) {
+	public void add(String key, String value) {
 		List<String> l = responseHeader.get(key);
-		if(CollectionUtils.isEmpty(l)){
+		if (CollectionUtils.isEmpty(l)) {
 			l = new ArrayList<String>();
 		}
 		l.add(value);
@@ -47,7 +47,7 @@ public class ResponseResult {
 		this.responseHeader = responseHeader;
 	}
 
-	public String toBody(){
+	public String toBody() {
 		return new String(responseBody.toByteArray());
 	}
 }

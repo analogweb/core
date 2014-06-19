@@ -84,6 +84,12 @@ public class FakeApplication {
 	}
 
 	public ResponseResult request(String path, String method,
+			final Map<String, List<String>> headers) {
+		return request(path, method, headers, new ByteArrayInputStream(
+				new byte[0]));
+	}
+
+	public ResponseResult request(String path, String method,
 			final Map<String, List<String>> headers, final InputStream body) {
 		RequestPath requestPath = new DefaultRequestPath(URI.create("/"),
 				URI.create(path), method);
@@ -105,8 +111,8 @@ public class FakeApplication {
 			public void commmit(RequestContext context) {
 				commitHeadersAndStatus(result, context);
 				Headers headers = getResponseHeaders();
-				if(headers instanceof MapHeaders){
-					result.setResponseHeader(((MapHeaders)headers).toMap());
+				if (headers instanceof MapHeaders) {
+					result.setResponseHeader(((MapHeaders) headers).toMap());
 				}
 				try {
 					ResponseEntity entity = getResponseWriter().getEntity();
@@ -125,19 +131,11 @@ public class FakeApplication {
 					RequestContext context) {
 				int status = getStatus();
 				if (status == 204) {
-					ex.setStatus(204);
 					ex.add("Content-Length", "0");
 				} else {
-					long length = getContentLength();
-					if (length == 0) {
-						ex.setStatus(204);
-						ex.add("Content-Length", "0");
-					} else {
-						ex.setStatus(status);
-						ex.add("Content-Length",
-								String.valueOf(length));
-					}
+					ex.add("Content-Length", String.valueOf(getContentLength()));
 				}
+				ex.setStatus(status);
 			}
 		};
 		if (app == null) {
@@ -158,6 +156,10 @@ public class FakeApplication {
 			};
 		}
 		return result;
+	}
+
+	public void shutdown() {
+		app.dispose();
 	}
 
 	protected List<ClassCollector> getClassCollectors() {
