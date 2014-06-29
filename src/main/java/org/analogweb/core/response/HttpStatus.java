@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import org.analogweb.Renderable;
 import org.analogweb.Headers;
+import org.analogweb.RenderableHolder;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.WebApplicationException;
@@ -14,7 +15,7 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
-public enum HttpStatus implements Renderable {
+public enum HttpStatus implements Renderable,RenderableHolder {
     CONTINUE(100), SWITCHING_PROTOCOLS(101), PROCESSING(102), OK(200), CREATED(201), ACCEPTED(202), NON_AUTHORITATIVE_INFORMATION(
             203), NO_CONTENT(204), RESET_CONTENT(205), PARTIAL_CONTENT(206), MULTI_STATUS(207), ALREADY_REPORTED(
             208), IM_USED(226), MULTIPLE_CHOICES(300), MOVED_PERMANENTLY(301), FOUND(302), SEE_OTHER(
@@ -32,7 +33,7 @@ public enum HttpStatus implements Renderable {
     private int statusCode;
     private String reason;
     private Map<String, String> responseHeaders;
-    private Renderable preRenderDirection;
+    private Renderable actuallyRenderable;
 
     HttpStatus(final int statusCode) {
         this.statusCode = statusCode;
@@ -78,8 +79,9 @@ public enum HttpStatus implements Renderable {
         return this.reason;
     }
 
+    @Deprecated//Use #getRenderable instead."
     public Renderable getPreRenderResponse() {
-        return this.preRenderDirection;
+        return this.actuallyRenderable;
     }
 
     public HttpStatus byReasonOf(String reason) {
@@ -97,7 +99,12 @@ public enum HttpStatus implements Renderable {
     }
 
     public HttpStatus with(Renderable direction) {
-        this.preRenderDirection = direction;
+        this.actuallyRenderable = direction;
         return this;
     }
+
+	@Override
+	public Renderable getRenderable() {
+		return this.actuallyRenderable;	
+	}
 }

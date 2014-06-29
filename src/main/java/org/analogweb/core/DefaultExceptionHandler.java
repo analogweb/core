@@ -18,7 +18,7 @@ public class DefaultExceptionHandler implements ExceptionHandler {
             return HttpStatus.METHOD_NOT_ALLOWED;
         }
         logThrowable(exception);
-        throw new WebApplicationException(exception);
+		throw new WebApplicationException(exception);
     }
 
     protected void logThrowable(Exception exception) {

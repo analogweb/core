@@ -138,4 +138,17 @@ public class IntrgrationTest {
 		actual = app.request("/helloNull", "GET");
 		assertThat(actual.getStatus(), is(204));
 	}
+
+	@Test
+	public void testStatusWithXmlBody() {
+		app = fakeApplication(DefaultApplicationProperties
+				.properties("integration.testcase"));
+		ResponseResult actual = app.request("/ok", "GET");
+		assertThat(actual.getStatus(), is(200));
+		assertThat(
+				actual.toBody(),
+				is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><fooBean><baa>baz</baa></fooBean>"));
+		assertThat(actual.getResponseHeader().get("Content-Type").get(0),
+				is("application/xml; charset=UTF-8"));
+	}
 }

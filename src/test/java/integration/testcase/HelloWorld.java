@@ -19,6 +19,7 @@ import org.analogweb.core.response.Xml;
 
 /**
  * Hello Analog Web World!
+ * 
  * @author snowgoose
  */
 @Route("/")
@@ -80,4 +81,10 @@ public class HelloWorld {
 		return null;
 	}
 
+	@Route
+	@Get
+	public HttpStatus ok() {
+		FooBean foo = new FooBean();
+		return HttpStatus.OK.with(xml(foo));
+	}
 }
