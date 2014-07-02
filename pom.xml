@@ -1,6 +1,5 @@
 <!--
-    The MIT Lisence Copyright (c) 2011,2012 Analog Web Framework Development 
-
+    The MIT Lisence Copyright (c) 2011 - 2014 Analog Web Framework Development 
 	Team. Permission is hereby granted, free of charge, to any person obtaining 
 	a copy of this software and associated documentation files (the "Software"), 
 	to deal in the Software without restriction, including without limitation 
@@ -29,13 +28,12 @@
 	</organization>
 	<issueManagement />
 	<ciManagement />
-	<inceptionYear>2012</inceptionYear>
+	<inceptionYear>2014</inceptionYear>
 	<contributors />
 	<scm>
 		<connection>scm:git:git@github.com:analogweb/core.git</connection>
 		<developerConnection>scm:git:git@github.com:analogweb/core.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+    </scm>
 	<licenses>
 		<license>
 			<name>MIT license</name>
