@@ -24,52 +24,66 @@ import org.junit.rules.ExpectedException;
  */
 public class DefaultExceptionHandlerTest {
 
-    private DefaultExceptionHandler handler;
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	private DefaultExceptionHandler handler;
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    @Before
-    public void setUp() {
-        handler = new DefaultExceptionHandler();
-    }
+	@Before
+	public void setUp() {
+		handler = new DefaultExceptionHandler();
+	}
 
-    @Test
-    public void testHandleThrowableWithApplicationRuntimeException() throws Exception {
-        thrown.expect(WebApplicationException.class);
-        thrown.expect(rootCause(SomeException.class));
-        handler.handleException(new SomeException());
-    }
+	@Test
+	public void testHandleThrowableWithApplicationRuntimeException()
+			throws Exception {
+		thrown.expect(WebApplicationException.class);
+		thrown.expect(rootCause(SomeException.class));
+		handler.handleException(new SomeException());
+	}
 
-    @Test
-    public void testHandleThrowableWithRequestPathUnsupportedException() throws Exception {
-        RequestPathMetadata metadata = mock(RequestPathMetadata.class);
-        Object actual = handler.handleException(new RequestMethodUnsupportedException(metadata,
-                Arrays.asList("GET"), "POST"));
-        assertThat((HttpStatus) actual, is(HttpStatus.METHOD_NOT_ALLOWED));
-    }
+	@Test
+	public void testHandleThrowableWithRequestPathUnsupportedException()
+			throws Exception {
+		RequestPathMetadata metadata = mock(RequestPathMetadata.class);
+		Object actual = handler
+				.handleException(new RequestMethodUnsupportedException(
+						metadata, Arrays.asList("GET"), "POST"));
+		assertThat((HttpStatus) actual, is(HttpStatus.METHOD_NOT_ALLOWED));
+	}
 
-    public static class SomeException extends ApplicationRuntimeException {
+	@Test
+	public void testHandleThrowableWithUnsupportedMediaTypeException()
+			throws Exception {
+		RequestPathMetadata metadata = mock(RequestPathMetadata.class);
+		Object actual = handler
+				.handleException(new UnsupportedMediaTypeException(metadata));
+		assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+	}
 
-        private static final long serialVersionUID = 1L;
-    }
+	public static class SomeException extends ApplicationRuntimeException {
 
-    private static Matcher<Throwable> rootCause(final Class<? extends Throwable> throwable) {
-        return new BaseMatcher<Throwable>() {
+		private static final long serialVersionUID = 1L;
+	}
 
-            @Override
-            public boolean matches(Object arg0) {
-                if (arg0 instanceof WebApplicationException) {
-                    Throwable raised = ((WebApplicationException) arg0).getCause();
-                    return throwable.equals(raised.getClass());
-                } else {
-                    return false;
-                }
-            }
+	private static Matcher<Throwable> rootCause(
+			final Class<? extends Throwable> throwable) {
+		return new BaseMatcher<Throwable>() {
 
-            @Override
-            public void describeTo(Description arg0) {
-                // nop.
-            }
-        };
-    }
+			@Override
+			public boolean matches(Object arg0) {
+				if (arg0 instanceof WebApplicationException) {
+					Throwable raised = ((WebApplicationException) arg0)
+							.getCause();
+					return throwable.equals(raised.getClass());
+				} else {
+					return false;
+				}
+			}
+
+			@Override
+			public void describeTo(Description arg0) {
+				// nop.
+			}
+		};
+	}
 }

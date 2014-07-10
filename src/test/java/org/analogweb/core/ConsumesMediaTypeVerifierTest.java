@@ -19,127 +19,131 @@ import org.analogweb.annotation.As;
 import org.analogweb.annotation.Resolver;
 import org.analogweb.annotation.Route;
 import org.analogweb.annotation.RequestFormats;
-import org.analogweb.core.response.HttpStatus;
 import org.analogweb.util.ReflectionUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class ConsumesMediaTypeVerifierTest {
 
-    private ConsumesMediaTypeVerifier verifier;
-    private InvocationArguments args;
-    private InvocationMetadata metadata;
-    private RequestContext context;
-    private TypeMapperContext converters;
-    private RequestValueResolvers handlers;
+	private ConsumesMediaTypeVerifier verifier;
+	private InvocationArguments args;
+	private InvocationMetadata metadata;
+	private RequestContext context;
+	private TypeMapperContext converters;
+	private RequestValueResolvers handlers;
 
-    @Before
-    public void setUp() {
-        verifier = new ConsumesMediaTypeVerifier();
-        args = mock(InvocationArguments.class);
-        metadata = mock(InvocationMetadata.class);
-        context = mock(RequestContext.class);
-        converters = mock(TypeMapperContext.class);
-        handlers = mock(RequestValueResolvers.class);
-    }
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    @Test
-    public void testPrepareInvoke() {
-        MediaType requstType = MediaTypes.APPLICATION_ATOM_XML_TYPE;
-        when(context.getContentType()).thenReturn(requstType);
-        Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsAtom",
-                new Class<?>[] { Object.class });
-        Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
-                handlers);
-        assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
-    }
+	@Before
+	public void setUp() {
+		verifier = new ConsumesMediaTypeVerifier();
+		args = mock(InvocationArguments.class);
+		metadata = mock(InvocationMetadata.class);
+		context = mock(RequestContext.class);
+		converters = mock(TypeMapperContext.class);
+		handlers = mock(RequestValueResolvers.class);
+	}
 
-    @Test
-    public void testPrepareInvokeInvalidMediaType() {
-        MediaType requstType = MediaTypes.APPLICATION_JSON_TYPE;
-        when(context.getContentType()).thenReturn(requstType);
-        Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsAtom",
-                new Class<?>[] { Object.class });
-        Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
-                handlers);
-        assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
-    }
+	@Test
+	public void testPrepareInvoke() {
+		MediaType requstType = MediaTypes.APPLICATION_ATOM_XML_TYPE;
+		when(context.getContentType()).thenReturn(requstType);
+		Method method = ReflectionUtils.getMethodQuietly(SomeResource.class,
+				"acceptsAtom", new Class<?>[] { Object.class });
+		Object actual = verifier.prepareInvoke(method, args, metadata, context,
+				converters, handlers);
+		assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
+	}
 
-    @Test
-    public void testPrepareInvokeDefaultFormats() {
-        MediaType requstType = MediaTypes.APPLICATION_XML_TYPE;
-        when(context.getContentType()).thenReturn(requstType);
-        SpecificMediaTypeRequestValueResolver handler = mock(SpecificMediaTypeRequestValueResolver.class);
-        when(handlers.findRequestValueResolver(Xml.class)).thenReturn(handler);
-        when(handler.supports(requstType)).thenReturn(true);
-        Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsSvg",
-                new Class<?>[] { Object.class });
-        Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
-                handlers);
-        assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
-    }
+	@Test
+	public void testPrepareInvokeInvalidMediaType() {
+		thrown.expect(UnsupportedMediaTypeException.class);
+		MediaType requstType = MediaTypes.APPLICATION_JSON_TYPE;
+		when(context.getContentType()).thenReturn(requstType);
+		Method method = ReflectionUtils.getMethodQuietly(SomeResource.class,
+				"acceptsAtom", new Class<?>[] { Object.class });
+		verifier.prepareInvoke(method, args, metadata, context, converters,
+				handlers);
+	}
 
-    @Test
-    public void testPrepareInvokeDefaultFormatsNotSupported() {
-        MediaType requstType = MediaTypes.APPLICATION_JSON_TYPE;
-        when(context.getContentType()).thenReturn(requstType);
-        SpecificMediaTypeRequestValueResolver handler = mock(SpecificMediaTypeRequestValueResolver.class);
-        when(handlers.findRequestValueResolver(Xml.class)).thenReturn(handler);
-        when(handler.supports(requstType)).thenReturn(false);
-        Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsSvg",
-                new Class<?>[] { Object.class });
-        Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
-                handlers);
-        assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
-    }
+	@Test
+	public void testPrepareInvokeDefaultFormats() {
+		MediaType requstType = MediaTypes.APPLICATION_XML_TYPE;
+		when(context.getContentType()).thenReturn(requstType);
+		SpecificMediaTypeRequestValueResolver handler = mock(SpecificMediaTypeRequestValueResolver.class);
+		when(handlers.findRequestValueResolver(Xml.class)).thenReturn(handler);
+		when(handler.supports(requstType)).thenReturn(true);
+		Method method = ReflectionUtils.getMethodQuietly(SomeResource.class,
+				"acceptsSvg", new Class<?>[] { Object.class });
+		Object actual = verifier.prepareInvoke(method, args, metadata, context,
+				converters, handlers);
+		assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
+	}
 
-    @Test
-    public void testPrepareInvokeDefaultFormatsNotFound() {
-        MediaType requstType = MediaTypes.TEXT_XML_TYPE;
-        when(context.getContentType()).thenReturn(requstType);
-        when(handlers.findRequestValueResolver(Xml.class)).thenReturn(null);
-        Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsSvg",
-                new Class<?>[] { Object.class });
-        Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
-                handlers);
-        assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
-    }
+	@Test
+	public void testPrepareInvokeDefaultFormatsNotSupported() {
+		thrown.expect(UnsupportedMediaTypeException.class);
+		MediaType requstType = MediaTypes.APPLICATION_JSON_TYPE;
+		when(context.getContentType()).thenReturn(requstType);
+		SpecificMediaTypeRequestValueResolver handler = mock(SpecificMediaTypeRequestValueResolver.class);
+		when(handlers.findRequestValueResolver(Xml.class)).thenReturn(handler);
+		when(handler.supports(requstType)).thenReturn(false);
+		Method method = ReflectionUtils.getMethodQuietly(SomeResource.class,
+				"acceptsSvg", new Class<?>[] { Object.class });
+		verifier.prepareInvoke(method, args, metadata, context, converters,
+				handlers);
+	}
 
-    @Test
-    public void testPrepareInvokeNotDefinedFormats() {
-        Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsParameter",
-                new Class<?>[] { String.class });
-        Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
-                handlers);
-        assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
-    }
+	@Test
+	public void testPrepareInvokeDefaultFormatsNotFound() {
+		thrown.expect(UnsupportedMediaTypeException.class);
+		MediaType requstType = MediaTypes.TEXT_XML_TYPE;
+		when(context.getContentType()).thenReturn(requstType);
+		when(handlers.findRequestValueResolver(Xml.class)).thenReturn(null);
+		Method method = ReflectionUtils.getMethodQuietly(SomeResource.class,
+				"acceptsSvg", new Class<?>[] { Object.class });
+		verifier.prepareInvoke(method, args, metadata, context, converters,
+				handlers);
+	}
 
-    @Test
-    public void testPrecidence() {
-        assertThat(verifier.getPrecedence(), is(1));
-    }
+	@Test
+	public void testPrepareInvokeNotDefinedFormats() {
+		thrown.expect(UnsupportedMediaTypeException.class);
+		Method method = ReflectionUtils.getMethodQuietly(SomeResource.class,
+				"acceptsParameter", new Class<?>[] { String.class });
+		verifier.prepareInvoke(method, args, metadata, context, converters,
+				handlers);
+	}
 
-    private static final class SomeResource {
+	@Test
+	public void testPrecidence() {
+		assertThat(verifier.getPrecedence(), is(1));
+	}
 
-        @RequestFormats(MediaTypes.APPLICATION_ATOM_XML)
-        @Route
-        public String acceptsAtom(@Resolver(Xml.class) @As Object anXml) {
-            return "fake!";
-        }
+	private static final class SomeResource {
 
-        @RequestFormats
-        @Route
-        public String acceptsSvg(@Resolver(Xml.class) @As Object anXml) {
-            return "fake!";
-        }
+		@RequestFormats(MediaTypes.APPLICATION_ATOM_XML)
+		@Route
+		public String acceptsAtom(@Resolver(Xml.class) @As Object anXml) {
+			return "fake!";
+		}
 
-        @RequestFormats
-        @Route
-        public String acceptsParameter(@As("param") String param) {
-            return "fake!";
-        }
-    }
+		@RequestFormats
+		@Route
+		public String acceptsSvg(@Resolver(Xml.class) @As Object anXml) {
+			return "fake!";
+		}
 
-    interface Xml extends RequestValueResolver {
-    }
+		@RequestFormats
+		@Route
+		public String acceptsParameter(@As("param") String param) {
+			return "fake!";
+		}
+	}
+
+	interface Xml extends RequestValueResolver {
+	}
 }

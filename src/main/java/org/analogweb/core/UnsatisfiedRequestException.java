@@ -7,12 +7,12 @@ import org.analogweb.RequestPathMetadata;
  * 場合に送出される例外です。
  * @author snowgoose
  */
-public class UnsatisfiedRequestPathException extends ApplicationRuntimeException {
+public class UnsatisfiedRequestException extends ApplicationRuntimeException {
 
     private static final long serialVersionUID = -5701810553477314954L;
     private RequestPathMetadata metadata;
 
-    public UnsatisfiedRequestPathException(RequestPathMetadata metadata) {
+    public UnsatisfiedRequestException(RequestPathMetadata metadata) {
         this.metadata = metadata;
     }
 

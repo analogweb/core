@@ -8,7 +8,7 @@ import org.analogweb.RequestPathMetadata;
  * リクエストメソッドが、あるエントリポイントに於いて実行不可である場合に送出される例外です。
  * @author snowgoose
  */
-public class RequestMethodUnsupportedException extends UnsatisfiedRequestPathException {
+public class RequestMethodUnsupportedException extends UnsatisfiedRequestException {
 
     private static final long serialVersionUID = -5103029925778697441L;
     private final List<String> definedMethods;

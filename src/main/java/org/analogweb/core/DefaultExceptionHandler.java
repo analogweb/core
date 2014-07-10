@@ -11,17 +11,21 @@ import org.analogweb.util.logging.Logs;
  */
 public class DefaultExceptionHandler implements ExceptionHandler {
 
-    protected static final Log log = Logs.getLog(DefaultExceptionHandler.class);
+	protected static final Log log = Logs.getLog(DefaultExceptionHandler.class);
 
-    public Object handleException(Exception exception) throws WebApplicationException {
-        if (exception instanceof RequestMethodUnsupportedException) {
-            return HttpStatus.METHOD_NOT_ALLOWED;
-        }
-        logThrowable(exception);
+	public Object handleException(Exception exception)
+			throws WebApplicationException {
+		if (exception instanceof UnsupportedMediaTypeException) {
+			return HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+		}
+		if (exception instanceof RequestMethodUnsupportedException) {
+			return HttpStatus.METHOD_NOT_ALLOWED;
+		}
+		logThrowable(exception);
 		throw new WebApplicationException(exception);
-    }
+	}
 
-    protected void logThrowable(Exception exception) {
-        log.warn(exception.toString());
-    }
+	protected void logThrowable(Exception exception) {
+		log.warn(exception.toString());
+	}
 }
