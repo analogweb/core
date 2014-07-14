@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 
+import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.core.ApplicationRuntimeException;
@@ -58,6 +59,27 @@ public class DefaultExceptionHandlerTest {
 		Object actual = handler
 				.handleException(new UnsupportedMediaTypeException(metadata));
 		assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+	}
+
+	@Test
+	public void testHandleRoutedThrowableWithUnsupportedMediaTypeException()
+			throws Exception {
+		RequestPathMetadata metadata = mock(RequestPathMetadata.class);
+		InvocationMetadata invocationMetadata = mock(InvocationMetadata.class);
+		Object actual = handler.handleException(new InvocationFailureException(
+				new UnsupportedMediaTypeException(metadata),
+				invocationMetadata, new String[0]));
+		assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+	}
+
+	@Test
+	public void testHandleRouteThrowableWithApplicationRuntimeException()
+			throws Exception {
+		thrown.expect(WebApplicationException.class);
+		thrown.expect(rootCause(InvocationFailureException.class));
+		InvocationMetadata metadata = mock(InvocationMetadata.class);
+		handler.handleException(new InvocationFailureException(
+				new SomeException(), metadata, new String[0]));
 	}
 
 	public static class SomeException extends ApplicationRuntimeException {
