@@ -33,6 +33,8 @@ public class HttpExchangeResponseContext extends AbstractResponseContext {
     @Override
     public void commmit(RequestContext context) {
         HttpExchange ex = getHttpExchange();
+        // Must be called before getResponseBody.
+        // @see http://docs.oracle.com/javase/6/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpExchange.html
         commitHeadersAndStatus(ex, context);
         try {
             ResponseEntity entity = getResponseWriter().getEntity();

@@ -36,14 +36,6 @@ public interface ResponseContext {
     void setStatus(int status);
 
     /**
-     * レスポンスするHTTPレスポンスのコンテンツの長さを
-     * 指定します。リクエストメソッド、レスポンスボディの
-     * 内容により設定した値は無視される可能性があります。
-     * @param length HTTPレスポンスのコンテンツの長さ
-     */
-    void setContentLength(long length);
-
-    /**
      * レスポンスボディに書き込むエンティティを設定します。
      * @author snowgoose
      */

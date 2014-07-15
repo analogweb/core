@@ -89,7 +89,7 @@ public class AnalogHandlerTest {
                         isA(ResponseContext.class))).thenReturn(Application.PROCEEDED);
         handler.handle(exc);
         assertThat(exc.getSendStatus(), is(HttpURLConnection.HTTP_OK));
-        assertThat(exc.getResponseContentLength(), is(0L));
+        assertThat(exc.getResponseContentLength(), is(HttpExchangeResponseContext.NO_CONTENT));
     }
 
     @Test

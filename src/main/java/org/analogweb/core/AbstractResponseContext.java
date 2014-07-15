@@ -11,7 +11,6 @@ import org.analogweb.core.response.HttpStatus;
 public abstract class AbstractResponseContext implements ResponseContext {
 
 	private int status = HttpStatus.OK.getStatusCode();
-	private long length = -1;
 	private final ResponseWriter writer;
 	private final Headers headers;
 
@@ -39,12 +38,14 @@ public abstract class AbstractResponseContext implements ResponseContext {
 	}
 
 	protected long getContentLength() {
-		return this.length;
-	}
-
-	@Override
-	public void setContentLength(long length) {
-		this.length = length;
+		ResponseWriter w = getResponseWriter();
+		if (w != null) {
+			ResponseEntity e = w.getEntity();
+			if (e != null) {
+				return e.getContentLength();
+			}
+		}
+		return 0L;
 	}
 
 	protected int getStatus() {

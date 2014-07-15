@@ -20,62 +20,68 @@ import org.junit.rules.ExpectedException;
  */
 public class HttpExchangeResponseContextTest {
 
-    private HttpExchangeResponseContext context;
-    private MockHttpExchange exc;
-    private RequestContext requestContext;
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	private HttpExchangeResponseContext context;
+	private MockHttpExchange exc;
+	private RequestContext requestContext;
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    @Before
-    public void setUp() throws Exception {
-        exc = new MockHttpExchange();
-        context = new HttpExchangeResponseContext(exc);
-        requestContext = mock(RequestContext.class);
-    }
+	@Before
+	public void setUp() throws Exception {
+		exc = new MockHttpExchange();
+		context = new HttpExchangeResponseContext(exc);
+		requestContext = mock(RequestContext.class);
+	}
 
-    @Test
-    public void testCommmit() throws Exception {
-        context.getResponseWriter().writeEntity("ThisIsTest");
-        context.setContentLength("ThisIsTest".length());
-        context.commmit(requestContext);
-        assertThat(exc.getSendStatus(), is(HttpURLConnection.HTTP_OK));
-        assertThat(exc.getResponseContentLength(), is(10L));
-        assertThat(new String(((ByteArrayOutputStream) exc.getResponseBody()).toByteArray()),
-                is("ThisIsTest"));
-    }
+	@Test
+	public void testCommmit() throws Exception {
+		context.getResponseWriter().writeEntity("ThisIsTest");
+		context.commmit(requestContext);
+		assertThat(exc.getSendStatus(), is(HttpURLConnection.HTTP_OK));
+		assertThat(exc.getResponseContentLength(), is(10L));
+		assertThat(
+				new String(
+						((ByteArrayOutputStream) exc.getResponseBody())
+								.toByteArray()), is("ThisIsTest"));
+	}
 
-    @Test
-    public void testCommmitNoContent() throws Exception {
-        context.getResponseWriter().writeEntity("ThisIsTest");
-        context.setStatus(HttpURLConnection.HTTP_NO_CONTENT);
-        context.commmit(requestContext);
-        assertThat(exc.getSendStatus(), is(HttpURLConnection.HTTP_NO_CONTENT));
-        assertThat(exc.getResponseContentLength(), is(-1L));
-        assertThat(new String(((ByteArrayOutputStream) exc.getResponseBody()).toByteArray()),
-                is("ThisIsTest"));
-    }
+	@Test
+	public void testCommmitNoContent() throws Exception {
+		context.getResponseWriter().writeEntity("ThisIsTest");
+		context.setStatus(HttpURLConnection.HTTP_NO_CONTENT);
+		context.commmit(requestContext);
+		assertThat(exc.getSendStatus(), is(HttpURLConnection.HTTP_NO_CONTENT));
+		assertThat(exc.getResponseContentLength(),
+				is(HttpExchangeResponseContext.NO_CONTENT));
+		assertThat(
+				new String(
+						((ByteArrayOutputStream) exc.getResponseBody())
+								.toByteArray()), is("ThisIsTest"));
+	}
 
-    @Test
-    public void testCommmitUnsupportedType() throws Exception {
-        context.setStatus(HttpURLConnection.HTTP_UNSUPPORTED_TYPE);
-        context.commmit(requestContext);
-        assertThat(exc.getSendStatus(), is(HttpURLConnection.HTTP_UNSUPPORTED_TYPE));
-        assertThat(exc.getResponseContentLength(), is(0L));
-    }
+	@Test
+	public void testCommmitUnsupportedType() throws Exception {
+		context.setStatus(HttpURLConnection.HTTP_UNSUPPORTED_TYPE);
+		context.commmit(requestContext);
+		assertThat(exc.getSendStatus(),
+				is(HttpURLConnection.HTTP_UNSUPPORTED_TYPE));
+		assertThat(exc.getResponseContentLength(),
+				is(HttpExchangeResponseContext.NO_CONTENT));
+	}
 
-    @Test
-    public void testCommmitIOException() throws Exception {
-        thrown.expect(ApplicationRuntimeException.class);
-        context.getResponseWriter().writeEntity("ThisIsTest");
-        context.setContentLength("ThisIsTest".length());
-        exc = new MockHttpExchange() {
+	@Test
+	public void testCommmitIOException() throws Exception {
+		thrown.expect(ApplicationRuntimeException.class);
+		context.getResponseWriter().writeEntity("ThisIsTest");
+		exc = new MockHttpExchange() {
 
-            @Override
-            public void sendResponseHeaders(int arg0, long arg1) throws IOException {
-                throw new IOException();
-            }
-        };
-        context = new HttpExchangeResponseContext(exc);
-        context.commmit(requestContext);
-    }
+			@Override
+			public void sendResponseHeaders(int arg0, long arg1)
+					throws IOException {
+				throw new IOException();
+			}
+		};
+		context = new HttpExchangeResponseContext(exc);
+		context.commmit(requestContext);
+	}
 }
