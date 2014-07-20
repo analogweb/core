@@ -35,137 +35,130 @@ import org.analogweb.util.Maps;
  */
 public class FakeApplication {
 
-	private Application app;
-	private final ApplicationContext resolver;
-	private final ApplicationProperties props;
+    private Application app;
+    private final ApplicationContext resolver;
+    private final ApplicationProperties props;
 
-	public static FakeApplication fakeApplication() {
-		return new FakeApplication();
-	}
+    public static FakeApplication fakeApplication() {
+        return new FakeApplication();
+    }
 
-	public static FakeApplication fakeApplication(ApplicationProperties props) {
-		return new FakeApplication(props);
-	}
+    public static FakeApplication fakeApplication(ApplicationProperties props) {
+        return new FakeApplication(props);
+    }
 
-	public FakeApplication() {
-		this(DefaultApplicationContext.context(Maps
-				.<String, Object> newEmptyHashMap()));
-	}
+    public FakeApplication() {
+        this(DefaultApplicationContext.context(Maps.<String, Object> newEmptyHashMap()));
+    }
 
-	public FakeApplication(ApplicationContext contextResolver) {
-		this(contextResolver, DefaultApplicationProperties.defaultProperties());
-	}
+    public FakeApplication(ApplicationContext contextResolver) {
+        this(contextResolver, DefaultApplicationProperties.defaultProperties());
+    }
 
-	public FakeApplication(ApplicationProperties props) {
-		this(DefaultApplicationContext.context(Maps
-				.<String, Object> newEmptyHashMap()), props);
-	}
+    public FakeApplication(ApplicationProperties props) {
+        this(DefaultApplicationContext.context(Maps.<String, Object> newEmptyHashMap()), props);
+    }
 
-	public FakeApplication(ApplicationContext contextResolver,
-			ApplicationProperties props) {
-		this.resolver = contextResolver;
-		this.props = props;
-	}
+    public FakeApplication(ApplicationContext contextResolver, ApplicationProperties props) {
+        this.resolver = contextResolver;
+        this.props = props;
+    }
 
-	public ResponseResult request(String path, String method) {
-		return request(path, method, new ByteArrayInputStream(new byte[0]));
-	}
+    public ResponseResult request(String path, String method) {
+        return request(path, method, new ByteArrayInputStream(new byte[0]));
+    }
 
-	public ResponseResult request(String path, String method, final String body) {
-		return request(path, method,
-				Maps.<String, List<String>> newEmptyHashMap(),
-				new ByteArrayInputStream(body.getBytes()));
-	}
+    public ResponseResult request(String path, String method, final String body) {
+        return request(path, method, Maps.<String, List<String>> newEmptyHashMap(),
+                new ByteArrayInputStream(body.getBytes()));
+    }
 
-	public ResponseResult request(String path, String method,
-			final InputStream body) {
-		return request(path, method,
-				Maps.<String, List<String>> newEmptyHashMap(), body);
-	}
+    public ResponseResult request(String path, String method, final InputStream body) {
+        return request(path, method, Maps.<String, List<String>> newEmptyHashMap(), body);
+    }
 
-	public ResponseResult request(String path, String method,
-			final Map<String, List<String>> headers) {
-		return request(path, method, headers, new ByteArrayInputStream(
-				new byte[0]));
-	}
+    public ResponseResult request(String path, String method,
+            final Map<String, List<String>> headers) {
+        return request(path, method, headers, new ByteArrayInputStream(new byte[0]));
+    }
 
-	public ResponseResult request(String path, String method,
-			final Map<String, List<String>> headers, final InputStream body) {
-		RequestPath requestPath = new DefaultRequestPath(URI.create("/"),
-				URI.create(path), method);
-		RequestContext request = new AbstractRequestContext(requestPath,
-				Locale.getDefault()) {
-			@Override
-			public Headers getRequestHeaders() {
-				return new MapHeaders(headers);
-			}
+    public ResponseResult request(String path, String method,
+            final Map<String, List<String>> headers, final InputStream body) {
+        RequestPath requestPath = new DefaultRequestPath(URI.create("/"), URI.create(path), method);
+        RequestContext request = new AbstractRequestContext(requestPath, Locale.getDefault()) {
 
-			@Override
-			public InputStream getRequestBody() throws IOException {
-				return body;
-			}
-		};
-		final ResponseResult result = new ResponseResult();
-		ResponseContext response = new AbstractResponseContext() {
-			@Override
-			public void commmit(RequestContext context) {
-				commitHeadersAndStatus(result, context);
-				Headers headers = getResponseHeaders();
-				if (headers instanceof MapHeaders) {
-					result.setResponseHeader(((MapHeaders) headers).toMap());
-				}
-				try {
-					ResponseEntity entity = getResponseWriter().getEntity();
-					// no content.
-					if (entity != null) {
-						entity.writeInto(result.getResponseBody());
-					}
-					result.getResponseBody().flush();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+            @Override
+            public Headers getRequestHeaders() {
+                return new MapHeaders(headers);
+            }
 
-			private void commitHeadersAndStatus(ResponseResult ex,
-					RequestContext context) {
-				int status = getStatus();
-				if (status == 204) {
-					ex.add("Content-Length", "0");
-				} else {
-					ex.add("Content-Length", String.valueOf(getContentLength()));
-				}
-				ex.setStatus(status);
-			}
-		};
-		if (app == null) {
-			app = new WebApplication();
-			app.run(resolver, props, getClassCollectors(), Thread
-					.currentThread().getContextClassLoader());
-		}
-		try {
-			int resultCode = app.processRequest(requestPath, request, response);
-			if (resultCode == WebApplication.NOT_FOUND) {
-				result.setStatus(404);
-				return result;
-			}
-			response.commmit(request);
-		} catch (Exception e) {
-			throw new ApplicationRuntimeException(e) {
-				private static final long serialVersionUID = 1L;
-			};
-		}
-		return result;
-	}
+            @Override
+            public InputStream getRequestBody() throws IOException {
+                return body;
+            }
+        };
+        final ResponseResult result = new ResponseResult();
+        ResponseContext response = new AbstractResponseContext() {
 
-	public void shutdown() {
-		app.dispose();
-	}
+            @Override
+            public void commmit(RequestContext context) {
+                commitHeadersAndStatus(result, context);
+                Headers headers = getResponseHeaders();
+                if (headers instanceof MapHeaders) {
+                    result.setResponseHeader(((MapHeaders) headers).toMap());
+                }
+                try {
+                    ResponseEntity entity = getResponseWriter().getEntity();
+                    // no content.
+                    if (entity != null) {
+                        entity.writeInto(result.getResponseBody());
+                    }
+                    result.getResponseBody().flush();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
 
-	protected List<ClassCollector> getClassCollectors() {
-		List<ClassCollector> list = new ArrayList<ClassCollector>();
-		list.add(new JarClassCollector());
-		list.add(new FileClassCollector());
-		return Collections.unmodifiableList(list);
-	}
+            private void commitHeadersAndStatus(ResponseResult ex, RequestContext context) {
+                int status = getStatus();
+                if (status == 204) {
+                    ex.add("Content-Length", "0");
+                } else {
+                    ex.add("Content-Length", String.valueOf(getContentLength()));
+                }
+                ex.setStatus(status);
+            }
+        };
+        if (app == null) {
+            app = new WebApplication();
+            app.run(resolver, props, getClassCollectors(), Thread.currentThread()
+                    .getContextClassLoader());
+        }
+        try {
+            int resultCode = app.processRequest(requestPath, request, response);
+            if (resultCode == WebApplication.NOT_FOUND) {
+                result.setStatus(404);
+                return result;
+            }
+            response.commmit(request);
+        } catch (Exception e) {
+            throw new ApplicationRuntimeException(e) {
+
+                private static final long serialVersionUID = 1L;
+            };
+        }
+        return result;
+    }
+
+    public void shutdown() {
+        app.dispose();
+    }
+
+    protected List<ClassCollector> getClassCollectors() {
+        List<ClassCollector> list = new ArrayList<ClassCollector>();
+        list.add(new JarClassCollector());
+        list.add(new FileClassCollector());
+        return Collections.unmodifiableList(list);
+    }
 }

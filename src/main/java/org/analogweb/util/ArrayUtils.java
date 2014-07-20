@@ -7,22 +7,18 @@ import java.lang.reflect.Array;
  */
 public final class ArrayUtils {
 
-    @SafeVarargs
     public static <T> boolean isEmpty(T... anArray) {
         return isNotEmpty(anArray) == false;
     }
 
-    @SafeVarargs
 	public static <T> boolean isNotEmpty(T... anArray) {
         return (anArray != null && anArray.length != 0);
     }
 
-    @SafeVarargs
     public static <T> T[] newArray(T... objects) {
         return objects;
     }
 
-    @SafeVarargs
     public static <T> T[] clone(Class<T> type, T... original) {
         return clone(type, 0, original);
     }
@@ -40,7 +36,6 @@ public final class ArrayUtils {
         return array;
     }
 
-    @SafeVarargs
     public static <T> T[] add(Class<T> clazz, T addition, T... original) {
         T[] array = clone(clazz, 1, original);
         if (array != null) {
