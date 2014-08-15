@@ -45,6 +45,11 @@ public final class MediaTypes {
     /** "application/json" */
     public final static MediaType APPLICATION_JSON_TYPE = new DefaultMediaType("application",
             "json");
+    /** "application/javascript" */
+    public final static String APPLICATION_JAVASCRIPT = "application/javascript";
+    /** "application/javascript" */
+    public final static MediaType APPLICATION_JAVASCRIPT_TYPE = new DefaultMediaType("application",
+            "javascript");
     /** "application/x-www-form-urlencoded" */
     public final static String APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded";
     /** "application/x-www-form-urlencoded" */
@@ -72,6 +77,11 @@ public final class MediaTypes {
     public final static String TEXT_HTML = "text/html";
     /** "text/html" */
     public final static MediaType TEXT_HTML_TYPE = new DefaultMediaType("text", "html");
+    /** "text/javascript" */
+    public final static String TEXT_JAVASCRIPT = "text/javascript";
+    /** "text/javascript" */
+    public final static MediaType TEXT_JAVASCRIPT_TYPE = new DefaultMediaType("text",
+            "javascript");
 
     private static final class DefaultMediaType implements MediaType {
 
