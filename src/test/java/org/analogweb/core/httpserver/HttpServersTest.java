@@ -10,20 +10,19 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
 
+import org.analogweb.Server;
 import org.junit.After;
 import org.junit.Test;
 
-import com.sun.net.httpserver.HttpServer;
-
 public class HttpServersTest {
 
-    private HttpServer server;
+    private Server server;
 
     @After
     public void tearDown() {
         // Release port and dispose WebApplication.
         if (server != null) {
-            server.stop(0);
+            server.shutdown(0);
         }
     }
 
