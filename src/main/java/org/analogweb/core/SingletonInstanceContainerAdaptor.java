@@ -30,7 +30,6 @@ public class SingletonInstanceContainerAdaptor implements ContainerAdaptor {
         return (T) map.get(type.getCanonicalName());
     }
 
-    @SuppressWarnings("unchecked")
     public <T> List<T> getInstancesOfType(Class<T> type) {
         return Arrays.asList(getInstanceOfType(type));
     }

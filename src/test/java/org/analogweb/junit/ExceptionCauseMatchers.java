@@ -22,6 +22,7 @@ public class ExceptionCauseMatchers {
         return causedBy(new Class[] { t });
     }
 
+    @SuppressWarnings("unchecked")
     public static Causes causedBy(Class<? extends Throwable>... t) {
         return new Causes(t);
     }
@@ -70,6 +71,7 @@ public class ExceptionCauseMatchers {
         static final Causes EMPTY = new Causes();
         private List<Class<? extends Throwable>> causes;
 
+        @SuppressWarnings("unchecked")
         Causes(Class<? extends Throwable>... classes) {
             if (classes != null) {
                 this.causes = Arrays.asList(classes);
