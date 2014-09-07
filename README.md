@@ -1,6 +1,8 @@
 Analogweb Framework
 ===============================================
 
+![BuildStatus](https://api.travis-ci.org/analogweb/core.svg)
+
 Analogweb is a tiny HTTP oriented framework.
 It depends only Java 6+.
 
