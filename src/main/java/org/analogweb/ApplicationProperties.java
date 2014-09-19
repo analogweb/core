@@ -20,20 +20,16 @@ public interface ApplicationProperties {
     Collection<String> getComponentPackageNames();
 
     /**
-     * アプリケーションに対するリクエストを特定する識別子を
-     * 取得します。
-     * @return 識別子
-     * @deprecated
-     */
-    @Deprecated
-    String getApplicationSpecifier();
-
-    /**
      * アプリケーション全般で利用可能なテンポラリディレクトリ
      * を取得します。
      * @return テンポラリディレクトリを指し示す{@link File}
      */
     File getTempDir();
 
+    /**
+     * アプリケーションに対するリクエストに適用される
+     * 既定の{@link Locale}を取得します。
+     * @return テンポラリディレクトリを指し示す{@link File}
+     */
     Locale getDefaultClientLocale();
 }

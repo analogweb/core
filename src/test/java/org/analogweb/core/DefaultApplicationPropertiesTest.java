@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Locale;
 
 import org.analogweb.Application;
-import org.analogweb.util.StringUtils;
 import org.analogweb.util.SystemProperties;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +27,6 @@ public class DefaultApplicationPropertiesTest {
     @Test
     public void testUsingDefaultCreator() throws IOException {
         properties = new DefaultApplicationProperties();
-        assertThat(properties.getApplicationSpecifier(), is(StringUtils.EMPTY));
         Collection<String> actualPackageNames = properties.getComponentPackageNames();
         assertThat(actualPackageNames.size(), is(1));
         assertThat(actualPackageNames.contains(Application.class.getPackage().getName()), is(true));
@@ -41,10 +39,9 @@ public class DefaultApplicationPropertiesTest {
     public void testUsingConfiguredDefaultCreator() throws IOException {
         File dir = folder.newFolder();
         String packageNames = "foo.baa,baz.boo";
-        String applicationSpecifier = ".do";
         String locale = "en-us";
         String tempDirectoryPath = dir.getPath();
-        properties = new DefaultApplicationProperties(packageNames, applicationSpecifier,
+        properties = new DefaultApplicationProperties(packageNames, 
                 tempDirectoryPath, locale);
         Collection<String> actualPackageNames = properties.getComponentPackageNames();
         assertThat(actualPackageNames.size(), is(2));
@@ -60,10 +57,9 @@ public class DefaultApplicationPropertiesTest {
     public void testUsingConfiguredDefaultCreatorWithEmptyPackageNames() throws IOException {
         File dir = folder.newFolder();
         String packageNames = "";
-        String applicationSpecifier = ".do";
         String tempDirectoryPath = dir.getPath();
         String locale = "";
-        properties = new DefaultApplicationProperties(packageNames, applicationSpecifier,
+        properties = new DefaultApplicationProperties(packageNames,
                 tempDirectoryPath, locale);
         assertThat(properties.getComponentPackageNames().isEmpty(), is(true));
         assertThat(properties.getDefaultClientLocale(), is(Locale.getDefault()));
