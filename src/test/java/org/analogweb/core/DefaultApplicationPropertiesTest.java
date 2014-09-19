@@ -1,5 +1,6 @@
 package org.analogweb.core;
 
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -31,7 +32,7 @@ public class DefaultApplicationPropertiesTest {
         assertThat(actualPackageNames.size(), is(1));
         assertThat(actualPackageNames.contains(Application.class.getPackage().getName()), is(true));
         assertThat(properties.getTempDir().getPath(),
-                is(new File(SystemProperties.tmpDir() + SystemProperties.fileSeparator()
+                startsWith(new File(SystemProperties.tmpDir() + SystemProperties.fileSeparator()
                         + Application.class.getCanonicalName()).getPath()));
     }
 
@@ -48,7 +49,7 @@ public class DefaultApplicationPropertiesTest {
         assertThat(actualPackageNames.containsAll(Arrays.asList("foo.baa", "baz.boo")), is(true));
         assertThat(
                 properties.getTempDir().getPath(),
-                is(new File(dir.getPath() + SystemProperties.fileSeparator()
+                startsWith(new File(dir.getPath() + SystemProperties.fileSeparator()
                         + Application.class.getCanonicalName()).getPath()));
         assertThat(properties.getDefaultClientLocale(), is(Locale.US));
     }

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationProperties;
@@ -95,9 +96,15 @@ public class DefaultApplicationProperties implements ApplicationProperties {
 			tmpDir = SystemProperties.tmpDir();
 		}
 		if (tmpDir.endsWith(SystemProperties.fileSeparator())) {
-			return tmpDir + Application.class.getCanonicalName();
+			tmpDir = tmpDir + Application.class.getCanonicalName();
+		} else {
+			tmpDir = tmpDir + SystemProperties.fileSeparator()
+					+ Application.class.getCanonicalName();
 		}
-		return tmpDir + SystemProperties.fileSeparator()
-				+ Application.class.getCanonicalName();
+		String path = tmpDir + SystemProperties.fileSeparator() + UUID.randomUUID();
+		while (new File(path).exists()) {
+			path = tmpDir + SystemProperties.fileSeparator() + UUID.randomUUID();
+		}
+		return path;
 	}
 }
