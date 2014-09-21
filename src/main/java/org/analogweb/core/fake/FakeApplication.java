@@ -115,8 +115,10 @@ public class FakeApplication {
                     }
                     result.getResponseBody().flush();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    throw new ApplicationRuntimeException(e) {
+
+                        private static final long serialVersionUID = 1L;
+                    };
                 }
             }
 
