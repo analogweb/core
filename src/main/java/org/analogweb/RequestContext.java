@@ -73,4 +73,19 @@ public interface RequestContext {
      * @return {@link Locale}
      */
     List<Locale> getLocales();
+
+    /**
+     * HTTPリクエストヘッダ Content-Length に含まれるリクエスト長を
+     * 取得します。ヘッダが存在しない場合は0を返します。
+     * @return リクエスト長
+     */
+    long getContentLength();
+
+    /**
+     * HTTPリクエストの文字エンコーディングを取得します。
+     * エンコーディングを特定できない場合はUTF-8を返します。
+     * @see RequestContext#getContentType
+     * @return リクエストエンコーディング
+     */
+    String getCharacterEncoding();
 }
