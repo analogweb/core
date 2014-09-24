@@ -149,4 +149,14 @@ public class HttpExchangeRequestContextTest {
         header.putValue("foo", "baa");
         assertThat(header.contains("foo"), is(true));
     }
+
+    @Test
+    public void testGetRequestMethod() {
+        context = new HttpExchangeRequestContext(ex, requestPath, Locale.getDefault());
+        Headers headers = new Headers();
+        headers.put("Content-Type", Arrays.asList("text/xml"));
+        ex.setRequestHeaders(headers);
+        ex.setRequestMethod("GET");
+        assertThat(context.getRequestMethod(), is("GET"));
+    }
 }

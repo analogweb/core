@@ -48,7 +48,6 @@ public class MockHttpExchange extends HttpExchange {
 
     @Override
     public Object getAttribute(String arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -62,36 +61,18 @@ public class MockHttpExchange extends HttpExchange {
         return this.localAddress;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sun.net.httpserver.HttpExchange#getPrincipal()
-     */
     @Override
     public HttpPrincipal getPrincipal() {
-        // TODO Auto-generated method stub
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sun.net.httpserver.HttpExchange#getProtocol()
-     */
     @Override
     public String getProtocol() {
-        // TODO Auto-generated method stub
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sun.net.httpserver.HttpExchange#getRemoteAddress()
-     */
     @Override
     public InetSocketAddress getRemoteAddress() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -115,24 +96,13 @@ public class MockHttpExchange extends HttpExchange {
         return this.requestURI;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sun.net.httpserver.HttpExchange#getResponseBody()
-     */
     @Override
     public OutputStream getResponseBody() {
         return this.responseBody;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sun.net.httpserver.HttpExchange#getResponseCode()
-     */
     @Override
     public int getResponseCode() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
@@ -147,23 +117,11 @@ public class MockHttpExchange extends HttpExchange {
         this.contentLength = arg1;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sun.net.httpserver.HttpExchange#setAttribute(java.lang.String,
-     * java.lang.Object)
-     */
     @Override
     public void setAttribute(String arg0, Object arg1) {
-        // TODO Auto-generated method stub
+    	// nop.
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.sun.net.httpserver.HttpExchange#setStreams(java.io.InputStream,
-     * java.io.OutputStream)
-     */
     @Override
     public void setStreams(InputStream arg0, OutputStream arg1) {
         this.requestBody = arg0;

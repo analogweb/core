@@ -88,4 +88,10 @@ public interface RequestContext {
      * @return リクエストエンコーディング
      */
     String getCharacterEncoding();
+    
+    String getRequestMethod();
+    
+    <T> T getAttribute(String name);
+
+    <T> void setAttribute(String name,T value);
 }

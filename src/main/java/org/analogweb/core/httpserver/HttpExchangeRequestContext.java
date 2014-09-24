@@ -16,24 +16,30 @@ import com.sun.net.httpserver.HttpExchange;
  */
 public class HttpExchangeRequestContext extends AbstractRequestContext {
 
-    private final HttpExchange ex;
+	private final HttpExchange ex;
 
-    HttpExchangeRequestContext(HttpExchange ex, RequestPath requestPath, Locale defaultLocale) {
-    	super(requestPath,defaultLocale);
-        this.ex = ex;
-    }
+	HttpExchangeRequestContext(HttpExchange ex, RequestPath requestPath,
+			Locale defaultLocale) {
+		super(requestPath, defaultLocale);
+		this.ex = ex;
+	}
 
-    protected HttpExchange getHttpExchange() {
-        return this.ex;
-    }
+	protected HttpExchange getHttpExchange() {
+		return this.ex;
+	}
 
-    @Override
-    public InputStream getRequestBody() throws IOException {
-        return getHttpExchange().getRequestBody();
-    }
+	@Override
+	public InputStream getRequestBody() throws IOException {
+		return getHttpExchange().getRequestBody();
+	}
 
-    @Override
-    public Headers getRequestHeaders() {
-        return new MapHeaders(getHttpExchange().getRequestHeaders());
-    }
+	@Override
+	public Headers getRequestHeaders() {
+		return new MapHeaders(getHttpExchange().getRequestHeaders());
+	}
+
+	@Override
+	public String getRequestMethod() {
+		return getHttpExchange().getRequestMethod();
+	}
 }

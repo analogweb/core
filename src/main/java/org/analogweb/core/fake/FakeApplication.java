@@ -82,7 +82,7 @@ public class FakeApplication {
         return request(path, method, headers, new ByteArrayInputStream(new byte[0]));
     }
 
-    public ResponseResult request(String path, String method,
+    public ResponseResult request(String path, final String method,
             final Map<String, List<String>> headers, final InputStream body) {
         RequestPath requestPath = new DefaultRequestPath(URI.create("/"), URI.create(path), method);
         RequestContext request = new AbstractRequestContext(requestPath, Locale.getDefault()) {
@@ -96,6 +96,11 @@ public class FakeApplication {
             public InputStream getRequestBody() throws IOException {
                 return body;
             }
+
+			@Override
+			public String getRequestMethod() {
+				return method;
+			}
         };
         final ResponseResult result = new ResponseResult();
         ResponseContext response = new AbstractResponseContext() {

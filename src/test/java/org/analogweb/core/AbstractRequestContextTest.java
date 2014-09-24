@@ -70,9 +70,15 @@ public class AbstractRequestContextTest {
 
 		private Headers headers;
 		private InputStream in;
+		private String method;
 
 		protected StubRequestContext(RequestPath requestPath,
 				Locale defaultLocale, Headers headers, InputStream in) {
+			this(requestPath, defaultLocale,headers,in,"GET");
+		}
+
+		protected StubRequestContext(RequestPath requestPath,
+				Locale defaultLocale, Headers headers, InputStream in,String method) {
 			super(requestPath, defaultLocale);
 			this.headers = headers;
 			this.in = in;
@@ -86,6 +92,11 @@ public class AbstractRequestContextTest {
 		@Override
 		public InputStream getRequestBody() throws IOException {
 			return in;
+		}
+
+		@Override
+		public String getRequestMethod() {
+			return method;
 		}
 
 	}

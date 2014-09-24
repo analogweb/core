@@ -19,6 +19,7 @@ import org.analogweb.core.MediaTypes;
 import org.analogweb.core.QueryParameters;
 import org.analogweb.core.RequestCookies;
 import org.analogweb.util.CollectionUtils;
+import org.analogweb.util.Maps;
 
 /**
  * @author snowgoose
@@ -32,6 +33,7 @@ public abstract class AbstractRequestContext implements RequestContext {
 	private Parameters formParams;
 	private final AcceptLanguages langs;
 	private final Locale defaultLocale;
+	private final Map<String, Object> attributes;
 
 	protected AbstractRequestContext(RequestPath requestPath,
 			Locale defaultLocale) {
@@ -41,6 +43,7 @@ public abstract class AbstractRequestContext implements RequestContext {
 				.getRequestURI());
 		this.langs = new AcceptLanguages(this);
 		this.defaultLocale = defaultLocale;
+		this.attributes = Maps.newConcurrentHashMap();
 	}
 
 	@Override
@@ -132,5 +135,16 @@ public abstract class AbstractRequestContext implements RequestContext {
 
 	protected String getDefaultCharacterEncoding() {
 		return DEFAULT_CHARACTER_ENCODING;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T getAttribute(String name) {
+		return (T)this.attributes.get(name);
+	}
+
+	@Override
+	public <T> void setAttribute(String name, T value) {
+		this.attributes.put(name, value);
 	}
 }
