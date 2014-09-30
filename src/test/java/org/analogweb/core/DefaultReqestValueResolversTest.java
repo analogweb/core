@@ -19,21 +19,23 @@ public class DefaultReqestValueResolversTest {
 	@Test
 	public void test() {
 		resolvers = new DefaultReqestValueResolvers(Arrays.asList(new A(),
-				new B(), new C(), new D(), new E(), new F()));
+				new B(), new C(), new D(), new E(), new F(), new G()));
 		RequestValueResolver a = resolvers.findRequestValueResolver(A.class);
 		RequestValueResolver b = resolvers.findRequestValueResolver(B.class);
 		RequestValueResolver c = resolvers.findRequestValueResolver(C.class);
 		RequestValueResolver d = resolvers.findRequestValueResolver(D.class);
 		RequestValueResolver e = resolvers.findRequestValueResolver(E.class);
 		RequestValueResolver f = resolvers.findRequestValueResolver(F.class);
-		String expected = D.class.getCanonicalName();
-		assertThat(expected, is(a.getClass().getCanonicalName()));
-		assertThat(expected, is(b.getClass().getCanonicalName()));
-		assertThat(expected, is(c.getClass().getCanonicalName()));
-		assertThat(expected, is(d.getClass().getCanonicalName()));
+		RequestValueResolver g = resolvers.findRequestValueResolver(G.class);
+		assertThat(A.class.getCanonicalName(), is(a.getClass().getCanonicalName()));
+		assertThat(B.class.getCanonicalName(), is(b.getClass().getCanonicalName()));
+		assertThat(C.class.getCanonicalName(), is(c.getClass().getCanonicalName()));
+		assertThat(D.class.getCanonicalName(), is(d.getClass().getCanonicalName()));
 		assertThat(E.class.getCanonicalName(), is(e.getClass()
 				.getCanonicalName()));
 		assertThat(F.class.getCanonicalName(), is(f.getClass()
+				.getCanonicalName()));
+		assertThat(G.class.getCanonicalName(), is(g.getClass()
 				.getCanonicalName()));
 	}
 
@@ -88,5 +90,9 @@ public class DefaultReqestValueResolversTest {
 			// nop
 			return null;
 		}
+	}
+	
+	class G extends F {
+		
 	}
 }
