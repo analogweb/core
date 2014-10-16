@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 
@@ -58,6 +59,10 @@ public final class IOUtils {
         } finally {
             closeQuietly(input);
         }
+    }
+
+    public static String toString(InputStream in) throws IOException {
+        return toString(new InputStreamReader(in));
     }
 
     public static String toString(Reader reader) throws IOException {

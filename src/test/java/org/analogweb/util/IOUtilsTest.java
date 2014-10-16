@@ -92,10 +92,18 @@ public class IOUtilsTest {
     }
 
     @Test
-    public void testToString() throws Exception {
+    public void testToStringViaReader() throws Exception {
         String expected = "this is test!";
         InputStream in = new ByteArrayInputStream(expected.getBytes());
         String actual = IOUtils.toString(new InputStreamReader(in));
+        assertThat(actual, is(expected));
+    }
+
+    @Test
+    public void testToStringViaStream() throws Exception {
+        String expected = "this is test!";
+        InputStream in = new ByteArrayInputStream(expected.getBytes());
+        String actual = IOUtils.toString(in);
         assertThat(actual, is(expected));
     }
 }
