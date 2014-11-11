@@ -13,12 +13,11 @@ import org.analogweb.util.StringUtils;
 /**
  * テキストをレスポンスする{@link Renderable}です。<br/>
  * レスポンスにおける既定のContent-Typeは「text/plain」であり 、文字セットは「UTF-8」です。
- * 
  * @author snowgoose
  */
 public class TextFormat<T extends TextFormat<T>> extends BuildableResponse<T> implements Renderable {
 
-    private static final String DEFAULT_CHARSET = Charset.defaultCharset().displayName();
+    private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";
     private final String responseText;
     private String contentType = DEFAULT_CONTENT_TYPE;
@@ -77,11 +76,11 @@ public class TextFormat<T extends TextFormat<T>> extends BuildableResponse<T> im
     @Override
     protected void mergeHeaders(RequestContext request, ResponseContext response,
             Map<String, String> headers, ResponseEntity entity) {
+        super.mergeHeaders(request, response, headers, entity);
         String contentType = resolveContentType();
         if (StringUtils.isNotEmpty(contentType)) {
             response.getResponseHeaders().putValue("Content-Type", contentType);
         }
-        super.mergeHeaders(request, response, headers, entity);
     }
 
     protected String getResponseText() {
