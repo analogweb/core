@@ -19,6 +19,7 @@ import org.analogweb.ApplicationProcessor;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.Modules;
+import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RouteRegistry;
 import org.analogweb.junit.NoDescribeMatcher;
@@ -46,6 +47,7 @@ public class WebApplicationTest {
     private ClassLoader classLoader;
     private ApplicationContext resolver;
     private Collection<ClassCollector> collectors;
+    private RequestContext context;
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -53,6 +55,7 @@ public class WebApplicationTest {
     public void setUp() {
         classLoader = Thread.currentThread().getContextClassLoader();
         resolver = mock(ApplicationContext.class);
+        context = mock(RequestContext.class);
         List<ClassCollector> collectors = new ArrayList<ClassCollector>();
         collectors.add(new JarClassCollector());
         collectors.add(new FileClassCollector());
@@ -72,7 +75,8 @@ public class WebApplicationTest {
         RequestPath pathAnyThing = mock(RequestPath.class);
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
         when(pathAnyThing.getRequestMethod()).thenReturn("POST");
-        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(pathAnyThing);
+        when(context.getRequestPath()).thenReturn(pathAnyThing);
+        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(context);
         log.debug(metadataAnyThing.toString());
     }
 
@@ -90,7 +94,8 @@ public class WebApplicationTest {
         RequestPath pathAnyThing = mock(RequestPath.class);
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
         when(pathAnyThing.getRequestMethod()).thenReturn("POST");
-        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(pathAnyThing);
+        when(context.getRequestPath()).thenReturn(pathAnyThing);
+        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(context);
         log.debug(metadataAnyThing.toString());
     }
 

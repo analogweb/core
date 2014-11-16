@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.net.URI;
 
 import org.analogweb.InvocationMetadata;
+import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 import org.junit.Before;
@@ -20,10 +21,12 @@ import org.junit.Test;
 public class DefaultRouteRegistryTest {
 
     private DefaultRouteRegistry registry;
+    private RequestContext context;
 
     @Before
     public void setUp() throws Exception {
         registry = new DefaultRouteRegistry();
+        context = mock(RequestContext.class);
     }
 
     @Test
@@ -43,9 +46,12 @@ public class DefaultRouteRegistryTest {
         registry.register(metadata1);
         registry.register(metadata2);
         registry.register(metadata3);
-        assertThat(registry.findInvocationMetadata(requestPath1), is(metadata1));
-        assertThat(registry.findInvocationMetadata(requestPath2), is(metadata2));
-        assertThat(registry.findInvocationMetadata(requestPath3), is(metadata3));
+        when(context.getRequestPath()).thenReturn(requestPath1);
+        assertThat(registry.findInvocationMetadata(context), is(metadata1));
+        when(context.getRequestPath()).thenReturn(requestPath2);
+        assertThat(registry.findInvocationMetadata(context), is(metadata2));
+        when(context.getRequestPath()).thenReturn(requestPath3);
+        assertThat(registry.findInvocationMetadata(context), is(metadata3));
     }
 
     @Test
@@ -57,8 +63,10 @@ public class DefaultRouteRegistryTest {
         registry.register(metadata1);
         when(requestPath1.match(requestPath1)).thenReturn(true);
         when(metadata1.getDefinedPath()).thenReturn(requestPath1);
-        assertThat(registry.findInvocationMetadata(requestPath1), is(metadata1));
-        assertNull(registry.findInvocationMetadata(requestPath2));
+        when(context.getRequestPath()).thenReturn(requestPath1);
+        assertThat(registry.findInvocationMetadata(context), is(metadata1));
+        when(context.getRequestPath()).thenReturn(requestPath2);
+        assertNull(registry.findInvocationMetadata(context));
     }
 
     @Test
@@ -70,8 +78,10 @@ public class DefaultRouteRegistryTest {
         when(requestPath1.match(requestPath1)).thenReturn(true);
         registry.register(metadata1);
         registry.dispose();
-        assertNull(registry.findInvocationMetadata(requestPath1));
-        assertNull(registry.findInvocationMetadata(requestPath2));
+        when(context.getRequestPath()).thenReturn(requestPath1);
+        assertNull(registry.findInvocationMetadata(context));
+        when(context.getRequestPath()).thenReturn(requestPath2);
+        assertNull(registry.findInvocationMetadata(context));
     }
 
     @Test
@@ -89,11 +99,13 @@ public class DefaultRouteRegistryTest {
         RequestPath requestPath1 = new DefaultRequestPath(URI.create("/"), URI.create("/path"),
                 "GET");
         when(meta2.getDefinedPath()).thenReturn(path2);
-        InvocationMetadata actual = registry.findInvocationMetadata(requestPath1);
+        when(context.getRequestPath()).thenReturn(requestPath1);
+        InvocationMetadata actual = registry.findInvocationMetadata(context);
         assertThat(actual, is(meta1));
         RequestPath requestPath2 = new DefaultRequestPath(URI.create("/"), URI.create("/path"),
                 "POST");
-        actual = registry.findInvocationMetadata(requestPath2);
+        when(context.getRequestPath()).thenReturn(requestPath2);
+        actual = registry.findInvocationMetadata(context);
         assertThat(actual, is(meta2));
     }
 }

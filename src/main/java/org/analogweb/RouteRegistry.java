@@ -8,10 +8,10 @@ public interface RouteRegistry extends Disposable {
 
     /**
     * Find matched {@link InvocationMetadata}.<br/>
-    * @param requestPath {@link RequestPathMetadata}
+    * @param requestContext {@link RequestContext}
     * @return {@link InvocationMetadata}
      */
-    InvocationMetadata findInvocationMetadata(RequestPath requestPath);
+    InvocationMetadata findInvocationMetadata(RequestContext requestContext);
 
     /**
      * Register {@link InvocationMetadata}.

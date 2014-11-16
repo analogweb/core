@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.analogweb.InvocationMetadata;
+import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.RouteRegistry;
@@ -18,7 +19,8 @@ public class DefaultRouteRegistry implements RouteRegistry {
             .newConcurrentHashMap();
 
     @Override
-    public InvocationMetadata findInvocationMetadata(RequestPath requestPath) {
+    public InvocationMetadata findInvocationMetadata(RequestContext requestContext) {
+    	RequestPath requestPath = requestContext.getRequestPath();
         // direct match
         InvocationMetadata direct = actionMetadataMap.get(requestPath);
         if (direct != null) {
