@@ -10,6 +10,8 @@ public interface Modules extends Disposable {
 
     List<InvocationMetadataFactory> getInvocationMetadataFactories();
 
+    List<InvocationMetadataFinder> getInvocationMetadataFinders();
+
     Invoker getInvoker();
 
     ContainerAdaptor getInvocationInstanceProvider();

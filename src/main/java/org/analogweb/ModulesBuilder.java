@@ -34,6 +34,11 @@ public interface ModulesBuilder {
 
     ModulesBuilder clearInvocationMetadataFactoriesClass();
 
+    ModulesBuilder addInvocationMetadataFinderClass(
+            Class<? extends InvocationMetadataFinder> invocationMetadataFinderClass);
+
+    ModulesBuilder clearInvocationMetadataFinderClass();
+
     ModulesBuilder addApplicationProcessorClass(
             Class<? extends ApplicationProcessor> applicationProcessorClass);
 

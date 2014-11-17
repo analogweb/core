@@ -6,7 +6,7 @@ import java.util.Map;
  * Finder strategy of {@link InvocationMetadata} from {@link RouteRegistry}s
  * @author snowgooseyk
  */
-public interface InvocationMetadataFinder extends Precedence {
+public interface InvocationMetadataFinder extends Precedence,MultiModule {
 
 	InvocationMetadata find(
 			Map<RequestPathMetadata, InvocationMetadata> metadatas,

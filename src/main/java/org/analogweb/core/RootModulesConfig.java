@@ -5,6 +5,7 @@ import org.analogweb.AttributesHandler;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadataFactory;
+import org.analogweb.InvocationMetadataFinder;
 import org.analogweb.InvokerFactory;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.ModulesConfig;
@@ -33,6 +34,7 @@ public final class RootModulesConfig implements ModulesConfig {
                 .setTypeMapperContextClass(TypeMapperContext.class)
                 .addApplicationProcessorClass(ApplicationProcessor.class)
                 .addInvocationMetadataFactoriesClass(InvocationMetadataFactory.class)
+                .addInvocationMetadataFinderClass(InvocationMetadataFinder.class)
                 .addAttributesHandlerClass(AttributesHandler.class)
                 .addRequestValueResolverClass(RequestValueResolver.class);
     }

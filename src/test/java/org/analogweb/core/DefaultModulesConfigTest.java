@@ -8,6 +8,7 @@ import org.analogweb.AttributesHandler;
 import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadataFactory;
+import org.analogweb.InvocationMetadataFinder;
 import org.analogweb.InvokerFactory;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.ResponseHandler;
@@ -59,6 +60,8 @@ public class DefaultModulesConfigTest {
         when(modulesBuilder.addInvocationMetadataFactoriesClass(InvocationMetadataFactory.class))
                 .thenReturn(modulesBuilder);
         when(modulesBuilder.addAttributesHandlerClass(AttributesHandler.class)).thenReturn(
+                modulesBuilder);
+        when(modulesBuilder.addInvocationMetadataFinderClass(InvocationMetadataFinder.class)).thenReturn(
                 modulesBuilder);
         config.prepare(modulesBuilder);
     }

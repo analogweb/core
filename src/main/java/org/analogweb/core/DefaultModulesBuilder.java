@@ -20,6 +20,7 @@ import org.analogweb.ExceptionHandler;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationInterceptor;
 import org.analogweb.InvocationMetadataFactory;
+import org.analogweb.InvocationMetadataFinder;
 import org.analogweb.Invoker;
 import org.analogweb.InvokerFactory;
 import org.analogweb.Modules;
@@ -54,6 +55,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private final List<Class<? extends ApplicationProcessor>> applicationProcessorClasses;
     private final List<Class<? extends InvocationInterceptor>> invocationInterceptorClasses;
     private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
+    private final List<Class<? extends InvocationMetadataFinder>> invocationMetadataFinderClasses;
     private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
     private final List<Class<? extends RequestValueResolver>> requestValueResolverClasses;
     private final Map<Class<? extends Renderable>, Class<? extends ResponseFormatter>> directionFormatterClasses;
@@ -64,6 +66,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         this.applicationProcessorClasses = new LinkedList<Class<? extends ApplicationProcessor>>();
         this.invocationInterceptorClasses = new LinkedList<Class<? extends InvocationInterceptor>>();
         this.invocationMetadataFactoryClasses = new LinkedList<Class<? extends InvocationMetadataFactory>>();
+        this.invocationMetadataFinderClasses = new LinkedList<Class<? extends InvocationMetadataFinder>>();
         this.attributesHandlerClasses = new LinkedList<Class<? extends AttributesHandler>>();
         this.requestValueResolverClasses = new LinkedList<Class<? extends RequestValueResolver>>();
         this.directionFormatterClasses = Maps.newConcurrentHashMap();
@@ -86,6 +89,17 @@ public class DefaultModulesBuilder implements ModulesBuilder {
             public List<InvocationMetadataFactory> getInvocationMetadataFactories() {
                 return getComponentInstances(moduleContainerAdaptor,
                         getInvocationMetadataFactoryClasses());
+            }
+
+            private List<InvocationMetadataFinder> metadataFinders;
+
+            @Override
+            public List<InvocationMetadataFinder> getInvocationMetadataFinders() {
+            	if(metadataFinders == null){
+            		metadataFinders = getComponentInstances(moduleContainerAdaptor,
+                            getInvocationMetadataFinderClasses());
+            	}
+                return this.metadataFinders;
             }
 
             private Invoker invoker;
@@ -324,6 +338,13 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder addInvocationMetadataFinderClass(
+            Class<? extends InvocationMetadataFinder> actionMethodMetadataFinderClass) {
+        this.invocationMetadataFinderClasses.add(actionMethodMetadataFinderClass);
+        return this;
+    }
+
+    @Override
     public ModulesBuilder setInvokerFactoryClass(Class<? extends InvokerFactory> invokerFactoryClass) {
         this.invokerFactoryClass = invokerFactoryClass;
         return this;
@@ -400,6 +421,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         return this.invocationMetadataFactoryClasses;
     }
 
+    protected List<Class<? extends InvocationMetadataFinder>> getInvocationMetadataFinderClasses() {
+        return this.invocationMetadataFinderClasses;
+    }
+
     protected Class<? extends InvokerFactory> getInvokerFactoryClass() {
         return this.invokerFactoryClass;
     }
@@ -460,6 +485,12 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     @Override
     public ModulesBuilder clearInvocationMetadataFactoriesClass() {
         this.invocationMetadataFactoryClasses.clear();
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder clearInvocationMetadataFinderClass() {
+        this.invocationMetadataFinderClasses.clear();
         return this;
     }
 
