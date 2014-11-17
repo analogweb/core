@@ -94,7 +94,7 @@ public class WebApplication implements Application {
 			onProcessRequest(processors, context, requestedPath);
 			RouteRegistry mapping = getRouteRegistry();
 			log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
-			metadata = mapping.findInvocationMetadata(context);
+			metadata = mapping.findInvocationMetadata(context,mod.getInvocationMetadataFinders());
 			if (metadata == null) {
 				log.log(Markers.LIFECYCLE, "DL000005", requestedPath);
 				return NOT_FOUND;

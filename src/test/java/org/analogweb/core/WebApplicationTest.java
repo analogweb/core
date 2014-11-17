@@ -76,7 +76,7 @@ public class WebApplicationTest {
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
         when(pathAnyThing.getRequestMethod()).thenReturn("POST");
         when(context.getRequestPath()).thenReturn(pathAnyThing);
-        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(context);
+        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(context,application.getModules().getInvocationMetadataFinders());
         log.debug(metadataAnyThing.toString());
     }
 
@@ -95,7 +95,7 @@ public class WebApplicationTest {
         when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
         when(pathAnyThing.getRequestMethod()).thenReturn("POST");
         when(context.getRequestPath()).thenReturn(pathAnyThing);
-        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(context);
+        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(context,application.getModules().getInvocationMetadataFinders());
         log.debug(metadataAnyThing.toString());
     }
 

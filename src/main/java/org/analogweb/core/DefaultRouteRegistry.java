@@ -1,11 +1,12 @@
 package org.analogweb.core;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.analogweb.InvocationMetadata;
+import org.analogweb.InvocationMetadataFinder;
 import org.analogweb.RequestContext;
-import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.RouteRegistry;
 import org.analogweb.util.Maps;
@@ -19,22 +20,18 @@ public class DefaultRouteRegistry implements RouteRegistry {
             .newConcurrentHashMap();
 
     @Override
-    public InvocationMetadata findInvocationMetadata(RequestContext requestContext) {
-    	RequestPath requestPath = requestContext.getRequestPath();
-        // direct match
-        InvocationMetadata direct = actionMetadataMap.get(requestPath);
-        if (direct != null) {
-            return direct;
-        }
-        // pattern match
-        for (Entry<RequestPathMetadata, InvocationMetadata> pathEntry : actionMetadataMap
-                .entrySet()) {
-            if (pathEntry.getKey().match(requestPath)) {
-                InvocationMetadata found = pathEntry.getValue();
-                actionMetadataMap.put(requestPath, found);
-                return found;
-            }
-        }
+    public InvocationMetadata findInvocationMetadata(RequestContext requestContext,List<InvocationMetadataFinder> finders) {
+    	Map<RequestPathMetadata, InvocationMetadata> metadatas = Collections.unmodifiableMap(actionMetadataMap);
+    	for(InvocationMetadataFinder finder : finders){
+    		InvocationMetadata found = finder.find(metadatas, requestContext);
+    		if(found == null){
+    			continue;
+    		} else if (found instanceof InvocationMetadataFinder.Cacheable){
+    			return ((InvocationMetadataFinder.Cacheable)found).getCachable();
+    		} else {
+    			return found;
+    		}
+    	}
         return null;
     }
 
