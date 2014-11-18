@@ -93,6 +93,7 @@ public class DefaultRouteRegistryTest {
         registry.register(metadata1);
         registry.register(metadata2);
         registry.register(metadata3);
+        when(context.getRequestPath()).thenReturn(requestPath3);
         InvocationMetadataFinder finder2 = mock(InvocationMetadataFinder.class);
         when(finder2.find(anyMapOf(RequestPathMetadata.class,InvocationMetadata.class), eq(context))).thenReturn(null);
         InvocationMetadataFinder finder3 = mock(InvocationMetadataFinder.class);
