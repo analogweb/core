@@ -42,13 +42,13 @@ public class DefaultExceptionHandler implements ExceptionHandler {
 	protected Object verifyException(Throwable exception) {
 		if (exception == null) {
 			return null;
-		}
-		if (exception instanceof UnsupportedMediaTypeException) {
+		} else if (exception instanceof UnsupportedMediaTypeException) {
 			return HttpStatus.UNSUPPORTED_MEDIA_TYPE;
-		}
-		if (exception instanceof RequestMethodUnsupportedException) {
+		} else if (exception instanceof RequestMethodUnsupportedException) {
 			return HttpStatus.METHOD_NOT_ALLOWED;
-		}
+                } else if (exception instanceof InvalidRequestFormatException) {
+                    return HttpStatus.BAD_REQUEST;
+                }
 		return null;
 	}
 
