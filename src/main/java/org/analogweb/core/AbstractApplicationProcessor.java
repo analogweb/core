@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import org.analogweb.ApplicationProcessor;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
+import org.analogweb.MutableRequestContext;
 import org.analogweb.Precedence;
 import org.analogweb.PreparedInvocationArguments;
 import org.analogweb.RequestContext;
@@ -19,7 +20,7 @@ import org.analogweb.TypeMapperContext;
 public abstract class AbstractApplicationProcessor implements ApplicationProcessor {
 
     @Override
-    public Object onProcessRequest(RequestContext request, RequestPath path) {
+    public Object onProcessRequest(MutableRequestContext request, RequestPath path) {
         return NO_INTERRUPTION;
     }
 

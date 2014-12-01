@@ -21,11 +21,11 @@ public interface ApplicationProcessor extends MultiModule, Precedence {
      * 通常は、{@link #NO_INTERRUPTION}を返します。それ以外の
      * 値をかえす場合は、処理の結果その戻り値を以って
      * {@link Application}の処理を終了します。
-     * @param request {@link RequestContext}
+     * @param request {@link MutableRequestContext}
      * @param path {@link RequestPath}
      * @return 実行処理を中断する結果({@link Renderable}など。)
      */
-    Object onProcessRequest(RequestContext request, RequestPath path);
+    Object onProcessRequest(MutableRequestContext request, RequestPath path);
 
     /**
      * {@link Application}の実行前に処理を追加します。<br/>
