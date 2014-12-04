@@ -25,6 +25,7 @@ import org.analogweb.Module;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.ModulesConfig;
+import org.analogweb.MutableRequestContext;
 import org.analogweb.Renderable;
 import org.analogweb.RenderableHolder;
 import org.analogweb.RequestContext;
@@ -83,15 +84,18 @@ public class WebApplication implements Application {
 
 	@Override
 	public int processRequest(RequestPath requestedPath,
-			RequestContext context, ResponseContext responseContext)
+			RequestContext requestContext, ResponseContext responseContext)
 			throws IOException, WebApplicationException {
 		InvocationMetadata metadata = null;
 		Modules mod = null;
 		List<ApplicationProcessor> processors = null;
+                RequestContext context = requestContext;
 		try {
 			mod = getModules();
 			processors = mod.getApplicationProcessors();
-			onProcessRequest(processors, context, requestedPath);
+			MutableRequestContext mutableContext = new DefaultMutableRequestContext(context);
+			onProcessRequest(processors, mutableContext, requestedPath);
+			context = mutableContext.unwrap();
 			RouteRegistry mapping = getRouteRegistry();
 			log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
 			metadata = mapping.findInvocationMetadata(context,mod.getInvocationMetadataFinders());
@@ -149,7 +153,7 @@ public class WebApplication implements Application {
 	}
 
 	protected void onProcessRequest(List<ApplicationProcessor> processors,
-			RequestContext request, RequestPath requestedPath) {
+			MutableRequestContext request, RequestPath requestedPath) {
 		log.log(Markers.LIFECYCLE, "DL000017");
 		Object interruption = ApplicationProcessor.NO_INTERRUPTION;
 		for (ApplicationProcessor processor : processors) {

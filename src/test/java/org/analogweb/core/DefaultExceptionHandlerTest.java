@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestPathMetadata;
+import org.analogweb.RequestValueResolver;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.RequestMethodUnsupportedException;
@@ -72,7 +73,14 @@ public class DefaultExceptionHandlerTest {
 		assertThat((HttpStatus) actual, is(HttpStatus.UNSUPPORTED_MEDIA_TYPE));
 	}
 
-	@Test
+        @Test
+        public void testHandleRoutedThrowableWithInvalidRequestFormatException()
+                        throws Exception {
+                Object actual = handler.handleException(new InvalidRequestFormatException(RequestValueResolver.class));
+                assertThat((HttpStatus) actual, is(HttpStatus.BAD_REQUEST));
+        }
+
+        @Test
 	public void testHandleRouteThrowableWithApplicationRuntimeException()
 			throws Exception {
 		thrown.expect(WebApplicationException.class);
