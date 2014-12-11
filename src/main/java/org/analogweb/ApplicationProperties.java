@@ -3,6 +3,7 @@ package org.analogweb;
 import java.io.File;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * アプリケーションインスタンスで共有される唯一のプロパティです。<br/>
@@ -12,24 +13,17 @@ import java.util.Locale;
  */
 public interface ApplicationProperties {
 
-    /**
-     * アプリケーションを構成するコンポーネントが存在する
-     * すべてのパッケージ名を取得します。
-     * @return すべてのパッケージ名
-     */
+    String PACKAGES = "analogweb.packages";
+    String TEMP_DIR = "analogweb.templory.directory";
+    String LOCALE = "analogweb.default.locale";
+
     Collection<String> getComponentPackageNames();
 
-    /**
-     * アプリケーション全般で利用可能なテンポラリディレクトリ
-     * を取得します。
-     * @return テンポラリディレクトリを指し示す{@link File}
-     */
     File getTempDir();
 
-    /**
-     * アプリケーションに対するリクエストに適用される
-     * 既定の{@link Locale}を取得します。
-     * @return テンポラリディレクトリを指し示す{@link File}
-     */
     Locale getDefaultClientLocale();
+
+    Map<String, Object> getProperties();
+
+    String getStringProperty(String key);
 }

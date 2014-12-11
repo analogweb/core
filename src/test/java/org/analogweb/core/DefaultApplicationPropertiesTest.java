@@ -27,7 +27,7 @@ public class DefaultApplicationPropertiesTest {
 
     @Test
     public void testUsingDefaultCreator() throws IOException {
-        properties = new DefaultApplicationProperties();
+        properties = DefaultApplicationProperties.defaultProperties();
         Collection<String> actualPackageNames = properties.getComponentPackageNames();
         assertThat(actualPackageNames.size(), is(1));
         assertThat(actualPackageNames.contains(Application.class.getPackage().getName()), is(true));
@@ -42,13 +42,12 @@ public class DefaultApplicationPropertiesTest {
         String packageNames = "foo.baa,baz.boo";
         String locale = "en-us";
         String tempDirectoryPath = dir.getPath();
-        properties = new DefaultApplicationProperties(packageNames, 
-                tempDirectoryPath, locale);
+        properties = DefaultApplicationProperties.properties(packageNames, tempDirectoryPath,
+                locale);
         Collection<String> actualPackageNames = properties.getComponentPackageNames();
         assertThat(actualPackageNames.size(), is(2));
         assertThat(actualPackageNames.containsAll(Arrays.asList("foo.baa", "baz.boo")), is(true));
-        assertThat(
-                properties.getTempDir().getPath(),
+        assertThat(properties.getTempDir().getPath(),
                 startsWith(new File(dir.getPath() + SystemProperties.fileSeparator()
                         + Application.class.getCanonicalName()).getPath()));
         assertThat(properties.getDefaultClientLocale(), is(Locale.US));
@@ -60,8 +59,8 @@ public class DefaultApplicationPropertiesTest {
         String packageNames = "";
         String tempDirectoryPath = dir.getPath();
         String locale = "";
-        properties = new DefaultApplicationProperties(packageNames,
-                tempDirectoryPath, locale);
+        properties = DefaultApplicationProperties.properties(packageNames, tempDirectoryPath,
+                locale);
         assertThat(properties.getComponentPackageNames().isEmpty(), is(true));
         assertThat(properties.getDefaultClientLocale(), is(Locale.getDefault()));
     }

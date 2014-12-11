@@ -6,11 +6,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationProperties;
+import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
 import org.analogweb.util.SystemProperties;
 
@@ -19,12 +21,10 @@ import org.analogweb.util.SystemProperties;
  */
 public class DefaultApplicationProperties implements ApplicationProperties {
 
-    private final Collection<String> packageNames;
-    private final String tempDirectoryPath;
-    private final Locale defaultClientLocale;
+    private Map<String, Object> properties;
 
     public static DefaultApplicationProperties defaultProperties() {
-        return new DefaultApplicationProperties();
+        return properties(Application.class.getPackage().getName());
     }
 
     public static DefaultApplicationProperties properties(String packageNames) {
@@ -33,36 +33,46 @@ public class DefaultApplicationProperties implements ApplicationProperties {
 
     public static DefaultApplicationProperties properties(String packageNames,
             String tmpDirectoryPath, String defaultClientLocale) {
-        return new DefaultApplicationProperties(packageNames, tmpDirectoryPath, defaultClientLocale);
+        Map<String, Object> properties = Maps.newHashMap(TEMP_DIR,
+                (Object) createTempDirPath(tmpDirectoryPath));
+        properties.put(LOCALE, createDefaultClientLocale(defaultClientLocale));
+        properties.put(PACKAGES, createUserDefinedPackageNames(packageNames));
+        return new DefaultApplicationProperties(properties);
     }
 
-    protected DefaultApplicationProperties() {
-        this(Application.class.getPackage().getName(), null, null);
+    public static DefaultApplicationProperties properties(Map<String, Object> properties) {
+        return new DefaultApplicationProperties(properties);
     }
 
-    protected DefaultApplicationProperties(String packageNames, String tempDirectoryPath,
-            String defaultClientLocale) {
-        this.packageNames = createUserDefinedPackageNames(packageNames);
-        this.tempDirectoryPath = createTempDirPath(tempDirectoryPath);
-        this.defaultClientLocale = createDefaultClientLocale(defaultClientLocale);
+    protected DefaultApplicationProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 
     @Override
     public File getTempDir() {
-        return new File(tempDirectoryPath);
+        return (File) getProperties().get(TEMP_DIR);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<String> getComponentPackageNames() {
-        return packageNames;
+        return (Collection<String>) getProperties().get(PACKAGES);
     }
 
     @Override
     public Locale getDefaultClientLocale() {
-        return defaultClientLocale;
+        return (Locale) getProperties().get(LOCALE);
     }
 
-    protected Locale createDefaultClientLocale(String locale) {
+    public String getStringProperty(String key) {
+        return (String) getProperties().get(key);
+    }
+
+    public Map<String, Object> getProperties() {
+        return this.properties;
+    };
+
+    private static Locale createDefaultClientLocale(String locale) {
         if (StringUtils.isEmpty(locale)) {
             return Locale.getDefault();
         }
@@ -77,7 +87,7 @@ public class DefaultApplicationProperties implements ApplicationProperties {
         }
     }
 
-    protected Set<String> createUserDefinedPackageNames(String tokenizedRootPackageNames) {
+    private static Set<String> createUserDefinedPackageNames(String tokenizedRootPackageNames) {
         Set<String> packageNames = new HashSet<String>();
         if (StringUtils.isNotEmpty(tokenizedRootPackageNames)) {
             for (String packageName : StringUtils.split(tokenizedRootPackageNames, ',')) {
@@ -87,7 +97,7 @@ public class DefaultApplicationProperties implements ApplicationProperties {
         return Collections.unmodifiableSet(packageNames);
     }
 
-    protected String createTempDirPath(String tmpDirPath) {
+    private static File createTempDirPath(String tmpDirPath) {
         String tmpDir = tmpDirPath;
         if (StringUtils.isEmpty(tmpDir)) {
             tmpDir = SystemProperties.tmpDir() + SystemProperties.fileSeparator()
@@ -103,6 +113,6 @@ public class DefaultApplicationProperties implements ApplicationProperties {
         while (new File(path).exists()) {
             path = tmpDir + SystemProperties.fileSeparator() + UUID.randomUUID();
         }
-        return path;
+        return new File(path);
     }
 }
