@@ -20,7 +20,7 @@ import org.analogweb.TypeMapperContext;
 public abstract class AbstractApplicationProcessor implements ApplicationProcessor {
 
     @Override
-    public Object onProcessRequest(MutableRequestContext request, RequestPath path) {
+    public Object preMatching(MutableRequestContext request, RequestPath path) {
         return NO_INTERRUPTION;
     }
 

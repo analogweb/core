@@ -94,7 +94,7 @@ public class WebApplication implements Application {
 			mod = getModules();
 			processors = mod.getApplicationProcessors();
 			MutableRequestContext mutableContext = new DefaultMutableRequestContext(context);
-			onProcessRequest(processors, mutableContext, requestedPath);
+			preMatching(processors, mutableContext, requestedPath);
 			context = mutableContext.unwrap();
 			RouteRegistry mapping = getRouteRegistry();
 			log.log(Markers.LIFECYCLE, "DL000004", requestedPath);
@@ -152,12 +152,12 @@ public class WebApplication implements Application {
 		return PROCEEDED;
 	}
 
-	protected void onProcessRequest(List<ApplicationProcessor> processors,
+	protected void preMatching(List<ApplicationProcessor> processors,
 			MutableRequestContext request, RequestPath requestedPath) {
 		log.log(Markers.LIFECYCLE, "DL000017");
 		Object interruption = ApplicationProcessor.NO_INTERRUPTION;
 		for (ApplicationProcessor processor : processors) {
-			interruption = processor.onProcessRequest(request, requestedPath);
+			interruption = processor.preMatching(request, requestedPath);
 			if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
 				throw new InvokeInterruptedException(interruption);
 			}

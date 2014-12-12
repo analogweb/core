@@ -25,7 +25,7 @@ public interface ApplicationProcessor extends MultiModule, Precedence {
      * @param path {@link RequestPath}
      * @return 実行処理を中断する結果({@link Renderable}など。)
      */
-    Object onProcessRequest(MutableRequestContext request, RequestPath path);
+    Object preMatching(MutableRequestContext request, RequestPath path);
 
     /**
      * {@link Application}の実行前に処理を追加します。<br/>
