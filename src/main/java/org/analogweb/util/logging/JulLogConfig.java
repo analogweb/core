@@ -7,22 +7,13 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
- * java.util.loggingを、コンフィギュレーションファイル(logging.properties)
- * を使用しないでコンフィギュレーション可能なクラスです。<br/>
- * コンフィギュレーションファイルから{@link LogManager}の設定が読み込まれる場合
- * システムクラスローダがロードを行うため、コンフィギュレーション内で使用するクラスはシステム
- * クラスローダが参照できるパスにが存在していなければならず、また、コンフィギュレーション
- * ファイルは各VMで共有されます。これは、Webアプリケーションなどでロギングを行う場合
- * 大変不便です。
- * このクラスのサブクラスは、下記の名前でクラスパスに配置する必要があります。
- * <li>jp.analog.util.JulLogConfigImpl</li>
+ * Configurable class for java.util.logging without logging.properties.
  * @author snowgoose
  */
 public abstract class JulLogConfig {
 
     /**
-     * 現在のVMにおける設定に依存した{@link Logger}を生成する
-     * {@link JulLogConfig}です。
+     * Configuration for creating {@link Logger} rely on default JVM settings.
      */
     public static final JulLogConfig SIMPLE = new JulLogConfig() {
 
