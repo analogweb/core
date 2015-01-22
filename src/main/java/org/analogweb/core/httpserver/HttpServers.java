@@ -18,35 +18,34 @@ import com.sun.net.httpserver.HttpServer;
  */
 public final class HttpServers {
 
-	private HttpServers() {
-		// nop.
-	}
+    private HttpServers() {
+        // nop.
+    }
 
-	public static Server create(String uri) {
-		return create(URI.create(uri));
-	}
+    public static Server create(String uri) {
+        return create(URI.create(uri));
+    }
 
-	public static Server create(URI uri) {
-		return create(uri, new AnalogHandler(new WebApplication()));
-	}
+    public static Server create(URI uri) {
+        return create(uri, new AnalogHandler(new WebApplication()));
+    }
 
-	public static Server create(URI uri, HttpHandler handler) {
-		try {
-			HttpServer server = HttpServer.create(
-					new InetSocketAddress(uri.getPort()), 0);
-			String basePath = uri.getPath();
-			if (StringUtils.isEmpty(basePath)) {
-				basePath = "/";
-			}
-			server.createContext(basePath, handler);
-			server.setExecutor(Executors.newCachedThreadPool());
-			return new HttpServerDelegate(server, handler);
-		} catch (IOException e) {
-			// TODO replace
-			throw new ApplicationRuntimeException(e) {
+    public static Server create(URI uri, HttpHandler handler) {
+        try {
+            HttpServer server = HttpServer.create(new InetSocketAddress(uri.getPort()), 0);
+            String basePath = uri.getPath();
+            if (StringUtils.isEmpty(basePath)) {
+                basePath = "/";
+            }
+            server.createContext(basePath, handler);
+            server.setExecutor(Executors.newCachedThreadPool());
+            return new HttpServerDelegate(server, handler);
+        } catch (IOException e) {
+            // TODO replace
+            throw new ApplicationRuntimeException(e) {
 
-				private static final long serialVersionUID = 1L;
-			};
-		}
-	}
+                private static final long serialVersionUID = 1L;
+            };
+        }
+    }
 }
