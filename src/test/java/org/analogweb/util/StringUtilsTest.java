@@ -146,4 +146,12 @@ public class StringUtilsTest {
         assertThat(StringUtils.charAt(-1, value), is(Character.MIN_VALUE));
         assertThat(StringUtils.charAt(0, null), is(Character.MIN_VALUE));
     }
+    
+    @Test
+    public void testJoin() {
+        assertThat(StringUtils.join(',', "a", "b", "c"), is("a,b,c"));
+        assertThat(StringUtils.join(',', "a"), is("a"));
+        assertThat(StringUtils.join(',', "a", "b", "c,"), is("a,b,c,"));
+        assertThat(StringUtils.join(','), is(""));
+    }
 }
