@@ -28,6 +28,7 @@ import org.analogweb.util.FileClassCollector;
 import org.analogweb.util.JarClassCollector;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,6 +61,11 @@ public class WebApplicationTest {
         collectors.add(new JarClassCollector());
         collectors.add(new FileClassCollector());
         this.collectors = collectors;
+    }
+    
+    @After
+    public void tearDown(){
+        application.dispose();
     }
 
     @Test

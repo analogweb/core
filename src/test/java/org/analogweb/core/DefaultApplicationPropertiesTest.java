@@ -45,8 +45,8 @@ public class DefaultApplicationPropertiesTest {
         properties = DefaultApplicationProperties.properties(packageNames, tempDirectoryPath,
                 locale);
         Collection<String> actualPackageNames = properties.getComponentPackageNames();
-        assertThat(actualPackageNames.size(), is(2));
-        assertThat(actualPackageNames.containsAll(Arrays.asList("foo.baa", "baz.boo")), is(true));
+        assertThat(actualPackageNames.size(), is(3));
+        assertThat(actualPackageNames.containsAll(Arrays.asList("foo.baa", "baz.boo", "org.analogweb")), is(true));
         assertThat(properties.getTempDir().getPath(),
                 startsWith(new File(dir.getPath() + SystemProperties.fileSeparator()
                         + Application.class.getCanonicalName()).getPath()));
@@ -61,7 +61,8 @@ public class DefaultApplicationPropertiesTest {
         String locale = "";
         properties = DefaultApplicationProperties.properties(packageNames, tempDirectoryPath,
                 locale);
-        assertThat(properties.getComponentPackageNames().isEmpty(), is(true));
+        assertThat(properties.getComponentPackageNames().size(), is(1));
+        assertThat(properties.getComponentPackageNames().iterator().next(), is("org.analogweb"));
         assertThat(properties.getDefaultClientLocale(), is(Locale.getDefault()));
     }
 }

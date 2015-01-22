@@ -68,6 +68,7 @@ public class WebApplication implements Application {
 		sw.start();
 		this.resolver = resolver;
 		this.classLoader = classLoader;
+		ApplicationPropertiesHolder.configure(this, props);
 		log.log(Markers.BOOT_APPLICATION, "IB000001");
 		Collection<String> invocationPackageNames = props
 				.getComponentPackageNames();

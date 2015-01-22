@@ -24,7 +24,7 @@ public class DefaultApplicationProperties implements ApplicationProperties {
     private Map<String, Object> properties;
 
     public static DefaultApplicationProperties defaultProperties() {
-        return properties(Application.class.getPackage().getName());
+        return properties(StringUtils.EMPTY);
     }
 
     public static DefaultApplicationProperties properties(String packageNames) {
@@ -89,6 +89,7 @@ public class DefaultApplicationProperties implements ApplicationProperties {
 
     private static Set<String> createUserDefinedPackageNames(String tokenizedRootPackageNames) {
         Set<String> packageNames = new HashSet<String>();
+        packageNames.add(ApplicationProperties.class.getPackage().getName());
         if (StringUtils.isNotEmpty(tokenizedRootPackageNames)) {
             for (String packageName : StringUtils.split(tokenizedRootPackageNames, ',')) {
                 packageNames.add(packageName);
