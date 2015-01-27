@@ -24,4 +24,6 @@ public interface ApplicationProperties {
     Map<String, Object> getProperties();
 
     String getStringProperty(String key);
+
+    Object getProperty(String key);
 }

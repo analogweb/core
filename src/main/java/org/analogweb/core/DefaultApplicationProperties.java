@@ -17,6 +17,7 @@ import org.analogweb.util.StringUtils;
 import org.analogweb.util.SystemProperties;
 
 /**
+ * Default implementation of {@link ApplicationProperties}
  * @author snowgooseyk
  */
 public class DefaultApplicationProperties implements ApplicationProperties {
@@ -40,8 +41,29 @@ public class DefaultApplicationProperties implements ApplicationProperties {
         return new DefaultApplicationProperties(properties);
     }
 
+    public static DefaultApplicationProperties properties(String[] options) {
+        return properties(toMap(options));
+    }
+
+    private static Map<String, Object> toMap(String[] options) {
+        Map<String, Object> params = Maps.newEmptyHashMap();
+        for (String opt : options) {
+            List<String> arg = StringUtils.split(opt, '=');
+            if (arg.size() > 1) {
+                params.put(arg.get(0), arg.get(1));
+            } else if (arg.isEmpty() == false) {
+                params.put(arg.get(0), Boolean.TRUE);
+            }
+        }
+        return params;
+    }
+
     public static DefaultApplicationProperties properties(Map<String, Object> properties) {
-        return new DefaultApplicationProperties(properties);
+        Map<String, Object> defaults = Maps.newHashMap(TEMP_DIR, (Object) createTempDirPath(null));
+        defaults.put(LOCALE, createDefaultClientLocale(null));
+        defaults.put(PACKAGES, createUserDefinedPackageNames(null));
+        defaults.putAll(properties);
+        return new DefaultApplicationProperties(defaults);
     }
 
     protected DefaultApplicationProperties(Map<String, Object> properties) {
@@ -50,7 +72,13 @@ public class DefaultApplicationProperties implements ApplicationProperties {
 
     @Override
     public File getTempDir() {
-        return (File) getProperties().get(TEMP_DIR);
+        Object o = getProperties().get(TEMP_DIR);
+        if (o instanceof File) {
+            return (File) o;
+        } else if (o instanceof String) {
+            return new File(o.toString());
+        }
+        return null;
     }
 
     @Override
@@ -66,6 +94,10 @@ public class DefaultApplicationProperties implements ApplicationProperties {
 
     public String getStringProperty(String key) {
         return (String) getProperties().get(key);
+    }
+
+    public Object getProperty(String key) {
+        return getProperties().get(key);
     }
 
     public Map<String, Object> getProperties() {
