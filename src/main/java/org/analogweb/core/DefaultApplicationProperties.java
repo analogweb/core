@@ -94,7 +94,7 @@ public class DefaultApplicationProperties implements ApplicationProperties {
                 packageNames.add(packageName);
             }
         }
-        packageNames.add(ApplicationProperties.class.getPackage().getName());
+        packageNames.add(Application.DEFAULT_PACKAGE_NAME);
         return Collections.unmodifiableSet(packageNames);
     }
 
