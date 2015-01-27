@@ -6,15 +6,13 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * アプリケーションインスタンスで共有される唯一のプロパティです。<br/>
- * 通常はアプリケーションインスタンス生成時に初期化され、その後プロパティの値が
- * 変更される事はありません。
+ * Global settings properties for {@link Application}。
  * @author snowgoose
  */
 public interface ApplicationProperties {
 
     String PACKAGES = "analogweb.packages";
-    String TEMP_DIR = "analogweb.templory.directory";
+    String TEMP_DIR = "analogweb.tmpdir";
     String LOCALE = "analogweb.default.locale";
 
     Collection<String> getComponentPackageNames();

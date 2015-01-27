@@ -13,13 +13,13 @@ package org.analogweb.hello;
 
 import java.net.URI;
 import org.analogweb.annotation.Route;
-import org.analogweb.core.httpserver.HttpServers;
+import org.analogweb.core.Servers;
 
 @Route("/")
 public class Hello {
 
   public static void main(String... args) {
-      HttpServers.create(URI.create("http://localhost:8080")).start();
+      Servers.create(URI.create("http://localhost:8080")).start();
   }
 
   @Route

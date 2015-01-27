@@ -89,12 +89,12 @@ public class DefaultApplicationProperties implements ApplicationProperties {
 
     private static Set<String> createUserDefinedPackageNames(String tokenizedRootPackageNames) {
         Set<String> packageNames = new HashSet<String>();
-        packageNames.add(ApplicationProperties.class.getPackage().getName());
         if (StringUtils.isNotEmpty(tokenizedRootPackageNames)) {
             for (String packageName : StringUtils.split(tokenizedRootPackageNames, ',')) {
                 packageNames.add(packageName);
             }
         }
+        packageNames.add(ApplicationProperties.class.getPackage().getName());
         return Collections.unmodifiableSet(packageNames);
     }
 
