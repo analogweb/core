@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationProperties;
+import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
 import org.analogweb.util.SystemProperties;
@@ -47,6 +48,9 @@ public class DefaultApplicationProperties implements ApplicationProperties {
 
     private static Map<String, Object> toMap(String[] options) {
         Map<String, Object> params = Maps.newEmptyHashMap();
+        if (ArrayUtils.isEmpty(options)) {
+            return params;
+        }
         for (String opt : options) {
             List<String> arg = StringUtils.split(opt, '=');
             if (arg.size() > 1) {
