@@ -33,6 +33,10 @@ public final class Servers {
         return create(URI.create(uri), DefaultApplicationProperties.properties(names));
     }
 
+    public static Server create(String uri, ApplicationProperties properties) {
+        return create(URI.create(uri), properties);
+    }
+
     public static Server create(URI uri, ApplicationProperties properties) {
         return create(uri, properties,
                 DefaultApplicationContext.context(Maps.<String, Object> newEmptyHashMap()),
