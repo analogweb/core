@@ -1,29 +1,44 @@
 package org.analogweb.core;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolver;
+import org.analogweb.util.IOUtils;
+import org.analogweb.util.logging.Log;
+import org.analogweb.util.logging.Logs;
+import org.analogweb.util.logging.Markers;
 
 /**
- * リクエストボディをストリームで取得する{@link AbstractAttributesHandler}の実装です。<br/>
- * クエリの内容に関わらす、常に{@link RequestContext#getRequestBody()}から得られる結果を
- * 返します。既にリクエストボディの読み込みを行っている等、リクエストボディの取得に失敗した場合は nullを返します。
- * 
+ * Resolve request body as {@link InputStream} or {@link String}.
+ * returns {@code null} when request body not readable.
+ * @see RequestContext#getRequestBody()
  * @author snowgoose
  */
 public class RequestBodyValueResolver implements RequestValueResolver {
 
-	@Override
-	public Object resolveValue(RequestContext requestContext,
-			InvocationMetadata metadata, String query, Class<?> type,
-			Annotation[] annotations) {
-		try {
-			return requestContext.getRequestBody();
-		} catch (IOException e) {
-			return null;
-		}
-	}
+    private Log log = Logs.getLog(RequestBodyValueResolver.class);
+
+    @Override
+    public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
+            String query, Class<?> type, Annotation[] annotations) {
+        if (type == null) {
+            return null;
+        }
+        try {
+            if (InputStream.class.isAssignableFrom(type)) {
+                return requestContext.getRequestBody();
+            } else if (String.class.isAssignableFrom(type)) {
+                return IOUtils.toString(requestContext.getRequestBody());
+            }
+            log.log(Markers.BOOT_APPLICATION, "WV000001",
+                    RequestBodyValueResolver.class.getCanonicalName(), type.getCanonicalName());
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
+    }
 }
