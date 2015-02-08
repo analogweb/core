@@ -13,13 +13,18 @@ import java.io.InputStream;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class RequestBodyValueResolverTest {
 
     private RequestBodyValueResolver resolver;
     private RequestContext requestContext;
     private InvocationMetadata metadata;
+    
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -56,18 +61,18 @@ public class RequestBodyValueResolverTest {
 
     @Test
     public void testResolveAttributeValueUnknownType() throws Exception {
+        thrown.expect(UnresolvableValueException.class);
         InputStream expected = new ByteArrayInputStream("abcde".getBytes("UTF-8"));
         when(requestContext.getRequestBody()).thenReturn(expected);
-        Object actual = resolver.resolveValue(requestContext, metadata, "", Integer.class, null);
-        assertThat(actual, is(nullValue()));
+        resolver.resolveValue(requestContext, metadata, "", Integer.class, null);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testResolveAttributeValueWithException() throws Exception {
+        thrown.expect(ApplicationRuntimeException.class);
         when(requestContext.getRequestBody()).thenThrow(IOException.class);
-        InputStream actual = (InputStream) resolver.resolveValue(requestContext, metadata, "",
+        resolver.resolveValue(requestContext, metadata, "",
                 InputStream.class, null);
-        assertThat(actual, is(nullValue()));
     }
 }

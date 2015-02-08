@@ -36,9 +36,11 @@ public class RequestBodyValueResolver implements RequestValueResolver {
             }
             log.log(Markers.BOOT_APPLICATION, "WV000001",
                     RequestBodyValueResolver.class.getCanonicalName(), type.getCanonicalName());
-            return null;
+            throw new UnresolvableValueException(this, type, query);
         } catch (IOException e) {
-            return null;
+            throw new ApplicationRuntimeException(e) {
+                private static final long serialVersionUID = 1L;
+            };
         }
     }
 }
