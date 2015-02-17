@@ -6,20 +6,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.analogweb.core.ParameterValueResolver;
-import org.analogweb.util.StringUtils;
+import org.analogweb.core.RequestContextValueResolver;
 
 /**
- * Resolves query ,form, matrix parameter values.
- * @see ParameterValueResolver 
+ * Resolves {@link RequestContext} specific instances.
+ * @see RequestContextValueResolver
  * @author snowgooseyk
  */
+@As
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
-@Resolver(ParameterValueResolver.class)
-@Valiables
-public @interface Param {
-
-    String value() default StringUtils.EMPTY;
+@Resolver(RequestContextValueResolver.class)
+public @interface Context {
 }
