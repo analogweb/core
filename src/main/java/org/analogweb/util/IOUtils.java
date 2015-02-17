@@ -1,13 +1,16 @@
 package org.analogweb.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
@@ -33,7 +36,7 @@ public final class IOUtils {
 
     public static int copyQuietly(InputStream input, OutputStream output) {
         try {
-            return copyInternal(new BufferedInputStream(input), new BufferedOutputStream(output));
+            return copy(input, output, 8192);
         } catch (IOException e) {
             log.log("DU000008", e, input);
             return -1;
@@ -41,18 +44,22 @@ public final class IOUtils {
     }
 
     public static int copy(InputStream input, OutputStream output) throws IOException {
-        return copyInternal(new BufferedInputStream(input), new BufferedOutputStream(output));
+        return copy(input, output, 8192);
     }
 
-    private static int copyInternal(InputStream input, OutputStream output) throws IOException {
+    public static int copy(InputStream input, OutputStream output, int bufferSize)
+            throws IOException {
         Assertion.notNull(input, InputStream.class.getName());
         Assertion.notNull(output, OutputStream.class.getName());
+        ReadableByteChannel in = Channels.newChannel(input);
+        WritableByteChannel out = Channels.newChannel(output);
         try {
             int count = 0;
-            int i;
-            while ((i = input.read()) != -1) {
-                output.write(i);
-                count++;
+            ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+            while (in.read(buffer) != -1) {
+                buffer.flip();
+                count += out.write(buffer);
+                buffer.clear();
             }
             output.flush();
             return count;
@@ -71,10 +78,11 @@ public final class IOUtils {
 
     public static String toString(Reader reader, int bufferSize) throws IOException {
         StringBuilder sb = new StringBuilder();
-        char[] buffer = new char[bufferSize];
-        int n = 0;
-        while (-1 != (n = reader.read(buffer))) {
-            sb.append(buffer, 0, n);
+        CharBuffer buffer = CharBuffer.allocate(bufferSize);
+        while (-1 != reader.read(buffer)) {
+            buffer.flip();
+            sb.append(buffer);
+            buffer.clear();
         }
         return sb.toString();
     }
