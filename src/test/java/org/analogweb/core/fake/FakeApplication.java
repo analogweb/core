@@ -31,6 +31,7 @@ import org.analogweb.util.JarClassCollector;
 import org.analogweb.util.Maps;
 
 /**
+ * {@link Application} for test stub.
  * @author snowgooseyk
  */
 public class FakeApplication {
@@ -97,10 +98,10 @@ public class FakeApplication {
                 return body;
             }
 
-			@Override
-			public String getRequestMethod() {
-				return method;
-			}
+            @Override
+            public String getRequestMethod() {
+                return method;
+            }
         };
         final ResponseResult result = new ResponseResult();
         ResponseContext response = new AbstractResponseContext() {
