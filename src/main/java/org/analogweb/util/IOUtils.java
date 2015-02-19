@@ -6,11 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
@@ -51,15 +47,14 @@ public final class IOUtils {
             throws IOException {
         Assertion.notNull(input, InputStream.class.getName());
         Assertion.notNull(output, OutputStream.class.getName());
-        ReadableByteChannel in = Channels.newChannel(input);
-        WritableByteChannel out = Channels.newChannel(output);
         try {
+            byte[] buffer = new byte[bufferSize];
+            int read = input.read(buffer, 0, bufferSize);
             int count = 0;
-            ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
-            while (in.read(buffer) != -1) {
-                buffer.flip();
-                count += out.write(buffer);
-                buffer.clear();
+            while (read > -1) {
+                output.write(buffer, 0, read);
+                count += read;
+                read = input.read(buffer, 0, bufferSize);
             }
             output.flush();
             return count;
