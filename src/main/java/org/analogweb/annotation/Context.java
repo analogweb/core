@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import org.analogweb.core.RequestContextValueResolver;
 
 /**
- * Resolves {@link RequestContext} specific instances.
+ * Resolves {@link org.analogweb.RequestContext} specific instances.
  * @see RequestContextValueResolver
  * @author snowgooseyk
  */
