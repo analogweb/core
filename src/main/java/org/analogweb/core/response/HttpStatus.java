@@ -52,7 +52,7 @@ public enum HttpStatus implements Renderable,RenderableHolder {
             }
         }
         Headers headers = response.getResponseHeaders();
-        Map<String, String> headersMap = getResponseHeaders();
+        Map<String, String> headersMap = getResponseHeaders();  
         if (headersMap != null) {
             for (Entry<String, String> e : headersMap.entrySet()) {
                 headers.putValue(e.getKey(), e.getValue());

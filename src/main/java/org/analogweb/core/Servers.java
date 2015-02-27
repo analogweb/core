@@ -7,8 +7,6 @@ import org.analogweb.ApplicationContext;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.Server;
 import org.analogweb.ServerFactory;
-import org.analogweb.core.httpserver.AnalogHandler;
-import org.analogweb.core.httpserver.HttpServers;
 import org.analogweb.util.ClassUtils;
 import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
@@ -66,7 +64,7 @@ public final class Servers {
 
     private static Server createDefaultServer(URI uri, ApplicationProperties properties,
             ApplicationContext context, Application application) {
-        log.log(Markers.BOOT_APPLICATION, "IB000007", "Sun HTTP Server");
-        return HttpServers.create(uri, new AnalogHandler(application, context, properties));
+        log.log(Markers.BOOT_APPLICATION, "IB000007", "Analogweb HTTP Server");
+        return new DefaultServer(uri.getPort(), application, context, properties);
     }
 }
