@@ -20,7 +20,7 @@
 	<groupId>org.analogweb</groupId>
 	<artifactId>analogweb-core</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9.3</version>
+	<version>0.9.4-SNAPSHOT</version>
 	<name>analogweb-core</name>
 	<url>http://analogweb.org</url>
 	<organization>
@@ -34,7 +34,7 @@
 		<url>scm:git:git@github.com:analogweb/core.git</url>
 		<connection>scm:git:git@github.com:analogweb/core.git</connection>
 		<developerConnection>scm:git:git@github.com:analogweb/core.git</developerConnection>
-      <tag>v0.9.3</tag>
+      <tag>HEAD</tag>
   </scm>
 	<licenses>
 		<license>
