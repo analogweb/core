@@ -4,11 +4,14 @@ import static org.analogweb.core.DefaultApplicationProperties.defaultProperties;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -34,12 +37,12 @@ import java.util.TimeZone;
 import org.analogweb.Application;
 import org.analogweb.ApplicationContext;
 import org.analogweb.ApplicationProperties;
+import org.analogweb.Disposable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.ResponseContext;
 import org.analogweb.Server;
-import org.analogweb.annotation.Route;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.ClassCollector;
@@ -49,40 +52,41 @@ import org.analogweb.util.IOUtils;
 import org.analogweb.util.JarClassCollector;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
-import org.analogweb.util.logging.Log;
-import org.analogweb.util.logging.Logs;
 
 public class DefaultServer implements Server {
 
     private static final int CR = 13;
     private static final int LF = 10;
     private static final byte[] CRLF = new byte[] { CR, LF };
-    private static final Log log = Logs.getLog(DefaultServer.class);
-    private final int port;
+    private final URI serverURI;
     private final Application app;
     private final ApplicationContext resolver;
     private final ApplicationProperties props;
 
-    public DefaultServer(int port) {
-        this(port, new WebApplication());
+    public DefaultServer(String uri) {
+        this(URI.create(uri));
     }
 
-    public DefaultServer(int port, Application app) {
-        this(port, app, (ApplicationContext) null);
+    public DefaultServer(URI uri) {
+        this(uri, new WebApplication());
     }
 
-    public DefaultServer(int port, Application app, ApplicationContext contextResolver) {
-        this(port, app, contextResolver, defaultProperties());
+    public DefaultServer(URI uri, Application app) {
+        this(uri, app, (ApplicationContext) null);
     }
 
-    public DefaultServer(int port, Application app, ApplicationProperties props) {
-        this(port, app, null, props);
+    public DefaultServer(URI uri, Application app, ApplicationContext contextResolver) {
+        this(uri, app, contextResolver, defaultProperties());
     }
 
-    public DefaultServer(int port, Application app, ApplicationContext contextResolver,
+    public DefaultServer(URI uri, Application app, ApplicationProperties props) {
+        this(uri, app, null, props);
+    }
+
+    public DefaultServer(URI uri, Application app, ApplicationContext contextResolver,
             ApplicationProperties props) {
         Assertion.notNull(app, Application.class.getName());
-        this.port = port;
+        this.serverURI = uri;
         this.app = app;
         this.resolver = contextResolver;
         this.props = props;
@@ -91,15 +95,14 @@ public class DefaultServer implements Server {
     @Override
     public void run() {
         ServerSocketChannel cnl = null;
-        Selector sl = null;
         try {
             this.app.run(resolver, props, getClassCollectors(), Thread.currentThread()
                     .getContextClassLoader());
             cnl = SelectorProvider.provider().openServerSocketChannel();
             cnl.configureBlocking(false);
-            cnl.socket().bind(new InetSocketAddress(this.port));
-            sl = Selector.open();
-            SelectionKey sk = cnl.register(sl, SelectionKey.OP_ACCEPT);
+            cnl.socket().bind(new InetSocketAddress(this.serverURI.getPort()));
+            final Selector sl = Selector.open();
+            final SelectionKey sk = cnl.register(sl, SelectionKey.OP_ACCEPT);
             runInternal(sl, sk);
         } catch (IOException e) {
             throw new ApplicationRuntimeException(e) {
@@ -107,21 +110,17 @@ public class DefaultServer implements Server {
                 private static final long serialVersionUID = 1L;
             };
         } finally {
-            IOUtils.closeQuietly(sl);
             IOUtils.closeQuietly(cnl);
         }
     }
 
     private void runInternal(Selector sl, SelectionKey sk) throws IOException {
         while (true) {
-            log.info("Ready for selection.");
             int ready = sl.select();
             if (ready == 0)
                 continue;
-            log.info("Selection completed.");
             Iterator<SelectionKey> keys = sl.selectedKeys().iterator();
             if (keys.hasNext() == false) {
-                log.info("Wake up.");
                 sl.wakeup();
             }
             while (keys.hasNext()) {
@@ -137,14 +136,12 @@ public class DefaultServer implements Server {
                     SocketChannel sock = ssock.accept();
                     sock.configureBlocking(false);
                     sock.register(sl, SelectionKey.OP_READ);
-                    log.info("Ready to accept.");
                 } else if (sk.isReadable()) {
-                    log.info("Read socket contents.");
                     SocketChannel sock = (SocketChannel) sk.channel();
                     sock.configureBlocking(false);
-                    log.info("Configure non blocking.");
+                    RequestContextImpl request = null;
                     try {
-                        RequestContext request = createRequestContext(sock);
+                        request = createRequestContext(sock);
                         if (request != null) {
                             ResponseContext response = createResponseContext(request, sock);
                             int proceed = this.app.processRequest(request.getRequestPath(),
@@ -159,6 +156,9 @@ public class DefaultServer implements Server {
                         e.printStackTrace();
                         sendStatus(sock, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
                     } finally {
+                        if (request != null) {
+                            request.dispose();
+                        }
                         sock.close();
                     }
                 }
@@ -166,10 +166,9 @@ public class DefaultServer implements Server {
         }
     }
 
-    private RequestContext createRequestContext(SocketChannel sock) throws IOException {
+    private RequestContextImpl createRequestContext(SocketChannel sock) throws IOException {
         ByteBuffer buf = ByteBuffer.allocate(8192);
         int read = sock.read(buf);
-        log.info("Reads " + read);
         if (read == 1) {
             // spinning.
             return null;
@@ -207,69 +206,17 @@ public class DefaultServer implements Server {
                     headerMap.put(key, Arrays.asList(value));
                 }
             }
-            log.info(headerMap.toString());
-            final InputStream body = resolveBodyStream(sock, buf, eoh, read, method,
+            final RequestBody body = resolveRequestBody(sock, buf, eoh, read, method,
                     headerMap.get("Content-Length"));
             if (body == null) {
                 return null;
             }
-            return new AbstractRequestContext(path, Locale.getDefault()) {
-
-                @Override
-                public String getRequestMethod() {
-                    return getRequestPath().getRequestMethods().get(0);
-                }
-
-                @Override
-                public Headers getRequestHeaders() {
-                    return new MapHeaders(headerMap);
-                }
-
-                @Override
-                public InputStream getRequestBody() throws IOException {
-                    return body;
-                }
-            };
+            return new RequestContextImpl(path, Locale.getDefault(), headerMap, body);
         }
         throw new ApplicationRuntimeException() {
 
             private static final long serialVersionUID = 1L;
         };
-    }
-
-    //TODO replace to memory mapped file.
-    private InputStream resolveBodyStream(SocketChannel sock, ByteBuffer buf, int eoh, int read,
-            String method, List<String> contentLengthHeader) throws IOException {
-        if (method.equalsIgnoreCase("POST") || method.equalsIgnoreCase("PUT")) {
-            int contentLength = CollectionUtils.isEmpty(contentLengthHeader) ? -1 : Integer
-                    .valueOf(contentLengthHeader.get(0));
-            if (contentLength < 0) {
-                sendStatus(sock, HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
-                return null;
-            }
-            ByteArrayOutputStream body = new ByteArrayOutputStream();
-            int firstBodySize = buf.limit() - eoh;
-            byte[] ba = new byte[firstBodySize];
-            buf = (ByteBuffer) buf.position(eoh);
-            buf.get(ba);
-            body.write(ba);
-            contentLength -= firstBodySize;
-            log.info("Remain Content Length : " + contentLength);
-            buf.clear();
-            while ((read = sock.read(buf)) > -1 && contentLength > 0) {
-                if (read == 0) {
-                    continue;
-                }
-                contentLength -= read;
-                log.info("Remain Content Length : " + contentLength);
-                buf.flip();
-                body.write(buf.array(), 0, read);
-                buf.clear();
-            }
-            return new ByteArrayInputStream(body.toByteArray());
-        } else {
-            return new ByteArrayInputStream(new byte[0]);
-        }
     }
 
     private int endOfHeader(final ByteBuffer buf, int length) {
@@ -282,6 +229,134 @@ public class DefaultServer implements Server {
             splitbyte++;
         }
         return 0;
+    }
+
+    private RequestBody resolveRequestBody(SocketChannel sock, ByteBuffer buf, int eoh, int read,
+            String method, List<String> contentLengthHeader) throws IOException {
+        if (method.equalsIgnoreCase("POST") || method.equalsIgnoreCase("PUT")) {
+            int contentLength = CollectionUtils.isEmpty(contentLengthHeader) ? -1 : Integer
+                    .valueOf(contentLengthHeader.get(0));
+            if (contentLength < 0) {
+                sendStatus(sock, HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
+                return null;
+            }
+            File file = File.createTempFile("Analogweb", "Request");
+            RandomAccessFile ra = new RandomAccessFile(file, "rw");
+            @SuppressWarnings("resource")
+            FileOutputStream body = new FileOutputStream(ra.getFD());
+            int firstBodySize = buf.limit() - eoh;
+            byte[] ba = new byte[firstBodySize];
+            buf = (ByteBuffer) buf.position(eoh);
+            buf.get(ba);
+            body.write(ba);
+            contentLength -= firstBodySize;
+            buf.clear();
+            while ((read = sock.read(buf)) > -1 && contentLength > 0) {
+                if (read == 0) {
+                    continue;
+                }
+                contentLength -= read;
+                buf.flip();
+                body.write(buf.array(), 0, read);
+                buf.clear();
+            }
+            return new RequestBody(file, ra);
+        } else {
+            return new RequestBody();
+        }
+    }
+
+    private void sendStatus(final SocketChannel sock, HttpStatus status, String body) {
+        CharBuffer buffer = CharBuffer.allocate(8192);
+        buffer.append("HTTP/1.1").append(' ').append(String.valueOf(status.getStatusCode()))
+                .append(' ').append(status.name()).append('\r').append('\n');
+        SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'",
+                Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        buffer.append("Date: ").append(dateFormat.format(new Date())).append('\r').append('\n');
+        if (StringUtils.isNotEmpty(body)) {
+            buffer.append("Content-Length: ").append(String.valueOf(body.length())).append('\r')
+                    .append('\n');
+        }
+        buffer.append("Connection: close");
+        buffer.append("\r\n");
+        buffer.flip();
+        Charset iso = Charset.forName("ISO-8859-1");
+        try {
+            sock.write(iso.encode(buffer));
+            sock.write(ByteBuffer.wrap(body.getBytes()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static final class RequestContextImpl extends AbstractRequestContext implements
+            Disposable {
+
+        private Map<String, List<String>> headerMap;
+        private RequestBody body;
+
+        RequestContextImpl(RequestPath requestPath, Locale defaultLocale,
+                Map<String, List<String>> headerMap, RequestBody body) {
+            super(requestPath, defaultLocale);
+            this.body = body;
+            this.headerMap = headerMap;
+        }
+
+        @Override
+        public String getRequestMethod() {
+            return getRequestPath().getRequestMethods().get(0);
+        }
+
+        @Override
+        public Headers getRequestHeaders() {
+            return new MapHeaders(headerMap);
+        }
+
+        @Override
+        public InputStream getRequestBody() throws IOException {
+            return body.open();
+        }
+
+        @Override
+        public void dispose() {
+            this.headerMap.clear();
+            this.body.dispose();
+        }
+    }
+
+    private static final class RequestBody implements Disposable {
+
+        private File file;
+        private RandomAccessFile random;
+        private InputStream in;
+
+        RequestBody() {
+            this.in = new ByteArrayInputStream(new byte[0]);
+        }
+
+        RequestBody(File file, RandomAccessFile random) {
+            System.out.println(file.getPath());
+            this.file = file;
+            this.random = random;
+        }
+
+        @Override
+        public void dispose() {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(random);
+            if (file != null) {
+                file.delete();
+            }
+        }
+
+        public InputStream open() throws IOException {
+            if (in == null) {
+                random.seek(0);
+                this.in = new FileInputStream(random.getFD());
+            }
+            return this.in;
+        }
     }
 
     private ResponseContext createResponseContext(final RequestContext request,
@@ -326,10 +401,7 @@ public class DefaultServer implements Server {
                 buffer.flip();
                 Charset iso = Charset.forName("ISO-8859-1");
                 try {
-                    log.info(sock.toString());
-                    log.info(iso.toString());
                     sock.write(iso.encode(buffer));
-                    log.info(getResponseWriter().toString());
                     ResponseEntity entity = getResponseWriter().getEntity();
                     if (entity != null) {
                         entity.writeInto(out);
@@ -375,30 +447,6 @@ public class DefaultServer implements Server {
                 };
             }
         };
-    }
-
-    private void sendStatus(final SocketChannel sock, HttpStatus status, String body) {
-        CharBuffer buffer = CharBuffer.allocate(8192);
-        buffer.append("HTTP/1.1").append(' ').append(String.valueOf(status.getStatusCode()))
-                .append(' ').append(status.name()).append('\r').append('\n');
-        SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'",
-                Locale.US);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        buffer.append("Date: ").append(dateFormat.format(new Date())).append('\r').append('\n');
-        if (StringUtils.isNotEmpty(body)) {
-            buffer.append("Content-Length: ").append(String.valueOf(body.length())).append('\r')
-                    .append('\n');
-        }
-        buffer.append("Connection: close");
-        buffer.append("\r\n");
-        buffer.flip();
-        Charset iso = Charset.forName("ISO-8859-1");
-        try {
-            sock.write(iso.encode(buffer));
-            sock.write(ByteBuffer.wrap(body.getBytes()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     static final class FixedLengthOutputStream extends OutputStream {
@@ -563,21 +611,5 @@ public class DefaultServer implements Server {
         list.add(new JarClassCollector());
         list.add(new FileClassCollector());
         return Collections.unmodifiableList(list);
-    }
-
-    public static class Runner {
-
-        public static void main(String[] args) {
-            Servers.create("http://localhost:8080").run();
-        }
-    }
-
-    @Route("/")
-    public static class A {
-
-        @Route("ping")
-        public String ping() {
-            return "PONG";
-        }
     }
 }

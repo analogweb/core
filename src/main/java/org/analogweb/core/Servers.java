@@ -65,6 +65,6 @@ public final class Servers {
     private static Server createDefaultServer(URI uri, ApplicationProperties properties,
             ApplicationContext context, Application application) {
         log.log(Markers.BOOT_APPLICATION, "IB000007", "Analogweb HTTP Server");
-        return new DefaultServer(uri.getPort(), application, context, properties);
+        return new DefaultServer(uri, application, context, properties);
     }
 }
