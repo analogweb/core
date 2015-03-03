@@ -12,8 +12,10 @@ import org.analogweb.core.MapHeaders;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
+ * @deprecated This will be remove in a future version.
  * @author snowgoose
  */
+@Deprecated
 public class HttpExchangeRequestContext extends AbstractRequestContext {
 
 	private final HttpExchange ex;

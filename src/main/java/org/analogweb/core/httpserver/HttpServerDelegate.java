@@ -10,6 +10,7 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
+@Deprecated
 class HttpServerDelegate extends HttpServer implements Server {
 
 	private HttpServer delegate;

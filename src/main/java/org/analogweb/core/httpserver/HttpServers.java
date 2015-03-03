@@ -14,8 +14,10 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 /**
+ * @deprecated This will be remove in a future version.
  * @author snowgoose
  */
+@Deprecated
 public final class HttpServers {
 
     private HttpServers() {

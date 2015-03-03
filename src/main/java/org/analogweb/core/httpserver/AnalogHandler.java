@@ -28,8 +28,10 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsExchange;
 
 /**
+ * @deprecated This will be remove in a future version.
  * @author snowgoose
  */
+@Deprecated
 public class AnalogHandler implements HttpHandler {
 
     private final Application app;

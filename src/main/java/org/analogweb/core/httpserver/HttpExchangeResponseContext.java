@@ -12,8 +12,10 @@ import org.analogweb.core.MapHeaders;
 import com.sun.net.httpserver.HttpExchange;
 
 /**
+ * @deprecated This will be remove in a future version.
  * @author snowgoose
  */
+@Deprecated
 public class HttpExchangeResponseContext extends AbstractResponseContext {
 
     protected static long NO_CONTENT = -1;
