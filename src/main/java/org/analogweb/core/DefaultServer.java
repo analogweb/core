@@ -336,7 +336,6 @@ public class DefaultServer implements Server {
         }
 
         RequestBody(File file, RandomAccessFile random) {
-            System.out.println(file.getPath());
             this.file = file;
             this.random = random;
         }
