@@ -123,7 +123,7 @@ public final class ReflectionUtils {
             field.set(instance, value);
         } catch (IllegalAccessException e) {
             // swallow
-            log.log("DU000009", e, field);
+            log.log("TU000009", e, field);
         }
     }
 
@@ -136,7 +136,7 @@ public final class ReflectionUtils {
             field.set(instance, value);
         } catch (IllegalAccessException e) {
             // swallow
-            log.log("DU000009", e, field);
+            log.log("TU000009", e, field);
         }
     }
 
@@ -186,13 +186,13 @@ public final class ReflectionUtils {
                     }
                     return field.get(instance);
                 } catch (SecurityException e) {
-                    log.log("DU000010", e, instance, fieldName);
+                    log.log("TU000010", e, instance, fieldName);
                 } catch (NoSuchFieldException e) {
-                    log.log("DU000010", e, instance, fieldName);
+                    log.log("TU000010", e, instance, fieldName);
                 } catch (IllegalArgumentException e) {
-                    log.log("DU000010", e, instance, fieldName);
+                    log.log("TU000010", e, instance, fieldName);
                 } catch (IllegalAccessException e) {
-                    log.log("DU000010", e, instance, fieldName);
+                    log.log("TU000010", e, instance, fieldName);
                 }
                 return null;
             }
@@ -205,17 +205,17 @@ public final class ReflectionUtils {
         try {
             return clazz.getMethod(methodName, parameterTypes);
         } catch (SecurityException e) {
-            log.log("DU000011", e, clazz, methodName);
+            log.log("TU000011", e, clazz, methodName);
         } catch (NoSuchMethodException e) {
-            log.log("DU000011", e, clazz, methodName);
+            log.log("TU000011", e, clazz, methodName);
         }
         // try declared method.
         try {
             return clazz.getDeclaredMethod(methodName, parameterTypes);
         } catch (SecurityException e) {
-            log.log("DU000011", e, clazz, methodName);
+            log.log("TU000011", e, clazz, methodName);
         } catch (NoSuchMethodException e) {
-            log.log("DU000011", e, clazz, methodName);
+            log.log("TU000011", e, clazz, methodName);
         }
         return null;
     }
