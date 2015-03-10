@@ -15,15 +15,15 @@ public class DefaultRequestPathTest {
 
     @Test
     public void testGetPath() throws Exception {
-        URI uri = new URI("http://somehost:8080/foo/baa/baz.do");
+        URI uri = new URI("http://somehost:8080/foo/baa/baz.html");
         URI baseUri = new URI("http://somehost:8080/foo");
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "GET");
-        assertThat(actual.getActualPath(), is("/baa/baz"));
+        assertThat(actual.getActualPath(), is("/baa/baz.html"));
     }
 
     @Test
     public void testGetPathOnRootContext() throws Exception {
-        URI uri = new URI("http://somehost:8080/baa/baz.do");
+        URI uri = new URI("http://somehost:8080/baa/baz");
         URI baseUri = new URI("http://somehost:8080/");
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "GET");
         assertThat(actual.getActualPath(), is("/baa/baz"));
@@ -31,7 +31,7 @@ public class DefaultRequestPathTest {
 
     @Test
     public void testGetPathWithRequestMethod() throws Exception {
-        URI uri = new URI("http://somehost:8080/foo/baa/baz.do?abc=def");
+        URI uri = new URI("http://somehost:8080/foo/baa/baz?abc=def");
         URI baseUri = new URI("http://somehost:8080/foo/");
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "GET");
         assertThat(actual.getActualPath(), is("/baa/baz"));
@@ -49,7 +49,7 @@ public class DefaultRequestPathTest {
     @Test
     public void testGetPathContainsJsessionId() throws Exception {
         URI uri = new URI(
-                "http://somehost:8080/foo/baa.do;jsessionid=1A26E401D812045AF2D9150891DA01B3");
+                "http://somehost:8080/foo/baa;jsessionid=1A26E401D812045AF2D9150891DA01B3");
         URI baseUri = new URI("http://somehost:8080/foo");
         DefaultRequestPath actual = new DefaultRequestPath(baseUri, uri, "POST");
         assertThat(actual.getActualPath(), is("/baa"));

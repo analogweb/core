@@ -53,10 +53,10 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
         if (editedPath.indexOf("/") != 0) {
             editedPath = new StringBuilder().append('/').append(path);
         }
-        int lastIndexOfSuffix = editedPath.lastIndexOf(".");
-        if (editedPath.lastIndexOf("/") < lastIndexOfSuffix) {
-            editedPath = new StringBuilder(editedPath.substring(0, lastIndexOfSuffix));
-        }
+        //        int lastIndexOfSuffix = editedPath.lastIndexOf(".");
+        //        if (editedPath.lastIndexOf("/") < lastIndexOfSuffix) {
+        //            editedPath = new StringBuilder(editedPath.substring(0, lastIndexOfSuffix));
+        //        }
         return editedPath;
     }
 
@@ -131,9 +131,19 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
     }
 
     protected boolean wildCardMatch(String text, String pattern) {
-        for (String card : StringUtils.split(pattern, '*')) {
+        List<String> sp = StringUtils.split(pattern, '*');
+        for (int i = 0; i < sp.size(); i++) {
+            String card = sp.get(i);
+            // at first.
+            if (i == 0 && card.startsWith("/") && text.startsWith(card) == false) {
+                return false;
+            }
             int idx = text.indexOf(card);
             if (idx == -1) {
+                return false;
+            }
+            // at last.
+            if (i == sp.size() - 1 && StringUtils.isNotEmpty(card) && text.endsWith(card) == false) {
                 return false;
             }
             text = text.substring(idx + card.length());

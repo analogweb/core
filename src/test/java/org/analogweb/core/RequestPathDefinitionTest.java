@@ -1,17 +1,21 @@
 package org.analogweb.core;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.net.URI;
 
 import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.junit.NoDescribeMatcher;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -56,7 +60,7 @@ public class RequestPathDefinitionTest {
         RequestPath other = mock(RequestPath.class);
         when(other.getActualPath()).thenReturn("/foo/baa/something");
         when(other.getRequestMethod()).thenReturn("POST");
-        assertTrue(mappedPath.match(other));
+        assertThat(mappedPath.match(other), is(true));
     }
 
     @Test
@@ -137,36 +141,11 @@ public class RequestPathDefinitionTest {
     }
 
     @Test
-    public void testDefineWithSuffix() {
-        String root = "";
-        String path = "/baa/something.do";
-        RequestPathMetadata mappedPath = RequestPathDefinition.define(root, path);
-        // ignore suffix.
-        assertThat(mappedPath.getActualPath(), is("/baa/something"));
-    }
-
-    @Test
-    public void testDefineWithNullRootPath() {
-        String root = null;
-        String path = "baa/something.do";
-        RequestPathMetadata mappedPath = RequestPathDefinition.define(root, path);
-        assertThat(mappedPath.getActualPath(), is("/baa/something"));
-    }
-
-    @Test
     public void testDefineWithNullEditPath() {
         thrown.expect(InvalidRequestPathException.class);
         String root = "/foo";
         String path = null;
         RequestPathDefinition.define(root, path);
-    }
-
-    @Test
-    public void testDefineWithEmptyRootPath() {
-        String root = "";
-        String path = "baa/something.do";
-        RequestPathMetadata actual = RequestPathDefinition.define(root, path);
-        assertThat(actual.getActualPath(), is("/baa/something"));
     }
 
     @Test
@@ -194,104 +173,54 @@ public class RequestPathDefinitionTest {
     }
 
     @Test
-    public void testMatchNoStrict() {
-        String root = "/foo/";
-        String path = "baa/something";
-        String expected = "/foo/baa/something.do";
-        assertNotMatch(root, path, expected);
+    public void testMatchStrictly() {
+        assertThat("/foo/baa/something", is(matchFor("/foo/baa/something")));
+        assertThat("/foo/baa/something.html", is(matchFor("/foo/baa/something.html")));
+        assertThat("/foo/baa/something", is(not(matchFor("/foo/something"))));
+        assertThat("/foo/baa/something", is(not(matchFor("/foo/baa/something.html"))));
+        assertThat("/foo/baa/something", is(not(matchFor("/foo/baa/a/something"))));
+        assertThat("/foo/baa/something", is(not(matchFor("/foo/baa/something/a/"))));
     }
 
     @Test
     public void testMatchWithWindCard() {
-        String root = "/foo";
-        String path = "/baa/*";
-        String expected = "/foo/baa/something";
-        assertMatch(root, path, expected);
-    }
-
-    @Test
-    public void testMatchWithContainsWindCard() {
-        String root = "/foo";
-        String path = "/baa/*/baz";
-        String expected = "/foo/baa/something/anything/baz";
-        assertMatch(root, path, expected);
-    }
-
-    @Test
-    public void testNotMatchWithContainsWindCard() {
-        String root = "/foo";
-        String path = "/baa/*/baz";
-        String expected = "/foo/baa/something/anything/baz/bad";
-        assertMatch(root, path, expected);
-    }
-
-    @Test
-    public void testNotMatchWithWindCard() {
-        String root = "/foo";
-        String path = "/baa/*";
-        String expected = "/foo/baasomething";
-        assertNotMatch(root, path, expected);
+        assertThat("/foo/baa/*", is(matchFor("/foo/baa/something")));
+        assertThat("/foo/baa/*", is(matchFor("/foo/baa/something/anything")));
+        assertThat("/foo/*/baa", is(matchFor("/foo/something/baa")));
+        assertThat("/foo/*/baa", is(matchFor("/foo/something/anything/baa")));
+        assertThat("/foo/*/baa", is(matchFor("/foo/something/anything/nothing/baa")));
+        assertThat("*/foo/baa/*", is(matchFor("/something/foo/baa/anything")));
+        assertThat("*/foo/*/baa", is(matchFor("/baz/foo/something/baa")));
+        assertThat("*/foo/*/baa", is(matchFor("/baa/baz/foo/something/baa")));
+        assertThat("*.html", is(matchFor("/baa/baz.html")));
+        assertThat("*.html", is(matchFor("/baa/baz/foo.html")));
+        assertThat("*.html", is(matchFor("/baa/baz/foo.html/baa.html")));
+        assertThat("/foo/*.html", is(matchFor("/foo/baa.html")));
+        assertThat("/foo/*.html", is(not(matchFor("/foo/baa"))));
+        assertThat("*.html", is(not(matchFor("/baa/baz"))));
+        assertThat("*.html", is(not(matchFor("/baa/html"))));
+        assertThat("*.html", is(not(matchFor("/baa/baz.htm"))));
+        assertThat("*/foo/*/baa", is(not(matchFor("/baa/baz/foo/something/baa/baz"))));
+        assertThat("/foo/baa/*", is(not(matchFor("/something/foo/baa/anything"))));
+        assertThat("/foo/baa/*", is(not(matchFor("/foo/something/baa/anything"))));
+        assertThat("/foo/baa/*", is(not(matchFor("/something/baa/foo/anything"))));
+        assertThat("/foo/*/baa", is(not(matchFor("/foo/something/baa/baz"))));
     }
 
     @Test
     public void testMatchWithPlaceHolder() {
-        String root = "/foo";
-        String path = "/baa/{baz}";
-        String expected = "/foo/baa/{something";
-        assertMatch(root, path, expected);
-        root = "/foo";
-        path = "/baa/{something";
-        assertMatch(root, path, expected);
-    }
-
-    @Test
-    public void testMatchWithMultiplePlaceHolder() {
-        String root = "/foo";
-        String path = "/{hoge}/{baz}/anything";
-        String expected = "/foo/baa/something/anything";
-        assertMatch(root, path, expected);
-    }
-
-    @Test
-    public void testMatchWithMultipleFirstPlaceHolder() {
-        String root = "/foo";
-        String path = "/baa/{hoge}/{baz}";
-        String expected = "/foo/baa/something/anything";
-        assertMatch(root, path, expected);
-    }
-
-    @Test
-    public void testMatchWithNotMatchMultiplePlaceHolder() {
-        String root = "/foo";
-        String path = "/{hoge}/{baz}/baa";
-        String expected = "/foo/baa/something/anything";
-        assertNotMatch(root, path, expected);
-    }
-
-    @Test
-    public void testMatchWithMultiplePlaceHolderOnly() {
-        String root = "/foo";
-        String path = "/{hoge}/{baz}";
-        String expected = "/foo/baa/something";
-        assertMatch(root, path, expected);
-    }
-
-    @Test
-    public void testNotMatchWithMultiplePlaceHolderOnly() {
-        String root = "/foo";
-        String path = "/{hoge}/{baz}";
-        String expected = "/foo/baa";
-        assertNotMatch(root, path, expected);
-        expected = "/foo/baa/baz/bad";
-        assertNotMatch(root, path, expected);
-    }
-
-    @Test
-    public void testMatchWithNotMatchMultiplePlaceHolderNumber() {
-        String root = "/foo";
-        String path = "/{hoge}/{baz}/baa";
-        String expected = "/foo/something/anything/else";
-        assertNotMatch(root, path, expected);
+        assertThat("/foo/baa/{baz}", is(matchFor("/foo/baa/something")));
+        assertThat("/foo/baa/{baz}/{hoge}", is(matchFor("/foo/baa/something/anything")));
+        assertThat("/foo/baa/{baz}/{hoge}/fuga", is(matchFor("/foo/baa/something/anything/fuga")));
+        assertThat("/foo/baa/{baz}", is(not(matchFor("/foo/baa/something/anything"))));
+        assertThat("/foo/baa/{baz}", is(not(matchFor("/foo/baa"))));
+        assertThat("/foo/baa/{baz}/{hoge}",
+                is(not(matchFor("/foo/baa/something/anything/nothing"))));
+        assertThat("/foo/baa/{baz}/{hoge}/fuga",
+                is(not(matchFor("/foo/baa/something/anything/else"))));
+        assertThat("/foo/baa/{baz}/{hoge}/fuga",
+                is(not(matchFor("/foo/baa/something/anything/nothing/fuga"))));
+        assertThat("/foo/baa/{baz", is(not(matchFor("/foo/baa/something"))));
     }
 
     @Test
@@ -307,43 +236,23 @@ public class RequestPathDefinitionTest {
         actual.match(actualSame);
     }
 
-    @Test
-    public void testNotRootMatch() {
-        String root = "/foo/baa/";
-        String path = "baa/something";
-        String expected = "/foo/baz/something";
-        assertNotMatch(root, path, expected);
-    }
+    Matcher<String> matchFor(final String requested) {
+        return new TypeSafeMatcher<String>() {
 
-    @Test
-    public void testNotMatchWithWorngPlaceHolder() {
-        String root = "/foo";
-        String path = "/baa/{baz";
-        String expected = "/foo/baa/{something";
-        assertNotMatch(root, path, expected);
-        expected = "/foo/baa/baz}";
-        assertNotMatch(root, path, expected);
-    }
+            @Override
+            public void describeTo(Description description) {
+            }
 
-    void assertMatch(String root, String path, String expected) {
-        assertPath(root, path, expected, true);
-    }
-
-    void assertNotMatch(String root, String path, String expected) {
-        assertPath(root, path, expected, false);
-    }
-
-    void assertPath(String root, String path, String expected, boolean expectMatch) {
-        RequestPathMetadata actual = RequestPathDefinition.define(root, path);
-        RequestPath actualSame = mock(RequestPath.class);
-        when(actualSame.getActualPath()).thenReturn(expected);
-        when(actualSame.getRequestMethod()).thenReturn("GET");
-        log.debug("actual path : " + actual);
-        log.debug("other actual path : " + actualSame);
-        if (expectMatch) {
-            assertTrue(actual.match(actualSame));
-        } else {
-            assertFalse(actual.match(actualSame));
-        }
+            @Override
+            protected boolean matchesSafely(String item) {
+                RequestPathMetadata definedPath = RequestPathDefinition.define("", item,
+                        new String[] { "GET" });
+                DefaultRequestPath requestedPath = new DefaultRequestPath(URI.create("/"),
+                        URI.create(requested), "GET");
+                log.debug(String.format("Compare %s to %s", definedPath.toString(),
+                        requestedPath.toString()));
+                return definedPath.match(requestedPath);
+            }
+        };
     }
 }

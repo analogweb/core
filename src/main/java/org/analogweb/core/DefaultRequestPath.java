@@ -48,7 +48,7 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
 
     private String getFormattedPath(String requestUri, String contextPath) {
         String uri = removeJsessionId(requestUri);
-        return removeSuffix(uri);
+        return uri;
     }
 
     private String removeJsessionId(String uri) {
@@ -58,14 +58,6 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
         } else {
             return uri.substring(0, indexOfSessionIdSeparator);
         }
-    }
-
-    private String removeSuffix(String uri) {
-        int lastIndexOfSuffixSeparator = uri.lastIndexOf('.');
-        if (uri.lastIndexOf('/') < lastIndexOfSuffixSeparator) {
-            return uri.substring(0, lastIndexOfSuffixSeparator);
-        }
-        return uri;
     }
 
     @Override
