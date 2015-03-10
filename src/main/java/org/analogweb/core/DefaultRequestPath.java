@@ -9,6 +9,7 @@ import org.analogweb.util.Assertion;
 import org.analogweb.util.StringUtils;
 
 /**
+ * Default implementation of {@link RequestPath}.
  * @author snowgoose
  */
 public class DefaultRequestPath extends AbstractRequestPathMetadata implements RequestPath {
@@ -38,12 +39,6 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata implements R
     @Override
     public boolean match(RequestPath requestPath) {
         return getActualPath().equals(requestPath.getActualPath());
-    }
-
-    @Override
-    @Deprecated
-    public boolean pathThrowgh(String specifier) {
-        return false;
     }
 
     private String getFormattedPath(String requestUri, String contextPath) {
