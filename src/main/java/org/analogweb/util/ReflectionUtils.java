@@ -6,6 +6,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -260,5 +262,24 @@ public final class ReflectionUtils {
             findAllImplementsInterfacesRecursivery(interfaci, result);
         }
         return result;
+    }
+
+    public static ParameterizedType findParameterizedType(Class<?> clazz) {
+        if (clazz == null || clazz.equals(Object.class)) {
+            return null;
+        }
+        final Type genericType = clazz.getGenericSuperclass();
+        if (genericType instanceof ParameterizedType) {
+            return (ParameterizedType) genericType;
+        } else {
+            final Type[] genericInterfaceTypes = clazz.getGenericInterfaces();
+            for (final Type genericInterfaceType : genericInterfaceTypes) {
+                if (genericInterfaceType instanceof ParameterizedType) {
+                    return (ParameterizedType) genericInterfaceType;
+                }
+            }
+            final Class<?> next = (Class<?>) clazz.getGenericSuperclass();
+            return findParameterizedType(next);
+        }
     }
 }
