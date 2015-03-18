@@ -1,12 +1,15 @@
 package org.analogweb.core;
 
+import static org.mockito.Mockito.when;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 
+import org.analogweb.ExceptionMapper;
 import org.analogweb.InvocationMetadata;
+import org.analogweb.Modules;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.RequestValueResolver;
 import org.analogweb.core.response.HttpStatus;
@@ -33,6 +36,12 @@ public class DefaultExceptionHandlerTest {
     @Before
     public void setUp() {
         handler = new DefaultExceptionHandler();
+        Modules modules = mock(Modules.class);
+        when(modules.getExceptionMappers()).thenReturn(
+                Arrays.<ExceptionMapper> asList(new UnsupportedMediaTypeExceptionMapper(),
+                        new InvalidRequestFormatExceptionMapper(),
+                        new RequestMethodUnsupportedExceptionMapper()));
+        handler.setModules(modules);
     }
 
     @Test

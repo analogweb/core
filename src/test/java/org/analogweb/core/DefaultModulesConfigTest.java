@@ -6,11 +6,13 @@ import static org.mockito.Mockito.when;
 import org.analogweb.ApplicationProcessor;
 import org.analogweb.AttributesHandler;
 import org.analogweb.ExceptionHandler;
+import org.analogweb.ExceptionMapper;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.InvocationMetadataFinder;
 import org.analogweb.InvokerFactory;
 import org.analogweb.ModulesBuilder;
+import org.analogweb.RequestValueResolver;
 import org.analogweb.ResponseHandler;
 import org.analogweb.ResponseResolver;
 import org.analogweb.TypeMapperContext;
@@ -61,7 +63,11 @@ public class DefaultModulesConfigTest {
                 .thenReturn(modulesBuilder);
         when(modulesBuilder.addAttributesHandlerClass(AttributesHandler.class)).thenReturn(
                 modulesBuilder);
-        when(modulesBuilder.addInvocationMetadataFinderClass(InvocationMetadataFinder.class)).thenReturn(
+        when(modulesBuilder.addInvocationMetadataFinderClass(InvocationMetadataFinder.class))
+                .thenReturn(modulesBuilder);
+        when(modulesBuilder.addRequestValueResolverClass(RequestValueResolver.class)).thenReturn(
+                modulesBuilder);
+        when(modulesBuilder.addExceptionMapperClass(ExceptionMapper.class)).thenReturn(
                 modulesBuilder);
         config.prepare(modulesBuilder);
     }

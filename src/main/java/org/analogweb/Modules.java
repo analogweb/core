@@ -3,7 +3,7 @@ package org.analogweb;
 import java.util.List;
 
 /**
- * このアプリケーションを構成する、拡張可能なモジュールを管理します。<br/>
+ * All modules that compose an application.
  * @author snowgoose
  */
 public interface Modules extends Disposable {
@@ -11,6 +11,8 @@ public interface Modules extends Disposable {
     List<InvocationMetadataFactory> getInvocationMetadataFactories();
 
     List<InvocationMetadataFinder> getInvocationMetadataFinders();
+
+    List<ExceptionMapper> getExceptionMappers();
 
     Invoker getInvoker();
 

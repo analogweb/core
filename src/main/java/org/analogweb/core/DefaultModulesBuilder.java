@@ -17,6 +17,7 @@ import org.analogweb.AttributesHandler;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ContainerAdaptorFactory;
 import org.analogweb.ExceptionHandler;
+import org.analogweb.ExceptionMapper;
 import org.analogweb.InvocationFactory;
 import org.analogweb.InvocationInterceptor;
 import org.analogweb.InvocationMetadataFactory;
@@ -58,6 +59,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private final List<Class<? extends InvocationMetadataFinder>> invocationMetadataFinderClasses;
     private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
     private final List<Class<? extends RequestValueResolver>> requestValueResolverClasses;
+    private final List<Class<? extends ExceptionMapper>> exceptionMapperClasses;
     private final Map<Class<? extends Renderable>, Class<? extends ResponseFormatter>> directionFormatterClasses;
     private final List<Class<? extends MultiModule>> ignoreClasses;
     private final List<MultiModule.Filter> ignoreFilters;
@@ -69,6 +71,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         this.invocationMetadataFinderClasses = new LinkedList<Class<? extends InvocationMetadataFinder>>();
         this.attributesHandlerClasses = new LinkedList<Class<? extends AttributesHandler>>();
         this.requestValueResolverClasses = new LinkedList<Class<? extends RequestValueResolver>>();
+        this.exceptionMapperClasses = new LinkedList<Class<? extends ExceptionMapper>>();
         this.directionFormatterClasses = Maps.newConcurrentHashMap();
         this.ignoreClasses = new LinkedList<Class<? extends MultiModule>>();
         this.ignoreFilters = new LinkedList<MultiModule.Filter>();
@@ -95,10 +98,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
             @Override
             public List<InvocationMetadataFinder> getInvocationMetadataFinders() {
-            	if(metadataFinders == null){
-            		metadataFinders = getComponentInstances(moduleContainerAdaptor,
+                if (metadataFinders == null) {
+                    metadataFinders = getComponentInstances(moduleContainerAdaptor,
                             getInvocationMetadataFinderClasses());
-            	}
+                }
                 return this.metadataFinders;
             }
 
@@ -193,6 +196,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return null;
             }
 
+            private RequestValueResolvers resolvers;
             // prevent cyclic reference.
             private Set<String> alreadyInjected;
 
@@ -295,8 +299,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 }
             }
 
-            private RequestValueResolvers resolvers;
-
             @Override
             public RequestValueResolvers getRequestValueResolvers() {
                 if (this.resolvers == null) {
@@ -308,6 +310,17 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                     this.resolvers = new DefaultReqestValueResolvers(resolverList);
                 }
                 return resolvers;
+            }
+
+            private List<ExceptionMapper> exceptionMappers;
+
+            @Override
+            public List<ExceptionMapper> getExceptionMappers() {
+                if (this.exceptionMappers == null) {
+                    this.exceptionMappers = getComponentInstances(moduleContainerAdaptor,
+                            getExceptionMapperClasses());
+                }
+                return this.exceptionMappers;
             }
         };
     }
@@ -474,6 +487,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         return this.directionFormatterClasses.get(mapToResponse);
     }
 
+    protected List<Class<? extends ExceptionMapper>> getExceptionMapperClasses() {
+        return this.exceptionMapperClasses;
+    }
+
     protected List<Class<? extends MultiModule>> getIgnoringClasses() {
         return this.ignoreClasses;
     }
@@ -523,6 +540,13 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     public ModulesBuilder addResponseFormatterClass(Class<? extends Renderable> mapToResponseClass,
             Class<? extends ResponseFormatter> directionFormatterClass) {
         this.directionFormatterClasses.put(mapToResponseClass, directionFormatterClass);
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder addExceptionMapperClass(
+            Class<? extends ExceptionMapper> exceptionMapperClass) {
+        this.exceptionMapperClasses.add(exceptionMapperClass);
         return this;
     }
 

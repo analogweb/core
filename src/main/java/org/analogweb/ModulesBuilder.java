@@ -60,6 +60,8 @@ public interface ModulesBuilder {
     ModulesBuilder addResponseFormatterClass(Class<? extends Renderable> mapToResponseClass,
             Class<? extends ResponseFormatter> responseFormatterClass);
 
+    ModulesBuilder addExceptionMapperClass(Class<? extends ExceptionMapper> exceptionMapperClass);
+
     ModulesBuilder clearDirectionFormatterClass();
 
     ModulesBuilder ignore(Class<? extends MultiModule> multiModuleClass);

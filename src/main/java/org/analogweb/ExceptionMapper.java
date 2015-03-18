@@ -3,7 +3,7 @@ package org.analogweb;
 /**
  * @author snowgooseyk
  */
-public interface ExceptionMapper {
+public interface ExceptionMapper extends MultiModule {
 
     /**
      * Return {@code true} when this {@link ExceptionMapper} can handle {@link Throwable}.

@@ -1,11 +1,13 @@
 package org.analogweb.core;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.analogweb.ExceptionHandler;
 import org.analogweb.ExceptionMapper;
+import org.analogweb.Modules;
+import org.analogweb.ModulesAware;
 import org.analogweb.WebApplicationException;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
@@ -14,10 +16,10 @@ import org.analogweb.util.logging.Logs;
  * Default {@link ExceptionHandler} implementation.
  * @author snowgoose
  */
-public class DefaultExceptionHandler implements ExceptionHandler {
+public class DefaultExceptionHandler implements ExceptionHandler, ModulesAware {
 
     protected static final Log log = Logs.getLog(DefaultExceptionHandler.class);
-    private List<ExceptionMapper> mappers = getDefaultMappers();
+    private List<ExceptionMapper> mappers;
 
     @Override
     public Object handleException(Exception exception) throws WebApplicationException {
@@ -62,17 +64,22 @@ public class DefaultExceptionHandler implements ExceptionHandler {
         return null;
     }
 
-    private List<ExceptionMapper> getDefaultMappers() {
-        return Arrays.<ExceptionMapper> asList(new UnsupportedMediaTypeExceptionMapper(),
-                new InvalidRequestFormatExceptionMapper(),
-                new RequestMethodUnsupportedExceptionMapper());
-    }
-
     protected List<ExceptionMapper> getExceptionMappers() {
         return Collections.unmodifiableList(this.mappers);
     }
 
     protected void logThrowable(Exception exception) {
         log.warn(exception.toString());
+    }
+
+    @Override
+    public void dispose() {
+        this.mappers.clear();
+    }
+
+    @Override
+    public void setModules(Modules modules) {
+        this.mappers = new ArrayList<ExceptionMapper>();
+        this.mappers.addAll(modules.getExceptionMappers());
     }
 }
