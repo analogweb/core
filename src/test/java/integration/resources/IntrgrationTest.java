@@ -91,6 +91,18 @@ public class IntrgrationTest {
     }
 
     @Test
+    public void testPutXmlBodyInvalidContentType() {
+        app = fakeApplication(DefaultApplicationProperties.properties("integration.testcase"));
+        InputStream body = new ByteArrayInputStream(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><fooBean><baa>baz</baa></fooBean>"
+                        .getBytes());
+        ResponseResult actual = app.request("/helloXmlValue", "PUT",
+                Maps.newHashMap("Content-Type", Arrays.asList("text/plain")), body);
+        assertThat(actual.getStatus(), is(415));
+        assertThat(actual.toBody(), is(""));
+    }
+
+    @Test
     public void testPutXmlBodyInvalidContent() {
         app = fakeApplication(DefaultApplicationProperties.properties("integration.testcase"));
         InputStream body = new ByteArrayInputStream(

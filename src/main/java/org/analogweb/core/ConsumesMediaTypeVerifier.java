@@ -20,64 +20,54 @@ import org.analogweb.util.ArrayUtils;
  */
 public class ConsumesMediaTypeVerifier extends AbstractApplicationProcessor {
 
-	@Override
-	public Object prepareInvoke(Method method, InvocationArguments args,
-			InvocationMetadata metadata, RequestContext context,
-			TypeMapperContext converters, RequestValueResolvers resolvers) {
-		if (method == null) {
-			return NO_INTERRUPTION;
-		}
-		Annotation[] ann = method.getAnnotations();
-		RequestFormats formats = AnnotationUtils.findAnnotation(
-				RequestFormats.class, ann);
-		if (formats != null) {
-			String[] expectMimes = formats.value();
-			MediaType contentType = context.getContentType();
-			if (contentType == null) {
-				throw new UnsupportedMediaTypeException(
-						metadata.getDefinedPath());
-			}
-			if (ArrayUtils.isEmpty(expectMimes)) {
-				if (mediaTypeUnsupported(contentType, method, resolvers)) {
-					throw new UnsupportedMediaTypeException(
-							metadata.getDefinedPath());
-				}
-			} else {
-				for (String expectMime : expectMimes) {
-					if (contentType
-							.isCompatible(MediaTypes.valueOf(expectMime))) {
-						return super.prepareInvoke(method, args, metadata,
-								context, converters, resolvers);
-					}
-				}
-				throw new UnsupportedMediaTypeException(
-						metadata.getDefinedPath());
-			}
-		}
-		return super.prepareInvoke(method, args, metadata, context, converters,
-				resolvers);
-	}
+    @Override
+    public Object prepareInvoke(Method method, InvocationArguments args,
+            InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
+            RequestValueResolvers resolvers) {
+        if (method == null || context.getRequestMethod().equalsIgnoreCase("GET")) {
+            return NO_INTERRUPTION;
+        }
+        Annotation[] ann = method.getAnnotations();
+        RequestFormats formats = AnnotationUtils.findAnnotation(RequestFormats.class, ann);
+        MediaType contentType = context.getContentType();
+        if (contentType == null) {
+            throw new UnsupportedMediaTypeException(metadata.getDefinedPath());
+        }
+        String[] expectMimes;
+        if (formats == null || ArrayUtils.isEmpty(expectMimes = formats.value())) {
+            if (mediaTypeUnsupported(contentType, method, resolvers)) {
+                throw new UnsupportedMediaTypeException(metadata.getDefinedPath());
+            }
+        } else {
+            for (String expectMime : expectMimes) {
+                if (contentType.isCompatible(MediaTypes.valueOf(expectMime))) {
+                    return super.prepareInvoke(method, args, metadata, context, converters,
+                            resolvers);
+                }
+            }
+            throw new UnsupportedMediaTypeException(metadata.getDefinedPath());
+        }
+        return super.prepareInvoke(method, args, metadata, context, converters, resolvers);
+    }
 
-	private boolean mediaTypeUnsupported(MediaType contentType, Method method,
-			RequestValueResolvers handlers) {
-		Annotation[][] parameterAnn = method.getParameterAnnotations();
-		for (Annotation[] pa : parameterAnn) {
-			Resolver by = AnnotationUtils.findAnnotation(Resolver.class, pa);
-			if (by != null) {
-				RequestValueResolver ha = handlers.findRequestValueResolver(by
-						.value());
-				if (ha instanceof SpecificMediaTypeRequestValueResolver
-						&& ((SpecificMediaTypeRequestValueResolver) ha)
-								.supports(contentType)) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+    private boolean mediaTypeUnsupported(MediaType contentType, Method method,
+            RequestValueResolvers handlers) {
+        Annotation[][] parameterAnn = method.getParameterAnnotations();
+        for (Annotation[] pa : parameterAnn) {
+            Resolver by = AnnotationUtils.findAnnotation(Resolver.class, pa);
+            if (by != null) {
+                RequestValueResolver ha = handlers.findRequestValueResolver(by.value());
+                if (ha instanceof SpecificMediaTypeRequestValueResolver
+                        && ((SpecificMediaTypeRequestValueResolver) ha).supports(contentType)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-	@Override
-	public int getPrecedence() {
-		return 1;
-	}
+    @Override
+    public int getPrecedence() {
+        return 1;
+    }
 }
