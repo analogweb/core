@@ -280,6 +280,7 @@ public class DefaultServer implements Server {
         }
         buffer.append("Connection: close");
         buffer.append("\r\n");
+        buffer.append("\r\n");
         buffer.flip();
         Charset iso = Charset.forName("ISO-8859-1");
         try {
