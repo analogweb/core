@@ -24,7 +24,7 @@ public class Resource extends BuildableResponse<Resource> {
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
     protected static final String CONTENT_DISPOSITION = "Content-Disposition";
-    private String contentType = DEFAULT_CONTENT_TYPE;
+    //    private String contentType = DEFAULT_CONTENT_TYPE;
     private String charset = DEFAULT_CHARSET;
     private final String fileName;
     private String disposition = "attachment";
@@ -34,10 +34,14 @@ public class Resource extends BuildableResponse<Resource> {
         this(input, fileName, DEFAULT_CONTENT_TYPE, DEFAULT_CHARSET);
     }
 
+    protected Resource(InputStream input, String fileName, String contentType) {
+        this(input, fileName, contentType, DEFAULT_CHARSET);
+    }
+
     protected Resource(InputStream input, String fileName, String contentType, String charset) {
         this.input = input;
         this.fileName = fileName;
-        this.contentType = contentType;
+        header("Content-Type", contentType);
         this.charset = charset;
     }
 
@@ -48,6 +52,11 @@ public class Resource extends BuildableResponse<Resource> {
     public static Resource as(InputStream input, String fileName) {
         Assertion.notNull(input, InputStream.class.getName());
         return new Resource(input, fileName);
+    }
+
+    public static Resource as(InputStream input, String fileName, String contentType) {
+        Assertion.notNull(input, InputStream.class.getName());
+        return new Resource(input, fileName, contentType);
     }
 
     public static Resource asFilePath(String filePath) {
@@ -70,7 +79,6 @@ public class Resource extends BuildableResponse<Resource> {
     @Override
     protected void mergeHeaders(RequestContext request, ResponseContext response,
             Map<String, String> headers, ResponseEntity entity) {
-        headers.put("Content-Type", getContentType());
         try {
             headers.put(CONTENT_DISPOSITION, createContentDisposition());
         } catch (UnsupportedEncodingException e) {
@@ -113,10 +121,6 @@ public class Resource extends BuildableResponse<Resource> {
 
     public String getCharset() {
         return this.charset;
-    }
-
-    public String getContentType() {
-        return this.contentType;
     }
 
     public Resource inline() {

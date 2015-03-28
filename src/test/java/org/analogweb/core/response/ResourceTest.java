@@ -60,6 +60,22 @@ public class ResourceTest {
     }
 
     @Test
+    public void testDistinctFileResource() throws Exception {
+        File file = folder.newFile("text.log");
+        writeStringTo(file);
+        Resource resource = Resource.as(file).status(204).header("Content-Type", "text/plain");
+        when(response.getResponseHeaders()).thenReturn(headers);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ResponseWriter writer = new DefaultResponseWriter();
+        when(response.getResponseWriter()).thenReturn(writer);
+        resource.render(context, response);
+        writer.getEntity().writeInto(out);
+        assertThat(new String(out.toByteArray()), is("this is test log."));
+        verify(headers).putValue("Content-Type", "text/plain");
+        verify(headers).putValue("Content-Disposition", "attachment; filename=text.log");
+    }
+
+    @Test
     public void testNotAvairableFileResource() throws Exception {
         thrown.expect(ApplicationRuntimeException.class);
         Resource.as(new File("foo/baa"));
