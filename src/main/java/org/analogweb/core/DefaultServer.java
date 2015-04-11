@@ -285,7 +285,9 @@ public class DefaultServer implements Server {
         Charset iso = Charset.forName("ISO-8859-1");
         try {
             sock.write(iso.encode(buffer));
-            sock.write(ByteBuffer.wrap(body.getBytes()));
+            if (StringUtils.isNotEmpty(body)) {
+                sock.write(ByteBuffer.wrap(body.getBytes()));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
