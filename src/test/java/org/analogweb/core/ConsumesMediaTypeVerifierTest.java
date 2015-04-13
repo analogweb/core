@@ -111,18 +111,6 @@ public class ConsumesMediaTypeVerifierTest {
     }
 
     @Test
-    public void testPrepareInvokeDefaultFormatsNotFound() {
-        thrown.expect(UnsupportedMediaTypeException.class);
-        MediaType requstType = MediaTypes.TEXT_XML_TYPE;
-        when(context.getRequestMethod()).thenReturn("POST");
-        when(context.getContentType()).thenReturn(requstType);
-        when(handlers.findRequestValueResolver(Xml.class)).thenReturn(null);
-        Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsSvg",
-                new Class<?>[] { Object.class });
-        verifier.prepareInvoke(method, args, metadata, context, converters, handlers);
-    }
-
-    @Test
     public void testPrepareInvokeNotDefinedFormats() {
         thrown.expect(UnsupportedMediaTypeException.class);
         when(context.getRequestMethod()).thenReturn("PUT");

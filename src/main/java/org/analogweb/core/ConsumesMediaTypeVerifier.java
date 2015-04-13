@@ -58,12 +58,12 @@ public class ConsumesMediaTypeVerifier extends AbstractApplicationProcessor {
             if (by != null) {
                 RequestValueResolver ha = handlers.findRequestValueResolver(by.value());
                 if (ha instanceof SpecificMediaTypeRequestValueResolver
-                        && ((SpecificMediaTypeRequestValueResolver) ha).supports(contentType)) {
-                    return false;
+                        && ((SpecificMediaTypeRequestValueResolver) ha).supports(contentType) == false) {
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 
     @Override
