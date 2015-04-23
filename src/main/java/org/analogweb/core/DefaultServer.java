@@ -372,6 +372,7 @@ public class DefaultServer implements Server {
         @Override
         public void dispose() {
             IOUtils.closeQuietly(in);
+            this.bytes = null;
         }
         
         public void update(byte[] buffer) throws IOException {
