@@ -50,9 +50,12 @@ import org.analogweb.util.IOUtils;
 import org.analogweb.util.JarClassCollector;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
+import org.analogweb.util.logging.Log;
+import org.analogweb.util.logging.Logs;
 
 public class DefaultServer implements Server {
 
+    private static final Log log = Logs.getLog(DefaultServer.class);
     private static final int CR = 13;
     private static final int LF = 10;
     private static final byte[] CRLF = new byte[] { CR, LF };
@@ -112,7 +115,7 @@ public class DefaultServer implements Server {
         }
     }
     
-    private Map<SelectableChannel, Handler> requests = Maps.newConcurrentHashMap();
+    private Map<SelectableChannel, Handler> requests = Maps.newEmptyHashMap();
 
     private void runInternal(Selector sl) throws IOException {
         while (true) {
@@ -122,28 +125,36 @@ public class DefaultServer implements Server {
                     SelectionKey key = keys.next();
                     keys.remove();
                     if (key.isAcceptable()) {
+                        log.trace("Accepting socket.");
                         ServerSocketChannel ssock = (ServerSocketChannel) key.channel();
                         SocketChannel channel = ssock.accept();
                         channel.configureBlocking(false);
                         channel.register(sl, SelectionKey.OP_READ);
                     } else {
                         if (key.isReadable()) {
+                            log.trace("Reading socket.");
                             SelectableChannel channel = key.channel();
                             Handler handler;
                             if(requests.containsKey(channel)){
+                                log.trace(String.format("Handler[key=%s] resolved.",channel));
                                 handler = requests.get(channel);
                             } else {
+                                log.trace(String.format("New Handler[key=%s] created.",channel));
                                 handler = new Handler();
                                 requests.put(channel, handler);
                             }
+                            log.trace(String.format("Invoking Handler[key=%s]#read.",channel));
                             handler.read(key);
                         }
                         if (key.isWritable()) {
                             SelectableChannel channel = key.channel();
                             try{
+                                log.trace(String.format("Invoking Handler[key=%s]#write.",channel));
                                 requests.get(channel).write(key);
                             } finally {
                                 requests.remove(channel);
+                                log.trace(String.format("Handler[key=%s] removed.",channel));
+                                log.trace(String.format("Currently %s requests remained.",requests.size()));
                             }
                         }
                     }
@@ -167,12 +178,14 @@ public class DefaultServer implements Server {
             sock.configureBlocking(false);
             ByteBuffer buf = ByteBuffer.allocate(8192);
             int read = sock.read(buf);
+            log.trace(String.format("%s bytes readed.",read));
             if (read == 1) {
                 // spinning.
+                log.trace("spinning.");
                 return;
             }
+            buf.flip();
             if (read > 0) {
-                buf.flip();
                 // Read first.
                 int eoh = 0;
                 if (headerMap == null || path == null) {
@@ -208,6 +221,7 @@ public class DefaultServer implements Server {
                             headerMap.put(k, Arrays.asList(value));
                         }
                     }
+                    log.trace(String.format("Request header resolved. %s",headerMap));
                 }
                 body = resolveRequestBody(sock, buf, eoh, read, path.getRequestMethod(),
                         headerMap.get("Content-Length"));
@@ -222,11 +236,15 @@ public class DefaultServer implements Server {
         private RequestBody resolveRequestBody(SocketChannel sock, ByteBuffer buf, int eoh, int read,
                 String method, List<String> contentLengthHeader) throws IOException {
             if(this.body != null){
-                body.update(buf.array());
+                log.trace(String.format("Append Request Body %s",body));
+                byte[] dst = new byte[read];
+                buf.get(dst);
+                body.update(dst);
                 buf.clear();
                 return body;
             }
             if (method.equalsIgnoreCase("POST") || method.equalsIgnoreCase("PUT")) {
+                log.trace("Create Request Body");
                 int contentLength = CollectionUtils.isEmpty(contentLengthHeader) ? -1 : Integer
                         .valueOf(contentLengthHeader.get(0));
                 if (contentLength < 0) {
@@ -237,8 +255,8 @@ public class DefaultServer implements Server {
                 byte[] ba = new byte[firstBodySize];
                 buf = (ByteBuffer) buf.position(eoh);
                 buf.get(ba);
-                contentLength -= firstBodySize;
                 buf.clear();        
+                log.trace(String.format("Content Length = %s",contentLength));
                 return new RequestBody(contentLength, ba);
             } else {
                 return new RequestBody();
@@ -378,6 +396,8 @@ public class DefaultServer implements Server {
         public void update(byte[] buffer) throws IOException {
             this.remain -= buffer.length;
             this.bytes.write(buffer);
+            log.trace(String.format("%s bytes written.",buffer.length));
+            log.trace(String.format("Content is remaining %s bytes.",remain));
             if(this.remain < 1){
                 this.resolved = true;
             }
