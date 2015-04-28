@@ -4,11 +4,14 @@ import static org.analogweb.core.DefaultApplicationProperties.defaultProperties;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -141,11 +144,19 @@ public class DefaultServer implements Server {
                             } else {
                                 log.trace(String.format("New Handler[key=%s] created.", channel));
                                 handler = new Handler();
-                                // TODO Remove handler when Exception occur.
                                 requests.put(channel, handler);
                             }
                             log.trace(String.format("Invoking Handler[key=%s]#read.", channel));
-                            handler.read(key);
+                            try {
+                                handler.read(key);
+                            } catch (RequestCancelledException e) {
+                                sendStatus((SocketChannel) key.channel(), e.getStatus(),
+                                        e.getBody());
+                                requests.remove(channel);
+                                log.trace(String.format("Handler[key=%s] removed.", channel));
+                                log.trace(String.format("Currently %s requests remained.",
+                                        requests.size()));
+                            }
                         }
                         if (key.isValid() && key.isWritable()) {
                             SelectableChannel channel = key.channel();
@@ -172,7 +183,7 @@ public class DefaultServer implements Server {
         }
     }
 
-    private class Handler {
+    final class Handler {
 
         private RequestPath path;
         private Map<String, List<String>> headerMap;
@@ -207,13 +218,13 @@ public class DefaultServer implements Server {
                                     ((ByteBuffer) buf.duplicate().limit(eoh)).array())));
                     String aLine = r.readLine();
                     if (aLine == null) {
-                        sendStatus(sock, HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
-                        return;
+                        throw new RequestCancelledException(HttpStatus.BAD_REQUEST,
+                                StringUtils.EMPTY);
                     }
                     StringTokenizer st = new StringTokenizer(aLine);
                     if (st.countTokens() < 2) {
-                        sendStatus(sock, HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
-                        return;
+                        throw new RequestCancelledException(HttpStatus.BAD_REQUEST,
+                                StringUtils.EMPTY);
                     }
                     final String method = st.nextToken();
                     final URI uri = URI.create(st.nextToken());
@@ -240,13 +251,16 @@ public class DefaultServer implements Server {
                         int proceed = app.processRequest(request.getRequestPath(), request,
                                 response);
                         if (proceed == Application.NOT_FOUND) {
-                            sendStatus(sock, HttpStatus.NOT_FOUND, StringUtils.EMPTY);
+                            throw new RequestCancelledException(HttpStatus.NOT_FOUND,
+                                    StringUtils.EMPTY);
                         } else {
                             response.commmit(request);
                         }
                     } catch (WebApplicationException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        throw new ApplicationRuntimeException(e.getCause()) {
+
+                            private static final long serialVersionUID = 1L;
+                        };
                     } finally {
                         if (response.getBody() != null) {
                             key.attach(response.getBody().getByteBuffer());
@@ -275,8 +289,7 @@ public class DefaultServer implements Server {
                 int contentLength = CollectionUtils.isEmpty(contentLengthHeader) ? -1 : Integer
                         .valueOf(contentLengthHeader.get(0));
                 if (contentLength < 0) {
-                    sendStatus(sock, HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
-                    return null;
+                    throw new RequestCancelledException(HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
                 }
                 int firstBodySize = buf.limit() - eoh;
                 byte[] ba = new byte[firstBodySize];
@@ -355,6 +368,26 @@ public class DefaultServer implements Server {
         }
     }
 
+    private static final class RequestCancelledException extends RuntimeException {
+
+        private static final long serialVersionUID = -5041505179564601790L;
+        private HttpStatus status;
+        private String body;
+
+        RequestCancelledException(HttpStatus status, String body) {
+            this.status = status;
+            this.body = body;
+        }
+
+        public HttpStatus getStatus() {
+            return this.status;
+        }
+
+        public String getBody() {
+            return this.body;
+        }
+    }
+
     private static final class RequestContextImpl extends AbstractRequestContext implements
             Disposable {
 
@@ -392,10 +425,12 @@ public class DefaultServer implements Server {
 
     private static final class RequestBody implements Disposable {
 
-        private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        private OutputStream out;
         private InputStream in;
         private int remain;
         private boolean resolved;
+        private File file;
+        private RandomAccessFile ra;
 
         RequestBody() {
             this.in = new ByteArrayInputStream(new byte[0]);
@@ -404,6 +439,9 @@ public class DefaultServer implements Server {
 
         RequestBody(int remain, byte[] first) throws IOException {
             this.remain = remain;
+            this.file = File.createTempFile("Analogweb", "Request");
+            this.ra = new RandomAccessFile(file, "rw");
+            this.out = new FileOutputStream(ra.getFD());
             update(first);
         }
 
@@ -413,22 +451,36 @@ public class DefaultServer implements Server {
 
         @Override
         public void dispose() {
+            IOUtils.closeQuietly(this.ra);
             IOUtils.closeQuietly(in);
-            this.bytes = null;
+            this.in = null;
+            IOUtils.closeQuietly(out);
+            this.out = null;
+            if (this.file != null) {
+                this.file.deleteOnExit();
+            }
         }
 
         public void update(byte[] buffer) throws IOException {
+            if (this.out == null) {
+                log.trace("This request buffer not writable.");
+                return;
+            }
             this.remain -= buffer.length;
-            this.bytes.write(buffer);
+            this.out.write(buffer);
             log.trace(String.format("%s bytes written.", buffer.length));
-            log.trace(String.format("Content is remaining %s bytes.", remain));
+            log.trace(String.format("Content remaining %s bytes.", remain));
             if (this.remain < 1) {
                 this.resolved = true;
             }
         }
 
         public InputStream open() throws IOException {
-            return new ByteArrayInputStream(this.bytes.toByteArray());
+            if (ra != null) {
+                return new FileInputStream(this.ra.getFD());
+            } else {
+                return this.in;
+            }
         }
     }
 
