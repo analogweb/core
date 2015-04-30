@@ -1,15 +1,12 @@
 package org.analogweb.core;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
@@ -25,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.StringTokenizer;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.MediaType;
@@ -33,6 +29,7 @@ import org.analogweb.Multipart;
 import org.analogweb.MultipartParameters;
 import org.analogweb.RequestContext;
 import org.analogweb.util.ArrayUtils;
+import org.analogweb.util.ClassUtils;
 import org.analogweb.util.IOUtils;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
@@ -57,8 +54,10 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
     public Object resolveValue(RequestContext request, InvocationMetadata metadata, String name,
             Class<?> requiredType, Annotation[] annotations) {
         try {
-            MultipartParameters<Multipart> multiparts = extractMultipart(request.getContentType().toString(), request.getRequestBody());
-            return multiparts.getMultiparts(name);
+            MultipartParameters<Multipart> multiparts = extractMultipart(request.getContentType()
+                    .toString(), request.getRequestBody());
+            return resolveParameterizedValue(request, metadata, name, requiredType, annotations,
+                    multiparts);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             return null;
@@ -112,7 +111,7 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
             fo.write(dst);
             fo.flush();
             fo.close();
-            params.add(new MultipartImpl(header,file,raf));
+            params.add(new MultipartImpl(header, file));
             System.out.println("BODY: " + new String(dst));
             beginOfBoundary = nextBeginOfBoundary;
             System.out.println("B: " + beginOfBoundary);
@@ -152,7 +151,7 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
         }
     }
 
-    private static Map<String, String> parseHeader(String buffer) {
+    private Map<String, String> parseHeader(String buffer) {
         BufferedReader r = new BufferedReader(new StringReader(buffer));
         String aLine = null;
         Map<String, String> m = Maps.newEmptyHashMap();
@@ -172,26 +171,71 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
         return m;
     }
 
+    protected Object resolveParameterizedValue(RequestContext request, InvocationMetadata metadata,
+            String name, Class<?> requiredType, Annotation[] annotations,
+            MultipartParameters<Multipart> parameters) {
+        if (isEqualsType(Iterable.class, requiredType)) {
+            return parameters;
+        }
+        final Multipart[] value = parameters.getMultiparts(name);
+        if (ArrayUtils.isNotEmpty(value)) {
+            if (isEqualsType(ClassUtils.forNameQuietly("[L" + File.class.getName() + ";"),
+                    requiredType)) {
+                final List<File> files = new ArrayList<File>();
+                for (final Multipart mp : value) {
+                    File f;
+                    if (mp instanceof MultipartImpl
+                            && (f = ((MultipartImpl) mp).getAsFile()) != null) {
+                        files.add(f);
+                    }
+                }
+                return files.toArray(new File[files.size()]);
+            } else if (isEqualsType(
+                    ClassUtils.forNameQuietly("[L" + Multipart.class.getName() + ";"), requiredType)) {
+                return value;
+            }
+            final Multipart mp = value[0];
+            if (isEqualsType(InputStream.class, requiredType)) {
+                return mp.getInputStream();
+            } else if (isEqualsType(File.class, requiredType)) {
+                if (mp instanceof MultipartImpl) {
+                    return ((MultipartImpl) mp).getAsFile();
+                }
+            } else if (isEqualsType(byte[].class, requiredType)) {
+                return mp.getBytes();
+            } else if (isEqualsType(Multipart.class, requiredType)) {
+                return mp;
+            } else {
+                throw new UnresolvableValueException(this, requiredType, name);
+            }
+        }
+        return super.resolveValue(request, metadata, name, requiredType, annotations);
+    }
+
+    private boolean isEqualsType(Class<?> clazz, Class<?> other) {
+        if (clazz == null || other == null) {
+            return false;
+        }
+        return (clazz == other) || clazz.getCanonicalName().equals(other.getCanonicalName());
+    }
+
     static final class MultipartImpl implements Multipart {
 
-        private Map<String,String> header;
-        private Map<String,String> contentDisposition;
+        private Map<String, String> header;
+        private Map<String, String> contentDisposition;
         private File tempFile;
-        private RandomAccessFile memory;
-        
-        MultipartImpl(Map<String,String> header,File temp,RandomAccessFile random){
+
+        MultipartImpl(Map<String, String> header, File temp) {
             this.header = header;
             this.tempFile = temp;
-            this.memory = random;
         }
 
         @Override
         public String getName() {
             return getContentDisposition().get("name");
         }
-        
-        public void dispose(){
-            IOUtils.closeQuietly(this.memory);
+
+        public void dispose() {
             this.tempFile.deleteOnExit();
         }
 
@@ -199,15 +243,20 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
         public String getResourceName() {
             return getContentDisposition().get("filename");
         }
-        
-        private Map<String,String> getContentDisposition(){
-            if(contentDisposition == null){
+
+        private Map<String, String> getContentDisposition() {
+            if (contentDisposition == null) {
                 contentDisposition = Maps.newEmptyHashMap();
                 String value = this.header.get("Content-Disposition");
                 for (String param : StringUtils.split(value, ';')) {
                     List<String> sp = StringUtils.split(param.trim(), '=');
                     if (sp.size() > 1) {
-                        contentDisposition.put(sp.get(0), sp.get(1));
+                        String p = sp.get(1);
+                        if (p.endsWith("\"") && p.startsWith("\"")) {
+                            contentDisposition.put(sp.get(0), p.substring(1, p.length() - 1));
+                        } else {
+                            contentDisposition.put(sp.get(0), p);
+                        }
                     } else {
                         contentDisposition.put(sp.get(0), "");
                     }
@@ -219,12 +268,17 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
         @Override
         public InputStream getInputStream() {
             try {
-                return new FileInputStream(memory.getFD());
+                return new FileInputStream(tempFile);
             } catch (IOException e) {
                 throw new ApplicationRuntimeException(e) {
+
                     private static final long serialVersionUID = 1L;
                 };
             }
+        }
+
+        public File getAsFile() {
+            return this.tempFile;
         }
 
         @Override
@@ -245,8 +299,8 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
         private List<Multipart> multiparts;
         private Charset encoding;
         private Map<String, Multipart[]> mapped;
-        
-        MultipartsImpl(List<Multipart> multiparts,Charset encoding){
+
+        MultipartsImpl(List<Multipart> multiparts, Charset encoding) {
             this.multiparts = multiparts;
             this.encoding = encoding;
         }
