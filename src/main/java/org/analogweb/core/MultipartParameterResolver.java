@@ -44,6 +44,8 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
 
     private static final Log log = Logs.getLog(MultipartParameterResolver.class);
     private final String defaultEncoding = "UTF-8";
+    private static final String MULTIPARTPARAMETERS_ON_CURRENT_REQUEST = MultipartParameterResolver.class
+            .getCanonicalName() + "_MULTIPARTPARAMETERS_ON_CURRENT_REQUEST";
 
     @Override
     public boolean supports(MediaType mediaType) {
@@ -54,32 +56,38 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
     public Object resolveValue(RequestContext request, InvocationMetadata metadata, String name,
             Class<?> requiredType, Annotation[] annotations) {
         try {
-            MultipartParameters<Multipart> multiparts = extractMultipart(request.getContentType()
-                    .toString(), request.getRequestBody());
+            MultipartParameters<Multipart> multiparts = request
+                    .getAttribute(MULTIPARTPARAMETERS_ON_CURRENT_REQUEST);
+            if (multiparts == null) {
+                multiparts = extractMultipart(request.getContentType().toString(),
+                        request.getRequestBody());
+                request.setAttribute(MULTIPARTPARAMETERS_ON_CURRENT_REQUEST, multiparts);
+            }
             return resolveParameterizedValue(request, metadata, name, requiredType, annotations,
                     multiparts);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            return null;
+            throw new ApplicationRuntimeException(e) {
+
+                private static final long serialVersionUID = 2628554296029294446L;
+            };
         }
     }
 
     private MultipartParameters<Multipart> extractMultipart(String contentType, InputStream in)
             throws IOException {
         byte[] boundary = extractBoundary(contentType);
-        System.out.println("BD: " + new String(boundary));
+        if (log.isTraceEnabled()) {
+            log.trace(String.format("Multipart Boundary : %s", new String(boundary)));
+        }
         List<Multipart> params = new LinkedList<Multipart>();
         ReadableByteChannel source = Channels.newChannel(in);
         ByteBuffer buffer = ByteBuffer.allocate(8192);
         source.read(buffer);
         buffer.flip();
         int beginOfBoundary = nextPosition(0, boundary, buffer);
-        System.out.println("B: " + beginOfBoundary);
         while (true) {
             int endOfBoundary = beginOfBoundary + boundary.length;
-            System.out.println("EB: " + endOfBoundary);
             int endOfHeader = nextPosition(endOfBoundary, new byte[] { 13, 10, 13, 10 }, buffer);
-            System.out.println("EH: " + endOfHeader);
             if (endOfHeader == -1) {
                 break;
             }
@@ -87,7 +95,9 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
             buffer.position(endOfBoundary + 2);// CRLF
             buffer.get(dst);
             Map<String, String> header = parseHeader(new String(dst));
-            System.out.println("HEADER: " + header);
+            if (log.isTraceEnabled()) {
+                log.trace(String.format("Header of part : %s", header));
+            }
             buffer.position(buffer.position() + 4);// CRLF + CRLF
             int nextBeginOfBoundary;
             File file = File.createTempFile(MultipartParameterResolver.class.getCanonicalName(),
@@ -103,18 +113,18 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
                 buffer.flip();
                 endOfHeader = 0;
             }
-            System.out.println("NB: " + nextBeginOfBoundary);
             int remaining = (nextBeginOfBoundary - 8) - endOfHeader;
-            System.out.println("Remaining: " + remaining);
             dst = new byte[remaining];
             buffer.get(dst);
             fo.write(dst);
             fo.flush();
             fo.close();
+            raf.close();
             params.add(new MultipartImpl(header, file));
-            System.out.println("BODY: " + new String(dst));
+            if (log.isTraceEnabled()) {
+                log.trace(String.format("Body of part : %s", new String(dst)));
+            }
             beginOfBoundary = nextBeginOfBoundary;
-            System.out.println("B: " + beginOfBoundary);
         }
         return new MultipartsImpl(params, Charset.forName(defaultEncoding));
     }
@@ -151,22 +161,17 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
         }
     }
 
-    private Map<String, String> parseHeader(String buffer) {
+    private Map<String, String> parseHeader(String buffer) throws IOException {
         BufferedReader r = new BufferedReader(new StringReader(buffer));
         String aLine = null;
         Map<String, String> m = Maps.newEmptyHashMap();
-        try {
-            while ((aLine = r.readLine()) != null && aLine.trim().length() != 0) {
-                int i = aLine.indexOf(':');
-                if (i > 0 && i < aLine.length()) {
-                    String key = aLine.substring(0, i).trim();
-                    String value = aLine.substring(i + 1).trim();
-                    m.put(key, value);
-                }
+        while ((aLine = r.readLine()) != null && aLine.trim().length() != 0) {
+            int i = aLine.indexOf(':');
+            if (i > 0 && i < aLine.length()) {
+                String key = aLine.substring(0, i).trim();
+                String value = aLine.substring(i + 1).trim();
+                m.put(key, value);
             }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
         return m;
     }
@@ -193,6 +198,13 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
             } else if (isEqualsType(
                     ClassUtils.forNameQuietly("[L" + Multipart.class.getName() + ";"), requiredType)) {
                 return value;
+            } else if (isEqualsType(ClassUtils.forNameQuietly("[L" + String.class.getName() + ";"),
+                    requiredType)) {
+                List<String> values = new ArrayList<String>();
+                for (final Multipart mp : value) {
+                    values.add(resolveParameterizedValueAsString(mp));
+                }
+                return values.toArray(new String[values.size()]);
             }
             final Multipart mp = value[0];
             if (isEqualsType(InputStream.class, requiredType)) {
@@ -203,6 +215,8 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
                 }
             } else if (isEqualsType(byte[].class, requiredType)) {
                 return mp.getBytes();
+            } else if (isEqualsType(String.class, requiredType)) {
+                return resolveParameterizedValueAsString(mp);
             } else if (isEqualsType(Multipart.class, requiredType)) {
                 return mp;
             } else {
@@ -210,6 +224,15 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
             }
         }
         return super.resolveValue(request, metadata, name, requiredType, annotations);
+    }
+
+    private String resolveParameterizedValueAsString(Multipart mp) {
+        String charset = MediaTypes.valueOf(mp.getContentType()).getParameters().get("charset");
+        if (StringUtils.isNotEmpty(charset)) {
+            return new String(mp.getBytes(), Charset.forName(charset));
+        } else {
+            return new String(mp.getBytes(), Charset.forName("ISO-8859-1"));
+        }
     }
 
     private boolean isEqualsType(Class<?> clazz, Class<?> other) {
@@ -344,7 +367,8 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
                 mapped = Maps.newEmptyHashMap();
                 for (Multipart mp : this.multiparts) {
                     if (mapped.containsKey(mp.getName())) {
-                        ArrayUtils.add(Multipart.class, mp, mapped.get(mp.getName()));
+                        mapped.put(mp.getName(),
+                                ArrayUtils.add(Multipart.class, mp, mapped.get(mp.getName())));
                     } else {
                         mapped.put(mp.getName(), ArrayUtils.newArray(mp));
                     }
