@@ -4,6 +4,7 @@ import static org.analogweb.core.DefaultApplicationProperties.defaultProperties;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -257,10 +258,9 @@ public class DefaultServer implements Server {
                             response.commmit(request);
                         }
                     } catch (WebApplicationException e) {
-                        throw new ApplicationRuntimeException(e.getCause()) {
-
-                            private static final long serialVersionUID = 1L;
-                        };
+                        e.printStackTrace();
+                        throw new RequestCancelledException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                e.getMessage());
                     } finally {
                         if (response.getBody() != null) {
                             key.attach(response.getBody().getByteBuffer());
@@ -297,7 +297,7 @@ public class DefaultServer implements Server {
                 buf.get(ba);
                 buf.clear();
                 log.trace(String.format("Content Length = %s", contentLength));
-                return new RequestBody(contentLength, ba);
+                return new RequestBody(contentLength, ba, props);
             } else {
                 return new RequestBody();
             }
@@ -437,11 +437,17 @@ public class DefaultServer implements Server {
             this.resolved = true;
         }
 
-        RequestBody(int remain, byte[] first) throws IOException {
+        RequestBody(int remain, byte[] first, ApplicationProperties props) throws IOException {
             this.remain = remain;
-            this.file = File.createTempFile("Analogweb", "Request");
-            this.ra = new RandomAccessFile(file, "rw");
-            this.out = new FileOutputStream(ra.getFD());
+            if (remain > 1024 * 1024) {
+                // Over 1M bytes.
+                this.file = File.createTempFile("Analogweb", "Request", props.getTempDir());
+                this.ra = new RandomAccessFile(file, "rw");
+                this.out = new FileOutputStream(ra.getFD());
+            } else {
+                // In memory mode.
+                this.out = new ByteArrayOutputStream();
+            }
             update(first);
         }
 
@@ -477,9 +483,11 @@ public class DefaultServer implements Server {
 
         public InputStream open() throws IOException {
             if (ra != null) {
+                IOUtils.closeQuietly(this.ra);
+                this.ra = new RandomAccessFile(file, "r");
                 return new FileInputStream(this.ra.getFD());
             } else {
-                return this.in;
+                return new ByteArrayInputStream(((ByteArrayOutputStream) out).toByteArray());
             }
         }
     }
