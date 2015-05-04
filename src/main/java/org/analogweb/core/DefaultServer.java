@@ -4,11 +4,14 @@ import static org.analogweb.core.DefaultApplicationProperties.defaultProperties;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -39,8 +42,8 @@ import org.analogweb.Disposable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
-import org.analogweb.ResponseContext;
 import org.analogweb.Server;
+import org.analogweb.WebApplicationException;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.ClassCollector;
@@ -114,12 +117,12 @@ public class DefaultServer implements Server {
             IOUtils.closeQuietly(cnl);
         }
     }
-    
+
     private Map<SelectableChannel, Handler> requests = Maps.newEmptyHashMap();
 
     private void runInternal(Selector sl) throws IOException {
         while (true) {
-            while(sl.select() > 0){
+            while (sl.select() > 0) {
                 Iterator<SelectionKey> keys = sl.selectedKeys().iterator();
                 while (keys.hasNext()) {
                     SelectionKey key = keys.next();
@@ -135,50 +138,64 @@ public class DefaultServer implements Server {
                             log.trace("Reading socket.");
                             SelectableChannel channel = key.channel();
                             Handler handler;
-                            if(requests.containsKey(channel)){
-                                log.trace(String.format("Handler[key=%s] resolved.",channel));
+                            if (requests.containsKey(channel)) {
+                                log.trace(String.format("Handler[key=%s] resolved.", channel));
                                 handler = requests.get(channel);
                             } else {
-                                log.trace(String.format("New Handler[key=%s] created.",channel));
+                                log.trace(String.format("New Handler[key=%s] created.", channel));
                                 handler = new Handler();
                                 requests.put(channel, handler);
                             }
-                            log.trace(String.format("Invoking Handler[key=%s]#read.",channel));
-                            handler.read(key);
-                        }
-                        if (key.isWritable()) {
-                            SelectableChannel channel = key.channel();
-                            try{
-                                log.trace(String.format("Invoking Handler[key=%s]#write.",channel));
-                                requests.get(channel).write(key);
-                            } finally {
+                            log.trace(String.format("Invoking Handler[key=%s]#read.", channel));
+                            try {
+                                handler.read(key);
+                            } catch (RequestCancelledException e) {
+                                sendStatus((SocketChannel) key.channel(), e.getStatus(),
+                                        e.getBody());
                                 requests.remove(channel);
-                                log.trace(String.format("Handler[key=%s] removed.",channel));
-                                log.trace(String.format("Currently %s requests remained.",requests.size()));
+                                log.trace(String.format("Handler[key=%s] removed.", channel));
+                                log.trace(String.format("Currently %s requests remained.",
+                                        requests.size()));
+                            }
+                        }
+                        if (key.isValid() && key.isWritable()) {
+                            SelectableChannel channel = key.channel();
+                            boolean completed = false;
+                            try {
+                                log.trace(String.format("Invoking Handler[key=%s]#write.", channel));
+                                completed = requests.get(channel).write(key);
+                            } finally {
+                                if (completed) {
+                                    requests.remove(channel);
+                                    log.trace(String.format("Handler[key=%s] removed.", channel));
+                                    log.trace(String.format("Currently %s requests remained.",
+                                            requests.size()));
+                                }
                             }
                         }
                     }
                 }
             }
             Iterator<SelectionKey> keys = sl.keys().iterator();
-            while(keys.hasNext()){
+            while (keys.hasNext()) {
                 keys.next().channel().close();
             }
         }
     }
-    
-    private class Handler {
-        
+
+    final class Handler {
+
         private RequestPath path;
         private Map<String, List<String>> headerMap;
         private RequestBody body;
-        
+        private boolean executed;
+
         public void read(SelectionKey key) throws IOException {
             SocketChannel sock = (SocketChannel) key.channel();
             sock.configureBlocking(false);
             ByteBuffer buf = ByteBuffer.allocate(8192);
             int read = sock.read(buf);
-            log.trace(String.format("%s bytes readed.",read));
+            log.trace(String.format("%s bytes readed.", read));
             if (read == 1) {
                 // spinning.
                 log.trace("spinning.");
@@ -201,13 +218,13 @@ public class DefaultServer implements Server {
                                     ((ByteBuffer) buf.duplicate().limit(eoh)).array())));
                     String aLine = r.readLine();
                     if (aLine == null) {
-                        sendStatus(sock, HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
-                        return;
+                        throw new RequestCancelledException(HttpStatus.BAD_REQUEST,
+                                StringUtils.EMPTY);
                     }
                     StringTokenizer st = new StringTokenizer(aLine);
                     if (st.countTokens() < 2) {
-                        sendStatus(sock, HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
-                        return;
+                        throw new RequestCancelledException(HttpStatus.BAD_REQUEST,
+                                StringUtils.EMPTY);
                     }
                     final String method = st.nextToken();
                     final URI uri = URI.create(st.nextToken());
@@ -221,22 +238,46 @@ public class DefaultServer implements Server {
                             headerMap.put(k, Arrays.asList(value));
                         }
                     }
-                    log.trace(String.format("Request header resolved. %s",headerMap));
+                    log.trace(String.format("Request header resolved. %s", headerMap));
                 }
                 body = resolveRequestBody(sock, buf, eoh, read, path.getRequestMethod(),
                         headerMap.get("Content-Length"));
-                if (body.resolved()) {
-                    key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                if (body.resolved() && executed == false) {
+                    log.trace(String.format("Invoke application."));
+                    RequestContextImpl request = new RequestContextImpl(path, Locale.getDefault(),
+                            headerMap, body);
+                    ResponseContextImpl response = new ResponseContextImpl(request, sock);
+                    try {
+                        int proceed = app.processRequest(request.getRequestPath(), request,
+                                response);
+                        if (proceed == Application.NOT_FOUND) {
+                            throw new RequestCancelledException(HttpStatus.NOT_FOUND,
+                                    StringUtils.EMPTY);
+                        } else {
+                            response.commmit(request);
+                        }
+                    } catch (WebApplicationException e) {
+                        throw new ApplicationRuntimeException(e.getCause()) {
+
+                            private static final long serialVersionUID = 1L;
+                        };
+                    } finally {
+                        if (response.getBody() != null) {
+                            key.attach(response.getBody().getByteBuffer());
+                            this.executed = true;
+                            key.interestOps(SelectionKey.OP_WRITE);
+                        }
+                    }
                 } else {
                     key.interestOps(SelectionKey.OP_READ);
                 }
             }
         }
-        
-        private RequestBody resolveRequestBody(SocketChannel sock, ByteBuffer buf, int eoh, int read,
-                String method, List<String> contentLengthHeader) throws IOException {
-            if(this.body != null){
-                log.trace(String.format("Append Request Body %s",body));
+
+        private RequestBody resolveRequestBody(SocketChannel sock, ByteBuffer buf, int eoh,
+                int read, String method, List<String> contentLengthHeader) throws IOException {
+            if (this.body != null) {
+                log.trace(String.format("Append Request Body %s", body));
                 byte[] dst = new byte[read];
                 buf.get(dst);
                 body.update(dst);
@@ -248,46 +289,41 @@ public class DefaultServer implements Server {
                 int contentLength = CollectionUtils.isEmpty(contentLengthHeader) ? -1 : Integer
                         .valueOf(contentLengthHeader.get(0));
                 if (contentLength < 0) {
-                    sendStatus(sock, HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
-                    return null;
+                    throw new RequestCancelledException(HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
                 }
                 int firstBodySize = buf.limit() - eoh;
                 byte[] ba = new byte[firstBodySize];
                 buf = (ByteBuffer) buf.position(eoh);
                 buf.get(ba);
-                buf.clear();        
-                log.trace(String.format("Content Length = %s",contentLength));
+                buf.clear();
+                log.trace(String.format("Content Length = %s", contentLength));
                 return new RequestBody(contentLength, ba);
             } else {
                 return new RequestBody();
             }
         }
 
-        public void write(SelectionKey key) throws IOException {
+        public boolean write(SelectionKey key) throws IOException {
             SocketChannel sock = (SocketChannel) key.channel();
             sock.configureBlocking(false);
-            RequestContextImpl request = null;
-            try {
-                request = new RequestContextImpl(path, Locale.getDefault(), headerMap, body);
-                if (request != null) {
-                    ResponseContext response = createResponseContext(request, sock);
-                    int proceed = app.processRequest(request.getRequestPath(),
-                            request, response);
-                    if (proceed == Application.NOT_FOUND) {
-                        sendStatus(sock, HttpStatus.NOT_FOUND, StringUtils.EMPTY);
+            ByteBuffer buffer = (ByteBuffer) key.attachment();
+            if (buffer != null) {
+                buffer.flip();
+                try {
+                    sock.write(buffer);
+                } catch (Exception e) {
+                } finally {
+                    if (buffer.hasRemaining() == false) {
+                        key.channel().register(key.selector(), SelectionKey.OP_READ);
+                        sock.close();
                     } else {
-                        response.commmit(request);
+                        buffer.compact();
+                        key.interestOps(SelectionKey.OP_WRITE);
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                sendStatus(sock, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-            } finally {
-                if (request != null) {
-                    request.dispose();
-                }
-                sock.close();
+                return buffer.hasRemaining() == false;
             }
+            return false;
         }
     }
 
@@ -302,7 +338,6 @@ public class DefaultServer implements Server {
         }
         return 0;
     }
-
 
     private void sendStatus(final SocketChannel sock, HttpStatus status, String body) {
         CharBuffer buffer = CharBuffer.allocate(8192);
@@ -328,6 +363,28 @@ public class DefaultServer implements Server {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(sock);
+        }
+    }
+
+    private static final class RequestCancelledException extends RuntimeException {
+
+        private static final long serialVersionUID = -5041505179564601790L;
+        private HttpStatus status;
+        private String body;
+
+        RequestCancelledException(HttpStatus status, String body) {
+            this.status = status;
+            this.body = body;
+        }
+
+        public HttpStatus getStatus() {
+            return this.status;
+        }
+
+        public String getBody() {
+            return this.body;
         }
     }
 
@@ -368,134 +425,227 @@ public class DefaultServer implements Server {
 
     private static final class RequestBody implements Disposable {
 
-        private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        private OutputStream out;
         private InputStream in;
         private int remain;
         private boolean resolved;
+        private File file;
+        private RandomAccessFile ra;
 
         RequestBody() {
             this.in = new ByteArrayInputStream(new byte[0]);
             this.resolved = true;
         }
 
-        RequestBody(int remain,byte[] first) throws IOException {
+        RequestBody(int remain, byte[] first) throws IOException {
             this.remain = remain;
+            this.file = File.createTempFile("Analogweb", "Request");
+            this.ra = new RandomAccessFile(file, "rw");
+            this.out = new FileOutputStream(ra.getFD());
             update(first);
         }
 
-        public boolean resolved(){
+        public boolean resolved() {
             return this.resolved;
         }
 
         @Override
         public void dispose() {
+            IOUtils.closeQuietly(this.ra);
             IOUtils.closeQuietly(in);
-            this.bytes = null;
+            this.in = null;
+            IOUtils.closeQuietly(out);
+            this.out = null;
+            if (this.file != null) {
+                this.file.deleteOnExit();
+            }
         }
-        
+
         public void update(byte[] buffer) throws IOException {
+            if (this.out == null) {
+                log.trace("This request buffer not writable.");
+                return;
+            }
             this.remain -= buffer.length;
-            this.bytes.write(buffer);
-            log.trace(String.format("%s bytes written.",buffer.length));
-            log.trace(String.format("Content is remaining %s bytes.",remain));
-            if(this.remain < 1){
+            this.out.write(buffer);
+            log.trace(String.format("%s bytes written.", buffer.length));
+            log.trace(String.format("Content remaining %s bytes.", remain));
+            if (this.remain < 1) {
                 this.resolved = true;
             }
         }
 
         public InputStream open() throws IOException {
-            return new ByteArrayInputStream(this.bytes.toByteArray());
+            if (ra != null) {
+                return new FileInputStream(this.ra.getFD());
+            } else {
+                return this.in;
+            }
         }
     }
 
-    private ResponseContext createResponseContext(final RequestContext request,
-            final SocketChannel sock) {
-        return new AbstractResponseContext() {
+    static final class ResponseContextImpl extends AbstractResponseContext {
 
-            @Override
-            public void commmit(RequestContext context) {
-                // write headers
-                CharBuffer buffer = CharBuffer.allocate(8192);
-                buffer.append("HTTP/1.1").append(' ').append(String.valueOf(getStatus()))
-                        .append(' ').append(HttpStatus.valueOf(getStatus()).name()).append("\r\n");
-                Headers h = getResponseHeaders();
-                if (h.contains("Date") == false) {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat(
-                            "E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
-                    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-                    buffer.append("Date: ").append(dateFormat.format(new Date())).append("\r\n");
+        private RequestContext request;
+        private SocketChannel sock;
+        private ResponseBody body;
+
+        ResponseContextImpl(final RequestContext request, final SocketChannel sock) {
+            this.request = request;
+            this.sock = sock;
+        }
+
+        public ResponseBody getBody() {
+            return this.body;
+        }
+
+        @Override
+        public void commmit(RequestContext context) {
+            // write headers
+            CharBuffer buffer = CharBuffer.allocate(8192);
+            buffer.append("HTTP/1.1").append(' ').append(String.valueOf(getStatus())).append(' ')
+                    .append(HttpStatus.valueOf(getStatus()).name()).append("\r\n");
+            Headers h = getResponseHeaders();
+            if (h.contains("Date") == false) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'",
+                        Locale.US);
+                dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+                buffer.append("Date: ").append(dateFormat.format(new Date())).append("\r\n");
+            }
+            long length = getContentLength();
+            OutputStream out = null;
+            if (request.getRequestMethod().equals("HEAD") == false) {
+                if (h.contains("Content-Length") == false && length != -1) {
+                    buffer.append("Content-Length: ").append(String.valueOf(length)).append("\r\n");
+                    out = toFixedLengthOutputStream(length, sock);
                 }
-                long length = getContentLength();
-                OutputStream out = null;
-                if (request.getRequestMethod().equals("HEAD") == false) {
-                    if (h.contains("Content-Length") == false && length != -1) {
-                        buffer.append("Content-Length: ").append(String.valueOf(length))
-                                .append("\r\n");
-                        out = toFixedLengthOutputStream(length, sock);
-                    }
-                    if (length == -1) {
-                        buffer.append("Transfer-Encoding: chunked").append("\r\n");
-                        out = toChunkedOutputStream(sock);
-                    }
+                if (length == -1) {
+                    buffer.append("Transfer-Encoding: chunked").append("\r\n");
+                    out = toChunkedOutputStream(sock);
                 }
-                for (String headerName : h.getNames()) {
-                    Iterator<String> values = h.getValues(headerName).iterator();
-                    buffer.append(headerName).append(": ").append(values.next());
-                    while (values.hasNext()) {
-                        buffer.append(',').append(values.next());
-                    }
-                    buffer.append("\r\n");
+            }
+            for (String headerName : h.getNames()) {
+                Iterator<String> values = h.getValues(headerName).iterator();
+                buffer.append(headerName).append(": ").append(values.next());
+                while (values.hasNext()) {
+                    buffer.append(',').append(values.next());
                 }
                 buffer.append("\r\n");
-                buffer.flip();
-                Charset iso = Charset.forName("ISO-8859-1");
-                try {
-                    sock.write(iso.encode(buffer));
-                    ResponseEntity entity = getResponseWriter().getEntity();
-                    if (entity != null) {
-                        entity.writeInto(out);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+            }
+            buffer.append("\r\n");
+            buffer.flip();
+            Charset iso = Charset.forName("ISO-8859-1");
+            try {
+                sock.write(iso.encode(buffer));
+                ResponseEntity entity = getResponseWriter().getEntity();
+                if (entity != null) {
+                    entity.writeInto(out);
                 }
-                // write contents.s
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            // write contents.s
+        }
 
-            private FixedLengthOutputStream toFixedLengthOutputStream(long length,
-                    SocketChannel sock) {
-                return new FixedLengthOutputStream(toOutputStream(sock), length);
+        private FixedLengthOutputStream toFixedLengthOutputStream(long length, SocketChannel sock) {
+            return new FixedLengthOutputStream(toOutputStream(), length);
+        }
+
+        private ChunkedOutputStream toChunkedOutputStream(SocketChannel sock) {
+            return new ChunkedOutputStream(8192, toOutputStream());
+        }
+
+        private OutputStream toOutputStream() {
+            this.body = new ResponseBody(ByteBuffer.allocate(64 * 1024));
+            return new OutputStream() {
+
+                @Override
+                public void write(int b) throws IOException {
+                    body.put(new byte[] { (byte) b });
+                }
+
+                @Override
+                public void write(byte[] b, int off, int len) throws IOException {
+                    body.put(b);
+                }
+            };
+        }
+    }
+
+    static final class ResponseBody {
+
+        private ByteBuffer backend;
+
+        private ResponseBody(ByteBuffer bb) {
+            this.backend = bb;
+        }
+
+        public static ResponseBody allocate(int capacity) {
+            return new ResponseBody(ByteBuffer.allocate(capacity));
+        }
+
+        public void put(byte[] src) {
+            ensureCapacity(src.length);
+            backend.put(src);
+        }
+
+        private void ensureCapacity(int size) {
+            int remaining = backend.remaining();
+            if (size > remaining) {
+                log.debug("allocating new DynamicByteBuffer, old capacity {}: ", backend.capacity());
+                int missing = size - remaining;
+                int newSize = (int) ((backend.capacity() + missing) * 1.5);
+                reallocate(newSize);
             }
+        }
 
-            private ChunkedOutputStream toChunkedOutputStream(SocketChannel sock) {
-                return new ChunkedOutputStream(8192, toOutputStream(sock));
-            }
+        // Preserves position.
+        private void reallocate(int newCapacity) {
+            int oldPosition = backend.position();
+            byte[] newBuffer = new byte[newCapacity];
+            System.arraycopy(backend.array(), 0, newBuffer, 0, backend.position());
+            backend = ByteBuffer.wrap(newBuffer);
+            backend.position(oldPosition);
+            log.debug("allocated new DynamicByteBufer, new capacity: {}", backend.capacity());
+        }
 
-            private OutputStream toOutputStream(final SocketChannel sock) {
-                return new OutputStream() {
+        public ByteBuffer getByteBuffer() {
+            return backend;
+        }
 
-                    private ByteBuffer bu = ByteBuffer.allocate(8192);
+        public void flip() {
+            backend.flip();
+        }
 
-                    @Override
-                    public void write(int b) throws IOException {
-                        bu.clear();
-                        bu.put((byte) b);
-                        bu.flip();
-                        sock.write(bu);
-                    }
+        public int limit() {
+            return backend.limit();
+        }
 
-                    @Override
-                    public void write(byte[] b, int off, int len) throws IOException {
-                        if (bu.limit() < len) {
-                            bu = ByteBuffer.wrap(b, off, len);
-                        }
-                        bu.clear();
-                        bu.put(b, off, len);
-                        bu.flip();
-                        sock.write(bu);
-                    }
-                };
-            }
-        };
+        public int position() {
+            return backend.position();
+        }
+
+        public byte[] array() {
+            return backend.array();
+        }
+
+        public int capacity() {
+            return backend.capacity();
+        }
+
+        public boolean hasRemaining() {
+            return backend.hasRemaining();
+        }
+
+        public ResponseBody compact() {
+            backend.compact();
+            return this;
+        }
+
+        public ResponseBody clear() {
+            backend.clear();
+            return this;
+        }
     }
 
     static final class FixedLengthOutputStream extends OutputStream {
