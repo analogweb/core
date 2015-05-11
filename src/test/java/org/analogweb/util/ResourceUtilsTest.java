@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.List;
 
 import org.junit.Rule;
@@ -85,11 +84,10 @@ public class ResourceUtilsTest {
     @Test
     public void testFindURLViaHttp() throws Exception {
         try {
-            assumeThat(
-                    ((HttpURLConnection) new URL("http://example.com/").openConnection())
-                            .getResponseCode(),
-                    is(200));
-        } catch (UnknownHostException e) {
+            HttpURLConnection c = (HttpURLConnection) new URL("http://example.com/").openConnection();
+            c.setConnectTimeout(3000);
+            assumeThat(c.getResponseCode(),is(200));
+        } catch (Exception e) {
             assumeNoException(e);
         }
         URL url = ResourceUtils.findResource("http://example.com/");
