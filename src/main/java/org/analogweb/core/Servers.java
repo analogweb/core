@@ -26,6 +26,18 @@ public final class Servers {
         // nop.
     }
 
+    public static void run(String... packageNames) {
+        run(8080, packageNames);
+    }
+
+    public static void run(int port, String... packageNames) {
+        create(port, packageNames).run();
+    }
+
+    public static Server create(int port, String... packageNames) {
+        return create("http://localhost:" + port, packageNames);
+    }
+
     public static Server create(String uri, String... packageNames) {
         String names = StringUtils.join(',', packageNames);
         return create(URI.create(uri), DefaultApplicationProperties.properties(names));
