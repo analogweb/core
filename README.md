@@ -20,7 +20,7 @@ import org.analogweb.core.Servers;
 public class Hello {
 
   public static void main(String... args) {
-      Servers.create(URI.create("http://localhost:8080")).start();
+      Servers.run();
   }
 
   @Route
