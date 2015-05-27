@@ -425,6 +425,7 @@ public class DefaultServer implements Server {
 
     private static final class RequestBody implements Disposable {
 
+        private static final ByteArrayInputStream EMPTY = new ByteArrayInputStream(new byte[0]);
         private OutputStream out;
         private InputStream in;
         private int remain;
@@ -482,12 +483,16 @@ public class DefaultServer implements Server {
         }
 
         public InputStream open() throws IOException {
-            if (ra != null) {
+            if (this.ra != null) {
                 IOUtils.closeQuietly(this.ra);
                 this.ra = new RandomAccessFile(file, "r");
                 return new FileInputStream(this.ra.getFD());
             } else {
-                return new ByteArrayInputStream(((ByteArrayOutputStream) out).toByteArray());
+                if (this.out instanceof ByteArrayOutputStream) {
+                    return new ByteArrayInputStream(((ByteArrayOutputStream) out).toByteArray());
+                } else {
+                    return EMPTY;
+                }
             }
         }
     }
