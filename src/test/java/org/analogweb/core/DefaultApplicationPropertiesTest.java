@@ -43,7 +43,7 @@ public class DefaultApplicationPropertiesTest {
         Collection<String> actualPackageNames = properties.getComponentPackageNames();
         assertThat(actualPackageNames.size(), is(1));
         assertThat(actualPackageNames.contains(Application.class.getPackage().getName()), is(true));
-        assertThat(properties.getTempDir().getPath(), is("/foo/baa/baz"));
+        assertThat(properties.getTempDir().getPath(), is(new File("/foo/baa/baz").getPath()));
         assertThat(properties.getProperty("arg1"), is((Object) Boolean.TRUE));
         assertThat(properties.getStringProperty("arg2"), is("arg3"));
     }
