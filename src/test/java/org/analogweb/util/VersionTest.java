@@ -57,7 +57,8 @@ public class VersionTest {
 
             @Override
             public Enumeration<URL> getResources(String name) throws IOException {
-                return Collections.emptyEnumeration();
+                List<URL> urls = Collections.emptyList();
+                return Collections.enumeration(urls);
             }
         };
         List<Version> actual = Version.load(classLoader);
