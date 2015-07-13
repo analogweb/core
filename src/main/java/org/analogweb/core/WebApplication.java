@@ -75,7 +75,7 @@ public class WebApplication implements Application {
         if (versions.isEmpty() == false) {
             log.log(Markers.BOOT_APPLICATION, "IB000008");
             for (Version v : versions) {
-                log.info("   " + v.getArtifactId() + " : " + v.getVersion());
+                log.info("   " + v.getVersion() + " : " + v.getArtifactId());
             }
         }
         Collection<String> invocationPackageNames = props.getComponentPackageNames();
