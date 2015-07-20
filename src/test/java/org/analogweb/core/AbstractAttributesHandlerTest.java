@@ -31,8 +31,8 @@ public class AbstractAttributesHandlerTest {
 
     @Test
     public void testNop() {
-        assertThat(handler.resolveValue(requestContext, metadata, "foo", String.class, new Annotation[0]),
-                is(nullValue()));
+        assertThat(handler.resolveValue(requestContext, metadata, "foo", String.class,
+                new Annotation[0]), is(nullValue()));
         handler.putAttributeValue(requestContext, "foo", new Object());
         handler.removeAttribute(requestContext, "foo");
     }

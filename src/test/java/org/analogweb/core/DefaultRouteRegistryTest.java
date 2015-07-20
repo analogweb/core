@@ -1,6 +1,5 @@
 package org.analogweb.core;
 
-
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -48,12 +47,20 @@ public class DefaultRouteRegistryTest {
         registry.register(metadata2);
         registry.register(metadata3);
         InvocationMetadataFinder finder1 = mock(InvocationMetadataFinder.class);
-        when(finder1.find(anyMapOf(RequestPathMetadata.class,InvocationMetadata.class), eq(context))).thenReturn(null);
+        when(
+                finder1.find(anyMapOf(RequestPathMetadata.class, InvocationMetadata.class),
+                        eq(context))).thenReturn(null);
         InvocationMetadataFinder finder2 = mock(InvocationMetadataFinder.class);
-        when(finder2.find(anyMapOf(RequestPathMetadata.class,InvocationMetadata.class), eq(context))).thenReturn(metadata2);
+        when(
+                finder2.find(anyMapOf(RequestPathMetadata.class, InvocationMetadata.class),
+                        eq(context))).thenReturn(metadata2);
         InvocationMetadataFinder finder3 = mock(InvocationMetadataFinder.class);
-        when(finder3.find(anyMapOf(RequestPathMetadata.class,InvocationMetadata.class), eq(context))).thenReturn(null);
-        assertThat(registry.findInvocationMetadata(context,Arrays.asList(finder1,finder2,finder3)), is(metadata2));
+        when(
+                finder3.find(anyMapOf(RequestPathMetadata.class, InvocationMetadata.class),
+                        eq(context))).thenReturn(null);
+        assertThat(
+                registry.findInvocationMetadata(context, Arrays.asList(finder1, finder2, finder3)),
+                is(metadata2));
     }
 
     @Test
@@ -71,12 +78,20 @@ public class DefaultRouteRegistryTest {
         registry.register(metadata2);
         registry.register(metadata3);
         InvocationMetadataFinder finder1 = mock(InvocationMetadataFinder.class);
-        when(finder1.find(anyMapOf(RequestPathMetadata.class,InvocationMetadata.class), eq(context))).thenReturn(null);
+        when(
+                finder1.find(anyMapOf(RequestPathMetadata.class, InvocationMetadata.class),
+                        eq(context))).thenReturn(null);
         InvocationMetadataFinder finder2 = mock(InvocationMetadataFinder.class);
-        when(finder2.find(anyMapOf(RequestPathMetadata.class,InvocationMetadata.class), eq(context))).thenReturn(null);
+        when(
+                finder2.find(anyMapOf(RequestPathMetadata.class, InvocationMetadata.class),
+                        eq(context))).thenReturn(null);
         InvocationMetadataFinder finder3 = mock(InvocationMetadataFinder.class);
-        when(finder3.find(anyMapOf(RequestPathMetadata.class,InvocationMetadata.class), eq(context))).thenReturn(null);
-        assertThat(registry.findInvocationMetadata(context,Arrays.asList(finder1,finder2,finder3)), is(nullValue()));
+        when(
+                finder3.find(anyMapOf(RequestPathMetadata.class, InvocationMetadata.class),
+                        eq(context))).thenReturn(null);
+        assertThat(
+                registry.findInvocationMetadata(context, Arrays.asList(finder1, finder2, finder3)),
+                is(nullValue()));
     }
 
     @Test
@@ -95,10 +110,15 @@ public class DefaultRouteRegistryTest {
         registry.register(metadata3);
         when(context.getRequestPath()).thenReturn(requestPath3);
         InvocationMetadataFinder finder2 = mock(InvocationMetadataFinder.class);
-        when(finder2.find(anyMapOf(RequestPathMetadata.class,InvocationMetadata.class), eq(context))).thenReturn(null);
+        when(
+                finder2.find(anyMapOf(RequestPathMetadata.class, InvocationMetadata.class),
+                        eq(context))).thenReturn(null);
         InvocationMetadataFinder finder3 = mock(InvocationMetadataFinder.class);
-        when(finder3.find(anyMapOf(RequestPathMetadata.class,InvocationMetadata.class), eq(context))).thenReturn(metadata3);
+        when(
+                finder3.find(anyMapOf(RequestPathMetadata.class, InvocationMetadata.class),
+                        eq(context))).thenReturn(metadata3);
         when(metadata3.getCachable()).thenReturn(metadata1);
-        assertThat(registry.findInvocationMetadata(context,Arrays.asList(finder2,finder3)), is(metadata1));
+        assertThat(registry.findInvocationMetadata(context, Arrays.asList(finder2, finder3)),
+                is(metadata1));
     }
 }

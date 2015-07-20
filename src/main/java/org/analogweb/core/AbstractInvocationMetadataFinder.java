@@ -7,44 +7,40 @@ import org.analogweb.RequestPathMetadata;
 /**
  * @author snowgooseyk
  */
-public abstract class AbstractInvocationMetadataFinder implements
-		InvocationMetadataFinder {
+public abstract class AbstractInvocationMetadataFinder implements InvocationMetadataFinder {
 
-	@Override
-	public int getPrecedence() {
-		return Integer.MIN_VALUE;
-	}
+    @Override
+    public int getPrecedence() {
+        return Integer.MIN_VALUE;
+    }
 
+    protected Cacheable cacheable(final InvocationMetadata found) {
+        return new Cacheable() {
 
-	protected Cacheable cacheable(final InvocationMetadata found){
-		return new Cacheable(){
+            @Override
+            public Class<?> getInvocationClass() {
+                return found.getInvocationClass();
+            }
 
-			@Override
-			public Class<?> getInvocationClass() {
-				return found.getInvocationClass();
-			}
+            @Override
+            public String getMethodName() {
+                return found.getMethodName();
+            }
 
-			@Override
-			public String getMethodName() {
-				return found.getMethodName();
-			}
+            @Override
+            public Class<?>[] getArgumentTypes() {
+                return found.getArgumentTypes();
+            }
 
-			@Override
-			public Class<?>[] getArgumentTypes() {
-				return found.getArgumentTypes();
-			}
+            @Override
+            public RequestPathMetadata getDefinedPath() {
+                return found.getDefinedPath();
+            }
 
-			@Override
-			public RequestPathMetadata getDefinedPath() {
-				return found.getDefinedPath();
-			}
-
-			@Override
-			public InvocationMetadata getCachable() {
-				return found;
-			}
-			
-		};
-	}
-	
+            @Override
+            public InvocationMetadata getCachable() {
+                return found;
+            }
+        };
+    }
 }

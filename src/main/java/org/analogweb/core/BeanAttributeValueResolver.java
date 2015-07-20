@@ -18,72 +18,63 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
-public class BeanAttributeValueResolver implements RequestValueResolver,
-		ModulesAware {
+public class BeanAttributeValueResolver implements RequestValueResolver, ModulesAware {
 
-	private RequestValueResolvers resolvers;
-	private TypeMapperContext converters;
+    private RequestValueResolvers resolvers;
+    private TypeMapperContext converters;
 
-	@Override
-	public Object resolveValue(RequestContext context,
-			InvocationMetadata metadata, String key, Class<?> requiredType,
-			Annotation[] parameterAnnotations) {
-		Object beanInstance = instanticate(requiredType,
-				AnnotationUtils.findAnnotation(Resolver.class,
-						parameterAnnotations), metadata, context,
-				getRequestValueResolvers(), parameterAnnotations);
-		if (beanInstance != null) {
-			for (Field field : requiredType.getDeclaredFields()) {
-				Object convertedValue = AnnotatedArguments.resolveArguent(
-						field.getName(), field.getAnnotations(),
-						field.getType(), context, metadata,
-						getTypeMapperContext(), getRequestValueResolvers());
-				if (convertedValue != null) {
-					ReflectionUtils.writeValueToField(field, beanInstance,
-							convertedValue);
-				}
-			}
-		}
-		return beanInstance;
-	}
+    @Override
+    public Object resolveValue(RequestContext context, InvocationMetadata metadata, String key,
+            Class<?> requiredType, Annotation[] parameterAnnotations) {
+        Object beanInstance = instanticate(requiredType,
+                AnnotationUtils.findAnnotation(Resolver.class, parameterAnnotations), metadata,
+                context, getRequestValueResolvers(), parameterAnnotations);
+        if (beanInstance != null) {
+            for (Field field : requiredType.getDeclaredFields()) {
+                Object convertedValue = AnnotatedArguments.resolveArguent(field.getName(),
+                        field.getAnnotations(), field.getType(), context, metadata,
+                        getTypeMapperContext(), getRequestValueResolvers());
+                if (convertedValue != null) {
+                    ReflectionUtils.writeValueToField(field, beanInstance, convertedValue);
+                }
+            }
+        }
+        return beanInstance;
+    }
 
-	protected final TypeMapperContext getTypeMapperContext() {
-		return this.converters;
-	}
+    protected final TypeMapperContext getTypeMapperContext() {
+        return this.converters;
+    }
 
-	protected final RequestValueResolvers getRequestValueResolvers() {
-		return this.resolvers;
-	}
+    protected final RequestValueResolvers getRequestValueResolvers() {
+        return this.resolvers;
+    }
 
-	private Object instanticate(Class<?> clazz, Resolver resolverAnn,
-			InvocationMetadata metadata, RequestContext context,
-			RequestValueResolvers resolvers, Annotation[] parameterAnnotations) {
-		if (resolverAnn != null) {
-			Class<? extends RequestValueResolver> resolverClass = resolverAnn
-					.value();
-			RequestValueResolver resolver = resolvers
-					.findRequestValueResolver(resolverClass);
-			if (resolver != null
-					// Cyclic reference limitation.
-					&& BeanAttributeValueResolver.class.equals(resolver
-							.getClass()) == false) {
-				return resolver.resolveValue(context, metadata,
-						StringUtils.EMPTY, clazz, parameterAnnotations);
-			}
-		}
-		return ReflectionUtils.getInstanceQuietly(clazz);
-	}
+    private Object instanticate(Class<?> clazz, Resolver resolverAnn, InvocationMetadata metadata,
+            RequestContext context, RequestValueResolvers resolvers,
+            Annotation[] parameterAnnotations) {
+        if (resolverAnn != null) {
+            Class<? extends RequestValueResolver> resolverClass = resolverAnn.value();
+            RequestValueResolver resolver = resolvers.findRequestValueResolver(resolverClass);
+            if (resolver != null
+            // Cyclic reference limitation.
+                    && BeanAttributeValueResolver.class.equals(resolver.getClass()) == false) {
+                return resolver.resolveValue(context, metadata, StringUtils.EMPTY, clazz,
+                        parameterAnnotations);
+            }
+        }
+        return ReflectionUtils.getInstanceQuietly(clazz);
+    }
 
-	@Override
-	public void dispose() {
-		this.converters = null;
-		this.resolvers = null;
-	}
+    @Override
+    public void dispose() {
+        this.converters = null;
+        this.resolvers = null;
+    }
 
-	@Override
-	public void setModules(Modules modules) {
-		this.converters = modules.getTypeMapperContext();
-		this.resolvers = modules.getRequestValueResolvers();
-	}
-
+    @Override
+    public void setModules(Modules modules) {
+        this.converters = modules.getTypeMapperContext();
+        this.resolvers = modules.getRequestValueResolvers();
+    }
 }

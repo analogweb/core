@@ -8,10 +8,9 @@ import org.analogweb.RequestPathMetadata;
  */
 public class UnsupportedMediaTypeException extends UnsatisfiedRequestException {
 
-	private static final long serialVersionUID = 851954945303138560L;
+    private static final long serialVersionUID = 851954945303138560L;
 
-	public UnsupportedMediaTypeException(RequestPathMetadata metadata) {
-		super(metadata);
-	}
-
+    public UnsupportedMediaTypeException(RequestPathMetadata metadata) {
+        super(metadata);
+    }
 }

@@ -4,13 +4,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class FooBean{
+public class FooBean {
+
     @XmlElement
     private String baa = "baz";
-    
-    public String getBaa(){
+
+    public String getBaa() {
         return this.baa;
     }
-
 }
-

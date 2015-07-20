@@ -1,31 +1,26 @@
 package org.analogweb;
 
 /**
- * リクエストされたエントリポイントとなるメソッド(実行する対象)を表すコンポーネントです。<br/>
- * このコンポーネントはアクションメソッドの実行毎にインスタンスが生成され、 
- * エンドポイントとなるメソッドが存在するオブジェクトのインスタンスや、エンドポイントに
- * 適用される引数等の状態を持ちます。
+ * Invocation of entry-point method.
  * @author snowgoose
  */
 public interface Invocation {
 
     /**
-     * リクエストされたエンドポイントとなるメソッドを実行します。<br/>
-     * {@link ApplicationProcessor}により評価された内容を保持した状態で実行されます。
+     * Invoke entry-point method.
      * @see ApplicationProcessor
-     * @return エンドポイントの実行結果
+     * @return result of method invocation.
      */
     Object invoke();
 
     /**
-     * エントリポイントとして実行されるインスタンスを返します。
-     * @return エントリポイントとして実行されるインスタンス
+     * Get entry-point object instance.
+     * @return entry-point object instance.
      */
     Object getInvocationInstance();
 
     /**
-     * エントリポイントの実行時に指定される{@link InvocationArguments}
-     * を取得します。
+     * Get {@link InvocationArguments}
      * @return {@link InvocationArguments}
      */
     InvocationArguments getInvocationArguments();

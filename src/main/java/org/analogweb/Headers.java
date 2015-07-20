@@ -3,35 +3,35 @@ package org.analogweb;
 import java.util.List;
 
 /**
- * リクエスト及びレスポンスヘッダを管理します。
+ * Request or response header.
  * @author snowgoose
  */
 public interface Headers {
 
     /**
-     * 指定されたキーに対応するヘッダの値を取得します。
-     * @param name ヘッダの値を取得する為のキー
-     * @return キーに対応するヘッダの値
+     * Get header value.
+     * @param name Key of header value.
+     * @return header value.
      */
     List<String> getValues(String name);
 
     /**
-     * 全てのヘッダのキー名を取得します。
-     * @return 全てのヘッダのキー名
+     * Get all header keys.
+     * @return All header keys
      */
     List<String> getNames();
 
     /**
-     * 指定したキーに対するヘッダの値を追加又は更新します。
-     * @param name ヘッダの値に対するキー
-     * @param value 追加又は更新するヘッダの値
+     * Put header value.
+     * @param name key of header value.
+     * @param value header value.
      */
     void putValue(String name, String value);
 
     /**
-     * 指定したキーがヘッダに存在する場合は{@code true}を返します。
-     * @param name ヘッダの値に対するキー
-     * @return キーがヘッダに存在する場合は{@code true}
+     * Test header value presence.
+     * @param name key of header value.
+     * @return when header value presence, returns {@code true}
      */
     boolean contains(String name);
 }

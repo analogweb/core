@@ -5,6 +5,5 @@ package org.analogweb;
  */
 public interface ModulesAware extends Disposable {
 
-	void setModules(Modules modules);
-
+    void setModules(Modules modules);
 }

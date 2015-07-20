@@ -22,7 +22,6 @@ public class RequestBodyValueResolverTest {
     private RequestBodyValueResolver resolver;
     private RequestContext requestContext;
     private InvocationMetadata metadata;
-    
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -72,7 +71,6 @@ public class RequestBodyValueResolverTest {
     public void testResolveAttributeValueWithException() throws Exception {
         thrown.expect(ApplicationRuntimeException.class);
         when(requestContext.getRequestBody()).thenThrow(IOException.class);
-        resolver.resolveValue(requestContext, metadata, "",
-                InputStream.class, null);
+        resolver.resolveValue(requestContext, metadata, "", InputStream.class, null);
     }
 }

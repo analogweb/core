@@ -1,34 +1,33 @@
 package org.analogweb;
 
 /**
- * <a href="http://www.ietf.org/rfc/rfc2109.txt">RFC 2109</a>に基づく、
- * クッキーを管理します。
+ * Cookie based on <a href="http://www.ietf.org/rfc/rfc2109.txt">RFC 2109</a>.
  * @author snowgoose
  */
 public interface Cookies {
 
     /**
-     * 指定したキーに一致する{@link Cookie}を返します。
-     * @param name {@link Cookie}を特定するキー
+     * Get {@link Cookie}.
+     * @param name Key of {@link Cookie}
      * @return {@link Cookie}
      */
     Cookie getCookie(String name);
 
     /**
-     * 指定したキーに一致する{@link Cookie}を追加、又は更新します。
-     * @param name {@link Cookie}を特定するキー
-     * @param value 更新する{@link Cookie}の値
+     * Put {@link Cookie}.
+     * @param name Key of {@link Cookie}.
+     * @param value Value of {@link Cookie}.
      */
     void putCookie(String name, Object value);
 
     /**
-     * 指定した{@link Cookie}を追加、又は更新します。
+     * Put {@link Cookie}.
      * @param cookie {@link Cookie}
      */
     void putCookie(Cookie cookie);
 
     /**
-     * 単一のキーを保持するクッキーです。
+     * A Cookie.
      * @author snowgoose
      */
     interface Cookie {

@@ -21,8 +21,7 @@ public class Version {
 
     public static List<Version> load(ClassLoader classLoader) {
         try {
-            Enumeration<URL> resources = classLoader
-                    .getResources("analogweb.version.properties");
+            Enumeration<URL> resources = classLoader.getResources("analogweb.version.properties");
             Properties properties = new Properties();
             while (resources.hasMoreElements()) {
                 URL p = resources.nextElement();
@@ -43,7 +42,7 @@ public class Version {
                     if (StringUtils.isNotEmpty(key)) {
                         int index = key.indexOf('.');
                         if (index >= 0) {
-                            String artifactId = key.substring(0,index);
+                            String artifactId = key.substring(0, index);
                             if (artifactIds.contains(artifactId)
                                     || properties.containsKey(artifactId + ".version") == false) {
                                 continue;
@@ -53,7 +52,7 @@ public class Version {
                     }
                 }
                 List<Version> versions = new LinkedList<Version>();
-                for(String id:artifactIds){
+                for (String id : artifactIds) {
                     versions.add(new Version(id, properties.getProperty(id + ".version")));
                 }
                 return versions;
@@ -62,7 +61,7 @@ public class Version {
             // ignore it.
             log.debug(e.getMessage());
         }
-        log.log(Markers.BOOT_APPLICATION,"WB000001");
+        log.log(Markers.BOOT_APPLICATION, "WB000001");
         return Collections.emptyList();
     }
 

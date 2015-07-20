@@ -8,12 +8,12 @@ import java.lang.reflect.Array;
 public final class ArrayUtils {
 
     @SuppressWarnings("unchecked")
-	public static <T> boolean isEmpty(T... anArray) {
+    public static <T> boolean isEmpty(T... anArray) {
         return isNotEmpty(anArray) == false;
     }
 
     @SuppressWarnings("unchecked")
-	public static <T> boolean isNotEmpty(T... anArray) {
+    public static <T> boolean isNotEmpty(T... anArray) {
         return (anArray != null && anArray.length != 0);
     }
 

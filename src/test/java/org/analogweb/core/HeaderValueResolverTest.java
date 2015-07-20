@@ -19,42 +19,38 @@ import org.junit.Test;
  */
 public class HeaderValueResolverTest {
 
-	private HeaderValueResolver resolver;
-	private RequestContext requestContext;
-	private InvocationMetadata metadata;
-	private Headers headers;
+    private HeaderValueResolver resolver;
+    private RequestContext requestContext;
+    private InvocationMetadata metadata;
+    private Headers headers;
 
-	@Before
-	public void setUp() throws Exception {
-		resolver = new HeaderValueResolver();
-		requestContext = mock(RequestContext.class);
-		metadata = mock(InvocationMetadata.class);
-		headers = mock(Headers.class);
-	}
+    @Before
+    public void setUp() throws Exception {
+        resolver = new HeaderValueResolver();
+        requestContext = mock(RequestContext.class);
+        metadata = mock(InvocationMetadata.class);
+        headers = mock(Headers.class);
+    }
 
-	@Test
-	public void testResolveAttributeValue() {
-		when(requestContext.getRequestHeaders()).thenReturn(headers);
-		when(headers.getValues("Content-Type")).thenReturn(
-				Arrays.asList("text/plain"));
-		Object actual = resolver.resolveValue(requestContext, metadata,
-				"Content-Type", null, null);
-		assertThat(((String[]) actual)[0], is("text/plain"));
-	}
+    @Test
+    public void testResolveAttributeValue() {
+        when(requestContext.getRequestHeaders()).thenReturn(headers);
+        when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("text/plain"));
+        Object actual = resolver.resolveValue(requestContext, metadata, "Content-Type", null, null);
+        assertThat(((String[]) actual)[0], is("text/plain"));
+    }
 
-	@Test
-	public void testResolveAttributeValueNotAvairable() {
-		when(requestContext.getRequestHeaders()).thenReturn(headers);
-		when(headers.getValues("Foo-Type")).thenReturn(null);
-		Object actual = resolver.resolveValue(requestContext, metadata,
-				"Foo-Type", null, null);
-		assertNull(actual);
-	}
+    @Test
+    public void testResolveAttributeValueNotAvairable() {
+        when(requestContext.getRequestHeaders()).thenReturn(headers);
+        when(headers.getValues("Foo-Type")).thenReturn(null);
+        Object actual = resolver.resolveValue(requestContext, metadata, "Foo-Type", null, null);
+        assertNull(actual);
+    }
 
-	@Test
-	public void testResolveAttributeValueWithNullName() {
-		Object actual = resolver.resolveValue(requestContext, metadata, null,
-				null, null);
-		assertNull(actual);
-	}
+    @Test
+    public void testResolveAttributeValueWithNullName() {
+        Object actual = resolver.resolveValue(requestContext, metadata, null, null, null);
+        assertNull(actual);
+    }
 }

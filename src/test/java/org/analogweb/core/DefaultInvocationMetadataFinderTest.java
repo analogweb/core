@@ -19,20 +19,19 @@ import org.junit.Test;
 
 public class DefaultInvocationMetadataFinderTest {
 
-	private DefaultInvocationMetadataFinder finder;
+    private DefaultInvocationMetadataFinder finder;
     private RequestContext context;
-    
 
     @Before
     public void setUp() throws Exception {
-    	finder = new DefaultInvocationMetadataFinder();
+        finder = new DefaultInvocationMetadataFinder();
         context = mock(RequestContext.class);
     }
 
     @Test
     public void testGetActionMethodMetadata() {
-    	RequestPath requestPath1 = mock(RequestPath.class);
-    	RequestPath requestPath2 = mock(RequestPath.class);
+        RequestPath requestPath1 = mock(RequestPath.class);
+        RequestPath requestPath2 = mock(RequestPath.class);
         RequestPath requestPath3 = mock(RequestPath.class);
         InvocationMetadata metadata1 = mock(InvocationMetadata.class);
         InvocationMetadata metadata2 = mock(InvocationMetadata.class);
@@ -41,16 +40,16 @@ public class DefaultInvocationMetadataFinderTest {
         when(metadata2.getDefinedPath()).thenReturn(requestPath2);
         when(metadata3.getDefinedPath()).thenReturn(requestPath3);
         Map<RequestPathMetadata, InvocationMetadata> metadatas = Maps.newEmptyHashMap();
-        metadatas.put(requestPath1,metadata1);
-        metadatas.put(requestPath2,metadata2);
-        metadatas.put(requestPath3,metadata3);
+        metadatas.put(requestPath1, metadata1);
+        metadatas.put(requestPath2, metadata2);
+        metadatas.put(requestPath3, metadata3);
         metadatas = Collections.unmodifiableMap(metadatas);
         when(context.getRequestPath()).thenReturn(requestPath1);
-        assertThat(finder.find(metadatas,context), is(metadata1));
+        assertThat(finder.find(metadatas, context), is(metadata1));
         when(context.getRequestPath()).thenReturn(requestPath2);
-        assertThat(finder.find(metadatas,context), is(metadata2));
+        assertThat(finder.find(metadatas, context), is(metadata2));
         when(context.getRequestPath()).thenReturn(requestPath3);
-        assertThat(finder.find(metadatas,context), is(metadata3));
+        assertThat(finder.find(metadatas, context), is(metadata3));
     }
 
     @Test
@@ -60,14 +59,14 @@ public class DefaultInvocationMetadataFinderTest {
         InvocationMetadata metadata1 = mock(InvocationMetadata.class);
         when(metadata1.getDefinedPath()).thenReturn(requestPath1);
         Map<RequestPathMetadata, InvocationMetadata> metadatas = Maps.newEmptyHashMap();
-        metadatas.put(requestPath1,metadata1);
+        metadatas.put(requestPath1, metadata1);
         metadatas = Collections.unmodifiableMap(metadatas);
         when(requestPath1.match(requestPath1)).thenReturn(true);
         when(metadata1.getDefinedPath()).thenReturn(requestPath1);
         when(context.getRequestPath()).thenReturn(requestPath1);
-        assertThat(finder.find(metadatas,context), is(metadata1));
+        assertThat(finder.find(metadatas, context), is(metadata1));
         when(context.getRequestPath()).thenReturn(requestPath2);
-        assertNull(finder.find(metadatas,context));
+        assertNull(finder.find(metadatas, context));
     }
 
     @Test
@@ -80,9 +79,9 @@ public class DefaultInvocationMetadataFinderTest {
         Map<RequestPathMetadata, InvocationMetadata> metadatas = Maps.newEmptyHashMap();
         metadatas = Collections.unmodifiableMap(metadatas);
         when(context.getRequestPath()).thenReturn(requestPath1);
-        assertNull(finder.find(metadatas,context));
+        assertNull(finder.find(metadatas, context));
         when(context.getRequestPath()).thenReturn(requestPath2);
-        assertNull(finder.find(metadatas,context));
+        assertNull(finder.find(metadatas, context));
     }
 
     @Test
@@ -96,20 +95,19 @@ public class DefaultInvocationMetadataFinderTest {
                 new String[] { "POST" });
         when(meta2.getDefinedPath()).thenReturn(path2);
         Map<RequestPathMetadata, InvocationMetadata> metadatas = Maps.newEmptyHashMap();
-        metadatas.put(path1,meta1);
-        metadatas.put(path2,meta2);
+        metadatas.put(path1, meta1);
+        metadatas.put(path2, meta2);
         metadatas = Collections.unmodifiableMap(metadatas);
         RequestPath requestPath1 = new DefaultRequestPath(URI.create("/"), URI.create("/path"),
                 "GET");
         when(meta2.getDefinedPath()).thenReturn(path2);
         when(context.getRequestPath()).thenReturn(requestPath1);
-        InvocationMetadata actual = finder.find(metadatas,context);
+        InvocationMetadata actual = finder.find(metadatas, context);
         assertThat(actual, is(meta1));
         RequestPath requestPath2 = new DefaultRequestPath(URI.create("/"), URI.create("/path"),
                 "POST");
         when(context.getRequestPath()).thenReturn(requestPath2);
-        actual = finder.find(metadatas,context);
+        actual = finder.find(metadatas, context);
         assertThat(actual, is(meta2));
     }
-
 }

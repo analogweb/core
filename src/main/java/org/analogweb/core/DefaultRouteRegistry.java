@@ -20,26 +20,29 @@ public class DefaultRouteRegistry implements RouteRegistry {
             .newConcurrentHashMap();
 
     @Override
-    public InvocationMetadata findInvocationMetadata(RequestContext requestContext,List<InvocationMetadataFinder> finders) {
-    	Map<RequestPathMetadata, InvocationMetadata> readOnly = Collections.unmodifiableMap(actionMetadataMap);
-    	for(InvocationMetadataFinder finder : finders){
-    		InvocationMetadata found = finder.find(readOnly, requestContext);
-    		if(found == null){
-    			continue;
-    		} else if (found instanceof InvocationMetadataFinder.Cacheable){
-    			InvocationMetadataFinder.Cacheable cacheable = (InvocationMetadataFinder.Cacheable)found;
-    			return update(requestContext.getRequestPath(),cacheable);
-    		} else {
-    			return found;
-    		}
-    	}
+    public InvocationMetadata findInvocationMetadata(RequestContext requestContext,
+            List<InvocationMetadataFinder> finders) {
+        Map<RequestPathMetadata, InvocationMetadata> readOnly = Collections
+                .unmodifiableMap(actionMetadataMap);
+        for (InvocationMetadataFinder finder : finders) {
+            InvocationMetadata found = finder.find(readOnly, requestContext);
+            if (found == null) {
+                continue;
+            } else if (found instanceof InvocationMetadataFinder.Cacheable) {
+                InvocationMetadataFinder.Cacheable cacheable = (InvocationMetadataFinder.Cacheable) found;
+                return update(requestContext.getRequestPath(), cacheable);
+            } else {
+                return found;
+            }
+        }
         return null;
     }
-    
-    protected InvocationMetadata update(RequestPathMetadata path, InvocationMetadataFinder.Cacheable metadata){
-    	InvocationMetadata i = metadata.getCachable();
-    	this.actionMetadataMap.put(path, i);
-    	return i;
+
+    protected InvocationMetadata update(RequestPathMetadata path,
+            InvocationMetadataFinder.Cacheable metadata) {
+        InvocationMetadata i = metadata.getCachable();
+        this.actionMetadataMap.put(path, i);
+        return i;
     }
 
     @Override

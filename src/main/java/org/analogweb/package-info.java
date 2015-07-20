@@ -1,7 +1,6 @@
 /**
- * Analog Webフレームワークにおけるルートパッケージです。<br/>
- * このパッケージではAnalog Webフレームワークにおける概念のみが定義されます。
- * このパッケージ以下に定義されるクラスは、Analog Webフレームワークのモジュールとして自動的に認識されます。
+ * Root of <a href="http://analogweb.org">Analog Web Framework</a><br/>
+ * This package defines fundamental interfaces.
  */
 package org.analogweb;
 

@@ -16,24 +16,21 @@ import org.analogweb.WebApplicationException;
  */
 public class DefaultResponseHandler implements ResponseHandler {
 
-	public void handleResult(Renderable result,
-			ResponseFormatter resultFormatter, RequestContext context,
-			ResponseContext response) throws IOException,
-			WebApplicationException {
-		try {
-			if (result instanceof ResponseFormatterAware<?>) {
-				((ResponseFormatterAware<?>) result).attach(resultFormatter);
-			} else if (result instanceof RenderableHolder) {
-				Renderable renderable = ((RenderableHolder) result)
-						.getRenderable();
-				if (renderable instanceof ResponseFormatterAware<?>) {
-					((ResponseFormatterAware<?>) renderable)
-							.attach(resultFormatter);
-				}
-			}
-			result.render(context, response);
-		} catch (Exception e) {
-			throw new ResponseEvaluationException(e, result);
-		}
-	}
+    public void handleResult(Renderable result, ResponseFormatter resultFormatter,
+            RequestContext context, ResponseContext response) throws IOException,
+            WebApplicationException {
+        try {
+            if (result instanceof ResponseFormatterAware<?>) {
+                ((ResponseFormatterAware<?>) result).attach(resultFormatter);
+            } else if (result instanceof RenderableHolder) {
+                Renderable renderable = ((RenderableHolder) result).getRenderable();
+                if (renderable instanceof ResponseFormatterAware<?>) {
+                    ((ResponseFormatterAware<?>) renderable).attach(resultFormatter);
+                }
+            }
+            result.render(context, response);
+        } catch (Exception e) {
+            throw new ResponseEvaluationException(e, result);
+        }
+    }
 }

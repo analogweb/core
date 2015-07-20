@@ -1,8 +1,7 @@
 package org.analogweb;
 
 /**
- * アプリケーションにおける{@link Modules}を構成するビルダです。<br/>
- * {@link Modules}を構成するためのコンポーネント(型)の定義情報を保持します。
+ * Builder of {@link Modules}.
  * @author snowgoose
  */
 public interface ModulesBuilder {

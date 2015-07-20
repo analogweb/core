@@ -14,7 +14,7 @@ public abstract class AbstractAttributesHandler implements AttributesHandler {
 
     @Override
     public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
-            String key, Class<?> requiredType,Annotation[] annotations) {
+            String key, Class<?> requiredType, Annotation[] annotations) {
         // nop
         return null;
     }

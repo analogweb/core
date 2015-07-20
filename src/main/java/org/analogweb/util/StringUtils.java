@@ -136,7 +136,7 @@ public final class StringUtils {
     public static String trimToEmpty(String value) {
         return isEmpty(value) ? EMPTY : value.trim();
     }
-    
+
     public static String join(Character joiner, String... array) {
         if (ArrayUtils.isEmpty(array)) {
             return StringUtils.EMPTY;

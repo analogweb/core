@@ -80,8 +80,7 @@ public final class MediaTypes {
     /** "text/javascript" */
     public final static String TEXT_JAVASCRIPT = "text/javascript";
     /** "text/javascript" */
-    public final static MediaType TEXT_JAVASCRIPT_TYPE = new DefaultMediaType("text",
-            "javascript");
+    public final static MediaType TEXT_JAVASCRIPT_TYPE = new DefaultMediaType("text", "javascript");
 
     private static final class DefaultMediaType implements MediaType {
 

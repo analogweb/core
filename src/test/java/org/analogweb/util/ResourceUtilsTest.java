@@ -84,9 +84,10 @@ public class ResourceUtilsTest {
     @Test
     public void testFindURLViaHttp() throws Exception {
         try {
-            HttpURLConnection c = (HttpURLConnection) new URL("http://example.com/").openConnection();
+            HttpURLConnection c = (HttpURLConnection) new URL("http://example.com/")
+                    .openConnection();
             c.setConnectTimeout(3000);
-            assumeThat(c.getResponseCode(),is(200));
+            assumeThat(c.getResponseCode(), is(200));
         } catch (Exception e) {
             assumeNoException(e);
         }

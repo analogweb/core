@@ -1,16 +1,16 @@
 package org.analogweb;
 
 /**
- * {@link ContainerAdaptor}を生成するファクトリです。
- * @param <T> 生成する{@link ContainerAdaptor}の型
+ * Factory of {@link ContainerAdaptor}.
+ * @param <T> type of {@link ContainerAdaptor}.
  * @author snowgoose
  */
 public interface ContainerAdaptorFactory<T extends ContainerAdaptor> extends Module {
 
     /**
-     * 新しい{@link ContainerAdaptor}を生成します。
+     * Create new {@link ContainerAdaptor}.
      * @param resolver {@link ApplicationContext}
-     * @return 新しい{@link ContainerAdaptor}のインスタンス。
+     * @return Created {@link ContainerAdaptor}
      */
     T createContainerAdaptor(ApplicationContext resolver);
 }

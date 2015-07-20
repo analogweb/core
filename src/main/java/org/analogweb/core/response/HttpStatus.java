@@ -15,7 +15,7 @@ import org.analogweb.util.StringUtils;
 /**
  * @author snowgoose
  */
-public enum HttpStatus implements Renderable,RenderableHolder {
+public enum HttpStatus implements Renderable, RenderableHolder {
     CONTINUE(100), SWITCHING_PROTOCOLS(101), PROCESSING(102), OK(200), CREATED(201), ACCEPTED(202), NON_AUTHORITATIVE_INFORMATION(
             203), NO_CONTENT(204), RESET_CONTENT(205), PARTIAL_CONTENT(206), MULTI_STATUS(207), ALREADY_REPORTED(
             208), IM_USED(226), MULTIPLE_CHOICES(300), MOVED_PERMANENTLY(301), FOUND(302), SEE_OTHER(
@@ -52,7 +52,7 @@ public enum HttpStatus implements Renderable,RenderableHolder {
             }
         }
         Headers headers = response.getResponseHeaders();
-        Map<String, String> headersMap = getResponseHeaders();  
+        Map<String, String> headersMap = getResponseHeaders();
         if (headersMap != null) {
             for (Entry<String, String> e : headersMap.entrySet()) {
                 headers.putValue(e.getKey(), e.getValue());
@@ -79,7 +79,8 @@ public enum HttpStatus implements Renderable,RenderableHolder {
         return this.reason;
     }
 
-    @Deprecated//Use #getRenderable instead."
+    @Deprecated
+    //Use #getRenderable instead."
     public Renderable getPreRenderResponse() {
         return this.actuallyRenderable;
     }
@@ -103,8 +104,8 @@ public enum HttpStatus implements Renderable,RenderableHolder {
         return this;
     }
 
-	@Override
-	public Renderable getRenderable() {
-		return this.actuallyRenderable;	
-	}
+    @Override
+    public Renderable getRenderable() {
+        return this.actuallyRenderable;
+    }
 }

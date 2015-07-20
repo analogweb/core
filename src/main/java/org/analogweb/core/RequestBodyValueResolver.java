@@ -39,6 +39,7 @@ public class RequestBodyValueResolver implements RequestValueResolver {
             throw new UnresolvableValueException(this, type, query);
         } catch (IOException e) {
             throw new ApplicationRuntimeException(e) {
+
                 private static final long serialVersionUID = 1L;
             };
         }

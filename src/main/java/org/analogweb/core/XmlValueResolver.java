@@ -23,7 +23,7 @@ public class XmlValueResolver implements SpecificMediaTypeRequestValueResolver {
 
     @Override
     public Object resolveValue(RequestContext context, InvocationMetadata metadata, String key,
-            Class<?> requiredType,Annotation[] annotations) {
+            Class<?> requiredType, Annotation[] annotations) {
         try {
             return unmershall(createUnmarshaller(requiredType), context.getRequestBody());
         } catch (IOException e) {
