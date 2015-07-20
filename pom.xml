@@ -18,13 +18,12 @@
 	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 	DEALINGS IN THE SOFTWARE.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.analogweb</groupId>
 	<artifactId>analogweb-core</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9.8-SNAPSHOT</version>
+	<version>0.9.8</version>
 	<name>analogweb-core</name>
 	<url>http://analogweb.org</url>
 	<organization>
@@ -38,7 +37,7 @@
 		<url>scm:git:git@github.com:analogweb/core.git</url>
 		<connection>scm:git:git@github.com:analogweb/core.git</connection>
 		<developerConnection>scm:git:git@github.com:analogweb/core.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>v0.9.8</tag>
 	</scm>
 	<licenses>
 		<license>
