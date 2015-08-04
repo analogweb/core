@@ -1,6 +1,5 @@
 package org.analogweb.core.response;
 
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -14,8 +13,6 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseContext.ResponseEntity;
-import org.analogweb.ResponseContext.ResponseWriter;
-import org.analogweb.core.DefaultResponseEntity;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,17 +20,14 @@ public class ResponsesTest {
 
     private RequestContext request;
     private ResponseContext response;
-    private ResponseWriter writer;
     private Headers responseHeaders;
 
     @Before
     public void setUp() {
         request = mock(RequestContext.class);
         response = mock(ResponseContext.class);
-        writer = mock(ResponseWriter.class);
         responseHeaders = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(responseHeaders);
-        when(response.getResponseWriter()).thenReturn(writer);
     }
 
     @Test
@@ -41,7 +35,6 @@ public class ResponsesTest {
         ResponseEntity entity = mock(ResponseEntity.class);
         Responses responses = Responses.ok(entity);
         responses.render(request, response);
-        verify(writer).writeEntity(entity);
         verify(response).setStatus(200);
     }
 
@@ -50,7 +43,6 @@ public class ResponsesTest {
         InputStream entity = new ByteArrayInputStream(new byte[0]);
         Responses responses = Responses.ok(entity);
         responses.render(request, response);
-        verify(writer).writeEntity(isA(DefaultResponseEntity.class));
         verify(response).setStatus(200);
     }
 
@@ -60,7 +52,6 @@ public class ResponsesTest {
         Charset cs = Charset.forName("UTF-8");
         Responses responses = Responses.ok(entity, cs);
         responses.render(request, response);
-        verify(writer).writeEntity(isA(DefaultResponseEntity.class));
         verify(response).setStatus(200);
     }
 

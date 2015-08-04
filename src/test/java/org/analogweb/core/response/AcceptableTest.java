@@ -19,8 +19,8 @@ import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.ResponseContext.ResponseEntity;
-import org.analogweb.ResponseContext.ResponseWriter;
 import org.analogweb.core.DefaultResponseWriter;
 import org.analogweb.WebApplicationException;
 import org.junit.Before;
@@ -58,9 +58,11 @@ public class AcceptableTest {
         a.map(new Renderable() {
 
             @Override
-            public void render(RequestContext context, ResponseContext response)
+            public Response render(RequestContext context, ResponseContext response)
                     throws IOException, WebApplicationException {
-                response.getResponseWriter().writeEntity("write with XML");
+                Response r = new DefaultResponseWriter();
+                r.putEntity("write with XML");
+                return r;
             }
         }, "text/xml");
         final String actual = schenarioRender(" text/xml", m, a);
@@ -100,8 +102,8 @@ public class AcceptableTest {
         when(headers.getValues("Accept")).thenReturn(
                 Arrays.asList("text/x-dvi", "image/png", "*/*"));
         //        when(request.getHeader("Accept")).thenReturn(accept);
-        ResponseWriter writer = new DefaultResponseWriter();
-        when(response.getResponseWriter()).thenReturn(writer);
+        //        Response writer = new DefaultResponseWriter();
+        //        when(response.getResponse()).thenReturn(writer);
         final Renderable anyResponse = mock(Renderable.class);
         Acceptable.as(m).mapToAny(anyResponse).render(context, response);
         verify(anyResponse).render(context, response);
@@ -122,9 +124,11 @@ public class AcceptableTest {
         a.mapToAny(new Renderable() {
 
             @Override
-            public void render(RequestContext context, ResponseContext response)
+            public Response render(RequestContext context, ResponseContext response)
                     throws IOException, WebApplicationException {
-                response.getResponseWriter().writeEntity("write with ANY");
+                Response r = new DefaultResponseWriter();
+                r.putEntity("write with ANY");
+                return r;
             }
         });
         final String actual = schenarioRender(" text/x-dvi,image/png, */*", m, a);
@@ -138,8 +142,6 @@ public class AcceptableTest {
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Accept")).thenReturn(
                 Arrays.asList("text/x-dvi", "image/png", "application/json"));
-        ResponseWriter writer = new DefaultResponseWriter();
-        when(response.getResponseWriter()).thenReturn(writer);
         final Renderable replaceResponse = mock(Renderable.class);
         Acceptable.as(m).map(replaceResponse, "application/json").render(context, response);
         verify(replaceResponse).render(context, response);
@@ -151,8 +153,6 @@ public class AcceptableTest {
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Accept")).thenReturn(
                 Arrays.asList("text/html", "text/x-dvi", "image/png", "application/json"));
-        ResponseWriter writer = new DefaultResponseWriter();
-        when(response.getResponseWriter()).thenReturn(writer);
         final Renderable jsonResponse = mock(Renderable.class);
         final Renderable htmlResponse = mock(Renderable.class);
         Acceptable acceptable = Acceptable.as(m).map(jsonResponse, "application/json")
@@ -166,8 +166,6 @@ public class AcceptableTest {
         final Member m = new Member("snowgoose", 34);
         when(context.getRequestHeaders()).thenReturn(headers);
         when(headers.getValues("Accept")).thenReturn(Arrays.asList("text/x-dvi", "image/png"));
-        ResponseWriter writer = new DefaultResponseWriter();
-        when(response.getResponseWriter()).thenReturn(writer);
         final Renderable jsonResponse = mock(Renderable.class);
         final Renderable htmlResponse = mock(Renderable.class);
         Acceptable acceptable = Acceptable.as(m).map(jsonResponse, "application/json")
@@ -206,9 +204,7 @@ public class AcceptableTest {
         when(response.getResponseHeaders()).thenReturn(responseHeaders);
         when(headers.getValues("Accept")).thenReturn(Arrays.asList(accept.split(",")));
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ResponseWriter writer = new DefaultResponseWriter();
-        when(response.getResponseWriter()).thenReturn(writer);
-        a.render(context, response);
+        Response writer = a.render(context, response);
         ResponseEntity entity = writer.getEntity();
         if (entity != null) {
             entity.writeInto(out);

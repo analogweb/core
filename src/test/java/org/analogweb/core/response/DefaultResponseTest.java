@@ -13,7 +13,6 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseContext.ResponseEntity;
-import org.analogweb.ResponseContext.ResponseWriter;
 import org.analogweb.core.DefaultResponseEntity;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -47,8 +46,6 @@ public class DefaultResponseTest {
         response = new DefaultResponse();
         ResponseEntity entity = new DefaultResponseEntity("This Is TEST!");
         response.setResponseEntity(entity);
-        ResponseWriter writer = mock(ResponseWriter.class);
-        when(responseContext.getResponseWriter()).thenReturn(writer);
         response.addHeader("Content-Type", "text/plain");
         Headers responseHeaders = mock(Headers.class);
         when(responseContext.getResponseHeaders()).thenReturn(responseHeaders);
@@ -57,7 +54,6 @@ public class DefaultResponseTest {
         assertThat(response.getHeaders().get("Content-Type"), is("text/plain"));
         assertThat(response.getResponseEntity(), is(entity));
         verify(responseHeaders).putValue("Content-Type", "text/plain");
-        verify(writer).writeEntity(entity);
         verify(responseContext).setStatus(HttpStatus.OK.getStatusCode());
     }
 

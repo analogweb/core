@@ -16,6 +16,7 @@ import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.core.ResponseEvaluationException;
 import org.analogweb.core.MissingRequirmentsException;
 import org.analogweb.WebApplicationException;
@@ -44,11 +45,12 @@ public class Redirect implements Renderable {
     }
 
     @Override
-    public void render(RequestContext context, ResponseContext response) throws IOException,
+    public Response render(RequestContext context, ResponseContext response) throws IOException,
             WebApplicationException {
         Assertion.notNull(context, RequestContext.class.getCanonicalName());
         String path = getParametarizedPath();
         sendRedirect(context, response, URI.create(path), getResponseCode());
+        return Response.EMPTY;
     }
 
     public Redirect encodeWith(String encodingCharset) {

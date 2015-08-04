@@ -12,7 +12,7 @@ import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.core.DefaultResponseWriter;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.util.Maps;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,10 +45,9 @@ public class HttpStatusTest {
     public void testRenderWithError() throws Exception {
         when(response.getResponseHeaders()).thenReturn(headers);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        DefaultResponseWriter writer = new DefaultResponseWriter();
-        when(response.getResponseWriter()).thenReturn(writer);
-        HttpStatus.NOT_FOUND.byReasonOf("foo is not found.").render(requestContext, response);
-        writer.getEntity().writeInto(out);
+        Response r = HttpStatus.NOT_FOUND.byReasonOf("foo is not found.").render(requestContext,
+                response);
+        r.getEntity().writeInto(out);
         assertThat(new String(out.toByteArray()), is("foo is not found."));
         verify(response).setStatus(404);
     }

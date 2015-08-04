@@ -4,38 +4,46 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.ResponseContext.ResponseEntity;
-import org.analogweb.ResponseContext.ResponseWriter;
 
 /**
  * @author snowgoose
  */
-public class DefaultResponseWriter implements ResponseWriter {
+public class DefaultResponseWriter implements Response {
 
     private ResponseEntity entity;
 
     @Override
-    public void writeEntity(String entity) {
-        writeEntity(entity, Charset.defaultCharset());
+    public void putEntity(String entity) {
+        putEntity(entity, Charset.defaultCharset());
     }
 
     @Override
-    public void writeEntity(String entity, Charset charset) {
-        writeEntity(new ByteArrayInputStream(entity.getBytes(charset)));
+    public void putEntity(String entity, Charset charset) {
+        putEntity(new ByteArrayInputStream(entity.getBytes(charset)));
     }
 
     @Override
-    public void writeEntity(final InputStream entity) {
-        writeEntity(new DefaultResponseEntity(entity));
+    public void putEntity(final InputStream entity) {
+        putEntity(new DefaultResponseEntity(entity));
     }
 
     @Override
-    public void writeEntity(ResponseEntity entity) {
+    public void putEntity(ResponseEntity entity) {
         this.entity = entity;
     }
 
     @Override
     public ResponseEntity getEntity() {
         return entity;
+    }
+
+    public long getContentLength() {
+        ResponseEntity e = this.entity;
+        if (e != null) {
+            return e.getContentLength();
+        }
+        return 0L;
     }
 }

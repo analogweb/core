@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.analogweb.Renderable;
 import org.analogweb.RenderableHolder;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseFormatterAware;
 import org.analogweb.ResponseHandler;
@@ -16,7 +17,7 @@ import org.analogweb.WebApplicationException;
  */
 public class DefaultResponseHandler implements ResponseHandler {
 
-    public void handleResult(Renderable result, ResponseFormatter resultFormatter,
+    public Response handleResult(Renderable result, ResponseFormatter resultFormatter,
             RequestContext context, ResponseContext response) throws IOException,
             WebApplicationException {
         try {
@@ -28,7 +29,7 @@ public class DefaultResponseHandler implements ResponseHandler {
                     ((ResponseFormatterAware<?>) renderable).attach(resultFormatter);
                 }
             }
-            result.render(context, response);
+            return result.render(context, response);
         } catch (Exception e) {
             throw new ResponseEvaluationException(e, result);
         }

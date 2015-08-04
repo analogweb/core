@@ -15,8 +15,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseContext.ResponseWriter;
-import org.analogweb.core.DefaultResponseWriter;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.core.FormatFailureException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,11 +42,9 @@ public class XmlTest {
         String charset = "UTF-8";
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ResponseWriter writer = new DefaultResponseWriter();
-        when(response.getResponseWriter()).thenReturn(writer);
         Xml xml = Xml.as(new Foo());
-        xml.render(context, response);
-        writer.getEntity().writeInto(out);
+        Response r = xml.render(context, response);
+        r.getEntity().writeInto(out);
         String actual = new String(out.toByteArray(), charset);
         assertThat(
                 actual,
@@ -60,12 +57,10 @@ public class XmlTest {
         thrown.expect(FormatFailureException.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ResponseWriter writer = new DefaultResponseWriter();
-        when(response.getResponseWriter()).thenReturn(writer);
         // render miss mapped type.
         Xml xml = Xml.as(new Hoge());
-        xml.render(context, response);
-        writer.getEntity().writeInto(out);
+        Response r = xml.render(context, response);
+        r.getEntity().writeInto(out);
     }
 
     @XmlRootElement

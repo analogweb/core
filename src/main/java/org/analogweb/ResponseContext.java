@@ -13,26 +13,109 @@ public interface ResponseContext {
     /**
      * Commit response to stream.
      * @param context {@link RequestContext}
+     * @param response {@link Response}
      */
-    void commmit(RequestContext context);
+    void commmit(RequestContext context, Response response);
 
     Headers getResponseHeaders();
 
-    ResponseWriter getResponseWriter();
-
     void setStatus(int status);
 
-    public static interface ResponseWriter {
+    public static interface Response {
 
-        void writeEntity(InputStream entity);
+        Response NOT_FOUND = new ResponseContext.Response() {
 
-        void writeEntity(String entity);
+            @Override
+            public void putEntity(InputStream entity) {
+                //NOP
+            }
 
-        void writeEntity(String entity, Charset charset);
+            @Override
+            public void putEntity(String entity) {
+                //NOP
+            }
 
-        void writeEntity(ResponseEntity entity);
+            @Override
+            public void putEntity(String entity, Charset charset) {
+                //NOP
+            }
+
+            @Override
+            public void putEntity(ResponseEntity entity) {
+                //NOP
+            }
+
+            @Override
+            public ResponseEntity getEntity() {
+                //NOP
+                return null;
+            }
+
+            @Override
+            public long getContentLength() {
+                //NOP
+                return 0;
+            }
+        };
+        Response EMPTY = new ResponseContext.Response() {
+
+            @Override
+            public void putEntity(InputStream entity) {
+                //NOP
+            }
+
+            @Override
+            public void putEntity(String entity) {
+                //NOP
+            }
+
+            @Override
+            public void putEntity(String entity, Charset charset) {
+                //NOP
+            }
+
+            @Override
+            public void putEntity(ResponseEntity entity) {
+                //NOP
+            }
+
+            ResponseEntity EMPTY_ENTITY = new ResponseEntity() {
+
+                @Override
+                public void writeInto(OutputStream responseBody) throws IOException {
+                    //NOP
+                }
+
+                @Override
+                public long getContentLength() {
+                    //NOP
+                    return 0;
+                }
+            };
+
+            @Override
+            public ResponseEntity getEntity() {
+                //NOP
+                return EMPTY_ENTITY;
+            }
+
+            @Override
+            public long getContentLength() {
+                return getEntity().getContentLength();
+            }
+        };
+
+        void putEntity(InputStream entity);
+
+        void putEntity(String entity);
+
+        void putEntity(String entity, Charset charset);
+
+        void putEntity(ResponseEntity entity);
 
         ResponseEntity getEntity();
+
+        long getContentLength();
     }
 
     public static interface ResponseEntity {

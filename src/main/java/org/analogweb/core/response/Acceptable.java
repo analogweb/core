@@ -11,6 +11,7 @@ import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.core.MediaTypes;
 import org.analogweb.WebApplicationException;
 import org.analogweb.util.StringUtils;
@@ -63,19 +64,17 @@ public class Acceptable implements Renderable {
     }
 
     @Override
-    public void render(RequestContext context, ResponseContext response) throws IOException,
+    public Response render(RequestContext context, ResponseContext response) throws IOException,
             WebApplicationException {
         List<String> mediaTypes = getAcceptableMediaType(context);
         if (mediaTypes.isEmpty()) {
-            HttpStatus.NOT_ACCEPTABLE.render(context, response);
-            return;
+            return HttpStatus.NOT_ACCEPTABLE.render(context, response);
         }
         Renderable d = selectResponse(mediaTypes, getSource());
         if (d == null) {
-            HttpStatus.NOT_ACCEPTABLE.render(context, response);
-            return;
+            return HttpStatus.NOT_ACCEPTABLE.render(context, response);
         }
-        d.render(context, response);
+        return d.render(context, response);
     }
 
     /**

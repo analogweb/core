@@ -27,7 +27,7 @@ public class DefaultResponseWriterTest {
     @Test
     public void testWriteStringEntity() throws IOException {
         String expected = "This Is Test Entity.";
-        writer.writeEntity(expected);
+        writer.putEntity(expected);
         ByteArrayOutputStream responseBody = new ByteArrayOutputStream();
         writer.getEntity().writeInto(responseBody);
         assertThat(new String(responseBody.toByteArray()), is(expected));
@@ -37,7 +37,7 @@ public class DefaultResponseWriterTest {
     public void testWriteStringEntityWithCharset() throws IOException {
         String expected = "これはテストです。";
         Charset charset = Charset.forName("UTF-8");
-        writer.writeEntity(expected, charset);
+        writer.putEntity(expected, charset);
         ByteArrayOutputStream responseBody = new ByteArrayOutputStream();
         writer.getEntity().writeInto(responseBody);
         assertThat(new String(responseBody.toByteArray(), charset), is(expected));
@@ -53,7 +53,7 @@ public class DefaultResponseWriterTest {
                 throw new IOException();
             }
         };
-        writer.writeEntity(entity);
+        writer.putEntity(entity);
         ByteArrayOutputStream responseBody = new ByteArrayOutputStream();
         writer.getEntity().writeInto(responseBody);
     }

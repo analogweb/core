@@ -9,6 +9,7 @@ import org.analogweb.Headers;
 import org.analogweb.RenderableHolder;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.WebApplicationException;
 import org.analogweb.util.StringUtils;
 
@@ -40,25 +41,27 @@ public enum HttpStatus implements Renderable, RenderableHolder {
     }
 
     @Override
-    public void render(RequestContext context, ResponseContext response) throws IOException,
-            WebApplicationException {
+    public Response render(RequestContext context, ResponseContext responseContext)
+            throws IOException, WebApplicationException {
         String reason = getReason();
+        Response response = Response.EMPTY;
         if (StringUtils.isNotEmpty(reason)) {
-            Text.with(reason).render(context, response);
+            response = Text.with(reason).render(context, responseContext);
         } else {
             Renderable preRenderDirection = getPreRenderResponse();
             if (preRenderDirection != null) {
-                preRenderDirection.render(context, response);
+                response = preRenderDirection.render(context, responseContext);
             }
         }
-        Headers headers = response.getResponseHeaders();
+        Headers headers = responseContext.getResponseHeaders();
         Map<String, String> headersMap = getResponseHeaders();
         if (headersMap != null) {
             for (Entry<String, String> e : headersMap.entrySet()) {
                 headers.putValue(e.getKey(), e.getValue());
             }
         }
-        response.setStatus(getStatusCode());
+        responseContext.setStatus(getStatusCode());
+        return response;
     }
 
     public static HttpStatus valueOf(int statusCode) {

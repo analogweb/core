@@ -3,6 +3,7 @@ package org.analogweb;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.util.ClassCollector;
 
 /**
@@ -13,13 +14,9 @@ public interface Application extends Disposable {
 
     String DEFAULT_PACKAGE_NAME = Application.class.getPackage().getName();
     /**
-     * {@link RequestPath} found and invocation proceeded.
-     */
-    int PROCEEDED = 1;
-    /**
      * {@link RequestPath} not found.
      */
-    int NOT_FOUND = 0;
+    Response NOT_FOUND = ResponseContext.Response.NOT_FOUND;
 
     /**
      * Run application.
@@ -40,8 +37,8 @@ public interface Application extends Disposable {
      * @throws IOException
      * @throws WebApplicationException
      */
-    int processRequest(RequestPath path, RequestContext context, ResponseContext responseContext)
-            throws IOException, WebApplicationException;
+    Response processRequest(RequestPath path, RequestContext context,
+            ResponseContext responseContext) throws IOException, WebApplicationException;
 
     /**
      * Obtain {@link Modules}.

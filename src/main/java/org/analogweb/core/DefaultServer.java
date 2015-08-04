@@ -43,6 +43,7 @@ import org.analogweb.Disposable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.Server;
 import org.analogweb.WebApplicationException;
 import org.analogweb.core.response.HttpStatus;
@@ -249,13 +250,13 @@ public class DefaultServer implements Server {
                             headerMap, body);
                     ResponseContextImpl response = new ResponseContextImpl(request, sock);
                     try {
-                        int proceed = app.processRequest(request.getRequestPath(), request,
+                        Response proceed = app.processRequest(request.getRequestPath(), request,
                                 response);
                         if (proceed == Application.NOT_FOUND) {
                             throw new RequestCancelledException(HttpStatus.NOT_FOUND,
                                     StringUtils.EMPTY);
                         } else {
-                            response.commmit(request);
+                            response.commmit(request, proceed);
                         }
                     } catch (WebApplicationException e) {
                         e.printStackTrace();
@@ -513,7 +514,7 @@ public class DefaultServer implements Server {
         }
 
         @Override
-        public void commmit(RequestContext context) {
+        public void commmit(RequestContext context, Response response) {
             // write headers
             CharBuffer buffer = CharBuffer.allocate(8192);
             buffer.append("HTTP/1.1").append(' ').append(String.valueOf(getStatus())).append(' ')
@@ -525,7 +526,7 @@ public class DefaultServer implements Server {
                 dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
                 buffer.append("Date: ").append(dateFormat.format(new Date())).append("\r\n");
             }
-            long length = getContentLength();
+            long length = response.getContentLength();
             OutputStream out = null;
             if (request.getRequestMethod().equals("HEAD") == false) {
                 if (h.contains("Content-Length") == false && length != -1) {
@@ -550,7 +551,7 @@ public class DefaultServer implements Server {
             Charset iso = Charset.forName("ISO-8859-1");
             try {
                 sock.write(iso.encode(buffer));
-                ResponseEntity entity = getResponseWriter().getEntity();
+                ResponseEntity entity = response.getEntity();
                 if (entity != null) {
                     entity.writeInto(out);
                 }

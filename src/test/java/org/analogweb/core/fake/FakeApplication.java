@@ -17,6 +17,7 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.core.AbstractRequestContext;
 import org.analogweb.core.AbstractResponseContext;
 import org.analogweb.core.ApplicationRuntimeException;
@@ -107,14 +108,14 @@ public class FakeApplication {
         ResponseContext response = new AbstractResponseContext() {
 
             @Override
-            public void commmit(RequestContext context) {
-                commitHeadersAndStatus(result, context);
+            public void commmit(RequestContext context, Response response) {
+                commitHeadersAndStatus(result, context, response);
                 Headers headers = getResponseHeaders();
                 if (headers instanceof MapHeaders) {
                     result.setResponseHeader(((MapHeaders) headers).toMap());
                 }
                 try {
-                    ResponseEntity entity = getResponseWriter().getEntity();
+                    ResponseEntity entity = response.getEntity();
                     // no content.
                     if (entity != null) {
                         entity.writeInto(result.getResponseBody());
@@ -128,12 +129,13 @@ public class FakeApplication {
                 }
             }
 
-            private void commitHeadersAndStatus(ResponseResult ex, RequestContext context) {
+            private void commitHeadersAndStatus(ResponseResult ex, RequestContext context,
+                    Response response) {
                 int status = getStatus();
                 if (status == 204) {
                     ex.add("Content-Length", "0");
                 } else {
-                    ex.add("Content-Length", String.valueOf(getContentLength()));
+                    ex.add("Content-Length", String.valueOf(response.getContentLength()));
                 }
                 ex.setStatus(status);
             }
@@ -144,12 +146,12 @@ public class FakeApplication {
                     .getContextClassLoader());
         }
         try {
-            int resultCode = app.processRequest(requestPath, request, response);
+            Response resultCode = app.processRequest(requestPath, request, response);
             if (resultCode == WebApplication.NOT_FOUND) {
                 result.setStatus(404);
                 return result;
             }
-            response.commmit(request);
+            response.commmit(request, resultCode);
         } catch (Exception e) {
             throw new ApplicationRuntimeException(e) {
 

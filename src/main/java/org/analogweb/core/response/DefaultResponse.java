@@ -8,9 +8,10 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.Renderable;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.ResponseContext.ResponseEntity;
-import org.analogweb.ResponseContext.ResponseWriter;
 import org.analogweb.WebApplicationException;
+import org.analogweb.core.DefaultResponseWriter;
 import org.analogweb.util.Maps;
 
 /**
@@ -23,25 +24,31 @@ public class DefaultResponse implements Renderable {
     private ResponseEntity entity;
 
     @Override
-    public void render(RequestContext request, ResponseContext response) throws IOException,
-            WebApplicationException {
+    public Response render(RequestContext request, ResponseContext responseContext)
+            throws IOException, WebApplicationException {
         ResponseEntity entity = getResponseEntity();
         HttpStatus defaultStatus = HttpStatus.OK;
         if (entity == null) {
-            entity = extractResponseEntity(request, response);
+            entity = extractResponseEntity(request, responseContext);
             if (entity == null) {
                 defaultStatus = HttpStatus.NO_CONTENT;
             }
         }
+        Response response = createResponse();
         if (entity != null) {
-            writeEntityToResponse(response.getResponseWriter(), entity);
+            putEntityToResponse(response, entity);
         }
-        mergeHeaders(request, response, getHeaders(), entity);
-        updateStatusToResponse(response, getStatus() == null ? defaultStatus : getStatus());
+        mergeHeaders(request, responseContext, getHeaders(), entity);
+        updateStatusToResponse(responseContext, getStatus() == null ? defaultStatus : getStatus());
+        return response;
     }
 
-    protected void writeEntityToResponse(ResponseWriter writer, ResponseEntity entity) {
-        writer.writeEntity(entity);
+    protected Response createResponse() {
+        return new DefaultResponseWriter();
+    }
+
+    protected void putEntityToResponse(Response response, ResponseEntity entity) {
+        response.putEntity(entity);
     }
 
     protected void updateStatusToResponse(ResponseContext response, HttpStatus status) {

@@ -2,6 +2,8 @@ package org.analogweb;
 
 import java.io.IOException;
 
+import org.analogweb.ResponseContext.Response;
+
 /**
  * Handle {@link Renderable}.<br/>
  * Usually,this handler executes only {@link Renderable#render(RequestContext, ResponseContext)}.
@@ -9,6 +11,7 @@ import java.io.IOException;
  */
 public interface ResponseHandler extends Module {
 
-    void handleResult(Renderable result, ResponseFormatter resultFormatter, RequestContext context,
-            ResponseContext response) throws IOException, WebApplicationException;
+    Response handleResult(Renderable result, ResponseFormatter resultFormatter,
+            RequestContext context, ResponseContext response) throws IOException,
+            WebApplicationException;
 }

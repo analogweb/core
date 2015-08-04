@@ -2,6 +2,8 @@ package org.analogweb;
 
 import java.io.IOException;
 
+import org.analogweb.ResponseContext.Response;
+
 /**
  * A renderable response.
  * @author snowgoose
@@ -15,6 +17,6 @@ public interface Renderable {
      * @throws IOException I/O error.
      * @throws WebApplicationException other exception.
      */
-    void render(RequestContext context, ResponseContext response) throws IOException,
+    Response render(RequestContext context, ResponseContext response) throws IOException,
             WebApplicationException;
 }

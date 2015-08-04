@@ -32,6 +32,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.ResponseContext;
+import org.analogweb.ResponseContext.Response;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
 import org.analogweb.ResponseResolver;
@@ -91,12 +92,13 @@ public class WebApplication implements Application {
     }
 
     @Override
-    public int processRequest(RequestPath requestedPath, RequestContext requestContext,
+    public Response processRequest(RequestPath requestedPath, RequestContext requestContext,
             ResponseContext responseContext) throws IOException, WebApplicationException {
         InvocationMetadata metadata = null;
         Modules mod = null;
         List<ApplicationProcessor> processors = null;
         RequestContext context = requestContext;
+        Response response = null;
         try {
             mod = getModules();
             processors = mod.getApplicationProcessors();
@@ -125,7 +127,7 @@ public class WebApplication implements Application {
                 log.log(Markers.LIFECYCLE, "DL000007", invocation.getInvocationInstance(),
                         invocationResult);
                 postInvoke(processors, invocationResult, arguments, metadata, context, resolvers);
-                handleResponse(mod, invocationResult, metadata, context, responseContext);
+                response = handleResponse(mod, invocationResult, metadata, context, responseContext);
             } catch (Exception e) {
                 log.log(Markers.LIFECYCLE, "DL000012", invocation.getInvocationInstance(), e);
                 onException(processors, e, arguments, metadata, context);
@@ -135,21 +137,21 @@ public class WebApplication implements Application {
             }
             afterCompletion(processors, context, responseContext, null);
         } catch (InvokeInterruptedException e) {
-            handleResponse(mod, e.getInterruption(), metadata, context, responseContext);
+            response = handleResponse(mod, e.getInterruption(), metadata, context, responseContext);
             afterCompletion(processors, context, responseContext, e);
         } catch (Exception e) {
             ExceptionHandler handler = mod.getExceptionHandler();
             log.log(Markers.LIFECYCLE, "DL000009", (Object) e, handler);
             Object exceptionResult = handler.handleException(e);
             if (exceptionResult != null) {
-                handleResponse(mod, exceptionResult, metadata, context, responseContext);
+                response = handleResponse(mod, exceptionResult, metadata, context, responseContext);
                 afterCompletion(processors, context, responseContext, e);
             } else {
                 afterCompletion(processors, context, responseContext, e);
                 throw new WebApplicationException(e);
             }
         }
-        return PROCEEDED;
+        return response;
     }
 
     protected void preMatching(List<ApplicationProcessor> processors,
@@ -208,7 +210,7 @@ public class WebApplication implements Application {
         }
     }
 
-    protected void handleResponse(Modules modules, Object result, InvocationMetadata metadata,
+    protected Response handleResponse(Modules modules, Object result, InvocationMetadata metadata,
             RequestContext context, ResponseContext responseContext) throws IOException,
             WebApplicationException {
         ResponseResolver resultResolver = modules.getResponseResolver();
@@ -229,7 +231,7 @@ public class WebApplication implements Application {
             log.log(Markers.LIFECYCLE, "DL000011", result);
         }
         ResponseHandler resultHandler = modules.getResponseHandler();
-        resultHandler.handleResult(resolved, resultFormatter, context, responseContext);
+        return resultHandler.handleResult(resolved, resultFormatter, context, responseContext);
     }
 
     protected void initApplication(Collection<ClassCollector> collectors,
