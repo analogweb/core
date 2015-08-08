@@ -256,7 +256,7 @@ public class DefaultServer implements Server {
                             throw new RequestCancelledException(HttpStatus.NOT_FOUND,
                                     StringUtils.EMPTY);
                         } else {
-                            response.commmit(request, proceed);
+                            proceed.commit(request, response);
                         }
                     } catch (WebApplicationException e) {
                         e.printStackTrace();
@@ -264,7 +264,7 @@ public class DefaultServer implements Server {
                                 e.getMessage());
                     } finally {
                         if (response.getBody() != null) {
-                            key.attach(response.getBody().getByteBuffer());
+                            key.attach(response);
                             this.executed = true;
                             key.interestOps(SelectionKey.OP_WRITE);
                         }
@@ -307,14 +307,15 @@ public class DefaultServer implements Server {
         public boolean write(SelectionKey key) throws IOException {
             SocketChannel sock = (SocketChannel) key.channel();
             sock.configureBlocking(false);
-            ByteBuffer buffer = (ByteBuffer) key.attachment();
+            ResponseContextImpl ri = (ResponseContextImpl)key.attachment();
+            ByteBuffer buffer = ri.getBody().getByteBuffer();
             if (buffer != null) {
                 buffer.flip();
                 try {
                     sock.write(buffer);
                 } catch (Exception e) {
                 } finally {
-                    if (buffer.hasRemaining() == false) {
+                    if (buffer.hasRemaining() == false && ri.completed()) {
                         key.channel().register(key.selector(), SelectionKey.OP_READ);
                         sock.close();
                     } else {
@@ -322,7 +323,7 @@ public class DefaultServer implements Server {
                         key.interestOps(SelectionKey.OP_WRITE);
                     }
                 }
-                return buffer.hasRemaining() == false;
+                return buffer.hasRemaining() == false && ri.completed();
             }
             return false;
         }

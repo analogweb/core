@@ -20,6 +20,10 @@ public interface ResponseContext {
     Headers getResponseHeaders();
 
     void setStatus(int status);
+    
+    boolean completed();
+    
+    void ensure();
 
     public static interface Response {
 
@@ -56,6 +60,12 @@ public interface ResponseContext {
                 //NOP
                 return 0;
             }
+
+            @Override
+            public void commit(RequestContext request, ResponseContext response) {
+                // NOP
+            }
+
         };
         Response EMPTY = new ResponseContext.Response() {
 
@@ -103,6 +113,12 @@ public interface ResponseContext {
             public long getContentLength() {
                 return getEntity().getContentLength();
             }
+
+            @Override
+            public void commit(RequestContext request, ResponseContext response) {
+                // NOP
+            }
+
         };
 
         void putEntity(InputStream entity);
@@ -114,8 +130,11 @@ public interface ResponseContext {
         void putEntity(ResponseEntity entity);
 
         ResponseEntity getEntity();
+        
+        void commit(RequestContext request,ResponseContext response);
 
         long getContentLength();
+        
     }
 
     public static interface ResponseEntity {

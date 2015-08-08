@@ -12,6 +12,7 @@ public abstract class AbstractResponseContext implements ResponseContext {
 
     private int status = HttpStatus.OK.getStatusCode();
     private final Headers headers;
+    private boolean completed;
 
     public AbstractResponseContext() {
         this(new MapHeaders());
@@ -34,4 +35,16 @@ public abstract class AbstractResponseContext implements ResponseContext {
     public void setStatus(int status) {
         this.status = status;
     }
+    
+    @Override
+    public boolean completed(){
+        return this.completed;
+    }
+
+    @Override
+    public void ensure(){
+        this.completed = true;
+    }
+
 }
+
