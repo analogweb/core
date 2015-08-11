@@ -40,11 +40,9 @@ public abstract class AbstractResponseContext implements ResponseContext {
     public boolean completed(){
         return this.completed;
     }
-
+    
     @Override
     public void ensure(){
         this.completed = true;
     }
-
 }
-

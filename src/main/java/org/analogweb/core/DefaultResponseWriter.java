@@ -52,10 +52,9 @@ public class DefaultResponseWriter implements Response {
     @Override
     public void commit(RequestContext request, ResponseContext response) {
         try{
-            response.commmit(request, this);
+            response.commit(request, this);
         } finally {
             response.ensure();
         }
     }
-
 }

@@ -126,8 +126,10 @@ public class DefaultServer implements Server {
         while (true) {
             while (sl.select() > 0) {
                 Iterator<SelectionKey> keys = sl.selectedKeys().iterator();
+                log.trace("Selector selects one or more sockets.");
                 while (keys.hasNext()) {
                     SelectionKey key = keys.next();
+                    log.trace(String.format("Obtain selection key [%s].",key));
                     keys.remove();
                     if (key.isAcceptable()) {
                         log.trace("Accepting socket.");
@@ -263,11 +265,9 @@ public class DefaultServer implements Server {
                         throw new RequestCancelledException(HttpStatus.INTERNAL_SERVER_ERROR,
                                 e.getMessage());
                     } finally {
-                        if (response.getBody() != null) {
-                            key.attach(response);
-                            this.executed = true;
-                            key.interestOps(SelectionKey.OP_WRITE);
-                        }
+                        key.attach(response);
+                        this.executed = true;
+                        key.interestOps(SelectionKey.OP_WRITE);
                     }
                 } else {
                     key.interestOps(SelectionKey.OP_READ);
@@ -308,6 +308,11 @@ public class DefaultServer implements Server {
             SocketChannel sock = (SocketChannel) key.channel();
             sock.configureBlocking(false);
             ResponseContextImpl ri = (ResponseContextImpl)key.attachment();
+            if (ri.completed() == false) {
+                log.debug("Task not completed.");
+                key.interestOps(SelectionKey.OP_WRITE);
+                return false;
+            }
             ByteBuffer buffer = ri.getBody().getByteBuffer();
             if (buffer != null) {
                 buffer.flip();
@@ -315,7 +320,7 @@ public class DefaultServer implements Server {
                     sock.write(buffer);
                 } catch (Exception e) {
                 } finally {
-                    if (buffer.hasRemaining() == false && ri.completed()) {
+                    if (buffer.hasRemaining() == false) {
                         key.channel().register(key.selector(), SelectionKey.OP_READ);
                         sock.close();
                     } else {
@@ -323,7 +328,7 @@ public class DefaultServer implements Server {
                         key.interestOps(SelectionKey.OP_WRITE);
                     }
                 }
-                return buffer.hasRemaining() == false && ri.completed();
+                return buffer.hasRemaining() == false;
             }
             return false;
         }
@@ -515,7 +520,7 @@ public class DefaultServer implements Server {
         }
 
         @Override
-        public void commmit(RequestContext context, Response response) {
+        public void commit(RequestContext context, Response response) {
             // write headers
             CharBuffer buffer = CharBuffer.allocate(8192);
             buffer.append("HTTP/1.1").append(' ').append(String.valueOf(getStatus())).append(' ')

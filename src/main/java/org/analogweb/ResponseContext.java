@@ -15,14 +15,29 @@ public interface ResponseContext {
      * @param context {@link RequestContext}
      * @param response {@link Response}
      */
-    void commmit(RequestContext context, Response response);
+    void commit(RequestContext context, Response response);
 
+    /**
+     * Obtain response headers.
+     * @return response header
+     */
     Headers getResponseHeaders();
 
+    /**
+     * Set HTTP status code.
+     * @param status HTTP status code
+     */
     void setStatus(int status);
     
+    /**
+     * Test response has completed.
+     * @return true when response has completed.
+     */
     boolean completed();
     
+    /**
+     * Ensure response has completed.
+     */
     void ensure();
 
     public static interface Response {
@@ -65,7 +80,6 @@ public interface ResponseContext {
             public void commit(RequestContext request, ResponseContext response) {
                 // NOP
             }
-
         };
         Response EMPTY = new ResponseContext.Response() {
 
@@ -118,7 +132,6 @@ public interface ResponseContext {
             public void commit(RequestContext request, ResponseContext response) {
                 // NOP
             }
-
         };
 
         void putEntity(InputStream entity);
@@ -130,11 +143,10 @@ public interface ResponseContext {
         void putEntity(ResponseEntity entity);
 
         ResponseEntity getEntity();
-        
-        void commit(RequestContext request,ResponseContext response);
 
         long getContentLength();
-        
+
+        void commit(RequestContext request, ResponseContext response);
     }
 
     public static interface ResponseEntity {

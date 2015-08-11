@@ -108,7 +108,7 @@ public class FakeApplication {
         ResponseContext response = new AbstractResponseContext() {
 
             @Override
-            public void commmit(RequestContext context, Response response) {
+            public void commit(RequestContext context, Response response) {
                 commitHeadersAndStatus(result, context, response);
                 Headers headers = getResponseHeaders();
                 if (headers instanceof MapHeaders) {
@@ -151,7 +151,7 @@ public class FakeApplication {
                 result.setStatus(404);
                 return result;
             }
-            response.commmit(request, resultCode);
+            response.commit(request, resultCode);
         } catch (Exception e) {
             throw new ApplicationRuntimeException(e) {
 
