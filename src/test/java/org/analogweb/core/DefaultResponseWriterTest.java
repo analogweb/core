@@ -15,13 +15,13 @@ import org.junit.rules.ExpectedException;
 
 public class DefaultResponseWriterTest {
 
-    private DefaultResponseWriter writer;
+    private DefaultResponse writer;
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() {
-        this.writer = new DefaultResponseWriter();
+        this.writer = new DefaultResponse();
     }
 
     @Test

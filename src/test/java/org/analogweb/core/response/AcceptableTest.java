@@ -21,7 +21,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.Response;
 import org.analogweb.ResponseEntity;
-import org.analogweb.core.DefaultResponseWriter;
+import org.analogweb.core.DefaultResponse;
 import org.analogweb.WebApplicationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public class AcceptableTest {
             @Override
             public Response render(RequestContext context, ResponseContext response)
                     throws IOException, WebApplicationException {
-                Response r = new DefaultResponseWriter();
+                Response r = new DefaultResponse();
                 r.putEntity("write with XML");
                 return r;
             }
@@ -126,7 +126,7 @@ public class AcceptableTest {
             @Override
             public Response render(RequestContext context, ResponseContext response)
                     throws IOException, WebApplicationException {
-                Response r = new DefaultResponseWriter();
+                Response r = new DefaultResponse();
                 r.putEntity("write with ANY");
                 return r;
             }

@@ -12,7 +12,7 @@ import org.analogweb.ResponseEntity;
 /**
  * @author snowgoose
  */
-public class DefaultResponseWriter implements Response {
+public class DefaultResponse implements Response {
 
     private ResponseEntity entity;
 

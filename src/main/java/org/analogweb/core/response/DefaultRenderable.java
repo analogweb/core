@@ -11,7 +11,7 @@ import org.analogweb.Response;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseEntity;
 import org.analogweb.WebApplicationException;
-import org.analogweb.core.DefaultResponseWriter;
+import org.analogweb.core.DefaultResponse;
 import org.analogweb.util.Maps;
 
 /**
@@ -44,7 +44,7 @@ public class DefaultRenderable implements Renderable {
     }
 
     protected Response createResponse() {
-        return new DefaultResponseWriter();
+        return new DefaultResponse();
     }
 
     protected void putEntityToResponse(Response response, ResponseEntity entity) {
