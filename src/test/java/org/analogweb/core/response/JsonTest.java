@@ -18,7 +18,7 @@ import java.util.List;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseContext.Response;
+import org.analogweb.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

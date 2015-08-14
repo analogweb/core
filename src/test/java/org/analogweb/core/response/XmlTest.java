@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseContext.Response;
+import org.analogweb.Response;
 import org.analogweb.core.FormatFailureException;
 import org.junit.Before;
 import org.junit.Rule;

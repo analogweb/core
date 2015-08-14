@@ -16,7 +16,7 @@ import java.io.InputStream;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseContext.Response;
+import org.analogweb.Response;
 import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.AssertionFailureException;
 import org.junit.Before;

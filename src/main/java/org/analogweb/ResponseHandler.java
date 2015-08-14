@@ -2,8 +2,6 @@ package org.analogweb;
 
 import java.io.IOException;
 
-import org.analogweb.ResponseContext.Response;
-
 /**
  * Handle {@link Renderable}.<br/>
  * Usually,this handler executes only {@link Renderable#render(RequestContext, ResponseContext)}.

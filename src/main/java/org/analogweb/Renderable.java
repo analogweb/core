@@ -2,8 +2,6 @@ package org.analogweb;
 
 import java.io.IOException;
 
-import org.analogweb.ResponseContext.Response;
-
 /**
  * A renderable response.
  * @author snowgoose

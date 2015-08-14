@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.analogweb.Renderable;
 import org.analogweb.RenderableHolder;
-import org.analogweb.ResponseContext.Response;
+import org.analogweb.Response;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseFormatterAware;
 import org.analogweb.ResponseHandler;

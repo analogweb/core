@@ -43,7 +43,7 @@ import org.analogweb.Disposable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
-import org.analogweb.ResponseContext.Response;
+import org.analogweb.Response;
 import org.analogweb.Server;
 import org.analogweb.WebApplicationException;
 import org.analogweb.core.response.HttpStatus;

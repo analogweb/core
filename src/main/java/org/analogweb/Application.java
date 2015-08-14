@@ -3,7 +3,6 @@ package org.analogweb;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.analogweb.ResponseContext.Response;
 import org.analogweb.util.ClassCollector;
 
 /**
@@ -16,7 +15,7 @@ public interface Application extends Disposable {
     /**
      * {@link RequestPath} not found.
      */
-    Response NOT_FOUND = ResponseContext.Response.NOT_FOUND;
+    Response NOT_FOUND = Response.NOT_FOUND;
 
     /**
      * Run application.

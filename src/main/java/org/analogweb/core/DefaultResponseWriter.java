@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.analogweb.RequestContext;
+import org.analogweb.Response;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseContext.Response;
 import org.analogweb.ResponseContext.ResponseEntity;
 
 /**

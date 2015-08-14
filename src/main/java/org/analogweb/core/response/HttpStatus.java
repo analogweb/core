@@ -8,8 +8,8 @@ import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RenderableHolder;
 import org.analogweb.RequestContext;
+import org.analogweb.Response;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseContext.Response;
 import org.analogweb.WebApplicationException;
 import org.analogweb.util.StringUtils;
 
