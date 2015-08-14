@@ -9,7 +9,7 @@ import javax.xml.bind.JAXBException;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.RequestContext;
-import org.analogweb.ResponseContext.ResponseEntity;
+import org.analogweb.ResponseEntity;
 import org.analogweb.core.FormatFailureException;
 
 /**

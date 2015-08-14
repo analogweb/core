@@ -3,7 +3,7 @@ package org.analogweb.core.response;
 import java.util.Map;
 
 import org.analogweb.Renderable;
-import org.analogweb.ResponseContext.ResponseEntity;
+import org.analogweb.ResponseEntity;
 
 /**
  * @author snowgooseyk

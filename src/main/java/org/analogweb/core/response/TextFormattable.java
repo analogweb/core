@@ -1,6 +1,6 @@
 package org.analogweb.core.response;
 
-import org.analogweb.ResponseContext.ResponseEntity;
+import org.analogweb.ResponseEntity;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseFormatterAware;
 import org.analogweb.RequestContext;

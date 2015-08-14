@@ -6,7 +6,7 @@ import java.util.Map;
 import org.analogweb.Renderable;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseContext.ResponseEntity;
+import org.analogweb.ResponseEntity;
 import org.analogweb.core.DefaultResponseEntity;
 import org.analogweb.util.StringUtils;
 

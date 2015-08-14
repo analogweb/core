@@ -1,7 +1,5 @@
 package org.analogweb;
 
-import org.analogweb.ResponseContext.ResponseEntity;
-
 /**
  * Formatter for {@link Renderable}.
  * @author snowgoose

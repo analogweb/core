@@ -1,8 +1,5 @@
 package org.analogweb;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * @author snowgoose
  */
@@ -38,10 +35,4 @@ public interface ResponseContext {
      */
     void ensure();
 
-    public static interface ResponseEntity {
-
-        void writeInto(OutputStream responseBody) throws IOException;
-
-        long getContentLength();
-    }
 }

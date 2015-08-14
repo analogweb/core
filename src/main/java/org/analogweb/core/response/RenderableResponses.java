@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 
-import org.analogweb.ResponseContext.ResponseEntity;
+import org.analogweb.ResponseEntity;
 import org.analogweb.core.DefaultResponseEntity;
 
 public class RenderableResponses extends BuildAndRenderableResponse<RenderableResponses> {

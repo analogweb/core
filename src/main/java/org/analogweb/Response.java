@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import org.analogweb.ResponseContext.ResponseEntity;
-
 public interface Response {
 
     void putEntity(InputStream entity);

@@ -44,6 +44,7 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.Response;
+import org.analogweb.ResponseEntity;
 import org.analogweb.Server;
 import org.analogweb.WebApplicationException;
 import org.analogweb.core.response.HttpStatus;

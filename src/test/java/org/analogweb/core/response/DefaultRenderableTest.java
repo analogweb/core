@@ -12,7 +12,7 @@ import java.util.Map;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseContext.ResponseEntity;
+import org.analogweb.ResponseEntity;
 import org.analogweb.core.DefaultResponseEntity;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

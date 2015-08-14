@@ -18,6 +18,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.ResponseContext;
 import org.analogweb.Response;
+import org.analogweb.ResponseEntity;
 import org.analogweb.core.AbstractRequestContext;
 import org.analogweb.core.AbstractResponseContext;
 import org.analogweb.core.ApplicationRuntimeException;

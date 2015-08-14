@@ -9,7 +9,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.Renderable;
 import org.analogweb.Response;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseContext.ResponseEntity;
+import org.analogweb.ResponseEntity;
 import org.analogweb.WebApplicationException;
 import org.analogweb.core.DefaultResponseWriter;
 import org.analogweb.util.Maps;

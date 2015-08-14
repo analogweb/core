@@ -12,7 +12,7 @@ import java.nio.charset.Charset;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseContext.ResponseEntity;
+import org.analogweb.ResponseEntity;
 import org.junit.Before;
 import org.junit.Test;
 
