@@ -15,7 +15,7 @@ import org.analogweb.util.StringUtils;
  * レスポンスにおける既定のContent-Typeは「text/plain」であり 、文字セットは「UTF-8」です。
  * @author snowgoose
  */
-public class TextFormat<T extends TextFormat<T>> extends BuildableResponse<T> implements Renderable {
+public class TextFormat<T extends TextFormat<T>> extends BuildAndRenderableResponse<T> implements Renderable {
 
     private static final String DEFAULT_CHARSET = "UTF-8";
     private static final String DEFAULT_CONTENT_TYPE = "text/plain";

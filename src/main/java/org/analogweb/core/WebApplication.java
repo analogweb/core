@@ -35,7 +35,7 @@ import org.analogweb.ResponseContext;
 import org.analogweb.ResponseContext.Response;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
-import org.analogweb.ResponseResolver;
+import org.analogweb.RenderableResolver;
 import org.analogweb.RouteRegistry;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.WebApplicationException;
@@ -213,7 +213,7 @@ public class WebApplication implements Application {
     protected Response handleResponse(Modules modules, Object result, InvocationMetadata metadata,
             RequestContext context, ResponseContext responseContext) throws IOException,
             WebApplicationException {
-        ResponseResolver resultResolver = modules.getResponseResolver();
+        RenderableResolver resultResolver = modules.getResponseResolver();
         Renderable resolved = resultResolver.resolve(result, metadata, context, responseContext);
         log.log(Markers.LIFECYCLE, "DL000008", result, result);
         ResponseFormatter resultFormatter = null;

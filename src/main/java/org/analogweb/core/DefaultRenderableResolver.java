@@ -1,7 +1,7 @@
 package org.analogweb.core;
 
 import org.analogweb.Renderable;
-import org.analogweb.ResponseResolver;
+import org.analogweb.RenderableResolver;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
@@ -12,7 +12,7 @@ import org.analogweb.core.response.Text;
 /**
  * @author snowgoose
  */
-public class DefaultResponseResolver implements ResponseResolver {
+public class DefaultRenderableResolver implements RenderableResolver {
 
     @Override
     public Renderable resolve(Object invocationResult, InvocationMetadata metadata,

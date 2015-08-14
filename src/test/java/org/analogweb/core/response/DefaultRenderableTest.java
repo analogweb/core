@@ -20,9 +20,9 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DefaultResponseTest {
+public class DefaultRenderableTest {
 
-    private DefaultResponse response;
+    private DefaultRenderable response;
     private RequestContext requestContext;
     private ResponseContext responseContext;
 
@@ -34,7 +34,7 @@ public class DefaultResponseTest {
 
     @Test
     public void testRenderDefault() throws Exception {
-        response = new DefaultResponse();
+        response = new DefaultRenderable();
         response.render(requestContext, responseContext);
         assertThat(response.getHeaders(), is(emptyMap()));
         assertThat(response.getResponseEntity(), is(nullValue()));
@@ -43,7 +43,7 @@ public class DefaultResponseTest {
 
     @Test
     public void testRenderEntityAndHeaders() throws Exception {
-        response = new DefaultResponse();
+        response = new DefaultRenderable();
         ResponseEntity entity = new DefaultResponseEntity("This Is TEST!");
         response.setResponseEntity(entity);
         response.addHeader("Content-Type", "text/plain");

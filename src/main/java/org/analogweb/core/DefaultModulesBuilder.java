@@ -34,7 +34,7 @@ import org.analogweb.RequestValueResolvers;
 import org.analogweb.Renderable;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
-import org.analogweb.ResponseResolver;
+import org.analogweb.RenderableResolver;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.Maps;
@@ -49,7 +49,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     private Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> invocationInstanceProviderClass;
     private Class<? extends InvokerFactory> invokerFactoryClass;
     private Class<? extends InvocationFactory> invocationFactoryClass;
-    private Class<? extends ResponseResolver> directionResolverClass;
+    private Class<? extends RenderableResolver> directionResolverClass;
     private Class<? extends ResponseHandler> directionHandlerClass;
     private Class<? extends ExceptionHandler> exceptionHandlerClass;
     private Class<? extends TypeMapperContext> typeMapperContextClass;
@@ -159,7 +159,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
             }
 
             @Override
-            public ResponseResolver getResponseResolver() {
+            public RenderableResolver getResponseResolver() {
                 return getComponentInstance(moduleContainerAdaptor, getResponseResolverClass());
             }
 
@@ -278,7 +278,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
             @Override
             public void dispose() {
                 setResponseHandlerClass(null);
-                setResponseResolverClass(null);
+                setRenderableResolverClass(null);
                 setExceptionHandlerClass(null);
                 setInvocationFactoryClass(null);
                 setInvocationInstanceProviderClass(null);
@@ -378,8 +378,8 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
-    public ModulesBuilder setResponseResolverClass(
-            Class<? extends ResponseResolver> actionResultResolverClass) {
+    public ModulesBuilder setRenderableResolverClass(
+            Class<? extends RenderableResolver> actionResultResolverClass) {
         this.directionResolverClass = actionResultResolverClass;
         return this;
     }
@@ -450,7 +450,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         return this.invocationFactoryClass;
     }
 
-    protected Class<? extends ResponseResolver> getResponseResolverClass() {
+    protected Class<? extends RenderableResolver> getResponseResolverClass() {
         return this.directionResolverClass;
     }
 

@@ -19,7 +19,7 @@ public interface ModulesBuilder {
 
     ModulesBuilder setInvokerFactoryClass(Class<? extends InvokerFactory> invokerFactoryClass);
 
-    ModulesBuilder setResponseResolverClass(Class<? extends ResponseResolver> responseResolverClass);
+    ModulesBuilder setRenderableResolverClass(Class<? extends RenderableResolver> responseResolverClass);
 
     ModulesBuilder setExceptionHandlerClass(Class<? extends ExceptionHandler> exceptionHandlerClass);
 

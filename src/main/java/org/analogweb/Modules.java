@@ -24,7 +24,7 @@ public interface Modules extends Disposable {
 
     InvocationFactory getInvocationFactory();
 
-    ResponseResolver getResponseResolver();
+    RenderableResolver getResponseResolver();
 
     ResponseHandler getResponseHandler();
 

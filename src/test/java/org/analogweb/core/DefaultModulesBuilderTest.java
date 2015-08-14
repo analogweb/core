@@ -30,7 +30,7 @@ import org.analogweb.MultiModule;
 import org.analogweb.Renderable;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
-import org.analogweb.ResponseResolver;
+import org.analogweb.RenderableResolver;
 import org.analogweb.TypeMapper;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.junit.NoDescribeMatcher;
@@ -59,7 +59,7 @@ public class DefaultModulesBuilderTest {
     private ContainerAdaptorFactory containerAdaptorFactory;
     private ContainerAdaptor containerAdaptor;
     private InvocationFactory invocationFactory;
-    private ResponseResolver directionResolver;
+    private RenderableResolver directionResolver;
     private ResponseHandler directiontHandler;
     private ApplicationProcessor invocationProcessor;
     private InvocationInterceptor invocationInterceptor;
@@ -79,7 +79,7 @@ public class DefaultModulesBuilderTest {
         containerAdaptor = mock(ContainerAdaptor.class);
         when(containerAdaptorFactory.createContainerAdaptor(resolver)).thenReturn(containerAdaptor);
         invocationFactory = mock(InvocationFactory.class);
-        directionResolver = mock(ResponseResolver.class);
+        directionResolver = mock(RenderableResolver.class);
         directiontHandler = mock(ResponseHandler.class);
         invocationProcessor = mock(ApplicationProcessor.class);
         invocationInterceptor = mock(InvocationInterceptor.class);
@@ -112,7 +112,7 @@ public class DefaultModulesBuilderTest {
                 .getClass());
         builder.setInvokerFactoryClass(invokerFactory.getClass());
         builder.setResponseHandlerClass(directiontHandler.getClass());
-        builder.setResponseResolverClass(directionResolver.getClass());
+        builder.setRenderableResolverClass(directionResolver.getClass());
         builder.addApplicationProcessorClass(invocationProcessor.getClass());
         builder.addInvocationInterceptorClass(invocationInterceptor.getClass());
         builder.addInvocationMetadataFactoriesClass(invocationMetadataFactory.getClass());

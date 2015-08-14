@@ -17,7 +17,7 @@ import org.analogweb.util.Maps;
 /**
  * @author snowgoose
  */
-public class DefaultResponse implements Renderable {
+public class DefaultRenderable implements Renderable {
 
     private Map<String, String> header = Maps.newEmptyHashMap();
     private HttpStatus status;

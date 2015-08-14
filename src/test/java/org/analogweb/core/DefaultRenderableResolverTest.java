@@ -19,9 +19,9 @@ import org.analogweb.core.response.Text;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DefaultResponseResolverTest extends DefaultResponseResolver {
+public class DefaultRenderableResolverTest {
 
-    private DefaultResponseResolver resolver;
+    private DefaultRenderableResolver resolver;
     private InvocationMetadata metadata;
     private RequestContext context;
     private ResponseContext response;
@@ -29,7 +29,7 @@ public class DefaultResponseResolverTest extends DefaultResponseResolver {
 
     @Before
     public void setUp() throws Exception {
-        resolver = new DefaultResponseResolver();
+        resolver = new DefaultRenderableResolver();
         metadata = mock(InvocationMetadata.class);
         context = mock(RequestContext.class);
         response = mock(ResponseContext.class);

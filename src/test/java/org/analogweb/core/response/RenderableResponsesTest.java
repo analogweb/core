@@ -16,7 +16,7 @@ import org.analogweb.ResponseContext.ResponseEntity;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ResponsesTest {
+public class RenderableResponsesTest {
 
     private RequestContext request;
     private ResponseContext response;
@@ -33,7 +33,7 @@ public class ResponsesTest {
     @Test
     public void testOk() throws Exception {
         ResponseEntity entity = mock(ResponseEntity.class);
-        Responses responses = Responses.ok(entity);
+        RenderableResponses responses = RenderableResponses.ok(entity);
         responses.render(request, response);
         verify(response).setStatus(200);
     }
@@ -41,7 +41,7 @@ public class ResponsesTest {
     @Test
     public void testOkWithEntityStream() throws Exception {
         InputStream entity = new ByteArrayInputStream(new byte[0]);
-        Responses responses = Responses.ok(entity);
+        RenderableResponses responses = RenderableResponses.ok(entity);
         responses.render(request, response);
         verify(response).setStatus(200);
     }
@@ -50,14 +50,14 @@ public class ResponsesTest {
     public void testOkWithEntityString() throws Exception {
         String entity = "foo";
         Charset cs = Charset.forName("UTF-8");
-        Responses responses = Responses.ok(entity, cs);
+        RenderableResponses responses = RenderableResponses.ok(entity, cs);
         responses.render(request, response);
         verify(response).setStatus(200);
     }
 
     @Test
     public void testLocates() throws Exception {
-        Responses responses = Responses.locates(URI.create("http://example.com/index.html"));
+        RenderableResponses responses = RenderableResponses.locates(URI.create("http://example.com/index.html"));
         responses.render(request, response);
         verify(responseHeaders).putValue("Location", "http://example.com/index.html");
         verify(response).setStatus(302);

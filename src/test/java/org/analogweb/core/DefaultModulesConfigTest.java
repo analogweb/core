@@ -14,7 +14,7 @@ import org.analogweb.InvokerFactory;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.RequestValueResolver;
 import org.analogweb.ResponseHandler;
-import org.analogweb.ResponseResolver;
+import org.analogweb.RenderableResolver;
 import org.analogweb.TypeMapperContext;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,7 +49,7 @@ public class DefaultModulesConfigTest {
                 .thenReturn(modulesBuilder);
         when(modulesBuilder.setResponseHandlerClass(ResponseHandler.class)).thenReturn(
                 modulesBuilder);
-        when(modulesBuilder.setResponseResolverClass(ResponseResolver.class)).thenReturn(
+        when(modulesBuilder.setRenderableResolverClass(RenderableResolver.class)).thenReturn(
                 modulesBuilder);
         when(modulesBuilder.setModulesProviderClass(StaticMappingContainerAdaptorFactory.class))
                 .thenReturn(modulesBuilder);
