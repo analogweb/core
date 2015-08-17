@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,8 +82,8 @@ public class DefaultInvokerTest {
         when(metadata.getMethodName()).thenReturn("doSomething");
         when(metadata.getArgumentTypes()).thenReturn(new Class<?>[] { String.class });
         when(
-                processor.prepareInvoke(isA(Method.class), eq(args), eq(metadata), eq(request),
-                        eq(typeMapper), eq(handlers))).thenReturn(
+                processor.prepareInvoke(args, metadata, request,
+                        typeMapper, handlers)).thenReturn(
                 ApplicationProcessor.NO_INTERRUPTION);
         doNothing().when(processor).postInvoke("foo is something!!", args, metadata, request,
                 handlers);
@@ -106,8 +105,8 @@ public class DefaultInvokerTest {
         when(metadata.getArgumentTypes()).thenReturn(new Class<?>[] { String.class });
         when(args.asList()).thenReturn(Collections.emptyList());
         when(
-                processor.prepareInvoke(isA(Method.class), eq(args), eq(metadata), eq(request),
-                        eq(typeMapper), eq(handlers))).thenReturn(
+                processor.prepareInvoke(args, metadata, request,
+                        typeMapper, handlers)).thenReturn(
                 ApplicationProcessor.NO_INTERRUPTION);
         when(
                 processor.processException(isA(IllegalArgumentException.class), eq(request),

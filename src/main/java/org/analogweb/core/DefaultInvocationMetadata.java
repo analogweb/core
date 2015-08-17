@@ -1,11 +1,13 @@
 package org.analogweb.core;
 
+import java.lang.reflect.Method;
+
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.util.ArrayUtils;
+import org.analogweb.util.ReflectionUtils;
 
 /**
- * {@link InvocationMetadata}の既定の実装です。
  * @author snowgoose
  */
 public class DefaultInvocationMetadata implements InvocationMetadata {
@@ -44,8 +46,14 @@ public class DefaultInvocationMetadata implements InvocationMetadata {
         return this.definedPath;
     }
 
-    @Override
+	@Override
+	public Method resolveMethod() {
+		return ReflectionUtils.getInvocationMethod(this);
+	}
+
+	@Override
     public String toString() {
         return String.format(super.toString() + " on %s", getDefinedPath().toString());
     }
+
 }

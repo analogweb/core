@@ -60,6 +60,7 @@ public class BindAttributeArgumentPreparatorTest {
         final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class };
         final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doSomething",
                 argumentTypes);
+        when(metadata.resolveMethod()).thenReturn(method);
         final Annotation[][] anns = method.getParameterAnnotations();
         AttributesHandler handler = mock(AttributesHandler.class);
         when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
@@ -72,11 +73,45 @@ public class BindAttributeArgumentPreparatorTest {
                 "baa!");
         when(typeMapper.mapToType(TypeMapper.class, "baa!", String.class, new String[0]))
                 .thenReturn("baa!");
-        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper,
                 handlers);
         assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
         verify(args).putInvocationArgument(0, "foo!");
         verify(args).putInvocationArgument(1, "baa!");
+    }
+
+    @Test
+    public void testPrepareWithNullMethod() {
+        final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class };
+        AttributesHandler handler = mock(AttributesHandler.class);
+        when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
+        when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+        when(metadata.resolveMethod()).thenReturn(null);
+        when(typeMapper.mapToType(TypeMapper.class, "foo!", String.class, new String[0]))
+                .thenReturn("foo!");
+        when(typeMapper.mapToType(TypeMapper.class, "baa!", String.class, new String[0]))
+                .thenReturn("baa!");
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper,
+                handlers);
+        assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
+    }
+
+    @Test
+    public void testPrepareWithNullArguments() {
+        final Class<?>[] argumentTypes = new Class<?>[] { String.class, String.class };
+        AttributesHandler handler = mock(AttributesHandler.class);
+        when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
+        when(metadata.getArgumentTypes()).thenReturn(null);
+        final Method method = ReflectionUtils.getMethodQuietly(StubResource.class, "doSomething",
+                argumentTypes);
+        when(metadata.resolveMethod()).thenReturn(method);
+        when(typeMapper.mapToType(TypeMapper.class, "foo!", String.class, new String[0]))
+                .thenReturn("foo!");
+        when(typeMapper.mapToType(TypeMapper.class, "baa!", String.class, new String[0]))
+                .thenReturn("baa!");
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper,
+                handlers);
+        assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
     }
 
     @Test
@@ -88,11 +123,12 @@ public class BindAttributeArgumentPreparatorTest {
         AttributesHandler handler = mock(AttributesHandler.class);
         when(handlers.findRequestValueResolver(Foo.class)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+        when(metadata.resolveMethod()).thenReturn(method);
         when(handler.resolveValue(context, metadata, "baz", argumentTypes[0], anns[0])).thenReturn(
                 "foo!");
         when(typeMapper.mapToType(TypeMapper.class, "foo!", String.class, new String[0]))
                 .thenReturn("foo!!");
-        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper,
                 handlers);
         assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
         verify(args).putInvocationArgument(0, "foo!!");
@@ -107,11 +143,12 @@ public class BindAttributeArgumentPreparatorTest {
         AttributesHandler handler = mock(AttributesHandler.class);
         when(handlers.findRequestValueResolver(Foo.class)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+        when(metadata.resolveMethod()).thenReturn(method);
         when(handler.resolveValue(context, metadata, "baz", argumentTypes[0], anns[0])).thenReturn(
                 "foo!");
         when(typeMapper.mapToType(TypeMapper.class, "foo!", String.class, new String[0]))
                 .thenReturn("foo!!");
-        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper,
                 handlers);
         assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
         verify(args).putInvocationArgument(0, "foo!!");
@@ -126,11 +163,12 @@ public class BindAttributeArgumentPreparatorTest {
         AttributesHandler handler = mock(AttributesHandler.class);
         when(handlers.findRequestValueResolver(Baa.class)).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+        when(metadata.resolveMethod()).thenReturn(method);
         when(handler.resolveValue(context, metadata, "foo", argumentTypes[0], anns[0])).thenReturn(
                 "boo!");
         when(typeMapper.mapToType(SomeTypeMapper.class, "boo!", String.class, new String[0]))
                 .thenReturn("booz!");
-        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper,
                 handlers);
         assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
         verify(args).putInvocationArgument(0, "booz!");
@@ -145,13 +183,14 @@ public class BindAttributeArgumentPreparatorTest {
         AttributesHandler handler = mock(AttributesHandler.class);
         when(handlers.findDefaultRequestValueResolver()).thenReturn(handler);
         when(metadata.getArgumentTypes()).thenReturn(argumentTypes);
+        when(metadata.resolveMethod()).thenReturn(method);
         when(handler.resolveValue(context, metadata, "foo", argumentTypes[0], anns[0])).thenReturn(
                 "100,000");
         BigDecimal expected = new BigDecimal(100000L);
         when(
                 typeMapper.mapToType(TypeMapper.class, "100,000", BigDecimal.class,
                         new String[] { "###,###" })).thenReturn(expected);
-        Object actual = preparator.prepareInvoke(method, args, metadata, context, typeMapper,
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper,
                 handlers);
         assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
         verify(args).putInvocationArgument(0, expected);

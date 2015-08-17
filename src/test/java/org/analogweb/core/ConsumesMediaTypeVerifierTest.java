@@ -53,7 +53,8 @@ public class ConsumesMediaTypeVerifierTest {
         when(context.getContentType()).thenReturn(requstType);
         Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsAtom",
                 new Class<?>[] { Object.class });
-        Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
+        when(metadata.resolveMethod()).thenReturn(method);
+        Object actual = verifier.prepareInvoke(args, metadata, context, converters,
                 handlers);
         assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
     }
@@ -65,7 +66,8 @@ public class ConsumesMediaTypeVerifierTest {
         when(context.getContentType()).thenReturn(requstType);
         Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsAtom",
                 new Class<?>[] { Object.class });
-        Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
+        when(metadata.resolveMethod()).thenReturn(method);
+        Object actual = verifier.prepareInvoke(args, metadata, context, converters,
                 handlers);
         assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
     }
@@ -78,7 +80,8 @@ public class ConsumesMediaTypeVerifierTest {
         when(context.getContentType()).thenReturn(requstType);
         Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsAtom",
                 new Class<?>[] { Object.class });
-        verifier.prepareInvoke(method, args, metadata, context, converters, handlers);
+        when(metadata.resolveMethod()).thenReturn(method);
+        verifier.prepareInvoke(args, metadata, context, converters, handlers);
     }
 
     @Test
@@ -91,7 +94,8 @@ public class ConsumesMediaTypeVerifierTest {
         when(handler.supports(requstType)).thenReturn(true);
         Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsSvg",
                 new Class<?>[] { Object.class });
-        Object actual = verifier.prepareInvoke(method, args, metadata, context, converters,
+        when(metadata.resolveMethod()).thenReturn(method);
+        Object actual = verifier.prepareInvoke(args, metadata, context, converters,
                 handlers);
         assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
     }
@@ -107,7 +111,8 @@ public class ConsumesMediaTypeVerifierTest {
         when(handler.supports(requstType)).thenReturn(false);
         Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsSvg",
                 new Class<?>[] { Object.class });
-        verifier.prepareInvoke(method, args, metadata, context, converters, handlers);
+        when(metadata.resolveMethod()).thenReturn(method);
+        verifier.prepareInvoke(args, metadata, context, converters, handlers);
     }
 
     @Test
@@ -116,7 +121,8 @@ public class ConsumesMediaTypeVerifierTest {
         when(context.getRequestMethod()).thenReturn("PUT");
         Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsParameter",
                 new Class<?>[] { String.class });
-        verifier.prepareInvoke(method, args, metadata, context, converters, handlers);
+        when(metadata.resolveMethod()).thenReturn(method);
+        verifier.prepareInvoke(args, metadata, context, converters, handlers);
     }
 
     @Test
@@ -129,7 +135,8 @@ public class ConsumesMediaTypeVerifierTest {
         when(handlers.findRequestValueResolver(Xml.class)).thenReturn(handler);
         Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsXml",
                 new Class<?>[] { Object.class });
-        verifier.prepareInvoke(method, args, metadata, context, converters, handlers);
+        when(metadata.resolveMethod()).thenReturn(method);
+        verifier.prepareInvoke(args, metadata, context, converters, handlers);
     }
 
     @Test
@@ -141,7 +148,8 @@ public class ConsumesMediaTypeVerifierTest {
         when(handlers.findRequestValueResolver(Xml.class)).thenReturn(handler);
         Method method = ReflectionUtils.getMethodQuietly(SomeResource.class, "acceptsXml",
                 new Class<?>[] { Object.class });
-        verifier.prepareInvoke(method, args, metadata, context, converters, handlers);
+        when(metadata.resolveMethod()).thenReturn(method);
+        verifier.prepareInvoke(args, metadata, context, converters, handlers);
     }
 
     @Test

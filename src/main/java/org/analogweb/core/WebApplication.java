@@ -1,7 +1,6 @@
 package org.analogweb.core;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -171,9 +170,8 @@ public class WebApplication implements Application {
             RequestValueResolvers attributesHandlers, TypeMapperContext typeMapperContext) {
         log.log(Markers.LIFECYCLE, "DL000013");
         Object interruption = ApplicationProcessor.NO_INTERRUPTION;
-        Method method = ReflectionUtils.getInvocationMethodDefault(metadata);
         for (ApplicationProcessor processor : processors) {
-            interruption = processor.prepareInvoke(method, args, metadata, request,
+            interruption = processor.prepareInvoke(args, metadata, request,
                     typeMapperContext, attributesHandlers);
             if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
                 throw new InvokeInterruptedException(interruption);

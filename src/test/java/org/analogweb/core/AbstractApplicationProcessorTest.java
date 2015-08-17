@@ -7,7 +7,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 import org.analogweb.ApplicationProcessor;
 import org.analogweb.InvocationArguments;
@@ -51,7 +50,7 @@ public class AbstractApplicationProcessorTest {
 
     @Test
     public void testPrepareInvoke() {
-        Object actual = processor.prepareInvoke((Method) null, args, metadata, context, converters,
+        Object actual = processor.prepareInvoke(args, metadata, context, converters,
                 null);
         assertSame(actual, ApplicationProcessor.NO_INTERRUPTION);
     }

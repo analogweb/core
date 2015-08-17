@@ -1,7 +1,5 @@
 package org.analogweb.core;
 
-import java.lang.reflect.Method;
-
 import org.analogweb.ApplicationProcessor;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
@@ -25,7 +23,7 @@ public abstract class AbstractApplicationProcessor implements ApplicationProcess
     }
 
     @Override
-    public Object prepareInvoke(Method method, InvocationArguments args,
+    public Object prepareInvoke(InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
             RequestValueResolvers resolvers) {
         return NO_INTERRUPTION;

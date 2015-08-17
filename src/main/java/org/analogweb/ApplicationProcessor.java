@@ -1,7 +1,5 @@
 package org.analogweb;
 
-import java.lang.reflect.Method;
-
 /**
  * Interrupt application phases.
  * @author snowgoose
@@ -25,7 +23,6 @@ public interface ApplicationProcessor extends MultiModule, Precedence {
     /**
      * Interrupt before invoking {@Invocation}.
      * Returns expect {@link #NO_INTERRUPTION}, finish process request with return value.
-     * @param method Target {@link Method}
      * @param args {@link InvocationArguments}
      * @param metadata {@link InvocationMetadata}
      * @param context {@link RequestContext}
@@ -33,7 +30,7 @@ public interface ApplicationProcessor extends MultiModule, Precedence {
      * @param resolvers {@link RequestValueResolvers}
      * @return {@link #NO_INTERRUPTION} or {@link Renderable}
      */
-    Object prepareInvoke(Method method, InvocationArguments args, InvocationMetadata metadata,
+    Object prepareInvoke(InvocationArguments args, InvocationMetadata metadata,
             RequestContext context, TypeMapperContext converters, RequestValueResolvers resolvers);
 
     /**

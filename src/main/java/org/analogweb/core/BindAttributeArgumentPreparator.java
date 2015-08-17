@@ -20,12 +20,16 @@ import org.analogweb.util.ArrayUtils;
 public class BindAttributeArgumentPreparator extends AbstractApplicationProcessor {
 
     @Override
-    public Object prepareInvoke(Method method, InvocationArguments args,
+    public Object prepareInvoke(InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
             RequestValueResolvers resolvers) {
+    	Method method = metadata.resolveMethod();
+    	if(method == null){
+            return NO_INTERRUPTION;
+    	}
         Annotation[][] parameterAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
-        if (method == null || ArrayUtils.isEmpty(parameterAnnotations)
+        if (ArrayUtils.isEmpty(parameterAnnotations)
                 || ArrayUtils.isEmpty(argTypes)) {
             return NO_INTERRUPTION;
         }

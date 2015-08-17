@@ -1,5 +1,7 @@
 package org.analogweb.core;
 
+import java.lang.reflect.Method;
+
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationMetadataFinder;
 import org.analogweb.RequestPathMetadata;
@@ -41,6 +43,11 @@ public abstract class AbstractInvocationMetadataFinder implements InvocationMeta
             public InvocationMetadata getCachable() {
                 return found;
             }
+
+			@Override
+			public Method resolveMethod() {
+				return found.resolveMethod();
+			}
         };
     }
 }

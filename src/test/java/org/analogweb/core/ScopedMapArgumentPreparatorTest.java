@@ -1,5 +1,7 @@
 package org.analogweb.core;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.analogweb.ApplicationProcessor;
 import org.analogweb.AttributesHandler;
 import org.analogweb.InvocationArguments;
 import org.analogweb.InvocationMetadata;
@@ -60,8 +63,30 @@ public class ScopedMapArgumentPreparatorTest {
         Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doSomething",
                 parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-        preparator.prepareInvoke(doSomething, args, metadata, context, typeMapper, handlers);
+        when(metadata.resolveMethod()).thenReturn(doSomething);
+        preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
         verify(args).putInvocationArgument(eq(0), isA(ContextExtractor.class));
+    }
+
+    @Test
+    public void testMapToFirstArgumentWithNullMethod() {
+        Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
+        Method doSomething = null;
+        when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
+        when(metadata.resolveMethod()).thenReturn(doSomething);
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
+        assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
+    }
+
+    @Test
+    public void testMapWithNullArgument() {
+        Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doSomething",
+                parameterTypes);
+        when(metadata.getArgumentTypes()).thenReturn(null);
+        when(metadata.resolveMethod()).thenReturn(doSomething);
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
+        assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
     }
 
     @Test
@@ -70,7 +95,8 @@ public class ScopedMapArgumentPreparatorTest {
         Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doAnything",
                 parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-        preparator.prepareInvoke(doSomething, args, metadata, context, typeMapper, handlers);
+        when(metadata.resolveMethod()).thenReturn(doSomething);
+        preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
     }
 
     @Test
@@ -79,7 +105,8 @@ public class ScopedMapArgumentPreparatorTest {
         Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doNothing",
                 parameterTypes);
         when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-        preparator.prepareInvoke(doSomething, args, metadata, context, typeMapper, handlers);
+        when(metadata.resolveMethod()).thenReturn(doSomething);
+        preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
     }
 
     interface Session extends AttributesHandler {

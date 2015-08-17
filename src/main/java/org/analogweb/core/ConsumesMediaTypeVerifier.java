@@ -21,10 +21,14 @@ import org.analogweb.util.ArrayUtils;
 public class ConsumesMediaTypeVerifier extends AbstractApplicationProcessor {
 
     @Override
-    public Object prepareInvoke(Method method, InvocationArguments args,
+    public Object prepareInvoke(InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
             RequestValueResolvers resolvers) {
-        if (method == null || context.getRequestMethod().equalsIgnoreCase("GET")) {
+    	if(context.getRequestMethod().equalsIgnoreCase("GET")){
+    		return NO_INTERRUPTION;
+    	}
+    	Method method = metadata.resolveMethod();
+        if (method == null) {
             return NO_INTERRUPTION;
         }
         Annotation[] ann = method.getAnnotations();
@@ -41,13 +45,13 @@ public class ConsumesMediaTypeVerifier extends AbstractApplicationProcessor {
         } else {
             for (String expectMime : expectMimes) {
                 if (contentType.isCompatible(MediaTypes.valueOf(expectMime))) {
-                    return super.prepareInvoke(method, args, metadata, context, converters,
+                    return super.prepareInvoke(args, metadata, context, converters,
                             resolvers);
                 }
             }
             throw new UnsupportedMediaTypeException(metadata.getDefinedPath());
         }
-        return super.prepareInvoke(method, args, metadata, context, converters, resolvers);
+        return super.prepareInvoke(args, metadata, context, converters, resolvers);
     }
 
     private boolean mediaTypeUnsupported(MediaType contentType, Method method,

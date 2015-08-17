@@ -28,12 +28,16 @@ import org.analogweb.util.ArrayUtils;
 public class ScopedMapArgumentPreparator extends AbstractApplicationProcessor {
 
     @Override
-    public Object prepareInvoke(Method method, InvocationArguments args,
+    public Object prepareInvoke(InvocationArguments args,
             InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
             RequestValueResolvers handlers) {
+    	Method method = metadata.resolveMethod();
+        if (method == null) {
+            return NO_INTERRUPTION;
+        }
         Annotation[][] argumentAnnotations = method.getParameterAnnotations();
         Class<?>[] argTypes = metadata.getArgumentTypes();
-        if (method == null || ArrayUtils.isEmpty(argTypes)
+        if (ArrayUtils.isEmpty(argTypes)
                 || ArrayUtils.isEmpty(argumentAnnotations)) {
             return NO_INTERRUPTION;
         }
