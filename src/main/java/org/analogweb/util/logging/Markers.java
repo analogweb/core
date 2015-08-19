@@ -7,10 +7,11 @@ import org.analogweb.util.Assertion;
  */
 public class Markers {
 
-    public static final Marker BOOT_APPLICATION = SimpleMarker.valueOf("BootApplication");
-    public static final Marker INIT_COMPONENT = SimpleMarker.valueOf("InitComponent");
-    public static final Marker LIFECYCLE = SimpleMarker.valueOf("Lifecycle");
-    public static final Marker VARIABLE_ACCESS = SimpleMarker.valueOf("VariableAccess");
+    public static final Marker BOOT_APPLICATION = SimpleMarker.valueOf("BOOT_APPLICATION");
+    public static final Marker MONITOR_MODULES = SimpleMarker.valueOf("MONITOR_MODULES");
+    public static final Marker INIT_COMPONENT = SimpleMarker.valueOf("INIT_COMPONENT");
+    public static final Marker LIFECYCLE = SimpleMarker.valueOf("LIFECYCLE");
+    public static final Marker VARIABLE_ACCESS = SimpleMarker.valueOf("VARIABLE_ACCESS");
 
     public static class SimpleMarker implements Marker {
 

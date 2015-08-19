@@ -1,6 +1,7 @@
 package org.analogweb.core;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import org.analogweb.util.Maps;
 
 public class DefaultReqestValueResolvers implements RequestValueResolvers {
 
-    static final Class<? extends RequestValueResolver> DEFAULT_RESOLVER_CLASS = ParameterValueResolver.class;
+    protected static final Class<? extends RequestValueResolver> DEFAULT_RESOLVER_CLASS = ParameterValueResolver.class;
     private final Map<Key, RequestValueResolver> resolverMap;
 
     public DefaultReqestValueResolvers(List<? extends RequestValueResolver> resolvers) {
@@ -32,11 +33,11 @@ public class DefaultReqestValueResolvers implements RequestValueResolvers {
     public RequestValueResolver findRequestValueResolver(
             Class<? extends RequestValueResolver> resolverClass) {
         if (resolverClass == null) {
-            return this.resolverMap.get(Key.valueOf(getDefaultRequestValueResolverClass()));
+            return getResolverMap().get(Key.valueOf(getDefaultRequestValueResolverClass()));
         }
-        RequestValueResolver resolver = this.resolverMap.get(Key.valueOf(resolverClass));
+        RequestValueResolver resolver = getResolverMap().get(Key.valueOf(resolverClass));
         if (resolver == null) {
-            return this.resolverMap.get(Key.valueOf(getDefaultRequestValueResolverClass()));
+            return getResolverMap().get(Key.valueOf(getDefaultRequestValueResolverClass()));
         }
         return resolver;
     }
@@ -50,11 +51,20 @@ public class DefaultReqestValueResolvers implements RequestValueResolvers {
         return null;
     }
 
+    @Override
+    public Collection<RequestValueResolver> all() {
+        return getResolverMap().values();
+    }
+    
+    protected final Map<Key,RequestValueResolver> getResolverMap(){
+        return this.resolverMap;
+    }
+
     protected Class<? extends RequestValueResolver> getDefaultRequestValueResolverClass() {
         return DEFAULT_RESOLVER_CLASS;
     }
 
-    static class Key implements Serializable {
+    protected static class Key implements Serializable {
 
         private static final long serialVersionUID = 1L;
         private int hashCode;
@@ -90,4 +100,5 @@ public class DefaultReqestValueResolvers implements RequestValueResolvers {
             return false;
         }
     }
+
 }

@@ -16,10 +16,15 @@ import org.analogweb.ApplicationProcessor;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.ExceptionHandler;
+import org.analogweb.ExceptionMapper;
 import org.analogweb.Invocation;
 import org.analogweb.InvocationArguments;
+import org.analogweb.InvocationFactory;
+import org.analogweb.InvocationInterceptor;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationMetadataFactory;
+import org.analogweb.InvocationMetadataFinder;
+import org.analogweb.Invoker;
 import org.analogweb.Module;
 import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
@@ -29,6 +34,7 @@ import org.analogweb.Renderable;
 import org.analogweb.RenderableHolder;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
+import org.analogweb.RequestValueResolver;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.Response;
 import org.analogweb.ResponseContext;
@@ -72,7 +78,7 @@ public class WebApplication implements Application {
         ApplicationPropertiesHolder.configure(this, props);
         log.log(Markers.BOOT_APPLICATION, "IB000001");
         List<Version> versions = Version.load(classLoader);
-        if (versions.isEmpty() == false) {
+        if (versions.isEmpty() == false && log.isInfoEnabled(Markers.BOOT_APPLICATION)) {
             log.log(Markers.BOOT_APPLICATION, "IB000008");
             for (Version v : versions) {
                 log.info("   " + v.getVersion() + " : " + v.getArtifactId());
@@ -171,8 +177,8 @@ public class WebApplication implements Application {
         log.log(Markers.LIFECYCLE, "DL000013");
         Object interruption = ApplicationProcessor.NO_INTERRUPTION;
         for (ApplicationProcessor processor : processors) {
-            interruption = processor.prepareInvoke(args, metadata, request,
-                    typeMapperContext, attributesHandlers);
+            interruption = processor.prepareInvoke(args, metadata, request, typeMapperContext,
+                    attributesHandlers);
             if (interruption != ApplicationProcessor.NO_INTERRUPTION) {
                 throw new InvokeInterruptedException(interruption);
             }
@@ -233,15 +239,14 @@ public class WebApplication implements Application {
     }
 
     protected void initApplication(Collection<ClassCollector> collectors,
-            Set<String> modulePackageNames, Collection<String> invocationPackageNames/*
-                                                                                     * , String specifier
-                                                                                     */) {
+            Set<String> modulePackageNames, Collection<String> invocationPackageNames) {
         Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames, collectors);
         ModulesBuilder modulesBuilder = processConfigPreparation(ReflectionUtils
                 .filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses));
         ApplicationContext resolver = getApplicationContextResolver();
         ContainerAdaptor defaultContainer = setUpDefaultContainer(resolver, moduleClasses);
         Modules modules = modulesBuilder.buildModules(resolver, defaultContainer);
+        monitorModules(modules);
         setModules(modules);
         log.log(Markers.BOOT_APPLICATION, "DB000003", modules);
         Collection<Class<?>> collectedInvocationClasses;
@@ -252,6 +257,84 @@ public class WebApplication implements Application {
         }
         setRouteRegistry(createRouteRegistry(collectedInvocationClasses,
                 modules.getInvocationMetadataFactories()));
+    }
+
+    private void monitorModules(Modules modules) {
+        if (log.isInfoEnabled(Markers.MONITOR_MODULES)) {
+            log.log(Markers.MONITOR_MODULES, "IB000009");
+            log.info(Markers.MONITOR_MODULES, "++++++++++++++++++++++++++++");
+            log.info(Markers.MONITOR_MODULES, "ApplicationProcessor");
+            log.info(Markers.MONITOR_MODULES, "===");
+            for (ApplicationProcessor m : modules.getApplicationProcessors()) {
+                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+            }
+            log.info(Markers.MONITOR_MODULES, "");
+            ExceptionHandler eh = modules.getExceptionHandler();
+            log.info(Markers.MONITOR_MODULES, "ExceptionHandler");
+            log.info(Markers.MONITOR_MODULES, "===");
+            log.info(Markers.MONITOR_MODULES, " - " + eh.getClass().getCanonicalName());
+            log.info(Markers.MONITOR_MODULES, "");
+            log.info(Markers.MONITOR_MODULES, "ExceptionMapper");
+            log.info(Markers.MONITOR_MODULES, "===");
+            for (ExceptionMapper m : modules.getExceptionMappers()) {
+                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+            }
+            log.info(Markers.MONITOR_MODULES, "");
+            InvocationFactory f = modules.getInvocationFactory();
+            log.info(Markers.MONITOR_MODULES, "InvocationFactory");
+            log.info(Markers.MONITOR_MODULES, "===");
+            log.info(Markers.MONITOR_MODULES, " - " + f.getClass().getCanonicalName());
+            log.info(Markers.MONITOR_MODULES, "");
+            ContainerAdaptor ii = modules.getInvocationInstanceProvider();
+            log.info(Markers.MONITOR_MODULES, "InvocationInstanceProvider");
+            log.info(Markers.MONITOR_MODULES, "===");
+            log.info(Markers.MONITOR_MODULES, " - " + ii.getClass().getCanonicalName());
+            log.info(Markers.MONITOR_MODULES, "");
+            log.info(Markers.MONITOR_MODULES, "InvocationInterceptor");
+            log.info(Markers.MONITOR_MODULES, "===");
+            for (InvocationInterceptor m : modules.getInvocationInterceptors()) {
+                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+            }
+            log.info(Markers.MONITOR_MODULES, "");
+            log.info(Markers.MONITOR_MODULES, "InvocationMetadataFactory");
+            log.info(Markers.MONITOR_MODULES, "===");
+            for (InvocationMetadataFactory m : modules.getInvocationMetadataFactories()) {
+                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+            }
+            log.info(Markers.MONITOR_MODULES, "");
+            log.info(Markers.MONITOR_MODULES, "InvocationMetadataFinder");
+            log.info(Markers.MONITOR_MODULES, "===");
+            for (InvocationMetadataFinder m : modules.getInvocationMetadataFinders()) {
+                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+            }
+            Invoker ik = modules.getInvoker();
+            log.info(Markers.MONITOR_MODULES, "");
+            log.info(Markers.MONITOR_MODULES, "Invoker");
+            log.info(Markers.MONITOR_MODULES, "===");
+            log.info(Markers.MONITOR_MODULES, " - " + ik.getClass().getCanonicalName());
+            ContainerAdaptor mca = modules.getModulesContainerAdaptor();
+            log.info(Markers.MONITOR_MODULES, "");
+            log.info(Markers.MONITOR_MODULES, "ModulesContainerAdaptor");
+            log.info(Markers.MONITOR_MODULES, "===");
+            log.info(Markers.MONITOR_MODULES, " - " + mca.getClass().getCanonicalName());
+            log.info(Markers.MONITOR_MODULES, "");
+            log.info(Markers.MONITOR_MODULES, "RequestValueResolver");
+            log.info(Markers.MONITOR_MODULES, "===");
+            for (RequestValueResolver m : modules.getRequestValueResolvers().all()) {
+                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+            }
+            ResponseHandler rh = modules.getResponseHandler();
+            log.info(Markers.MONITOR_MODULES, "");
+            log.info(Markers.MONITOR_MODULES, "ResponseHandler");
+            log.info(Markers.MONITOR_MODULES, "===");
+            log.info(Markers.MONITOR_MODULES, " - " + rh.getClass().getCanonicalName());
+            RenderableResolver rr = modules.getResponseResolver();
+            log.info(Markers.MONITOR_MODULES, "");
+            log.info(Markers.MONITOR_MODULES, "RenderableResolver");
+            log.info(Markers.MONITOR_MODULES, "===");
+            log.info(Markers.MONITOR_MODULES, " - " + rr.getClass().getCanonicalName());
+            log.info(Markers.MONITOR_MODULES, "++++++++++++++++++++++++++++");
+        }
     }
 
     protected ModulesBuilder processConfigPreparation(List<Class<ModulesConfig>> configs) {
