@@ -56,12 +56,9 @@ import org.analogweb.util.IOUtils;
 import org.analogweb.util.JarClassCollector;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
-import org.analogweb.util.logging.Log;
-import org.analogweb.util.logging.Logs;
 
 public class DefaultServer implements Server {
 
-    private static final Log log = Logs.getLog(DefaultServer.class);
     private static final int CR = 13;
     private static final int LF = 10;
     private static final byte[] CRLF = new byte[] { CR, LF };
@@ -121,69 +118,52 @@ public class DefaultServer implements Server {
         }
     }
 
-    private Map<SelectableChannel, Handler> requests = Maps.newEmptyHashMap();
+    private Map<SelectableChannel, Handler> requests = Maps.newConcurrentHashMap();
 
     private void runInternal(Selector sl) throws IOException {
         while (true) {
-            while (sl.select() > 0) {
+            while (sl.select(10) > 0) {
                 Iterator<SelectionKey> keys = sl.selectedKeys().iterator();
-                log.trace("Selector selects one or more sockets.");
                 while (keys.hasNext()) {
                     SelectionKey key = keys.next();
-                    log.trace(String.format("Obtain selection key [%s].",key));
                     keys.remove();
                     if (key.isAcceptable()) {
-                        log.trace("Accepting socket.");
                         ServerSocketChannel ssock = (ServerSocketChannel) key.channel();
                         SocketChannel channel = ssock.accept();
                         channel.configureBlocking(false);
                         channel.register(sl, SelectionKey.OP_READ);
                     } else {
                         if (key.isReadable()) {
-                            log.trace("Reading socket.");
                             SelectableChannel channel = key.channel();
                             Handler handler;
                             if (requests.containsKey(channel)) {
-                                log.trace(String.format("Handler[key=%s] resolved.", channel));
                                 handler = requests.get(channel);
                             } else {
-                                log.trace(String.format("New Handler[key=%s] created.", channel));
                                 handler = new Handler();
                                 requests.put(channel, handler);
                             }
-                            log.trace(String.format("Invoking Handler[key=%s]#read.", channel));
                             try {
                                 handler.read(key);
                             } catch (RequestCancelledException e) {
                                 sendStatus((SocketChannel) key.channel(), e.getStatus(),
                                         e.getBody());
                                 requests.remove(channel);
-                                log.trace(String.format("Handler[key=%s] removed.", channel));
-                                log.trace(String.format("Currently %s requests remained.",
-                                        requests.size()));
                             }
                         }
                         if (key.isValid() && key.isWritable()) {
                             SelectableChannel channel = key.channel();
                             boolean completed = false;
                             try {
-                                log.trace(String.format("Invoking Handler[key=%s]#write.", channel));
                                 completed = requests.get(channel).write(key);
                             } finally {
                                 if (completed) {
                                     requests.remove(channel);
-                                    log.trace(String.format("Handler[key=%s] removed.", channel));
-                                    log.trace(String.format("Currently %s requests remained.",
-                                            requests.size()));
+                                    channel.close();
                                 }
                             }
                         }
                     }
                 }
-            }
-            Iterator<SelectionKey> keys = sl.keys().iterator();
-            while (keys.hasNext()) {
-                keys.next().channel().close();
             }
         }
     }
@@ -200,10 +180,8 @@ public class DefaultServer implements Server {
             sock.configureBlocking(false);
             ByteBuffer buf = ByteBuffer.allocate(8192);
             int read = sock.read(buf);
-            log.trace(String.format("%s bytes readed.", read));
             if (read == 1) {
                 // spinning.
-                log.trace("spinning.");
                 return;
             }
             buf.flip();
@@ -243,12 +221,10 @@ public class DefaultServer implements Server {
                             headerMap.put(k, Arrays.asList(value));
                         }
                     }
-                    log.trace(String.format("Request header resolved. %s", headerMap));
                 }
                 body = resolveRequestBody(sock, buf, eoh, read, path.getRequestMethod(),
                         headerMap.get("Content-Length"));
                 if (body.resolved() && executed == false) {
-                    log.trace(String.format("Invoke application."));
                     RequestContextImpl request = new RequestContextImpl(path, Locale.getDefault(),
                             headerMap, body);
                     ResponseContextImpl response = new ResponseContextImpl(request, sock);
@@ -279,7 +255,6 @@ public class DefaultServer implements Server {
         private RequestBody resolveRequestBody(SocketChannel sock, ByteBuffer buf, int eoh,
                 int read, String method, List<String> contentLengthHeader) throws IOException {
             if (this.body != null) {
-                log.trace(String.format("Append Request Body %s", body));
                 byte[] dst = new byte[read];
                 buf.get(dst);
                 body.update(dst);
@@ -287,7 +262,6 @@ public class DefaultServer implements Server {
                 return body;
             }
             if (method.equalsIgnoreCase("POST") || method.equalsIgnoreCase("PUT")) {
-                log.trace("Create Request Body");
                 int contentLength = CollectionUtils.isEmpty(contentLengthHeader) ? -1 : Integer
                         .valueOf(contentLengthHeader.get(0));
                 if (contentLength < 0) {
@@ -298,7 +272,6 @@ public class DefaultServer implements Server {
                 buf = (ByteBuffer) buf.position(eoh);
                 buf.get(ba);
                 buf.clear();
-                log.trace(String.format("Content Length = %s", contentLength));
                 return new RequestBody(contentLength, ba, props);
             } else {
                 return new RequestBody();
@@ -310,7 +283,6 @@ public class DefaultServer implements Server {
             sock.configureBlocking(false);
             ResponseContextImpl ri = (ResponseContextImpl)key.attachment();
             if (ri.completed() == false) {
-                log.debug("Task not completed.");
                 key.interestOps(SelectionKey.OP_WRITE);
                 return false;
             }
@@ -478,13 +450,10 @@ public class DefaultServer implements Server {
 
         public void update(byte[] buffer) throws IOException {
             if (this.out == null) {
-                log.trace("This request buffer not writable.");
                 return;
             }
             this.remain -= buffer.length;
             this.out.write(buffer);
-            log.trace(String.format("%s bytes written.", buffer.length));
-            log.trace(String.format("Content remaining %s bytes.", remain));
             if (this.remain < 1) {
                 this.resolved = true;
             }
@@ -613,7 +582,6 @@ public class DefaultServer implements Server {
         private void ensureCapacity(int size) {
             int remaining = backend.remaining();
             if (size > remaining) {
-                log.debug("allocating new DynamicByteBuffer, old capacity {}: ", backend.capacity());
                 int missing = size - remaining;
                 int newSize = (int) ((backend.capacity() + missing) * 1.5);
                 reallocate(newSize);
@@ -627,7 +595,6 @@ public class DefaultServer implements Server {
             System.arraycopy(backend.array(), 0, newBuffer, 0, backend.position());
             backend = ByteBuffer.wrap(newBuffer);
             backend.position(oldPosition);
-            log.debug("allocated new DynamicByteBufer, new capacity: {}", backend.capacity());
         }
 
         public ByteBuffer getByteBuffer() {
