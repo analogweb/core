@@ -260,80 +260,80 @@ public class WebApplication implements Application {
     }
 
     private void monitorModules(Modules modules) {
-        if (log.isInfoEnabled(Markers.MONITOR_MODULES)) {
+        if (log.isDebugEnabled(Markers.MONITOR_MODULES)) {
             log.log(Markers.MONITOR_MODULES, "IB000009");
-            log.info(Markers.MONITOR_MODULES, "++++++++++++++++++++++++++++");
-            log.info(Markers.MONITOR_MODULES, "ApplicationProcessor");
-            log.info(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, "++++++++++++++++++++++++++++");
+            log.debug(Markers.MONITOR_MODULES, "ApplicationProcessor");
+            log.debug(Markers.MONITOR_MODULES, "===");
             for (ApplicationProcessor m : modules.getApplicationProcessors()) {
-                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+                log.debug(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
             }
-            log.info(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "");
             ExceptionHandler eh = modules.getExceptionHandler();
-            log.info(Markers.MONITOR_MODULES, "ExceptionHandler");
-            log.info(Markers.MONITOR_MODULES, "===");
-            log.info(Markers.MONITOR_MODULES, " - " + eh.getClass().getCanonicalName());
-            log.info(Markers.MONITOR_MODULES, "");
-            log.info(Markers.MONITOR_MODULES, "ExceptionMapper");
-            log.info(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, "ExceptionHandler");
+            log.debug(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, " - " + eh.getClass().getCanonicalName());
+            log.debug(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "ExceptionMapper");
+            log.debug(Markers.MONITOR_MODULES, "===");
             for (ExceptionMapper m : modules.getExceptionMappers()) {
-                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+                log.debug(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
             }
-            log.info(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "");
             InvocationFactory f = modules.getInvocationFactory();
-            log.info(Markers.MONITOR_MODULES, "InvocationFactory");
-            log.info(Markers.MONITOR_MODULES, "===");
-            log.info(Markers.MONITOR_MODULES, " - " + f.getClass().getCanonicalName());
-            log.info(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "InvocationFactory");
+            log.debug(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, " - " + f.getClass().getCanonicalName());
+            log.debug(Markers.MONITOR_MODULES, "");
             ContainerAdaptor ii = modules.getInvocationInstanceProvider();
-            log.info(Markers.MONITOR_MODULES, "InvocationInstanceProvider");
-            log.info(Markers.MONITOR_MODULES, "===");
-            log.info(Markers.MONITOR_MODULES, " - " + ii.getClass().getCanonicalName());
-            log.info(Markers.MONITOR_MODULES, "");
-            log.info(Markers.MONITOR_MODULES, "InvocationInterceptor");
-            log.info(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, "InvocationInstanceProvider");
+            log.debug(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, " - " + ii.getClass().getCanonicalName());
+            log.debug(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "InvocationInterceptor");
+            log.debug(Markers.MONITOR_MODULES, "===");
             for (InvocationInterceptor m : modules.getInvocationInterceptors()) {
-                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+                log.debug(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
             }
-            log.info(Markers.MONITOR_MODULES, "");
-            log.info(Markers.MONITOR_MODULES, "InvocationMetadataFactory");
-            log.info(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "InvocationMetadataFactory");
+            log.debug(Markers.MONITOR_MODULES, "===");
             for (InvocationMetadataFactory m : modules.getInvocationMetadataFactories()) {
-                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+                log.debug(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
             }
-            log.info(Markers.MONITOR_MODULES, "");
-            log.info(Markers.MONITOR_MODULES, "InvocationMetadataFinder");
-            log.info(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "InvocationMetadataFinder");
+            log.debug(Markers.MONITOR_MODULES, "===");
             for (InvocationMetadataFinder m : modules.getInvocationMetadataFinders()) {
-                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+                log.debug(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
             }
             Invoker ik = modules.getInvoker();
-            log.info(Markers.MONITOR_MODULES, "");
-            log.info(Markers.MONITOR_MODULES, "Invoker");
-            log.info(Markers.MONITOR_MODULES, "===");
-            log.info(Markers.MONITOR_MODULES, " - " + ik.getClass().getCanonicalName());
+            log.debug(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "Invoker");
+            log.debug(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, " - " + ik.getClass().getCanonicalName());
             ContainerAdaptor mca = modules.getModulesContainerAdaptor();
-            log.info(Markers.MONITOR_MODULES, "");
-            log.info(Markers.MONITOR_MODULES, "ModulesContainerAdaptor");
-            log.info(Markers.MONITOR_MODULES, "===");
-            log.info(Markers.MONITOR_MODULES, " - " + mca.getClass().getCanonicalName());
-            log.info(Markers.MONITOR_MODULES, "");
-            log.info(Markers.MONITOR_MODULES, "RequestValueResolver");
-            log.info(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "ModulesContainerAdaptor");
+            log.debug(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, " - " + mca.getClass().getCanonicalName());
+            log.debug(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "RequestValueResolver");
+            log.debug(Markers.MONITOR_MODULES, "===");
             for (RequestValueResolver m : modules.getRequestValueResolvers().all()) {
-                log.info(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
+                log.debug(Markers.MONITOR_MODULES, " - " + m.getClass().getCanonicalName());
             }
             ResponseHandler rh = modules.getResponseHandler();
-            log.info(Markers.MONITOR_MODULES, "");
-            log.info(Markers.MONITOR_MODULES, "ResponseHandler");
-            log.info(Markers.MONITOR_MODULES, "===");
-            log.info(Markers.MONITOR_MODULES, " - " + rh.getClass().getCanonicalName());
+            log.debug(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "ResponseHandler");
+            log.debug(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, " - " + rh.getClass().getCanonicalName());
             RenderableResolver rr = modules.getResponseResolver();
-            log.info(Markers.MONITOR_MODULES, "");
-            log.info(Markers.MONITOR_MODULES, "RenderableResolver");
-            log.info(Markers.MONITOR_MODULES, "===");
-            log.info(Markers.MONITOR_MODULES, " - " + rr.getClass().getCanonicalName());
-            log.info(Markers.MONITOR_MODULES, "++++++++++++++++++++++++++++");
+            log.debug(Markers.MONITOR_MODULES, "");
+            log.debug(Markers.MONITOR_MODULES, "RenderableResolver");
+            log.debug(Markers.MONITOR_MODULES, "===");
+            log.debug(Markers.MONITOR_MODULES, " - " + rr.getClass().getCanonicalName());
+            log.debug(Markers.MONITOR_MODULES, "++++++++++++++++++++++++++++");
         }
     }
 
