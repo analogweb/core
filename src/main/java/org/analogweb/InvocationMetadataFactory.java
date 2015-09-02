@@ -10,5 +10,5 @@ public interface InvocationMetadataFactory extends MultiModule {
 
     boolean containsInvocationClass(Class<?> clazz);
 
-    Collection<InvocationMetadata> createInvocationMetadatas(Class<?> clazz);
+    Collection<InvocationMetadata> createInvocationMetadatas(Class<?> clazz,ContainerAdaptor instanceProvider);
 }

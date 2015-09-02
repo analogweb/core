@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.analogweb.ContainerAdaptor;
 import org.analogweb.InvocationMetadata;
 import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.RequestPathMetadata;
@@ -27,7 +28,7 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
     }
 
     @Override
-    public Collection<InvocationMetadata> createInvocationMetadatas(Class<?> invocationClass) {
+    public Collection<InvocationMetadata> createInvocationMetadatas(Class<?> invocationClass,ContainerAdaptor instanceProvider) {
         Method[] methods = ReflectionUtils.getMethods(invocationClass);
         List<InvocationMetadata> metadatas = new ArrayList<InvocationMetadata>();
         for (Method method : methods) {

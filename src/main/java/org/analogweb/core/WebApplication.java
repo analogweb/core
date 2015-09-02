@@ -256,7 +256,7 @@ public class WebApplication implements Application {
             collectedInvocationClasses = collectClasses(invocationPackageNames, collectors);
         }
         setRouteRegistry(createRouteRegistry(collectedInvocationClasses,
-                modules.getInvocationMetadataFactories()));
+                modules.getInvocationMetadataFactories(),modules.getInvocationInstanceProvider()));
     }
 
     private void monitorModules(Modules modules) {
@@ -371,13 +371,13 @@ public class WebApplication implements Application {
     }
 
     protected RouteRegistry createRouteRegistry(Collection<Class<?>> collectedClasses,
-            List<InvocationMetadataFactory> factories) {
+            List<InvocationMetadataFactory> factories,ContainerAdaptor instanceProvider) {
         RouteRegistry mapping = new DefaultRouteRegistry();
         for (Class<?> clazz : collectedClasses) {
             for (InvocationMetadataFactory factory : factories) {
                 if (factory.containsInvocationClass(clazz)) {
                     for (InvocationMetadata actionMethodMetadata : factory
-                            .createInvocationMetadatas(clazz)) {
+                            .createInvocationMetadatas(clazz,instanceProvider)) {
                         log.log(Markers.BOOT_APPLICATION, "IB000004",
                                 actionMethodMetadata.getDefinedPath(),
                                 actionMethodMetadata.getInvocationClass(),
