@@ -1,8 +1,6 @@
 package org.analogweb.core.response;
 
 /**
- * テキストをレスポンスする{@link TextFormat}です。<br/>
- * レスポンスにおける既定のContent-Typeは「text/plain」であり 、文字セットは「UTF-8」です。
  * @author snowgoose
  */
 public class Text extends TextFormat<Text> {

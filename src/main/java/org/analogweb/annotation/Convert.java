@@ -9,8 +9,6 @@ import java.lang.annotation.Target;
 import org.analogweb.TypeMapper;
 
 /**
- * リクエストメソッドにおいて、パラメータとして指定される値を
- * 特定の型に変換するルールを指定します。
  * @author snowgoose
  */
 @Documented
@@ -19,7 +17,6 @@ import org.analogweb.TypeMapper;
 public @interface Convert {
 
     /**
-     * 取得した値を特定の型に変換するルール({@link TypeMapper})を設定します。
      * @return {@link TypeMapper}
      */
     Class<? extends TypeMapper> value() default TypeMapper.class;

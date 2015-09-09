@@ -27,7 +27,6 @@ import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 
 /**
- * リダイレクトを行う{@link Renderable}です。
  * @author snowgoose
  */
 public class Redirect implements Renderable {

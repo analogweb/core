@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.noMoreInteractions;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -128,6 +129,20 @@ public class ResourceTest {
         assertThat(new String(out.toByteArray()), is("this is test log."));
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "attachment");
+    }
+
+    @Test
+    public void testDefaultStreamResourceWithoutContentDisposition() throws Exception {
+        File file = folder.newFile("text.log");
+        writeStringTo(file);
+        Resource resource = Resource.as(new FileInputStream(file)).withoutContentDisposition();
+        when(response.getResponseHeaders()).thenReturn(headers);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Response r = resource.render(context, response);
+        r.getEntity().writeInto(out);
+        assertThat(new String(out.toByteArray()), is("this is test log."));
+        verify(headers).putValue("Content-Type", "application/octet-stream");
+        verify(headers,noMoreInteractions()).putValue("Content-Disposition", "attachment");
     }
 
     @Test

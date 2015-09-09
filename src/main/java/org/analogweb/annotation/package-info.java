@@ -1,5 +1,5 @@
 /**
- * デフォルトで使用可能な注釈を定義するパッケージです。
+ * This package define annotations used by default.
  */
 package org.analogweb.annotation;
 

@@ -1,5 +1,5 @@
 /**
- * 全般的に使用されるユーティリティを定義するパッケージです。
+ * This package define utilities.
  */
 package org.analogweb.util;
 

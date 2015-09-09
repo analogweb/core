@@ -29,6 +29,7 @@ public class Resource extends BuildAndRenderableResponse<Resource> {
     private final String fileName;
     private String disposition = "attachment";
     private final InputStream input;
+    private boolean withoutContentDisposition = false;
 
     protected Resource(InputStream input, String fileName) {
         this(input, fileName, DEFAULT_CONTENT_TYPE, DEFAULT_CHARSET);
@@ -80,7 +81,10 @@ public class Resource extends BuildAndRenderableResponse<Resource> {
     protected void mergeHeaders(RequestContext request, ResponseContext response,
             Map<String, String> headers, ResponseEntity entity) {
         try {
-            headers.put(CONTENT_DISPOSITION, createContentDisposition());
+        	String contentDisposition = createContentDisposition();
+        	if(StringUtils.isNotEmpty(contentDisposition)){
+                headers.put(CONTENT_DISPOSITION, createContentDisposition());
+        	}
         } catch (UnsupportedEncodingException e) {
             throw new ApplicationRuntimeException(e) {
 
@@ -98,11 +102,13 @@ public class Resource extends BuildAndRenderableResponse<Resource> {
 
     protected String createContentDisposition() throws UnsupportedEncodingException {
         StringBuilder buffer = new StringBuilder();
-        buffer.append(getDisposition());
-        String fileName = getFileName();
-        if (StringUtils.isNotEmpty(fileName)) {
-            buffer.append("; filename=");
-            buffer.append(URLEncoder.encode(fileName, getCharset()));
+        if(withContentDisposition()){
+            buffer.append(getDisposition());
+            String fileName = getFileName();
+            if (StringUtils.isNotEmpty(fileName)) {
+                buffer.append("; filename=");
+                buffer.append(URLEncoder.encode(fileName, getCharset()));
+            }
         }
         return buffer.toString();
     }
@@ -118,13 +124,22 @@ public class Resource extends BuildAndRenderableResponse<Resource> {
     protected String getDisposition() {
         return this.disposition;
     }
+    
+    protected boolean withContentDisposition(){
+    	return !this.withoutContentDisposition;
+    }
 
     public String getCharset() {
         return this.charset;
     }
-
+    
     public Resource inline() {
         this.disposition = "inline";
         return this;
+    }
+    
+    public Resource withoutContentDisposition(){
+    	this.withoutContentDisposition = true;
+    	return this;
     }
 }

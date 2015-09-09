@@ -18,11 +18,6 @@ import org.analogweb.util.AnnotationUtils;
 import org.analogweb.util.ArrayUtils;
 
 /**
- * {@link Attributes}注釈が付与された{@link org.analogweb.annotation.Route} メソッドの引数に対して、
- * {@link Map}インスタンスを生成し、スコープを操作するためのインターフェースとして提供します。<br/>
- * スコープは{@link Attributes#value()}属性に指定された値が適用されます。 適用されるメソッドの引数は{@link String}を キーとする
- * {@link Map}でなければなりません。{@link Attributes}注釈を付与している場合でも、この条件を満たさない場合は {@link Map}
- * インスタンスの適用はされません。
  * @author snowgoose
  */
 public class ScopedMapArgumentPreparator extends AbstractApplicationProcessor {

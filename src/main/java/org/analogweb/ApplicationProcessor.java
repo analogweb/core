@@ -21,7 +21,7 @@ public interface ApplicationProcessor extends MultiModule, Precedence {
     Object preMatching(MutableRequestContext request, RequestPath path);
 
     /**
-     * Interrupt before invoking {@Invocation}.
+     * Interrupt before invoking {@link Invocation}.
      * Returns expect {@link #NO_INTERRUPTION}, finish process request with return value.
      * @param args {@link InvocationArguments}
      * @param metadata {@link InvocationMetadata}

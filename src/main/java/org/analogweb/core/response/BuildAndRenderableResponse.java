@@ -9,7 +9,7 @@ import org.analogweb.ResponseEntity;
  * @author snowgooseyk
  */
 @SuppressWarnings("unchecked")
-public abstract class BuildAndRenderableResponse<T extends Renderable> extends DefaultRenderable {
+public class BuildAndRenderableResponse<T extends Renderable> extends DefaultRenderable {
 
     public T status(int st) {
         super.setStatus(st);

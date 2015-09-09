@@ -16,7 +16,6 @@ import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
 
 /**
- * {@link Invocation}のデフォルトの実装です。
  * @author snowgoose
  */
 public class DefaultInvocation implements Invocation, InvocationArguments {
@@ -61,11 +60,6 @@ public class DefaultInvocation implements Invocation, InvocationArguments {
         return invocationInstance;
     }
 
-    /**
-     * エンドポイントとなるメソッドに適用される引数を取得します。<br/>
-     * キーは引数の索引であり、値は引数となるインスタンスです。
-     * @return エンドポイントとなるメソッドに適用される引数を保持する{@link Map}
-     */
     protected Map<Integer, Object> getPreparedArgs() {
         return this.preparedArgsMap;
     }

@@ -8,7 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.Date;
 
-import org.analogweb.Renderable;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseFormatter;
 import org.analogweb.RequestContext;
@@ -18,9 +17,6 @@ import org.analogweb.core.FormatFailureException;
 import org.analogweb.util.ArrayUtils;
 
 /**
- * オブジェクトをJSON形式でフォーマットしてレスポンスする{@link Renderable}です。<br/>
- * オブジェクト形式でフォーマットされた({}で囲まれた)JSONオブジェクトを生成します。
- * デフォルトのContent-Typeは「application/json; charset=UTF-8」です。
  * @author snowgoose
  */
 public class Json extends TextFormattable<Json> {
@@ -155,10 +151,6 @@ public class Json extends TextFormattable<Json> {
         Introspector.flushCaches();
     }
 
-    /**
-     * デフォルトの{@link ResponseFormatter}によってJSONのレンダリングを行います。<br/>
-     * この{@link ResponseFormatter}は全ての{@link Json}のインスタンスに適用されます。
-     */
     @Override
     public ResponseFormatter getDefaultFormatter() {
         return new Json.DefaultFormatter();

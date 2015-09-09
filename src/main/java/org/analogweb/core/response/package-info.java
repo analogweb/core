@@ -1,5 +1,5 @@
 /**
- * リクエストのエントリポイントにおける、既定の実行結果を定義するパッケージです。
+ * This package defines execution results for response.
  */
 package org.analogweb.core.response;
 

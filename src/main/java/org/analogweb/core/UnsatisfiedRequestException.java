@@ -3,8 +3,6 @@ package org.analogweb.core;
 import org.analogweb.RequestPathMetadata;
 
 /**
- * エントリポイントに対するリクエストが、エントリポイントが定義する要件を満たさない
- * 場合に送出される例外です。
  * @author snowgoose
  */
 public class UnsatisfiedRequestException extends ApplicationRuntimeException {
@@ -16,10 +14,6 @@ public class UnsatisfiedRequestException extends ApplicationRuntimeException {
         this.metadata = metadata;
     }
 
-    /**
-     * {@link RequestPathMetadata}を取得します。
-     * @return {@link RequestPathMetadata}
-     */
     public RequestPathMetadata getMetadata() {
         return this.metadata;
     }

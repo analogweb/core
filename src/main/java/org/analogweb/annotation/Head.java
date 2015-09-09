@@ -8,7 +8,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * HTTPメソッド「HEAD」で有効な要素であることを表します。
  * @author snowgoose
  */
 @Documented

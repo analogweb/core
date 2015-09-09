@@ -7,8 +7,7 @@ import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 
 /**
- * テキストフォーマットが可能な{@link org.analogweb.Renderable}の実装です。
- * @param <T> フォーマットする{@link TextFormattable}の型
+ * @param <T> {@link TextFormattable}
  * @author snowgoose
  */
 public abstract class TextFormattable<T extends TextFormattable<T>> extends TextFormat<T> implements
@@ -37,18 +36,10 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
         return this.source;
     }
 
-    /**
-     * 現在のフォーマット可能な{@link ResponseFormatter}を取得します。<br/>
-     * @return {@link ResponseFormatter}
-     */
     protected ResponseFormatter getFormatter() {
         return this.formatter;
     }
 
-    /**
-          * デフォルトの{@link ResponseFormatter}によって特定のフォーマットへのレンダリングを行います。<br/>
-          * この{@link ResponseFormatter}は全ての{@link TextFormattable}のインスタンスに適用されます。
-     */
     protected abstract ResponseFormatter getDefaultFormatter();
 
     @Override
@@ -64,11 +55,6 @@ public abstract class TextFormattable<T extends TextFormattable<T>> extends Text
         return formatter.formatAndWriteInto(request, response, getCharsetAsText(), source);
     }
 
-    /**
-     * 指定した{@link ResponseFormatter}によって特定のフォーマットのレンダリングを行います。<br/>
-     * 既に{@link ResponseFormatter}が指定されている場合は無視されます。
-     * @param formatter {@link ResponseFormatter}
-     */
     @Override
     @SuppressWarnings("unchecked")
     public T attach(ResponseFormatter formatter) {

@@ -5,6 +5,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
+/**
+ * Holding response entity to write.
+ * @author snowgooseyk
+ */
 public interface Response {
 
     void putEntity(InputStream entity);

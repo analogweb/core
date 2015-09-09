@@ -20,8 +20,6 @@ import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
 
 /**
- * 既定の{@link InvocationFactory}の実装です。
- * 
  * @author snowgoose
  */
 public class DefaultInvocationFactory implements InvocationFactory {

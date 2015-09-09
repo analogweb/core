@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 import org.analogweb.RequestValueResolver;
 
 /**
- * 値を取得可能な特定の{@link RequestValueResolver}を指定します。<br/>
  * @author snowgoose
  */
 @Documented

@@ -13,9 +13,6 @@ import org.analogweb.ResponseEntity;
 import org.analogweb.core.FormatFailureException;
 
 /**
- * オブジェクトをXMLにフォーマットしてレスポンスする
- * {@link org.analogweb.Renderable}の実装です。<br/>
- * デフォルトのContent-Typeは「application/xml; charset=UTF-8」です。
  * @author snowgoose
  */
 public class Xml extends TextFormattable<Xml> {

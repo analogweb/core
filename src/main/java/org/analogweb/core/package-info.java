@@ -1,6 +1,6 @@
 /**
- * コアとなる実装を格納するパッケージです。<br/>
- * このパッケージ内の実装はフレームワークの既定の実装（モジュール）として、自動的にフレームワークに認識されます。
+ * Analogweb's core (default) implementations.<br/>
+ * These instance are recognized by an application automatically.
  */
 package org.analogweb.core;
 

@@ -6,19 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * アノテーションを操作、取得する為のユーティリティです。
+ * Utilities for {@link Annotation}
  * @author snowgoose
  */
 public final class AnnotationUtils {
 
-    /**
-     * 指定した型のアノテーションがクラスに存在する場合は、そのアノテーションのインスタンスを
-     * 取得します。アノテーションがクラスに存在しない場合は、nullを返します。
-     * @param <T> インスタンスを取得するアノテーションの型
-     * @param target インスタンスを取得するアノテーションの型
-     * @param annotationContainsClass アノテーションのインスタンスを探す対象のクラス
-     * @return アノテーションのインスタンス
-     */
     public static <T extends Annotation> T findAnnotation(Class<T> target,
             Class<?> annotationContainsClass) {
         Assertion.notNull(annotationContainsClass, "Class must not be null");
@@ -51,14 +43,6 @@ public final class AnnotationUtils {
         return findAnnotation(target, superClass);
     }
 
-    /**
-     * 指定した型のアノテーションが配列の中に存在する場合は、そのアノテーションのインスタンスを
-     * 取得します。アノテーションが配列の中に存在しない場合は、nullを返します。
-     * @param <T> インスタンスを取得するアノテーションの型
-     * @param target インスタンスを取得するアノテーションの型
-     * @param annotations アノテーションのインスタンスを探す対象の配列
-     * @return アノテーションのインスタンス
-     */
     @SuppressWarnings("unchecked")
     public static <T extends Annotation> T findAnnotation(Class<T> target,
             Annotation... annotations) {

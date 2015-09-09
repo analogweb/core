@@ -13,10 +13,6 @@ import org.analogweb.MediaType;
 import org.analogweb.RequestContext;
 
 /**
- * JAXBによる変換により、リクエストされたXMLを任意のオブジェクト
- * のインスタンスに変換する{@link SpecificMediaTypeRequestValueResolver}の実装です。<br/>
- * 変換元の値として、リクエストされたXMLを保持する{@link InputStream}
- * (リクエストボディ)が指定されている必要があります。
  * @author snowgoose
  */
 public class XmlValueResolver implements SpecificMediaTypeRequestValueResolver {

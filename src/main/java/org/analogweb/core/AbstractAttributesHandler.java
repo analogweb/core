@@ -6,8 +6,6 @@ import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 
 /**
- * {@link AttributesHandler}の既定の実装です。<br/>
- * {@link AttributesHandler}の必要最低限のメソッドの拡張を支援します。
  * @author snowgoose
  */
 public abstract class AbstractAttributesHandler implements AttributesHandler {
