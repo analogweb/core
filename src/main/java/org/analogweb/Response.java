@@ -61,7 +61,11 @@ public interface Response {
     
         @Override
         public void commit(RequestContext request, ResponseContext response) {
-            // NOP
+            try{
+                response.commit(request, this);
+            } finally {
+                response.ensure();
+            }
         }
     };
     Response EMPTY = new Response() {
@@ -113,7 +117,11 @@ public interface Response {
     
         @Override
         public void commit(RequestContext request, ResponseContext response) {
-            // NOP
+            try{
+                response.commit(request, this);
+            } finally {
+                response.ensure();
+            }
         }
     };
 }

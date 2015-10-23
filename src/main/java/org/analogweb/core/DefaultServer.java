@@ -281,29 +281,37 @@ public class DefaultServer implements Server {
         public boolean write(SelectionKey key) throws IOException {
             SocketChannel sock = (SocketChannel) key.channel();
             sock.configureBlocking(false);
-            ResponseContextImpl ri = (ResponseContextImpl)key.attachment();
+            ResponseContextImpl ri = (ResponseContextImpl) key.attachment();
             if (ri.completed() == false) {
                 key.interestOps(SelectionKey.OP_WRITE);
                 return false;
             }
-            ByteBuffer buffer = ri.getBody().getByteBuffer();
-            if (buffer != null) {
-                buffer.flip();
-                try {
-                    sock.write(buffer);
-                } catch (Exception e) {
-                } finally {
-                    if (buffer.hasRemaining() == false) {
-                        key.channel().register(key.selector(), SelectionKey.OP_READ);
-                        sock.close();
-                    } else {
-                        buffer.compact();
-                        key.interestOps(SelectionKey.OP_WRITE);
-                    }
-                }
-                return buffer.hasRemaining() == false;
+            ResponseBody rb = ri.getBody();
+            if (rb == null) {
+                key.channel().register(key.selector(), SelectionKey.OP_READ);
+                sock.close();
+                return true;
             }
-            return false;
+            ByteBuffer buffer = rb.getByteBuffer();
+            if (buffer == null) {
+                key.channel().register(key.selector(), SelectionKey.OP_READ);
+                sock.close();
+                return true;
+            }
+            buffer.flip();
+            try {
+                sock.write(buffer);
+            } catch (Exception e) {
+            } finally {
+                if (buffer.hasRemaining() == false) {
+                    key.channel().register(key.selector(), SelectionKey.OP_READ);
+                    sock.close();
+                } else {
+                    buffer.compact();
+                    key.interestOps(SelectionKey.OP_WRITE);
+                }
+            }
+            return buffer.hasRemaining() == false;
         }
     }
 
