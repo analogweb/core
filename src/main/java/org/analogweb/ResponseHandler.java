@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 public interface ResponseHandler extends Module {
 
-    Response handleResult(Renderable result, ResponseFormatter resultFormatter,
-            RequestContext context, ResponseContext response) throws IOException,
+   Response handleResult(Object result, InvocationMetadata metadata, RenderableResolver renderableResolver,
+            RequestContext context, ResponseContext response,ExceptionHandler exceptionHandler,ResponseFormatterFinder finder) throws IOException,
             WebApplicationException;
 }

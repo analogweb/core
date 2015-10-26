@@ -6,7 +6,7 @@ import java.util.List;
  * All modules that compose an application.
  * @author snowgoose
  */
-public interface Modules extends Disposable {
+public interface Modules extends Disposable,ResponseFormatterFinder {
 
     List<InvocationMetadataFactory> getInvocationMetadataFactories();
 

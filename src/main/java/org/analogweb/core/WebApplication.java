@@ -30,15 +30,12 @@ import org.analogweb.Modules;
 import org.analogweb.ModulesBuilder;
 import org.analogweb.ModulesConfig;
 import org.analogweb.MutableRequestContext;
-import org.analogweb.Renderable;
-import org.analogweb.RenderableHolder;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestPath;
 import org.analogweb.RequestValueResolver;
 import org.analogweb.RequestValueResolvers;
 import org.analogweb.Response;
 import org.analogweb.ResponseContext;
-import org.analogweb.ResponseFormatter;
 import org.analogweb.ResponseHandler;
 import org.analogweb.RenderableResolver;
 import org.analogweb.RouteRegistry;
@@ -217,25 +214,8 @@ public class WebApplication implements Application {
     protected Response handleResponse(Modules modules, Object result, InvocationMetadata metadata,
             RequestContext context, ResponseContext responseContext) throws IOException,
             WebApplicationException {
-        RenderableResolver resultResolver = modules.getResponseResolver();
-        Renderable resolved = resultResolver.resolve(result, metadata, context, responseContext);
-        log.log(Markers.LIFECYCLE, "DL000008", result, result);
-        ResponseFormatter resultFormatter = null;
-        if (resolved instanceof RenderableHolder) {
-            Renderable renderable = ((RenderableHolder) resolved).getRenderable();
-            if (renderable != null) {
-                resultFormatter = modules.findResponseFormatter(renderable.getClass());
-            }
-        } else {
-            resultFormatter = modules.findResponseFormatter(resolved.getClass());
-        }
-        if (resultFormatter != null) {
-            log.log(Markers.LIFECYCLE, "DL000010", result, resultFormatter);
-        } else {
-            log.log(Markers.LIFECYCLE, "DL000011", result);
-        }
         ResponseHandler resultHandler = modules.getResponseHandler();
-        return resultHandler.handleResult(resolved, resultFormatter, context, responseContext);
+        return resultHandler.handleResult(result, metadata,modules.getResponseResolver(), context, responseContext,modules.getExceptionHandler(),modules);
     }
 
     protected void initApplication(Collection<ClassCollector> collectors,
