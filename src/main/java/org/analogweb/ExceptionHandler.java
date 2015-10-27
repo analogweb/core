@@ -10,8 +10,7 @@ public interface ExceptionHandler extends Module {
      * Handle caused {@link Throwable}.
      * The return value handle by {@link RenderableResolver} when that is not {@code null}. 
      * @param exception {@link Exception}
-     * @throws WebApplicationException
      * @return Result of exception handling.({@link Renderable} etc...)
      */
-    Object handleException(Exception exception) throws WebApplicationException;
+	Object handleException(Exception exception);
 }

@@ -15,10 +15,6 @@ import org.analogweb.RequestValueResolver;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.RequestMethodUnsupportedException;
-import org.analogweb.WebApplicationException;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,9 +42,8 @@ public class DefaultExceptionHandlerTest {
 
     @Test
     public void testHandleThrowableWithApplicationRuntimeException() throws Exception {
-        thrown.expect(WebApplicationException.class);
-        thrown.expect(rootCause(SomeException.class));
-        handler.handleException(new SomeException());
+        Object actual = handler.handleException(new SomeException());
+        assertThat((HttpStatus) actual, is(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     @Test
@@ -84,11 +79,10 @@ public class DefaultExceptionHandlerTest {
 
     @Test
     public void testHandleRouteThrowableWithApplicationRuntimeException() throws Exception {
-        thrown.expect(WebApplicationException.class);
-        thrown.expect(rootCause(InvocationFailureException.class));
         InvocationMetadata metadata = mock(InvocationMetadata.class);
-        handler.handleException(new InvocationFailureException(new SomeException(), metadata,
+        Object actual = handler.handleException(new InvocationFailureException(new SomeException(), metadata,
                 new String[0]));
+        assertThat((HttpStatus) actual, is(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 
     public static class SomeException extends ApplicationRuntimeException {
@@ -96,23 +90,4 @@ public class DefaultExceptionHandlerTest {
         private static final long serialVersionUID = 1L;
     }
 
-    private static Matcher<Throwable> rootCause(final Class<? extends Throwable> throwable) {
-        return new BaseMatcher<Throwable>() {
-
-            @Override
-            public boolean matches(Object arg0) {
-                if (arg0 instanceof WebApplicationException) {
-                    Throwable raised = ((WebApplicationException) arg0).getCause();
-                    return throwable.equals(raised.getClass());
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            public void describeTo(Description arg0) {
-                // nop.
-            }
-        };
-    }
 }
