@@ -13,6 +13,7 @@ import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -282,4 +283,21 @@ public final class ReflectionUtils {
             return findParameterizedType(next);
         }
     }
+
+    public static List<Class<?>> getCallerClasses() {
+        return getCallerClasses(Thread.currentThread());
+    }
+
+    public static List<Class<?>> getCallerClasses(Thread thread) {
+        List<Class<?>> classes = new LinkedList<Class<?>>();
+        for (StackTraceElement ste : thread.getStackTrace()) {
+            String className = ste.getClassName();
+            if (className.equals(ReflectionUtils.class.getName()) == false
+                    && className.contains("java.lang.Thread") == false) {
+                classes.add(ClassUtils.forNameQuietly(className));
+            }
+        }
+        return classes;
+    }
+
 }

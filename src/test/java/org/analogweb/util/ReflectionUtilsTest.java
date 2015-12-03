@@ -159,6 +159,13 @@ public class ReflectionUtilsTest {
         assertTrue(actual.isEmpty());
     }
 
+    @Test
+    public void testGetCallerClass() {
+        List<Class<?>> actual = new MockObject().getCallerClasses();
+        assertThat(actual.get(0).getCanonicalName(),
+                is("org.analogweb.util.ReflectionUtilsTest.MockObject"));
+    }
+
     public interface IMockObject {
     }
 
@@ -176,6 +183,11 @@ public class ReflectionUtilsTest {
         public String doSomethingWithException(@Foo String foo) {
             throw new RuntimeException();
         }
+
+        public List<Class<?>> getCallerClasses() {
+            return ReflectionUtils.getCallerClasses();
+        }
+
     }
 
     public static class MockIIObject implements IIMockObject {

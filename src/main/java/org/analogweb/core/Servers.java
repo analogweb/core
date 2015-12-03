@@ -1,12 +1,15 @@
 package org.analogweb.core;
 
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationContext;
 import org.analogweb.ApplicationProperties;
 import org.analogweb.Server;
 import org.analogweb.ServerFactory;
+import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ClassUtils;
 import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
@@ -27,7 +30,7 @@ public final class Servers {
     }
 
     public static void run(String... packageNames) {
-        run(8080, packageNames);
+        run(8000, packageNames);
     }
 
     public static void run(int port, String... packageNames) {
@@ -39,7 +42,17 @@ public final class Servers {
     }
 
     public static Server create(String uri, String... packageNames) {
-        String names = StringUtils.join(',', packageNames);
+        String names;
+        if (ArrayUtils.isEmpty(packageNames)) {
+            Set<String> detectedPackages = new HashSet<String>();
+            for (Class<?> clz : ReflectionUtils.getCallerClasses()) {
+                detectedPackages.add(clz.getPackage().getName());
+            }
+            names = StringUtils.join(',',
+                    detectedPackages.toArray(new String[detectedPackages.size()]));
+        } else {
+            names = StringUtils.join(',', packageNames);
+        }
         return create(URI.create(uri), DefaultApplicationProperties.properties(names));
     }
 
