@@ -48,7 +48,7 @@ public enum HttpStatus implements Renderable, RenderableHolder {
         if (StringUtils.isNotEmpty(reason)) {
             response = Text.with(reason).render(context, responseContext);
         } else {
-            Renderable preRenderDirection = getPreRenderResponse();
+            Renderable preRenderDirection = getRenderable();
             if (preRenderDirection != null) {
                 response = preRenderDirection.render(context, responseContext);
             }
@@ -80,12 +80,6 @@ public enum HttpStatus implements Renderable, RenderableHolder {
 
     public String getReason() {
         return this.reason;
-    }
-
-    @Deprecated
-    //Use #getRenderable instead."
-    public Renderable getPreRenderResponse() {
-        return this.actuallyRenderable;
     }
 
     public HttpStatus byReasonOf(String reason) {
