@@ -330,7 +330,7 @@ public class DefaultServer implements Server {
     private void sendStatus(final SocketChannel sock, HttpStatus status, String body) {
         CharBuffer buffer = CharBuffer.allocate(8192);
         buffer.append("HTTP/1.1").append(' ').append(String.valueOf(status.getStatusCode()))
-                .append(' ').append(status.name()).append('\r').append('\n');
+                .append(' ').append(status.getPhrase()).append('\r').append('\n');
         SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'",
                 Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));

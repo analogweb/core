@@ -294,7 +294,10 @@ public final class ReflectionUtils {
             String className = ste.getClassName();
             if (className.equals(ReflectionUtils.class.getName()) == false
                     && className.contains("java.lang.Thread") == false) {
-                classes.add(ClassUtils.forNameQuietly(className));
+                Class<?> resolved = ClassUtils.forNameQuietly(className);
+                if (resolved != null) {
+                    classes.add(resolved);
+                }
             }
         }
         return classes;
