@@ -502,7 +502,7 @@ public class DefaultServer implements Server {
             // write headers
             CharBuffer buffer = CharBuffer.allocate(8192);
             buffer.append("HTTP/1.1").append(' ').append(String.valueOf(getStatus())).append(' ')
-                    .append(HttpStatus.valueOf(getStatus()).name()).append("\r\n");
+                    .append(HttpStatus.valueOf(getStatus()).getPhrase()).append("\r\n");
             Headers h = getResponseHeaders();
             if (h.contains("Date") == false) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'",
