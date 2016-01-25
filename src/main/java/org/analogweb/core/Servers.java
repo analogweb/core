@@ -25,12 +25,14 @@ public final class Servers {
 
     private static final Log log = Logs.getLog(Servers.class);
 
+    private static final int DEFAULT_PORT = 8000;
+    
     private Servers() {
         // nop.
     }
 
     public static void run(String... packageNames) {
-        run(8000, packageNames);
+        run(DEFAULT_PORT, packageNames);
     }
 
     public static void run(int port, String... packageNames) {
