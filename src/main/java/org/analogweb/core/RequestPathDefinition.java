@@ -85,21 +85,38 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
     }
 
     @Override
-    public boolean match(RequestPath requestPath) {
-        if (getActualPath().indexOf('*') > 0) {
-            return wildCardMatch(requestPath.getActualPath(), getActualPath())
-                    && containsRequestMethod(requestPath);
-        } else {
-            if (hasPlaceHolder(getActualPath())) {
-                return matchPlaceHolder(requestPath.getActualPath())
-                        && containsRequestMethod(requestPath);
-            }
-            return getActualPath().equals(requestPath.getActualPath())
-                    && containsRequestMethod(requestPath);
-        }
-    }
+	public boolean match(RequestPath requestPath) {
+//		if (containsRequestMethod(requestPath) == false) {
+//			return false;
+//		}
+		return matchWildCard(requestPath, getActualPath())
+				|| matchPlaceHolder(requestPath) || matchRegexPlaceHolder(requestPath)
+				|| getActualPath().equals(requestPath.getActualPath()) && containsRequestMethod(requestPath);
+	}
 
-    private boolean containsRequestMethod(RequestPath other) {
+    private boolean matchRegexPlaceHolder(RequestPath rp) {
+    	String requestedPath = rp.getActualPath();
+        List<String> requestedPathes = StringUtils.split(requestedPath, '/');
+        List<String> actualPathes = StringUtils.split(getActualPath(), '/');
+        if (requestedPathes.size() != actualPathes.size()) {
+            return false;
+        }
+        Iterator<String> actualPathesIterator = actualPathes.iterator();
+        for (String path : requestedPathes) {
+            String actualPath = actualPathesIterator.next();
+            List<String> identifiners = StringUtils.split(actualPath, '$');
+			if (identifiners.size() == 2) {
+				String pattern = identifiners.get(1);
+				if (pattern.startsWith("<") && pattern.endsWith(">")
+						&& Pattern.matches(StringUtils.substring(pattern, 1, pattern.length()-1), path)) {
+					return containsRequestMethod(rp);
+				}
+			}
+        }
+        return false;
+	}
+
+	private boolean containsRequestMethod(RequestPath other) {
         boolean contains = getRequestMethods().contains(other.getRequestMethod());
         if (contains == false) {
             throw new RequestMethodUnsupportedException(this, getRequestMethods(),
@@ -108,7 +125,8 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
         return contains;
     }
 
-    private boolean matchPlaceHolder(String requestedPath) {
+    private boolean matchPlaceHolder(RequestPath rp) {
+    	String requestedPath = rp.getActualPath();
         List<String> requestedPathes = StringUtils.split(requestedPath, '/');
         List<String> actualPathes = StringUtils.split(getActualPath(), '/');
         if (requestedPathes.size() != actualPathes.size()) {
@@ -122,15 +140,14 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
                 return false;
             }
         }
-        return true;
+        return containsRequestMethod(rp);
     }
 
-    private boolean hasPlaceHolder(String value) {
-        Pattern hasPlaceHolder = Pattern.compile(".*\\{[a-zA-z0-9]*\\}.*");
-        return hasPlaceHolder.matcher(value).matches();
-    }
-
-    protected boolean wildCardMatch(String text, String pattern) {
+    private boolean matchWildCard(RequestPath rp, String pattern) {
+    	String text = rp.getActualPath();
+		if (pattern.indexOf('*') < 0) {
+			return false;
+		}
         List<String> sp = StringUtils.split(pattern, '*');
         for (int i = 0; i < sp.size(); i++) {
             String card = sp.get(i);
@@ -148,7 +165,7 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
             }
             text = text.substring(idx + card.length());
         }
-        return true;
+        return containsRequestMethod(rp);
     }
 
     @Override
