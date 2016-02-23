@@ -86,9 +86,6 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
 
     @Override
 	public boolean match(RequestPath requestPath) {
-//		if (containsRequestMethod(requestPath) == false) {
-//			return false;
-//		}
 		return matchWildCard(requestPath, getActualPath())
 				|| matchPlaceHolder(requestPath) || matchRegexPlaceHolder(requestPath)
 				|| getActualPath().equals(requestPath.getActualPath()) && containsRequestMethod(requestPath);

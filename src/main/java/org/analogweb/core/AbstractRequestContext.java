@@ -41,7 +41,7 @@ public abstract class AbstractRequestContext implements RequestContext {
         this.matrixParams = new MatrixParameters(getRequestPath().getRequestURI());
         this.langs = new AcceptLanguages(this);
         this.defaultLocale = defaultLocale;
-        this.attributes = Maps.newConcurrentHashMap();
+        this.attributes = Maps.newEmptyHashMap();
     }
 
     @Override
