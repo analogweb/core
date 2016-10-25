@@ -45,7 +45,6 @@ public class Html extends TextFormattable<Html> {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static Html with(String str) {
         Html html = new Html(str);
         return html;

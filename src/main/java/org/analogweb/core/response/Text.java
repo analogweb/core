@@ -13,7 +13,6 @@ public class Text extends TextFormat<Text> {
         super(input, charset, contentType);
     }
 
-    @SuppressWarnings("unchecked")
     public static Text with(final String responseText) {
         return new Text(responseText);
     }

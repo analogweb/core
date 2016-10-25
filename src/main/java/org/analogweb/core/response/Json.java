@@ -29,7 +29,6 @@ public class Json extends TextFormattable<Json> {
         return json;
     }
 
-    @SuppressWarnings("unchecked")
     public static Json with(String str) {
         Json json = new Json(str);
         return json;
