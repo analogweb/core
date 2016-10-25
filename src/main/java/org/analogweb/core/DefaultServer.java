@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.analogweb.Application;
 import org.analogweb.ApplicationContext;
@@ -63,7 +64,7 @@ public class DefaultServer implements Server {
     private static final int LF = 10;
     private static final byte[] CRLF = new byte[] { CR, LF };
     private final URI serverURI;
-    private final Application app;
+    private final AtomicReference<Application> app;
     private final ApplicationContext resolver;
     private final ApplicationProperties props;
 
@@ -91,7 +92,7 @@ public class DefaultServer implements Server {
             ApplicationProperties props) {
         Assertion.notNull(app, Application.class.getName());
         this.serverURI = uri;
-        this.app = app;
+        this.app = new AtomicReference<Application>(app);
         this.resolver = contextResolver;
         this.props = props;
     }
@@ -100,7 +101,7 @@ public class DefaultServer implements Server {
     public void run() {
         ServerSocketChannel cnl = null;
         try {
-            this.app.run(resolver, props, getClassCollectors(), Thread.currentThread()
+            this.app.get().run(resolver, props, getClassCollectors(), Thread.currentThread()
                     .getContextClassLoader());
             cnl = SelectorProvider.provider().openServerSocketChannel();
             cnl.configureBlocking(false);
@@ -229,7 +230,7 @@ public class DefaultServer implements Server {
                             headerMap, body);
                     ResponseContextImpl response = new ResponseContextImpl(request, sock);
                     try {
-                        Response proceed = app.processRequest(request.getRequestPath(), request,
+                        Response proceed = app.get().processRequest(request.getRequestPath(), request,
                                 response);
                         if (proceed == Application.NOT_FOUND) {
                             throw new RequestCancelledException(HttpStatus.NOT_FOUND,
@@ -798,7 +799,7 @@ public class DefaultServer implements Server {
 
     @Override
     public void shutdown(int mode) {
-        app.dispose();
+        app.get().dispose();
     }
 
     protected List<ClassCollector> getClassCollectors() {
@@ -807,4 +808,10 @@ public class DefaultServer implements Server {
         list.add(new FileClassCollector());
         return Collections.unmodifiableList(list);
     }
+    
+	public void reload() {
+		Application newApplication = new WebApplication();
+		newApplication.run(resolver, props, getClassCollectors(), Thread.currentThread().getContextClassLoader());
+		this.app.compareAndSet(this.app.get(), newApplication);
+	}
 }
