@@ -14,7 +14,7 @@ public class DefaultResponseEntityTest {
     public void test() throws IOException {
         DefaultResponseEntity actual = new DefaultResponseEntity("ResponseEntity!");
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        actual.writeInto(out);
+        actual.writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is("ResponseEntity!"));
         assertThat(actual.getContentLength(), is(15L));
     }

@@ -4,29 +4,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.analogweb.Application;
-import org.analogweb.ApplicationContext;
-import org.analogweb.ApplicationProperties;
-import org.analogweb.Headers;
-import org.analogweb.RequestContext;
-import org.analogweb.RequestPath;
-import org.analogweb.ResponseContext;
-import org.analogweb.Response;
-import org.analogweb.ResponseEntity;
-import org.analogweb.core.AbstractRequestContext;
-import org.analogweb.core.AbstractResponseContext;
-import org.analogweb.core.ApplicationRuntimeException;
-import org.analogweb.core.DefaultApplicationContext;
-import org.analogweb.core.DefaultApplicationProperties;
-import org.analogweb.core.DefaultRequestPath;
-import org.analogweb.core.MapHeaders;
-import org.analogweb.core.WebApplication;
+import org.analogweb.*;
+import org.analogweb.core.*;
 import org.analogweb.util.ClassCollector;
 import org.analogweb.util.FileClassCollector;
 import org.analogweb.util.JarClassCollector;
@@ -68,25 +54,25 @@ public class FakeApplication {
     }
 
     public ResponseResult request(String path, String method) {
-        return request(path, method, new ByteArrayInputStream(new byte[0]));
+        return request(path, method, DefaultReadableBuffer.readBuffer(new byte[0]));
     }
 
     public ResponseResult request(String path, String method, final String body) {
         return request(path, method, Maps.<String, List<String>> newEmptyHashMap(),
-                new ByteArrayInputStream(body.getBytes()));
+                DefaultReadableBuffer.readBuffer(body.getBytes()));
     }
 
-    public ResponseResult request(String path, String method, final InputStream body) {
+    public ResponseResult request(String path, String method, final ReadableBuffer body) {
         return request(path, method, Maps.<String, List<String>> newEmptyHashMap(), body);
     }
 
     public ResponseResult request(String path, String method,
             final Map<String, List<String>> headers) {
-        return request(path, method, headers, new ByteArrayInputStream(new byte[0]));
+        return request(path, method, headers, DefaultReadableBuffer.readBuffer(new byte[0]));
     }
 
     public ResponseResult request(String path, final String method,
-            final Map<String, List<String>> headers, final InputStream body) {
+            final Map<String, List<String>> headers, final ReadableBuffer body) {
         RequestPath requestPath = new DefaultRequestPath(URI.create("/"), URI.create(path), method);
         RequestContext request = new AbstractRequestContext(requestPath, Locale.getDefault()) {
 
@@ -96,7 +82,7 @@ public class FakeApplication {
             }
 
             @Override
-            public InputStream getRequestBody() throws IOException {
+            public ReadableBuffer getRequestBody() throws IOException {
                 return body;
             }
 
@@ -119,7 +105,7 @@ public class FakeApplication {
                     ResponseEntity entity = response.getEntity();
                     // no content.
                     if (entity != null) {
-                        entity.writeInto(result.getResponseBody());
+                        entity.writeInto(DefaultWritableBuffer.writeBuffer(Channels.newChannel(result.getResponseBody())));
                     }
                     result.getResponseBody().flush();
                 } catch (IOException e) {

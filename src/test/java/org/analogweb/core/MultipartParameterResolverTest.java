@@ -50,7 +50,7 @@ public class MultipartParameterResolverTest {
         RequestContext request = mock(RequestContext.class);
         InvocationMetadata metadata = mock(InvocationMetadata.class);
         InputStream body = new ByteArrayInputStream(content.getBytes());
-        when(request.getRequestBody()).thenReturn(body);
+        when(request.getRequestBody()).thenReturn(DefaultReadableBuffer.readBuffer(body));
         when(request.getContentType())
                 .thenReturn(
                         MediaTypes
@@ -67,7 +67,7 @@ public class MultipartParameterResolverTest {
         RequestContext request = mock(RequestContext.class);
         InvocationMetadata metadata = mock(InvocationMetadata.class);
         InputStream body = new ByteArrayInputStream(content.getBytes());
-        when(request.getRequestBody()).thenReturn(body);
+        when(request.getRequestBody()).thenReturn(DefaultReadableBuffer.readBuffer(body));
         when(request.getContentType())
                 .thenReturn(
                         MediaTypes
@@ -84,7 +84,7 @@ public class MultipartParameterResolverTest {
         RequestContext request = mock(RequestContext.class);
         InvocationMetadata metadata = mock(InvocationMetadata.class);
         InputStream body = new ByteArrayInputStream(content.getBytes());
-        when(request.getRequestBody()).thenReturn(body);
+        when(request.getRequestBody()).thenReturn(DefaultReadableBuffer.readBuffer(body));
         when(request.getContentType())
                 .thenReturn(
                         MediaTypes
@@ -99,7 +99,7 @@ public class MultipartParameterResolverTest {
         RequestContext request = mock(RequestContext.class);
         InvocationMetadata metadata = mock(InvocationMetadata.class);
         InputStream body = new ByteArrayInputStream(content.getBytes());
-        when(request.getRequestBody()).thenReturn(body);
+        when(request.getRequestBody()).thenReturn(DefaultReadableBuffer.readBuffer(body));
         when(request.getContentType())
                 .thenReturn(
                         MediaTypes
@@ -119,7 +119,7 @@ public class MultipartParameterResolverTest {
         RequestContext request = mock(RequestContext.class);
         InvocationMetadata metadata = mock(InvocationMetadata.class);
         InputStream body = new ByteArrayInputStream(content.getBytes());
-        when(request.getRequestBody()).thenReturn(body);
+        when(request.getRequestBody()).thenReturn(DefaultReadableBuffer.readBuffer(body));
         when(request.getContentType())
                 .thenReturn(
                         MediaTypes
@@ -140,7 +140,7 @@ public class MultipartParameterResolverTest {
         RequestContext request = mock(RequestContext.class);
         InvocationMetadata metadata = mock(InvocationMetadata.class);
         InputStream body = new ByteArrayInputStream(content.getBytes());
-        when(request.getRequestBody()).thenReturn(body);
+        when(request.getRequestBody()).thenReturn(DefaultReadableBuffer.readBuffer(body));
         when(request.getContentType())
                 .thenReturn(
                         MediaTypes

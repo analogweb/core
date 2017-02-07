@@ -5,12 +5,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
-import org.analogweb.Cookies;
-import org.analogweb.Headers;
-import org.analogweb.MediaType;
-import org.analogweb.Parameters;
-import org.analogweb.RequestContext;
-import org.analogweb.RequestPath;
+import org.analogweb.*;
 import org.analogweb.util.Assertion;
 
 /**
@@ -55,7 +50,7 @@ public class RequestContextWrapper implements RequestContext {
     }
 
     @Override
-    public InputStream getRequestBody() throws IOException {
+    public ReadableBuffer getRequestBody() throws IOException {
         return getOriginalRequestContext().getRequestBody();
     }
 

@@ -17,11 +17,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.nio.channels.spi.SelectorProvider;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -37,17 +33,7 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.analogweb.Application;
-import org.analogweb.ApplicationContext;
-import org.analogweb.ApplicationProperties;
-import org.analogweb.Disposable;
-import org.analogweb.Headers;
-import org.analogweb.RequestContext;
-import org.analogweb.RequestPath;
-import org.analogweb.Response;
-import org.analogweb.ResponseEntity;
-import org.analogweb.Server;
-import org.analogweb.WebApplicationException;
+import org.analogweb.*;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.ClassCollector;
@@ -401,7 +387,7 @@ public class DefaultServer implements Server {
         }
 
         @Override
-        public InputStream getRequestBody() throws IOException {
+        public ReadableBuffer getRequestBody() throws IOException {
             return body.open();
         }
 
@@ -468,16 +454,16 @@ public class DefaultServer implements Server {
             }
         }
 
-        public InputStream open() throws IOException {
+        public ReadableBuffer open() throws IOException {
             if (this.ra != null) {
                 IOUtils.closeQuietly(this.ra);
                 this.ra = new RandomAccessFile(file, "r");
-                return new FileInputStream(this.ra.getFD());
+                return DefaultReadableBuffer.readBuffer(Channels.newChannel(new FileInputStream(this.ra.getFD())));
             } else {
                 if (this.out instanceof ByteArrayOutputStream) {
-                    return new ByteArrayInputStream(((ByteArrayOutputStream) out).toByteArray());
+                    return DefaultReadableBuffer.readBuffer(Channels.newChannel(new ByteArrayInputStream(((ByteArrayOutputStream) out).toByteArray())));
                 } else {
-                    return EMPTY;
+                    return DefaultReadableBuffer.readBuffer(Channels.newChannel(EMPTY));
                 }
             }
         }
@@ -538,7 +524,7 @@ public class DefaultServer implements Server {
                 sock.write(iso.encode(buffer));
                 ResponseEntity entity = response.getEntity();
                 if (entity != null) {
-                    entity.writeInto(out);
+                    entity.writeInto(DefaultWritableBuffer.writeBuffer(Channels.newChannel(out)));
                 }
             } catch (IOException e) {
                 e.printStackTrace();

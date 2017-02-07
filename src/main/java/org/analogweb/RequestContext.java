@@ -1,7 +1,6 @@
 package org.analogweb;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
@@ -21,7 +20,7 @@ public interface RequestContext {
 
     Parameters getMatrixParameters();
 
-    InputStream getRequestBody() throws IOException;
+    ReadableBuffer getRequestBody() throws IOException;
 
     MediaType getContentType();
 

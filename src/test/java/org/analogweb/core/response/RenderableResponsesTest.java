@@ -13,6 +13,7 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseEntity;
+import org.analogweb.core.DefaultReadableBuffer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,7 +42,7 @@ public class RenderableResponsesTest {
     @Test
     public void testOkWithEntityStream() throws Exception {
         InputStream entity = new ByteArrayInputStream(new byte[0]);
-        RenderableResponses responses = RenderableResponses.ok(entity);
+        RenderableResponses responses = RenderableResponses.ok(DefaultReadableBuffer.readBuffer(entity));
         responses.render(request, response);
         verify(response).setStatus(200);
     }

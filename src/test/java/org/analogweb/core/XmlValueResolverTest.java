@@ -40,7 +40,7 @@ public class XmlValueResolverTest {
         byte[] xmlBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><hello><world>snowgoose</world></hello>"
                 .getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        when(context.getRequestBody()).thenReturn(xmlBody);
+        when(context.getRequestBody()).thenReturn(DefaultReadableBuffer.readBuffer(xmlBody));
         Hello actual = (Hello) mapper.resolveValue(context, null, null, Hello.class, null);
         assertThat(actual.getWorld(), is("snowgoose"));
     }
@@ -52,7 +52,7 @@ public class XmlValueResolverTest {
         byte[] xmlBytes = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><hello><world>snowgoose</world></hello>"
                 .getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        when(context.getRequestBody()).thenReturn(xmlBody);
+        when(context.getRequestBody()).thenReturn(DefaultReadableBuffer.readBuffer(xmlBody));
         UnHello actual = (UnHello) mapper.resolveValue(context, null, null, UnHello.class, null);
         assertThat(actual, is(nullValue()));
     }
@@ -63,7 +63,7 @@ public class XmlValueResolverTest {
         when(headers.getValues("Content-Type")).thenReturn(Arrays.asList("application/json"));
         byte[] xmlBytes = "{\"hello\":\"world\"}".getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        when(context.getRequestBody()).thenReturn(xmlBody);
+        when(context.getRequestBody()).thenReturn(DefaultReadableBuffer.readBuffer(xmlBody));
         UnHello actual = (UnHello) mapper.resolveValue(context, null, null, UnHello.class, null);
         assertThat(actual, is(nullValue()));
     }
@@ -75,7 +75,7 @@ public class XmlValueResolverTest {
         when(headers.getValues("Content-Type")).thenReturn(Collections.EMPTY_LIST);
         byte[] xmlBytes = "plain text".getBytes();
         InputStream xmlBody = new ByteArrayInputStream(xmlBytes);
-        when(context.getRequestBody()).thenReturn(xmlBody);
+        when(context.getRequestBody()).thenReturn(DefaultReadableBuffer.readBuffer(xmlBody));
         UnHello actual = (UnHello) mapper.resolveValue(context, null, null, UnHello.class, null);
         assertThat(actual, is(nullValue()));
     }

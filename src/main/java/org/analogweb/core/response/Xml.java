@@ -6,10 +6,7 @@ import java.io.OutputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import org.analogweb.ResponseContext;
-import org.analogweb.ResponseFormatter;
-import org.analogweb.RequestContext;
-import org.analogweb.ResponseEntity;
+import org.analogweb.*;
 import org.analogweb.core.FormatFailureException;
 
 /**
@@ -38,11 +35,11 @@ public class Xml extends TextFormattable<Xml> {
             return new ResponseEntity() {
 
                 @Override
-                public void writeInto(OutputStream responseBody) throws IOException {
+                public void writeInto(WritableBuffer responseBody) throws IOException {
                     try {
                         final JAXBContext jaxb = JAXBContext.newInstance(source.getClass());
                         try {
-                            jaxb.createMarshaller().marshal(source, responseBody);
+                            jaxb.createMarshaller().marshal(source, responseBody.asOutputStream());
                         } catch (JAXBException e) {
                             throw new FormatFailureException(e, source, getClass().getName());
                         }

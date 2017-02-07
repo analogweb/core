@@ -16,6 +16,7 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.Response;
+import org.analogweb.core.DefaultWritableBuffer;
 import org.analogweb.core.FormatFailureException;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,7 +45,7 @@ public class XmlTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Xml xml = Xml.as(new Foo());
         Response r = xml.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         String actual = new String(out.toByteArray(), charset);
         assertThat(
                 actual,
@@ -60,7 +61,7 @@ public class XmlTest {
         // render miss mapped type.
         Xml xml = Xml.as(new Hoge());
         Response r = xml.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
     }
 
     @XmlRootElement

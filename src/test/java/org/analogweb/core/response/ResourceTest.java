@@ -14,12 +14,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.analogweb.Headers;
-import org.analogweb.RequestContext;
-import org.analogweb.ResponseContext;
-import org.analogweb.Response;
+import org.analogweb.*;
 import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.AssertionFailureException;
+import org.analogweb.core.DefaultReadableBuffer;
+import org.analogweb.core.DefaultWritableBuffer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +50,7 @@ public class ResourceTest {
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Response r = resource.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is("this is test log."));
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "attachment; filename=text.log");
@@ -65,7 +64,7 @@ public class ResourceTest {
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Response r = resource.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is("this is test log."));
         verify(headers).putValue("Content-Type", "text/plain");
         verify(headers).putValue("Content-Disposition", "attachment; filename=text.log");
@@ -85,7 +84,7 @@ public class ResourceTest {
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Response r = resource.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is("this is test log."));
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "inline; filename=text.log");
@@ -105,7 +104,7 @@ public class ResourceTest {
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Response r = resource.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is("this is test log."));
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "attachment; filename=text.log");
@@ -121,11 +120,11 @@ public class ResourceTest {
     public void testDefaultStreamResource() throws Exception {
         File file = folder.newFile("text.log");
         writeStringTo(file);
-        Resource resource = Resource.as(new FileInputStream(file));
+        Resource resource = Resource.as(DefaultReadableBuffer.readBuffer(new FileInputStream(file)));
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Response r = resource.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is("this is test log."));
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers).putValue("Content-Disposition", "attachment");
@@ -135,11 +134,11 @@ public class ResourceTest {
     public void testDefaultStreamResourceWithoutContentDisposition() throws Exception {
         File file = folder.newFile("text.log");
         writeStringTo(file);
-        Resource resource = Resource.as(new FileInputStream(file)).withoutContentDisposition();
+        Resource resource = Resource.as(DefaultReadableBuffer.readBuffer(new FileInputStream(file))).withoutContentDisposition();
         when(response.getResponseHeaders()).thenReturn(headers);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Response r = resource.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is("this is test log."));
         verify(headers).putValue("Content-Type", "application/octet-stream");
         verify(headers,noMoreInteractions()).putValue("Content-Disposition", "attachment");
@@ -148,7 +147,7 @@ public class ResourceTest {
     @Test
     public void testNullStreamResource() throws Exception {
         thrown.expect(AssertionFailureException.class);
-        Resource.as((InputStream) null);
+        Resource.as((ReadableBuffer) null);
     }
 
     private void writeStringTo(File file) throws IOException {

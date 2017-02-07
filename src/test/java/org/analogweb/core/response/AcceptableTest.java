@@ -23,6 +23,7 @@ import org.analogweb.Response;
 import org.analogweb.ResponseEntity;
 import org.analogweb.core.DefaultResponse;
 import org.analogweb.WebApplicationException;
+import org.analogweb.core.DefaultWritableBuffer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -207,7 +208,7 @@ public class AcceptableTest {
         Response writer = a.render(context, response);
         ResponseEntity entity = writer.getEntity();
         if (entity != null) {
-            entity.writeInto(out);
+            entity.writeInto(DefaultWritableBuffer.writeBuffer(out));
         }
         return new String(out.toByteArray());
     }

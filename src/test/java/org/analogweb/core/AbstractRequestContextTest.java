@@ -8,11 +8,13 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 
 import org.analogweb.Headers;
+import org.analogweb.ReadableBuffer;
 import org.analogweb.RequestPath;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +67,7 @@ public class AbstractRequestContextTest {
     private final class StubRequestContext extends AbstractRequestContext {
 
         private Headers headers;
-        private InputStream in;
+        private ReadableBuffer in;
         private String method;
 
         protected StubRequestContext(RequestPath requestPath, Locale defaultLocale,
@@ -77,7 +79,7 @@ public class AbstractRequestContextTest {
                 Headers headers, InputStream in, String method) {
             super(requestPath, defaultLocale);
             this.headers = headers;
-            this.in = in;
+            this.in = DefaultReadableBuffer.readBuffer(Channels.newChannel(in));
         }
 
         @Override
@@ -86,7 +88,7 @@ public class AbstractRequestContextTest {
         }
 
         @Override
-        public InputStream getRequestBody() throws IOException {
+        public ReadableBuffer getRequestBody() throws IOException {
             return in;
         }
 

@@ -8,7 +8,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.analogweb.ReadableBuffer;
 import org.analogweb.core.DefaultApplicationProperties;
+import org.analogweb.core.DefaultReadableBuffer;
 import org.analogweb.core.fake.FakeApplication;
 import org.analogweb.core.fake.ResponseResult;
 import org.analogweb.util.Maps;
@@ -79,9 +81,9 @@ public class IntrgrationTest {
     @Test
     public void testPutXmlBody() {
         app = fakeApplication(DefaultApplicationProperties.properties("integration.testcase"));
-        InputStream body = new ByteArrayInputStream(
+        ReadableBuffer body = DefaultReadableBuffer.readBuffer(new ByteArrayInputStream(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><fooBean><baa>baz</baa></fooBean>"
-                        .getBytes());
+                        .getBytes()));
         ResponseResult actual = app.request("/helloXmlValue", "PUT",
                 Maps.newHashMap("Content-Type", Arrays.asList("text/xml")), body);
         assertThat(actual.getStatus(), is(200));
@@ -93,9 +95,9 @@ public class IntrgrationTest {
     @Test
     public void testPutXmlBodyInvalidContentType() {
         app = fakeApplication(DefaultApplicationProperties.properties("integration.testcase"));
-        InputStream body = new ByteArrayInputStream(
+        ReadableBuffer body = DefaultReadableBuffer.readBuffer(new ByteArrayInputStream(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><fooBean><baa>baz</baa></fooBean>"
-                        .getBytes());
+                        .getBytes()));
         ResponseResult actual = app.request("/helloXmlValue", "PUT",
                 Maps.newHashMap("Content-Type", Arrays.asList("text/plain")), body);
         assertThat(actual.getStatus(), is(415));
@@ -105,9 +107,9 @@ public class IntrgrationTest {
     @Test
     public void testPutXmlBodyInvalidContent() {
         app = fakeApplication(DefaultApplicationProperties.properties("integration.testcase"));
-        InputStream body = new ByteArrayInputStream(
+        ReadableBuffer body = DefaultReadableBuffer.readBuffer(new ByteArrayInputStream(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><fooBean><baa>baz</baa></fooBean>"
-                        .getBytes());
+                        .getBytes()));
         ResponseResult actual = app.request("/helloXmlValue", "PUT",
                 Maps.newHashMap("Content-Type", Arrays.asList("plain/text")), body);
         assertThat(actual.getStatus(), is(415));
@@ -116,7 +118,7 @@ public class IntrgrationTest {
     @Test
     public void testPostFormToBean() {
         app = fakeApplication(DefaultApplicationProperties.properties("integration.testcase"));
-        InputStream body = new ByteArrayInputStream("baa=foo".getBytes());
+        ReadableBuffer body = DefaultReadableBuffer.readBuffer(new ByteArrayInputStream("baa=foo".getBytes()));
         ResponseResult actual = app
                 .request(
                         "/helloBean",

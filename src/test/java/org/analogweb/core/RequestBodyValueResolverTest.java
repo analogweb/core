@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.analogweb.InvocationMetadata;
+import org.analogweb.ReadableBuffer;
 import org.analogweb.RequestContext;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,16 +35,16 @@ public class RequestBodyValueResolverTest {
 
     @Test
     public void testResolveAttributeValue() throws Exception {
-        InputStream expected = new ByteArrayInputStream(new byte[0]);
+        ReadableBuffer expected = DefaultReadableBuffer.readBuffer(new byte[0]);
         when(requestContext.getRequestBody()).thenReturn(expected);
         InputStream actual = (InputStream) resolver.resolveValue(requestContext, metadata, "",
                 InputStream.class, null);
-        assertThat(actual, is(expected));
+        assertThat(actual, is(expected.asInputStream()));
     }
 
     @Test
     public void testResolveAttributeValueAsString() throws Exception {
-        InputStream expected = new ByteArrayInputStream("abcde".getBytes("UTF-8"));
+        ReadableBuffer expected = DefaultReadableBuffer.readBuffer("abcde".getBytes("UTF-8"));
         when(requestContext.getRequestBody()).thenReturn(expected);
         String actual = (String) resolver.resolveValue(requestContext, metadata, "", String.class,
                 null);
@@ -52,7 +53,7 @@ public class RequestBodyValueResolverTest {
 
     @Test
     public void testResolveAttributeValueWithoutType() throws Exception {
-        InputStream expected = new ByteArrayInputStream("abcde".getBytes("UTF-8"));
+        ReadableBuffer expected = DefaultReadableBuffer.readBuffer("abcde".getBytes("UTF-8"));
         when(requestContext.getRequestBody()).thenReturn(expected);
         Object actual = resolver.resolveValue(requestContext, metadata, "", null, null);
         assertThat(actual, is(nullValue()));
@@ -61,7 +62,7 @@ public class RequestBodyValueResolverTest {
     @Test
     public void testResolveAttributeValueUnknownType() throws Exception {
         thrown.expect(UnresolvableValueException.class);
-        InputStream expected = new ByteArrayInputStream("abcde".getBytes("UTF-8"));
+        ReadableBuffer expected = DefaultReadableBuffer.readBuffer("abcde".getBytes("UTF-8"));
         when(requestContext.getRequestBody()).thenReturn(expected);
         resolver.resolveValue(requestContext, metadata, "", Integer.class, null);
     }

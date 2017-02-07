@@ -13,6 +13,7 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.Response;
+import org.analogweb.core.DefaultWritableBuffer;
 import org.analogweb.util.Maps;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,7 +48,7 @@ public class HttpStatusTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Response r = HttpStatus.NOT_FOUND.byReasonOf("foo is not found.").render(requestContext,
                 response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is("foo is not found."));
         verify(response).setStatus(404);
     }

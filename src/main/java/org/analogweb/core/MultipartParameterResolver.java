@@ -11,7 +11,6 @@ import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -23,11 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.analogweb.InvocationMetadata;
-import org.analogweb.MediaType;
-import org.analogweb.Multipart;
-import org.analogweb.MultipartParameters;
-import org.analogweb.RequestContext;
+import org.analogweb.*;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ClassUtils;
 import org.analogweb.util.IOUtils;
@@ -73,14 +68,14 @@ public class MultipartParameterResolver extends ParameterValueResolver implement
         }
     }
 
-    private MultipartParameters<Multipart> extractMultipart(String contentType, InputStream in)
+    private MultipartParameters<Multipart> extractMultipart(String contentType, ReadableBuffer in)
             throws IOException {
         byte[] boundary = extractBoundary(contentType);
         if (log.isTraceEnabled()) {
             log.trace(String.format("Multipart Boundary : %s", new String(boundary)));
         }
         List<Multipart> params = new LinkedList<Multipart>();
-        ReadableByteChannel source = Channels.newChannel(in);
+        ReadableByteChannel source = in.asChannel();
         ByteBuffer buffer = ByteBuffer.allocate(8192);
         source.read(buffer);
         buffer.flip();

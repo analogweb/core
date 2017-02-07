@@ -14,6 +14,7 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.Response;
+import org.analogweb.core.DefaultWritableBuffer;
 import org.analogweb.util.StringUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,7 +45,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = actual.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is(responseText));
         assertThat(actual.toString(), is(responseText));
         verify(headers).putValue("Content-Type", "text/plain; charset=" + charset);
@@ -62,7 +63,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = actual.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is(responseText));
         verify(headers).putValue("Content-Type",
                 "text/plain; charset=" + Charset.defaultCharset().displayName());
@@ -78,7 +79,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = actual.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is(responseText));
         verify(headers).putValue("Content-Type", "text/plain");
     }
@@ -94,7 +95,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = actual.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is(responseText));
         verify(headers).putValue("Content-Type", "text/xml; charset=" + charset);
     }
@@ -109,7 +110,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = actual.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is(responseText));
         verify(headers).putValue("Content-Type", "application/json; charset=" + charset);
     }
@@ -124,7 +125,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = actual.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray(), "Shift-JIS"), is(responseText));
     }
 
@@ -136,7 +137,7 @@ public class TextTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = actual.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         assertThat(new String(out.toByteArray()), is(StringUtils.EMPTY));
     }
 

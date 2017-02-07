@@ -19,6 +19,7 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.Response;
+import org.analogweb.core.DefaultWritableBuffer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,7 +56,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         String actual = new String(out.toByteArray(), charset);
         assertThat(actual, is("{\"age\": 33,\"birthDay\": " + birthDay.getTime()
                 + ",\"name\": \"foo\"}"));
@@ -70,7 +71,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         String actual = new String(out.toByteArray(), charset);
         assertThat(actual, is("{\"value\": \"foo!\"}"));
     }
@@ -89,7 +90,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         String actual = new String(out.toByteArray(), charset);
         assertThat(actual, is("{[" + "{\"age\": 33,\"birthDay\": " + birthDay.getTime()
                 + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": " + birthDay2.getTime()
@@ -110,7 +111,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         String actual = new String(out.toByteArray(), charset);
         assertThat(actual, is("{[" + "{\"age\": 33,\"birthDay\": " + birthDay.getTime()
                 + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": " + birthDay2.getTime()
@@ -126,7 +127,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         String actual = new String(out.toByteArray(), "UTF-8");
         assertThat(actual, is("{\"boo\": true,\"simples\": [" + "{\"age\": 33,\"birthDay\": "
                 + birthDay.getTime() + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": "
@@ -142,7 +143,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = jsons.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         String actual = new String(out.toByteArray(), "UTF-8");
         assertThat(actual, is("{\"id\": \"01\",\"simples\": [" + "{\"age\": 33,\"birthDay\": "
                 + birthDay.getTime() + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": "
@@ -158,7 +159,7 @@ public class JsonTest {
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(out);
+        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
         String actual = new String(out.toByteArray(), charset);
         assertThat(actual, is("{\"age\": 33,\"birthDay\": null,\"name\": \"foo\"}"));
     }

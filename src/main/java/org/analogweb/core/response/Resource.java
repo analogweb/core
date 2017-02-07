@@ -8,10 +8,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
+import org.analogweb.ReadableBuffer;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.ResponseEntity;
 import org.analogweb.core.ApplicationRuntimeException;
+import org.analogweb.core.DefaultReadableBuffer;
 import org.analogweb.core.DefaultResponseEntity;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.StringUtils;
@@ -28,35 +30,35 @@ public class Resource extends BuildAndRenderableResponse<Resource> {
     private String charset = DEFAULT_CHARSET;
     private final String fileName;
     private String disposition = "attachment";
-    private final InputStream input;
+    private final ReadableBuffer input;
     private boolean withoutContentDisposition = false;
 
-    protected Resource(InputStream input, String fileName) {
+    protected Resource(ReadableBuffer input, String fileName) {
         this(input, fileName, DEFAULT_CONTENT_TYPE, DEFAULT_CHARSET);
     }
 
-    protected Resource(InputStream input, String fileName, String contentType) {
+    protected Resource(ReadableBuffer input, String fileName, String contentType) {
         this(input, fileName, contentType, DEFAULT_CHARSET);
     }
 
-    protected Resource(InputStream input, String fileName, String contentType, String charset) {
+    protected Resource(ReadableBuffer input, String fileName, String contentType, String charset) {
         this.input = input;
         this.fileName = fileName;
         header("Content-Type", contentType);
         this.charset = charset;
     }
 
-    public static Resource as(InputStream input) {
+    public static Resource as(ReadableBuffer input) {
         return as(input, StringUtils.EMPTY);
     }
 
-    public static Resource as(InputStream input, String fileName) {
-        Assertion.notNull(input, InputStream.class.getName());
+    public static Resource as(ReadableBuffer input, String fileName) {
+        Assertion.notNull(input, ReadableBuffer.class.getName());
         return new Resource(input, fileName);
     }
 
-    public static Resource as(InputStream input, String fileName, String contentType) {
-        Assertion.notNull(input, InputStream.class.getName());
+    public static Resource as(ReadableBuffer input, String fileName, String contentType) {
+        Assertion.notNull(input, ReadableBuffer.class.getName());
         return new Resource(input, fileName, contentType);
     }
 
@@ -68,7 +70,7 @@ public class Resource extends BuildAndRenderableResponse<Resource> {
     public static Resource as(File file) {
         Assertion.notNull(file, File.class.getName());
         try {
-            return new Resource(new FileInputStream(file), file.getName());
+            return new Resource(DefaultReadableBuffer.readBuffer(new FileInputStream(file).getChannel()),file.getName());
         } catch (FileNotFoundException e) {
             throw new ApplicationRuntimeException(e) {
 
@@ -117,7 +119,7 @@ public class Resource extends BuildAndRenderableResponse<Resource> {
         return this.fileName;
     }
 
-    protected InputStream getInputStream() {
+    protected ReadableBuffer getInputStream() {
         return this.input;
     }
 

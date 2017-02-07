@@ -21,7 +21,7 @@ public class XmlValueResolver implements SpecificMediaTypeRequestValueResolver {
     public Object resolveValue(RequestContext context, InvocationMetadata metadata, String key,
             Class<?> requiredType, Annotation[] annotations) {
         try {
-            return unmershall(createUnmarshaller(requiredType), context.getRequestBody());
+            return unmershall(createUnmarshaller(requiredType), context.getRequestBody().asInputStream());
         } catch (IOException e) {
             return null;
         }

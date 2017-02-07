@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 
+import org.analogweb.ReadableBuffer;
 import org.analogweb.ResponseEntity;
 import org.analogweb.core.DefaultResponseEntity;
 
@@ -21,7 +22,7 @@ public class RenderableResponses extends BuildAndRenderableResponse<RenderableRe
         return ok().entity(entity);
     }
 
-    public static RenderableResponses ok(InputStream body) {
+    public static RenderableResponses ok(ReadableBuffer body) {
         return ok(new DefaultResponseEntity(body));
     }
 

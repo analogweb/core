@@ -2,7 +2,6 @@ package org.analogweb;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 /**
@@ -11,7 +10,7 @@ import java.nio.charset.Charset;
  */
 public interface Response {
 
-    void putEntity(InputStream entity);
+    void putEntity(ReadableBuffer entity);
 
     void putEntity(String entity);
 
@@ -28,7 +27,7 @@ public interface Response {
     Response NOT_FOUND = new Response() {
     
         @Override
-        public void putEntity(InputStream entity) {
+        public void putEntity(ReadableBuffer entity) {
             //NOP
         }
     
@@ -71,7 +70,7 @@ public interface Response {
     Response EMPTY = new Response() {
     
         @Override
-        public void putEntity(InputStream entity) {
+        public void putEntity(ReadableBuffer entity) {
             //NOP
         }
     
@@ -93,7 +92,7 @@ public interface Response {
         ResponseEntity EMPTY_ENTITY = new ResponseEntity() {
     
             @Override
-            public void writeInto(OutputStream responseBody) throws IOException {
+            public void writeInto(WritableBuffer responseBody) throws IOException {
                 //NOP
             }
     

@@ -1,22 +1,21 @@
 package org.analogweb.core;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 
+import org.analogweb.ReadableBuffer;
 import org.analogweb.ResponseEntity;
-import org.analogweb.util.CountingOutputStream;
-import org.analogweb.util.IOUtils;
+import org.analogweb.WritableBuffer;
 
 /**
  * @author snowgoose
  */
 public class DefaultResponseEntity implements ResponseEntity {
 
-    private final InputStream entity;
+    private final ReadableBuffer entity;
     private long length = Long.MIN_VALUE;
 
     public DefaultResponseEntity(String entity) {
@@ -24,33 +23,46 @@ public class DefaultResponseEntity implements ResponseEntity {
     }
 
     public DefaultResponseEntity(String entity, Charset charset) {
-        this(new ByteArrayInputStream(entity.getBytes(charset)));
+        this(DefaultReadableBuffer.readBuffer(entity.getBytes(charset)));
     }
 
-    public DefaultResponseEntity(InputStream entity) {
+    public DefaultResponseEntity(ReadableBuffer entity) {
         this.entity = entity;
+        this.length = entity.getLength();
+    }
+
+    protected ReadableBuffer getEntity(){
+        return this.entity;
     }
 
     @Override
-    public void writeInto(OutputStream responseBody) throws IOException {
-        try {
-            CountingOutputStream c = new CountingOutputStream(responseBody);
-            IOUtils.copy(entity, c);
-            this.length = c.getCount();
-        } finally {
-            IOUtils.closeQuietly(entity);
+    public void writeInto(WritableBuffer responseBody) throws IOException {
+        ReadableBuffer entity = getEntity();
+        ByteBuffer buffer;
+        if(entity.getLength() > 0) {
+            buffer = ByteBuffer.allocate((int)entity.getLength());
+        } else {
+            buffer = ByteBuffer.allocate(8192);
+        }
+        int read;
+        int readLength = 0;
+        ReadableByteChannel readable = entity.asChannel();
+        WritableByteChannel writable = responseBody.asChannel();
+        while((read = readable.read(buffer)) > 0) {
+            readLength += read;
+            buffer.flip();
+            writable.write(buffer);
+            buffer.clear();
+        }
+        if(readLength > this.length) {
+            this.length = readLength;
         }
     }
 
     @Override
     public long getContentLength() {
-        if (this.length == Long.MIN_VALUE) {
-            if (ByteArrayInputStream.class.isInstance(entity)
-                    || FileInputStream.class.isInstance(entity)) {
-                length = IOUtils.avairable(entity);
-            } else {
+        if (this.length < 0) {
                 length = -1;
-            }
         }
         return length;
     }

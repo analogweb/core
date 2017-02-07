@@ -1,13 +1,8 @@
 package org.analogweb.core;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import org.analogweb.RequestContext;
-import org.analogweb.Response;
-import org.analogweb.ResponseContext;
-import org.analogweb.ResponseEntity;
+import org.analogweb.*;
 
 /**
  * @author snowgoose
@@ -23,11 +18,11 @@ public class DefaultResponse implements Response {
 
     @Override
     public void putEntity(String entity, Charset charset) {
-        putEntity(new ByteArrayInputStream(entity.getBytes(charset)));
+        putEntity(DefaultReadableBuffer.readBuffer(entity.getBytes(charset)));
     }
 
     @Override
-    public void putEntity(final InputStream entity) {
+    public void putEntity(final ReadableBuffer entity) {
         putEntity(new DefaultResponseEntity(entity));
     }
 
@@ -42,7 +37,7 @@ public class DefaultResponse implements Response {
     }
 
     public long getContentLength() {
-        ResponseEntity e = this.entity;
+        ResponseEntity e = getEntity();
         if (e != null) {
             return e.getContentLength();
         }

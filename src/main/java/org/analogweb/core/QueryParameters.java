@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.analogweb.MediaType;
 import org.analogweb.Parameters;
+import org.analogweb.ReadableBuffer;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.Maps;
 import org.analogweb.util.StringUtils;
@@ -23,20 +24,20 @@ public class QueryParameters implements Parameters {
 
     private Map<String, String[]> extracted;
     private final URI requestURI;
-    private final InputStream body;
+    private final ReadableBuffer body;
     private final MediaType contentType;
 
     public QueryParameters(URI requestURI) {
         this(requestURI, null, null);
     }
 
-    public QueryParameters(URI requestURI, InputStream body, MediaType contentType) {
+    public QueryParameters(URI requestURI, ReadableBuffer body, MediaType contentType) {
         this.requestURI = requestURI;
         this.body = body;
         this.contentType = contentType;
     }
 
-    protected Map<String, String[]> extract(URI requestURI, InputStream body, MediaType contentType) {
+    protected Map<String, String[]> extract(URI requestURI, ReadableBuffer body, MediaType contentType) {
         Charset charset = Charset.defaultCharset();
         if (contentType != null) {
             String c = contentType.getParameters().get("charset");
@@ -62,7 +63,7 @@ public class QueryParameters implements Parameters {
         }
     }
 
-    protected String resolveParametersParts(URI requestURI, InputStream body,
+    protected String resolveParametersParts(URI requestURI, ReadableBuffer body,
             MediaType contentType, Charset charset) throws IOException {
         return requestURI.getRawQuery();
     }

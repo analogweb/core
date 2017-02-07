@@ -3,11 +3,11 @@ package org.analogweb.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.nio.charset.Charset;
 
 import org.analogweb.InvocationMetadata;
 import org.analogweb.RequestContext;
 import org.analogweb.RequestValueResolver;
-import org.analogweb.util.IOUtils;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
@@ -30,9 +30,9 @@ public class RequestBodyValueResolver implements RequestValueResolver {
         }
         try {
             if (InputStream.class.isAssignableFrom(type)) {
-                return requestContext.getRequestBody();
+                return requestContext.getRequestBody().asInputStream();
             } else if (String.class.isAssignableFrom(type)) {
-                return IOUtils.toString(requestContext.getRequestBody());
+                return requestContext.getRequestBody().asString(Charset.defaultCharset());
             }
             log.log(Markers.BOOT_APPLICATION, "WV000001",
                     RequestBodyValueResolver.class.getCanonicalName(), type.getCanonicalName());
