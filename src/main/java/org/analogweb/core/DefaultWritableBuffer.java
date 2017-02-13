@@ -1,6 +1,8 @@
 package org.analogweb.core;
 
+import org.analogweb.ReadableBuffer;
 import org.analogweb.WritableBuffer;
+import org.analogweb.util.IOUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -68,6 +70,12 @@ public class DefaultWritableBuffer implements WritableBuffer {
     @Override
     public WritableByteChannel asChannel() throws IOException {
         return getChannel();
+    }
+
+    @Override
+    public WritableBuffer from(ReadableBuffer readable) throws IOException {
+        IOUtils.copy(readable.asChannel(),asChannel());
+        return this;
     }
 
 }

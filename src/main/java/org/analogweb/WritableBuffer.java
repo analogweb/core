@@ -12,4 +12,5 @@ public interface WritableBuffer {
 	WritableBuffer writeBytes(ByteBuffer buffer) throws IOException;
 	OutputStream asOutputStream() throws IOException;
 	WritableByteChannel asChannel() throws IOException;
+	WritableBuffer from(ReadableBuffer readable) throws IOException;
 }

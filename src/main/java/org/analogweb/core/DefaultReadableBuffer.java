@@ -1,6 +1,8 @@
 package org.analogweb.core;
 
 import org.analogweb.ReadableBuffer;
+import org.analogweb.WritableBuffer;
+import org.analogweb.util.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,7 +17,7 @@ import java.nio.charset.Charset;
  */
 public class DefaultReadableBuffer implements ReadableBuffer{
 
-    private final ReadableByteChannel buffer;
+    private final ReadableByteChannel channel;
     private long length;
     private InputStream stream;
 
@@ -37,7 +39,11 @@ public class DefaultReadableBuffer implements ReadableBuffer{
     }
 
     DefaultReadableBuffer(ReadableByteChannel content) {
-        this.buffer = content;
+        this.channel = content;
+    }
+
+    protected ReadableByteChannel getChannel(){
+        return this.channel;
     }
 
     @Override
@@ -47,7 +53,7 @@ public class DefaultReadableBuffer implements ReadableBuffer{
 
     @Override
     public ReadableBuffer read(ByteBuffer buffer) throws IOException {
-        this.buffer.read(buffer);
+        getChannel().read(buffer);
         return this;
     }
 
@@ -73,8 +79,9 @@ public class DefaultReadableBuffer implements ReadableBuffer{
 
     private int readFully(ByteBuffer b) throws IOException {
         int total = 0;
+        ReadableByteChannel ch = getChannel();
         while (true) {
-            int got = this.buffer.read(b);
+            int got = ch.read(b);
             if (got < 0) {
                 return (total == 0) ? -1 : total;
             }
@@ -88,14 +95,20 @@ public class DefaultReadableBuffer implements ReadableBuffer{
     @Override
     public InputStream asInputStream() throws IOException {
         if(stream == null) {
-            this.stream = Channels.newInputStream(this.buffer);
+            this.stream = Channels.newInputStream(getChannel());
         }
         return this.stream;
     }
 
     @Override
     public ReadableByteChannel asChannel() throws IOException{
-        return Channels.newChannel(asInputStream());
+        return getChannel();
+    }
+
+    @Override
+    public ReadableBuffer to(WritableBuffer writable) throws IOException {
+        IOUtils.copy(asChannel(),writable.asChannel());
+        return this;
     }
 
     @Override

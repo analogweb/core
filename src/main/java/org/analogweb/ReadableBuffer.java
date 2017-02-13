@@ -13,5 +13,6 @@ public interface ReadableBuffer {
 	String asString(Charset charset) throws IOException;
 	InputStream asInputStream() throws IOException;
 	ReadableByteChannel asChannel() throws IOException;
+	ReadableBuffer to(WritableBuffer writable) throws IOException;
 	long getLength();
 }

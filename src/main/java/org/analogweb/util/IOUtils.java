@@ -6,13 +6,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public final class IOUtils {
 
@@ -82,11 +85,16 @@ public final class IOUtils {
         return sb.toString();
     }
 
-    public static int avairable(InputStream in) {
-        try {
-            return in.available();
-        } catch (IOException e) {
-            return -1;
+    public static void copy(final ReadableByteChannel src, final WritableByteChannel dest) throws IOException {
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
+        while (src.read(buffer) != -1) {
+            buffer.flip();
+            dest.write(buffer);
+            buffer.compact();
+        }
+        buffer.flip();
+        while (buffer.hasRemaining()) {
+            dest.write(buffer);
         }
     }
 }
