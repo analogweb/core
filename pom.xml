@@ -1,5 +1,5 @@
 <!-- 
-    The MIT Lisence Copyright (c) 2011 - 2015 Analog Web Framework Development Team.
+    The MIT Lisence Copyright (c) 2011 - 2017 Analog Web Framework Development Team.
     
     Permission is hereby granted, free of charge, to any person obtaining 
 	a copy of this software and associated documentation files (the "Software"), 
@@ -50,7 +50,7 @@
 	<parent>
 		<groupId>org.analogweb</groupId>
 		<artifactId>analogweb-parent-modules</artifactId>
-		<version>11</version>
+		<version>13</version>
 		<relativePath />
 	</parent>
 	<build>
