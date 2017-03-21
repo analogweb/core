@@ -2,13 +2,10 @@ package org.analogweb.core;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import org.analogweb.Application;
-import org.analogweb.ApplicationContext;
-import org.analogweb.ApplicationProperties;
-import org.analogweb.Server;
-import org.analogweb.ServerFactory;
+import org.analogweb.*;
 import org.analogweb.util.ArrayUtils;
 import org.analogweb.util.ClassUtils;
 import org.analogweb.util.Maps;
@@ -71,6 +68,11 @@ public final class Servers {
     public static Server create(URI uri, ApplicationProperties properties,
             ApplicationContext context) {
         return create(uri, properties, context, new WebApplication());
+    }
+
+    public static Server create(URI uri, ApplicationProperties properties,
+                                ApplicationContext context, List<ModulesConfig> modules) {
+        return create(uri, properties, context, new WebApplication(modules));
     }
 
     public static Server create(URI uri, ApplicationProperties properties,

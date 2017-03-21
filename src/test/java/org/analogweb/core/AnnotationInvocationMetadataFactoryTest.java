@@ -36,7 +36,6 @@ public class AnnotationInvocationMetadataFactoryTest {
     public void testDetectAnnotatedAction() throws Exception {
         Class<?> actionsClass = FooResource.class;
         Method actionMethod = FooResource.class.getMethod("doSomething", (Class[]) null);
-        assertTrue(factory.containsInvocationClass(FooResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata.getInvocationClass().getCanonicalName(),
@@ -55,7 +54,6 @@ public class AnnotationInvocationMetadataFactoryTest {
     public void testDetectAnnotatedActionWithoutTypePathMapping() throws Exception {
         Class<?> actionsClass = BazResource.class;
         Method actionMethod = FooResource.class.getMethod("doSomething", (Class[]) null);
-        assertTrue(factory.containsInvocationClass(FooResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata, is(nullValue()));
@@ -66,7 +64,6 @@ public class AnnotationInvocationMetadataFactoryTest {
         Class<?> actionsClass = BaaResource.class;
         Method actionMethod = BaaResource.class.getMethod("doSomethingWithPostMethod",
                 (Class[]) null);
-        assertTrue(factory.containsInvocationClass(BaaResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata.getInvocationClass().getCanonicalName(),
@@ -85,7 +82,6 @@ public class AnnotationInvocationMetadataFactoryTest {
         Class<?> actionsClass = BaaResource.class;
         Method actionMethod = BaaResource.class.getMethod("doSomethingWithGetMethod",
                 (Class[]) null);
-        assertTrue(factory.containsInvocationClass(BaaResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata.getInvocationClass().getCanonicalName(),
@@ -104,7 +100,6 @@ public class AnnotationInvocationMetadataFactoryTest {
         Class<?> actionsClass = BaaResource.class;
         Method actionMethod = BaaResource.class.getMethod("doSomethingWithPutMethod",
                 (Class[]) null);
-        assertTrue(factory.containsInvocationClass(BaaResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata.getInvocationClass().getCanonicalName(),
@@ -123,7 +118,6 @@ public class AnnotationInvocationMetadataFactoryTest {
         Class<?> actionsClass = BaaResource.class;
         Method actionMethod = BaaResource.class.getMethod("doSomethingWithDeleteMethod",
                 new Class[] { String.class });
-        assertTrue(factory.containsInvocationClass(BaaResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata.getInvocationClass().getCanonicalName(),
@@ -143,7 +137,6 @@ public class AnnotationInvocationMetadataFactoryTest {
         Class<?> actionsClass = FooResource.class;
         Method actionMethod = FooResource.class.getMethod("doSomethingWithArg",
                 new Class<?>[] { String.class });
-        assertTrue(factory.containsInvocationClass(FooResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata.getInvocationClass().getCanonicalName(),
@@ -161,7 +154,6 @@ public class AnnotationInvocationMetadataFactoryTest {
         Class<?> actionsClass = FooResource.class;
         Method actionMethod = FooResource.class.getMethod("doSomethingNoDetectable",
                 new Class<?>[] { String.class, Integer.class });
-        assertTrue(factory.containsInvocationClass(FooResource.class));
         assertThat(factory.createInvocationMetadata(actionsClass, actionMethod), is(nullValue()));
     }
 
@@ -170,7 +162,6 @@ public class AnnotationInvocationMetadataFactoryTest {
         Class<?> actionsClass = FooResource.class;
         Method actionMethod = FooResource.class.getMethod("doSomethingNameBased",
                 new Class<?>[] { String.class });
-        assertTrue(factory.containsInvocationClass(FooResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata.getInvocationClass().getCanonicalName(),
@@ -188,7 +179,6 @@ public class AnnotationInvocationMetadataFactoryTest {
         Class<?> actionsClass = BaaResource.class;
         Method actionMethod = BaaResource.class.getMethod("doSomethingNameBased",
                 new Class<?>[] { String.class });
-        assertTrue(factory.containsInvocationClass(FooResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata.getInvocationClass().getCanonicalName(),
@@ -205,7 +195,6 @@ public class AnnotationInvocationMetadataFactoryTest {
     public void testDetectAnnotatedActionInhelitance() throws Exception {
         Class<?> actionsClass = Child.class;
         Method actionMethod = Child.class.getMethod("resolve", String.class);
-        assertTrue(factory.containsInvocationClass(FooResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata.getInvocationClass().getCanonicalName(),
@@ -226,7 +215,6 @@ public class AnnotationInvocationMetadataFactoryTest {
     public void testDetectAnnotatedActionWithBridgeMethod() throws Exception {
         Class<?> actionsClass = Child.class;
         Method actionMethod = Child.class.getMethod("resolve", Object.class);
-        assertTrue(factory.containsInvocationClass(FooResource.class));
         InvocationMetadata actionMethodMetadata = factory.createInvocationMetadata(actionsClass,
                 actionMethod);
         assertThat(actionMethodMetadata, is(nullValue()));

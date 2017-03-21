@@ -1,10 +1,8 @@
 package org.analogweb.core;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.net.URL;
+import java.util.*;
 
 import org.analogweb.ContainerAdaptor;
 import org.analogweb.InvocationMetadata;
@@ -12,10 +10,7 @@ import org.analogweb.InvocationMetadataFactory;
 import org.analogweb.RequestPathMetadata;
 import org.analogweb.annotation.HttpMethod;
 import org.analogweb.annotation.Route;
-import org.analogweb.util.AnnotationUtils;
-import org.analogweb.util.CollectionUtils;
-import org.analogweb.util.ReflectionUtils;
-import org.analogweb.util.StringUtils;
+import org.analogweb.util.*;
 
 /**
  * @author snowgoose
@@ -23,18 +18,16 @@ import org.analogweb.util.StringUtils;
 public class AnnotationInvocationMetadataFactory implements InvocationMetadataFactory {
 
     @Override
-    public boolean containsInvocationClass(Class<?> clazz) {
-        return clazz.getAnnotation(Route.class) != null;
-    }
-
-    @Override
-    public Collection<InvocationMetadata> createInvocationMetadatas(Class<?> invocationClass,ContainerAdaptor instanceProvider) {
-        Method[] methods = ReflectionUtils.getMethods(invocationClass);
+    public Collection<InvocationMetadata> createInvocationMetadatas(ContainerAdaptor instanceProvider) {
+        Collection<Class<?>> invocationClasses = collectAllClasses();
         List<InvocationMetadata> metadatas = new ArrayList<InvocationMetadata>();
-        for (Method method : methods) {
-            InvocationMetadata metadata = createInvocationMetadata(invocationClass, method);
-            if (metadata != null) {
-                metadatas.add(metadata);
+        for(Class<?> invocationClass : invocationClasses) {
+            Method[] methods = ReflectionUtils.getMethods(invocationClass);
+            for (Method method : methods) {
+                InvocationMetadata metadata = createInvocationMetadata(invocationClass, method);
+                if (metadata != null) {
+                    metadatas.add(metadata);
+                }
             }
         }
         return metadatas;
@@ -83,5 +76,24 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
             methods.add(hm.value());
         }
         return methods.toArray(new String[methods.size()]);
+    }
+    protected Collection<Class<?>> collectAllClasses() {
+        Collection<Class<?>> collectedClasses = new HashSet<Class<?>>();
+        for (String resourceName : SystemProperties.classPathes()) {
+            URL resourceURL = ResourceUtils.findResource(resourceName);
+            for (ClassCollector collector : getClassCollectors()) {
+                collectedClasses.addAll(collector.collect(StringUtils.EMPTY, resourceURL,
+                        Thread.currentThread()
+                                .getContextClassLoader()));
+            }
+        }
+        return collectedClasses;
+    }
+
+    protected List<ClassCollector> getClassCollectors() {
+        List<ClassCollector> list = new ArrayList<ClassCollector>();
+        list.add(new JarClassCollector());
+        list.add(new FileClassCollector());
+        return Collections.unmodifiableList(list);
     }
 }

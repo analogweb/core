@@ -4,11 +4,9 @@ import java.util.Collection;
 
 /**
  * Factory of {@link InvocationMetadata} from class metadatas.
- * @author snowgoose
+ * @author y2k2mt
  */
 public interface InvocationMetadataFactory extends MultiModule {
 
-    boolean containsInvocationClass(Class<?> clazz);
-
-    Collection<InvocationMetadata> createInvocationMetadatas(Class<?> clazz,ContainerAdaptor instanceProvider);
+    Collection<InvocationMetadata> createInvocationMetadatas(ContainerAdaptor instanceProvider);
 }

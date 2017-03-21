@@ -41,25 +41,41 @@ import org.analogweb.util.Maps;
 import org.analogweb.util.ReflectionUtils;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public class DefaultModulesBuilder implements ModulesBuilder {
 
+    private ContainerAdaptorFactory<? extends ContainerAdaptor> modulesProvider;
     private Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> modulesProviderClass;
+    private ContainerAdaptorFactory<? extends ContainerAdaptor> invocationInstanceProvider;
     private Class<? extends ContainerAdaptorFactory<? extends ContainerAdaptor>> invocationInstanceProviderClass;
+    private InvokerFactory invokerFactory;
     private Class<? extends InvokerFactory> invokerFactoryClass;
+    private InvocationFactory invocationFactory;
     private Class<? extends InvocationFactory> invocationFactoryClass;
+    private RenderableResolver renderableResolver;
     private Class<? extends RenderableResolver> directionResolverClass;
+    private ResponseHandler responseHandler;
     private Class<? extends ResponseHandler> directionHandlerClass;
+    private ExceptionHandler exceptionHandler;
     private Class<? extends ExceptionHandler> exceptionHandlerClass;
+    private TypeMapperContext typeMapperContext;
     private Class<? extends TypeMapperContext> typeMapperContextClass;
+    private final List<ApplicationProcessor> applicationProcessors;
     private final List<Class<? extends ApplicationProcessor>> applicationProcessorClasses;
+    private final List<InvocationInterceptor> invocationInterceptors;
     private final List<Class<? extends InvocationInterceptor>> invocationInterceptorClasses;
+    private final List<InvocationMetadataFactory> invocationMetadataFactories;
     private final List<Class<? extends InvocationMetadataFactory>> invocationMetadataFactoryClasses;
+    private final List<InvocationMetadataFinder> invocationMetadataFinders;
     private final List<Class<? extends InvocationMetadataFinder>> invocationMetadataFinderClasses;
+    private final List<AttributesHandler> attributesHandlers;
     private final List<Class<? extends AttributesHandler>> attributesHandlerClasses;
+    private final List<RequestValueResolver> requestValueResolvers;
     private final List<Class<? extends RequestValueResolver>> requestValueResolverClasses;
+    private final List<ExceptionMapper> exceptionMappers;
     private final List<Class<? extends ExceptionMapper>> exceptionMapperClasses;
+    private final Map<Class<? extends Renderable>, ResponseFormatter> responseFormatters;
     private final Map<Class<? extends Renderable>, Class<? extends ResponseFormatter>> directionFormatterClasses;
     private final List<Class<? extends MultiModule>> ignoreClasses;
     private final List<MultiModule.Filter> ignoreFilters;
@@ -75,12 +91,19 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         this.directionFormatterClasses = Maps.newConcurrentHashMap();
         this.ignoreClasses = new LinkedList<Class<? extends MultiModule>>();
         this.ignoreFilters = new LinkedList<MultiModule.Filter>();
+        this.applicationProcessors = new LinkedList<ApplicationProcessor>();
+        this.invocationInterceptors = new LinkedList<InvocationInterceptor>();
+        this.invocationMetadataFactories = new LinkedList<InvocationMetadataFactory>();
+        this.invocationMetadataFinders = new LinkedList<InvocationMetadataFinder>();
+        this.attributesHandlers = new LinkedList<AttributesHandler>();
+        this.requestValueResolvers = new LinkedList<RequestValueResolver>();
+        this.exceptionMappers = new LinkedList<ExceptionMapper>();
+        this.responseFormatters = Maps.newConcurrentHashMap();
     }
 
     @Override
     public Modules buildModules(final ApplicationContext resolver,
             final ContainerAdaptor defaultContainer) {
-        Assertion.notNull(getModulesProviderClass(), "ModulesProviderClass");
         final ContainerAdaptor moduleContainerAdaptor = createModuleContainerAdaptor(resolver,
                 defaultContainer);
         if (moduleContainerAdaptor == null) {
@@ -90,8 +113,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
             @Override
             public List<InvocationMetadataFactory> getInvocationMetadataFactories() {
-                return getComponentInstances(moduleContainerAdaptor,
+                List<InvocationMetadataFactory> factories = getComponentInstances(moduleContainerAdaptor,
                         getInvocationMetadataFactoryClasses());
+                        factories.addAll(invocationMetadataFactories);
+                return factories;
             }
 
             private List<InvocationMetadataFinder> metadataFinders;
@@ -101,6 +126,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 if (metadataFinders == null) {
                     metadataFinders = getComponentInstances(moduleContainerAdaptor,
                             getInvocationMetadataFinderClasses());
+                    metadataFinders.addAll(invocationMetadataFinders);
                 }
                 return this.metadataFinders;
             }
@@ -110,72 +136,104 @@ public class DefaultModulesBuilder implements ModulesBuilder {
             @Override
             public Invoker getInvoker() {
                 if (invoker == null) {
-                    InvokerFactory factory = getComponentInstance(moduleContainerAdaptor,
-                            getInvokerFactoryClass());
+                    InvokerFactory factory;
+                    if(invokerFactory == null) {
+                        factory = getComponentInstance(moduleContainerAdaptor,
+                                getInvokerFactoryClass());
+                    } else {
+                        factory = invokerFactory;
+                    }
                     invoker = factory.createInvoker(getInvocationInterceptors());
                 }
                 return invoker;
             }
 
-            private ContainerAdaptor invocationInstanceProvider;
+            private ContainerAdaptor instanceProvider;
 
             @Override
             public ContainerAdaptor getInvocationInstanceProvider() {
-                if (this.invocationInstanceProvider == null) {
-                    ContainerAdaptorFactory<?> factory = moduleContainerAdaptor
-                            .getInstanceOfType(getInvocationInstanceProviderClass());
-                    this.invocationInstanceProvider = factory.createContainerAdaptor(resolver);
+                if (this.instanceProvider == null) {
+                    ContainerAdaptorFactory<?> factory;
+                    if(invocationInstanceProvider == null){
+                        factory = moduleContainerAdaptor
+                                .getInstanceOfType(getInvocationInstanceProviderClass());
+                    } else {
+                        factory = invocationInstanceProvider;
+                    }
+                    this.instanceProvider = factory.createContainerAdaptor(resolver);
                 }
-                return this.invocationInstanceProvider;
+                return this.instanceProvider;
             }
 
-            private List<ApplicationProcessor> applicationProcessors;
+            private List<ApplicationProcessor> processors;
 
             @Override
             public List<ApplicationProcessor> getApplicationProcessors() {
-                if (this.applicationProcessors == null) {
-                    this.applicationProcessors = getComponentInstances(moduleContainerAdaptor,
-                            getApplicationProcessorClasses(),
-                            new PrecedenceComparator<ApplicationProcessor>());
+                if (this.processors == null) {
+                        this.processors = getComponentInstances(moduleContainerAdaptor,
+                                getApplicationProcessorClasses(),
+                                new PrecedenceComparator<ApplicationProcessor>());
+                        this.processors.addAll(applicationProcessors);
                 }
-                return this.applicationProcessors;
+                return this.processors;
             }
 
-            private List<InvocationInterceptor> invocationInterceptors;
+            private List<InvocationInterceptor> interceptors;
 
             @Override
             public List<InvocationInterceptor> getInvocationInterceptors() {
-                if (this.invocationInterceptors == null) {
-                    this.invocationInterceptors = getComponentInstances(moduleContainerAdaptor,
-                            getInvocationInterceptorClasses(),
-                            new PrecedenceComparator<InvocationInterceptor>());
+                if (this.interceptors == null) {
+                        this.interceptors = getComponentInstances(moduleContainerAdaptor,
+                                getInvocationInterceptorClasses(),
+                                new PrecedenceComparator<InvocationInterceptor>());
+                        this.interceptors.addAll(invocationInterceptors);
                 }
-                return this.invocationInterceptors;
+                return this.interceptors;
             }
 
             @Override
             public InvocationFactory getInvocationFactory() {
-                return getComponentInstance(moduleContainerAdaptor, getInvocationFactoryClass());
+                if(invocationFactory == null){
+                    return getComponentInstance(moduleContainerAdaptor, getInvocationFactoryClass());
+                } else {
+                    return invocationFactory;
+                }
             }
 
             @Override
             public RenderableResolver getResponseResolver() {
-                return getComponentInstance(moduleContainerAdaptor, getResponseResolverClass());
+                if(renderableResolver == null){
+                    return getComponentInstance(moduleContainerAdaptor, getResponseResolverClass());
+                } else {
+                    return renderableResolver;
+                }
             }
 
             @Override
             public ResponseHandler getResponseHandler() {
-                return getComponentInstance(moduleContainerAdaptor, getResponseHandlerClass());
+                if(responseHandler == null){
+                    return getComponentInstance(moduleContainerAdaptor, getResponseHandlerClass());
+                } else {
+                    return responseHandler;
+                }
             }
 
             @Override
             public ExceptionHandler getExceptionHandler() {
-                return getComponentInstance(moduleContainerAdaptor, getExceptionHandlerClass());
+                if(exceptionHandler == null){
+                    return getComponentInstance(moduleContainerAdaptor, getExceptionHandlerClass());
+                } else {
+                    return exceptionHandler;
+                }
             }
 
             @Override
             public TypeMapperContext getTypeMapperContext() {
-                return getComponentInstance(moduleContainerAdaptor, getTypeMapperContextClass());
+                if(typeMapperContext == null){
+                    return getComponentInstance(moduleContainerAdaptor, getTypeMapperContextClass());
+                } else {
+                    return typeMapperContext;
+                }
             }
 
             @Override
@@ -189,6 +247,10 @@ public class DefaultModulesBuilder implements ModulesBuilder {
 
             @Override
             public ResponseFormatter findResponseFormatter(Class<? extends Renderable> mapToResponse) {
+                ResponseFormatter formatter = responseFormatters.get(mapToResponse);
+                if(formatter != null){
+                    return formatter;
+                }
                 Class<? extends ResponseFormatter> formatterClass = getResponseFormatterClass(mapToResponse);
                 if (formatterClass != null) {
                     return getComponentInstance(moduleContainerAdaptor, formatterClass);
@@ -196,7 +258,6 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return null;
             }
 
-            private RequestValueResolvers resolvers;
             // prevent cyclic reference.
             private Set<String> alreadyInjected;
 
@@ -285,13 +346,13 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 setInvokerFactoryClass(null);
                 setModulesProviderClass(null);
                 setTypeMapperContextClass(null);
-                if (this.applicationProcessors != null) {
-                    this.applicationProcessors.clear();
-                    this.applicationProcessors = null;
+                if (this.processors != null) {
+                    this.processors.clear();
+                    this.processors = null;
                 }
-                if (this.invocationInterceptors != null) {
-                    this.invocationInterceptors.clear();
-                    this.invocationInterceptors = null;
+                if (this.interceptors != null) {
+                    this.interceptors.clear();
+                    this.interceptors = null;
                 }
                 if (this.alreadyInjected != null) {
                     this.alreadyInjected.clear();
@@ -299,10 +360,13 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 }
             }
 
+            private RequestValueResolvers resolvers;
+
             @Override
             public RequestValueResolvers getRequestValueResolvers() {
                 if (this.resolvers == null) {
                     List<RequestValueResolver> resolverList = new LinkedList<RequestValueResolver>();
+                    resolverList.addAll(requestValueResolvers);
                     resolverList.addAll(getComponentInstances(moduleContainerAdaptor,
                             getAttributesHandlerClasses()));
                     resolverList.addAll(getComponentInstances(moduleContainerAdaptor,
@@ -312,21 +376,26 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                 return resolvers;
             }
 
-            private List<ExceptionMapper> exceptionMappers;
+            private List<ExceptionMapper> exMappers;
 
             @Override
             public List<ExceptionMapper> getExceptionMappers() {
-                if (this.exceptionMappers == null) {
-                    this.exceptionMappers = getComponentInstances(moduleContainerAdaptor,
+                if (this.exMappers == null) {
+                    this.exMappers = getComponentInstances(moduleContainerAdaptor,
                             getExceptionMapperClasses());
+                    this.exMappers.addAll(exceptionMappers);
                 }
-                return this.exceptionMappers;
+                return this.exMappers;
             }
         };
     }
 
     protected ContainerAdaptor createModuleContainerAdaptor(final ApplicationContext resolver,
             final ContainerAdaptor defaultContainer) {
+        if(modulesProvider != null){
+            return modulesProvider.createContainerAdaptor(resolver);
+        }
+        Assertion.notNull(getModulesProviderClass(), "ModulesProviderClass");
         if (getModulesProviderClass().equals(StaticMappingContainerAdaptorFactory.class)) {
             return defaultContainer;
         } else {
@@ -343,10 +412,23 @@ public class DefaultModulesBuilder implements ModulesBuilder {
         return this;
     }
 
+    //TODO:implement.
+    @Override
+    public ModulesBuilder setModulesProvider(ContainerAdaptorFactory<? extends ContainerAdaptor> modulesProvider) {
+        this.modulesProvider = modulesProvider;
+        return this;
+    }
+
     @Override
     public ModulesBuilder addInvocationMetadataFactoriesClass(
             Class<? extends InvocationMetadataFactory> actionMethodMetadataFactoryClass) {
         this.invocationMetadataFactoryClasses.add(actionMethodMetadataFactoryClass);
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder addInvocationMetadataFactories(InvocationMetadataFactory... invocationMetadataFactories) {
+        this.invocationMetadataFactories.addAll(Arrays.asList(invocationMetadataFactories));
         return this;
     }
 
@@ -358,8 +440,20 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder addInvocationMetadataFinder(InvocationMetadataFinder... invocationMetadataFinder) {
+        this.invocationMetadataFinders.addAll(Arrays.asList(invocationMetadataFinder));
+        return this;
+    }
+
+    @Override
     public ModulesBuilder setInvokerFactoryClass(Class<? extends InvokerFactory> invokerFactoryClass) {
         this.invokerFactoryClass = invokerFactoryClass;
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder setInvokerFactory(InvokerFactory invokerFactory) {
+        this.invokerFactory = invokerFactory;
         return this;
     }
 
@@ -371,9 +465,21 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder setInvocationInstanceProvider(ContainerAdaptorFactory<? extends ContainerAdaptor> invocationInstanceProvider) {
+        this.invocationInstanceProvider = invocationInstanceProvider;
+        return this;
+    }
+
+    @Override
     public ModulesBuilder setInvocationFactoryClass(
             Class<? extends InvocationFactory> actionInvocationFactoryClass) {
         this.invocationFactoryClass = actionInvocationFactoryClass;
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder setInvocationFactory(InvocationFactory invocationFactory){
+        this.invocationFactory = invocationFactory;
         return this;
     }
 
@@ -385,9 +491,21 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder setRenderableResolver(RenderableResolver responseResolver) {
+        this.renderableResolver = renderableResolver;
+        return this;
+    }
+
+    @Override
     public ModulesBuilder setResponseHandlerClass(
             Class<? extends ResponseHandler> actionResultHandlerClass) {
         this.directionHandlerClass = actionResultHandlerClass;
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder setResponseHandler(ResponseHandler responseHandler) {
+        this.responseHandler = responseHandler;
         return this;
     }
 
@@ -399,9 +517,21 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder setTypeMapperContext(TypeMapperContext typeMapperContext) {
+        this.typeMapperContext = typeMapperContext;
+        return this;
+    }
+
+    @Override
     public ModulesBuilder setExceptionHandlerClass(
             Class<? extends ExceptionHandler> exceptionHandlerClass) {
         this.exceptionHandlerClass = exceptionHandlerClass;
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder setExceptionHandler(ExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
         return this;
     }
 
@@ -413,6 +543,12 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder addApplicationProcessor(ApplicationProcessor... applicationProcessors) {
+        this.applicationProcessors.addAll(Arrays.asList(applicationProcessors));
+        return this;
+    }
+
+    @Override
     public ModulesBuilder addInvocationInterceptorClass(
             Class<? extends InvocationInterceptor> invocationInterceptorClass) {
         this.invocationInterceptorClasses.add(invocationInterceptorClass);
@@ -420,9 +556,33 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder addInvocationInterceptor(InvocationInterceptor... invocationInterceptors) {
+        this.invocationInterceptors.addAll(Arrays.asList(invocationInterceptors));
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder clearInvocationInterceptorClass() {
+        this.invocationInterceptorClasses.clear();
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder clearInvocationInterceptors() {
+        this.invocationInterceptors.clear();
+        return this;
+    }
+
+    @Override
     public ModulesBuilder addAttributesHandlerClass(
             Class<? extends AttributesHandler> requestAttributesResolverClass) {
         this.attributesHandlerClasses.add(requestAttributesResolverClass);
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder addAttributesHandler(AttributesHandler... attributesHandler) {
+        this.attributesHandlers.addAll(Arrays.asList(attributesHandler));
         return this;
     }
 
@@ -506,8 +666,20 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder clearInvocationMetadataFactories() {
+        this.invocationMetadataFactories.clear();
+        return this;
+    }
+
+    @Override
     public ModulesBuilder clearInvocationMetadataFinderClass() {
         this.invocationMetadataFinderClasses.clear();
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder clearInvocationMetadataFinder() {
+        this.invocationMetadataFinders.clear();
         return this;
     }
 
@@ -518,8 +690,20 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder clearApplicationProcessors() {
+        this.applicationProcessors.clear();
+        return this;
+    }
+
+    @Override
     public ModulesBuilder clearAttributesHanderClass() {
         this.attributesHandlerClasses.clear();
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder clearAttributesHanders() {
+        this.attributesHandlers.clear();
         return this;
     }
 
@@ -531,8 +715,20 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder addRequestValueResolver(RequestValueResolver... requestValueResolver) {
+        this.requestValueResolvers.addAll(Arrays.asList(requestValueResolver));
+        return this;
+    }
+
+    @Override
     public ModulesBuilder clearRequestValueResolverClass() {
         this.requestValueResolverClasses.clear();
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder clearRequestValueResolvers() {
+        this.requestValueResolvers.clear();
         return this;
     }
 
@@ -544,9 +740,23 @@ public class DefaultModulesBuilder implements ModulesBuilder {
     }
 
     @Override
+    public ModulesBuilder addResponseFormatters(Class<? extends Renderable> mapToResponseClass, ResponseFormatter... responseFormatters) {
+        for(ResponseFormatter responseFormatter:responseFormatters) {
+            this.responseFormatters.put(mapToResponseClass,responseFormatter);
+        }
+        return this;
+    }
+
+    @Override
     public ModulesBuilder addExceptionMapperClass(
             Class<? extends ExceptionMapper> exceptionMapperClass) {
         this.exceptionMapperClasses.add(exceptionMapperClass);
+        return this;
+    }
+
+    @Override
+    public ModulesBuilder addExceptionMapper(ExceptionMapper... exceptionMappers) {
+        this.exceptionMappers.addAll(Arrays.asList(exceptionMappers));
         return this;
     }
 

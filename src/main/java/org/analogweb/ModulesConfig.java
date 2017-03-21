@@ -2,7 +2,7 @@ package org.analogweb;
 
 /**
  * Configure {@link Modules} through the {@link ModulesBuilder}.
- * @author snowgoose
+ * @author y2k2mt
  */
 public interface ModulesConfig {
 

@@ -55,15 +55,24 @@ import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public class WebApplication implements Application {
 
     private static final Log log = Logs.getLog(WebApplication.class);
+    private List<ModulesConfig> modulesConfigs;
     private Modules modules;
     private RouteRegistry routes;
     private ClassLoader classLoader;
     private ApplicationContext resolver;
+
+    public WebApplication(){
+        this(Collections.emptyList());
+    }
+
+    public WebApplication(List<ModulesConfig> modulesConfigs) {
+        this.modulesConfigs = modulesConfigs;
+    }
 
     @Override
     public void run(ApplicationContext resolver, ApplicationProperties props,
@@ -221,8 +230,7 @@ public class WebApplication implements Application {
     protected void initApplication(Collection<ClassCollector> collectors,
             Set<String> modulePackageNames, Collection<String> invocationPackageNames) {
         Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames, collectors);
-        ModulesBuilder modulesBuilder = processConfigPreparation(ReflectionUtils
-                .filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses));
+        ModulesBuilder modulesBuilder = processConfigPreparation(moduleClasses);
         ApplicationContext resolver = getApplicationContextResolver();
         ContainerAdaptor defaultContainer = setUpDefaultContainer(resolver, moduleClasses);
         Modules modules = modulesBuilder.buildModules(resolver, defaultContainer);
@@ -235,7 +243,7 @@ public class WebApplication implements Application {
         } else {
             collectedInvocationClasses = collectClasses(invocationPackageNames, collectors);
         }
-        setRouteRegistry(createRouteRegistry(collectedInvocationClasses,
+        setRouteRegistry(createRouteRegistry(
                 modules.getInvocationMetadataFactories(),modules.getInvocationInstanceProvider()));
     }
 
@@ -317,16 +325,21 @@ public class WebApplication implements Application {
         }
     }
 
-    protected ModulesBuilder processConfigPreparation(List<Class<ModulesConfig>> configs) {
-        ModulesBuilder modulesBuilder = new DefaultModulesBuilder();
-        List<ModulesConfig> moduleConfigInstances = new ArrayList<ModulesConfig>();
-        for (Class<ModulesConfig> configClass : configs) {
-            ModulesConfig config = ReflectionUtils.getInstanceQuietly(configClass);
-            if (config != null) {
-                moduleConfigInstances.add(config);
+    protected ModulesBuilder processConfigPreparation(Collection<Class<?>> moduleClasses) {
+        List<ModulesConfig> moduleConfigInstances = getModulesConfigs();
+        if(moduleConfigInstances == null || moduleConfigInstances.isEmpty()) {
+            moduleConfigInstances = new ArrayList<ModulesConfig>();
+            List<Class<ModulesConfig>> clazzes =
+                    ReflectionUtils.filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses);
+            for (Class<ModulesConfig> configClass : clazzes) {
+                ModulesConfig config = ReflectionUtils.getInstanceQuietly(configClass);
+                if (config != null) {
+                    moduleConfigInstances.add(config);
+                }
             }
         }
         Collections.sort(moduleConfigInstances, getModulesConfigComparator());
+        ModulesBuilder modulesBuilder = new DefaultModulesBuilder();
         for (ModulesConfig config : moduleConfigInstances) {
             log.log(Markers.BOOT_APPLICATION, "IB000003", config);
             modulesBuilder = config.prepare(modulesBuilder);
@@ -350,23 +363,19 @@ public class WebApplication implements Application {
         return adaptor;
     }
 
-    protected RouteRegistry createRouteRegistry(Collection<Class<?>> collectedClasses,
+    protected RouteRegistry createRouteRegistry(
             List<InvocationMetadataFactory> factories,ContainerAdaptor instanceProvider) {
         RouteRegistry mapping = new DefaultRouteRegistry();
-        for (Class<?> clazz : collectedClasses) {
             for (InvocationMetadataFactory factory : factories) {
-                if (factory.containsInvocationClass(clazz)) {
                     for (InvocationMetadata actionMethodMetadata : factory
-                            .createInvocationMetadatas(clazz,instanceProvider)) {
+                            .createInvocationMetadatas(instanceProvider)) {
                         log.log(Markers.BOOT_APPLICATION, "IB000004",
                                 actionMethodMetadata.getDefinedPath(),
                                 actionMethodMetadata.getInvocationClass(),
                                 actionMethodMetadata.getMethodName());
                         mapping.register(actionMethodMetadata);
                     }
-                }
             }
-        }
         return mapping;
     }
 
@@ -403,6 +412,10 @@ public class WebApplication implements Application {
 
     protected void setRouteRegistry(RouteRegistry registry) {
         this.routes = registry;
+    }
+
+    protected List<ModulesConfig> getModulesConfigs(){
+        return this.modulesConfigs;
     }
 
     @Override
