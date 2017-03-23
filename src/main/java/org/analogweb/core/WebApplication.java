@@ -67,7 +67,7 @@ public class WebApplication implements Application {
     private ApplicationContext resolver;
 
     public WebApplication(){
-        this(Collections.emptyList());
+        this(Collections.<ModulesConfig>emptyList());
     }
 
     public WebApplication(List<ModulesConfig> modulesConfigs) {
