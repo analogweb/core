@@ -18,9 +18,9 @@ import org.analogweb.util.Assertion;
 
 /**
  * default implementation of {@link ModulesConfig}
- * @author snowgoose
+ * @author y2k2mt
  */
-public final class RootModulesConfig implements ModulesConfig {
+public final class RootModulesConfig extends AbstractModulesConfig {
 
     @Override
     public ModulesBuilder prepare(ModulesBuilder builder) {

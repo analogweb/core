@@ -41,15 +41,7 @@ import org.analogweb.RenderableResolver;
 import org.analogweb.RouteRegistry;
 import org.analogweb.TypeMapperContext;
 import org.analogweb.WebApplicationException;
-import org.analogweb.util.ApplicationPropertiesHolder;
-import org.analogweb.util.ClassCollector;
-import org.analogweb.util.CollectionUtils;
-import org.analogweb.util.ReflectionUtils;
-import org.analogweb.util.ResourceUtils;
-import org.analogweb.util.StopWatch;
-import org.analogweb.util.StringUtils;
-import org.analogweb.util.SystemProperties;
-import org.analogweb.util.Version;
+import org.analogweb.util.*;
 import org.analogweb.util.logging.Log;
 import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
@@ -71,6 +63,7 @@ public class WebApplication implements Application {
     }
 
     public WebApplication(List<ModulesConfig> modulesConfigs) {
+        Assertion.notNull(modulesConfigs,"ModulesConfig");
         this.modulesConfigs = modulesConfigs;
     }
 
@@ -326,16 +319,19 @@ public class WebApplication implements Application {
     }
 
     protected ModulesBuilder processConfigPreparation(Collection<Class<?>> moduleClasses) {
-        List<ModulesConfig> moduleConfigInstances = getModulesConfigs();
-        if(moduleConfigInstances == null || moduleConfigInstances.isEmpty()) {
-            moduleConfigInstances = new ArrayList<ModulesConfig>();
+        List<ModulesConfig> reflectiveModuleConfigInstances = new ArrayList<ModulesConfig>();
             List<Class<ModulesConfig>> clazzes =
                     ReflectionUtils.filterClassAsImplementsInterface(ModulesConfig.class, moduleClasses);
             for (Class<ModulesConfig> configClass : clazzes) {
                 ModulesConfig config = ReflectionUtils.getInstanceQuietly(configClass);
                 if (config != null) {
-                    moduleConfigInstances.add(config);
+                    reflectiveModuleConfigInstances.add(config);
                 }
+            }
+        List<ModulesConfig> moduleConfigInstances = new ArrayList<ModulesConfig>(getModulesConfigs());
+        for(ModulesConfig reflectiveModule : reflectiveModuleConfigInstances){
+            if(!moduleConfigInstances.contains(reflectiveModule)){
+                moduleConfigInstances.add(reflectiveModule);
             }
         }
         Collections.sort(moduleConfigInstances, getModulesConfigComparator());
