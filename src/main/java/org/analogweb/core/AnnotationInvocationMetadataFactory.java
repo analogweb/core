@@ -4,10 +4,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
 
-import org.analogweb.ContainerAdaptor;
-import org.analogweb.InvocationMetadata;
-import org.analogweb.InvocationMetadataFactory;
-import org.analogweb.RequestPathMetadata;
+import org.analogweb.*;
 import org.analogweb.annotation.HttpMethod;
 import org.analogweb.annotation.Route;
 import org.analogweb.util.*;
@@ -18,8 +15,12 @@ import org.analogweb.util.*;
 public class AnnotationInvocationMetadataFactory implements InvocationMetadataFactory {
 
     @Override
-    public Collection<InvocationMetadata> createInvocationMetadatas(ContainerAdaptor instanceProvider) {
+    public Collection<InvocationMetadata> createInvocationMetadatas(ApplicationProperties properties,ContainerAdaptor instanceProvider) {
         Collection<Class<?>> invocationClasses = collectAllClasses();
+        Collection<String> packageNames = new ArrayList<String>();
+        packageNames.add(Application.DEFAULT_PACKAGE_NAME);
+        packageNames.addAll(properties.getComponentPackageNames() == null ? Collections.<String>emptyList() : properties.getComponentPackageNames());
+        invocationClasses.addAll(collectClasses(packageNames,getClassCollectors()));
         List<InvocationMetadata> metadatas = new ArrayList<InvocationMetadata>();
         for(Class<?> invocationClass : invocationClasses) {
             Method[] methods = ReflectionUtils.getMethods(invocationClass);
@@ -85,6 +86,24 @@ public class AnnotationInvocationMetadataFactory implements InvocationMetadataFa
                 collectedClasses.addAll(collector.collect(StringUtils.EMPTY, resourceURL,
                         Thread.currentThread()
                                 .getContextClassLoader()));
+            }
+        }
+        return collectedClasses;
+    }
+    protected ClassLoader currentClassLoader() {
+        return Thread.currentThread().getContextClassLoader();
+    }
+
+    protected Collection<Class<?>> collectClasses(Collection<String> rootPackageNames,
+                                                  Collection<ClassCollector> collectors) {
+        ClassLoader classLoader = currentClassLoader();
+        Collection<Class<?>> collectedClasses = new HashSet<Class<?>>();
+        for (String packageName : rootPackageNames) {
+            for (URL resourceURL : ResourceUtils.findPackageResources(packageName, classLoader)) {
+                for (ClassCollector collector : collectors) {
+                    collectedClasses.addAll(collector
+                            .collect(packageName, resourceURL, classLoader));
+                }
             }
         }
         return collectedClasses;

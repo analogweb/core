@@ -91,7 +91,7 @@ public class WebApplication implements Application {
         }
         modulesPackageNames.add(DEFAULT_PACKAGE_NAME);
         log.log(Markers.BOOT_APPLICATION, "DB000002", modulesPackageNames);
-        initApplication(collectors, modulesPackageNames, invocationPackageNames);
+        initApplication(collectors, modulesPackageNames, props);
         log.log(Markers.BOOT_APPLICATION, "IB000002", sw.stop());
     }
 
@@ -221,7 +221,7 @@ public class WebApplication implements Application {
     }
 
     protected void initApplication(Collection<ClassCollector> collectors,
-            Set<String> modulePackageNames, Collection<String> invocationPackageNames) {
+            Set<String> modulePackageNames, ApplicationProperties properties) {
         Collection<Class<?>> moduleClasses = collectClasses(modulePackageNames, collectors);
         ModulesBuilder modulesBuilder = processConfigPreparation(moduleClasses);
         ApplicationContext resolver = getApplicationContextResolver();
@@ -230,14 +230,8 @@ public class WebApplication implements Application {
         monitorModules(modules);
         setModules(modules);
         log.log(Markers.BOOT_APPLICATION, "DB000003", modules);
-        Collection<Class<?>> collectedInvocationClasses;
-        if (CollectionUtils.isEmpty(invocationPackageNames)) {
-            collectedInvocationClasses = collectAllClasses(collectors);
-        } else {
-            collectedInvocationClasses = collectClasses(invocationPackageNames, collectors);
-        }
         setRouteRegistry(createRouteRegistry(
-                modules.getInvocationMetadataFactories(),modules.getInvocationInstanceProvider()));
+                modules.getInvocationMetadataFactories(),properties,modules.getInvocationInstanceProvider()));
     }
 
     private void monitorModules(Modules modules) {
@@ -360,11 +354,11 @@ public class WebApplication implements Application {
     }
 
     protected RouteRegistry createRouteRegistry(
-            List<InvocationMetadataFactory> factories,ContainerAdaptor instanceProvider) {
+            List<InvocationMetadataFactory> factories,ApplicationProperties properties,ContainerAdaptor instanceProvider) {
         RouteRegistry mapping = new DefaultRouteRegistry();
             for (InvocationMetadataFactory factory : factories) {
                     for (InvocationMetadata actionMethodMetadata : factory
-                            .createInvocationMetadatas(instanceProvider)) {
+                            .createInvocationMetadatas(properties,instanceProvider)) {
                         log.log(Markers.BOOT_APPLICATION, "IB000004",
                                 actionMethodMetadata.getDefinedPath(),
                                 actionMethodMetadata.getInvocationClass(),

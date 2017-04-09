@@ -8,5 +8,6 @@ import java.util.Collection;
  */
 public interface InvocationMetadataFactory extends MultiModule {
 
-    Collection<InvocationMetadata> createInvocationMetadatas(ContainerAdaptor instanceProvider);
+    Collection<InvocationMetadata> createInvocationMetadatas(ApplicationProperties properties,ContainerAdaptor instanceProvider);
+
 }
