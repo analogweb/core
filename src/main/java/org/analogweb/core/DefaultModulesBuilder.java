@@ -330,6 +330,7 @@ public class DefaultModulesBuilder implements ModulesBuilder {
                     for (MultiModule.Filter moduleClass : getIgnoringFilters()) {
                         if (moduleClass.isAppreciable(next) == false) {
                             itr.remove();
+                            break;
                         }
                     }
                 }
