@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public class AcceptableTest {
 
@@ -41,15 +41,6 @@ public class AcceptableTest {
         context = mock(RequestContext.class);
         response = mock(ResponseContext.class);
         headers = mock(Headers.class);
-    }
-
-    @Test
-    public void testRenderAcceptableXML() throws Exception {
-        final Member m = new Member("snowgoose", 34);
-        final String actual = schenarioRender(" text/xml", m);
-        assertThat(
-                actual,
-                is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age></member>"));
     }
 
     @Test
@@ -76,7 +67,7 @@ public class AcceptableTest {
         final String actual = schenarioRender(" text/x-dvi; q=0.8, application/xml, */*", m);
         assertThat(
                 actual,
-                is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age></member>"));
+                is("{\"age\": 34,\"name\": \"snowgoose\"}"));
     }
 
     @Test
@@ -85,7 +76,7 @@ public class AcceptableTest {
         final String actual = schenarioRender(" text/x-dvi; q=0.8, text/xml; q=6, */*", m);
         assertThat(
                 actual,
-                is("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><member><name>snowgoose</name><age>34</age></member>"));
+                is("{\"age\": 34,\"name\": \"snowgoose\"}"));
     }
 
     @Test

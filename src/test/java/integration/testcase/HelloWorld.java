@@ -1,7 +1,6 @@
 package integration.testcase;
 
 import static org.analogweb.core.response.BasicResponses.text;
-import static org.analogweb.core.response.BasicResponses.xml;
 
 import org.analogweb.Renderable;
 import org.analogweb.annotation.Bean;
@@ -11,15 +10,13 @@ import org.analogweb.annotation.Post;
 import org.analogweb.annotation.Put;
 import org.analogweb.annotation.RequestFormats;
 import org.analogweb.annotation.Route;
-import org.analogweb.annotation.XmlType;
 import org.analogweb.core.MediaTypes;
 import org.analogweb.core.response.HttpStatus;
 import org.analogweb.core.response.Text;
-import org.analogweb.core.response.Xml;
 
 /**
  * Hello Analog Web World!
- * 
+ *
  * @author snowgoose
  */
 @Route("/")
@@ -44,28 +41,11 @@ public class HelloWorld {
     }
 
     @Route
-    @Get
-    public Xml helloXml() {
-        FooBean foo = new FooBean();
-        return xml(foo);
-    }
-
-    @Route
-    @RequestFormats
-    @Put
-    public Renderable helloXmlValue(@XmlType FooBean foo) {
-        if (foo == null) {
-            return HttpStatus.BAD_REQUEST.byReasonOf("XML entity required.");
-        }
-        return text("Hello World " + foo.getBaa());
-    }
-
-    @Route
     @RequestFormats(MediaTypes.APPLICATION_FORM_URLENCODED)
     @Put
     @Post
-    public Xml helloBean(@Bean FooBean foo) {
-        return xml(foo);
+    public Text helloBean(@Bean FooBean foo) {
+        return text(foo.getBaa());
     }
 
     @Route
@@ -85,6 +65,6 @@ public class HelloWorld {
     @Get
     public HttpStatus ok() {
         FooBean foo = new FooBean();
-        return HttpStatus.OK.with(xml(foo));
+        return HttpStatus.OK.with(text(foo.getBaa()));
     }
 }

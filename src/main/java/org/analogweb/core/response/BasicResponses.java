@@ -3,7 +3,7 @@ package org.analogweb.core.response;
 import java.util.Map;
 
 /**
- * @author snowgooseyk
+ * @author y2k2mt
  */
 public final class BasicResponses {
 
@@ -41,14 +41,6 @@ public final class BasicResponses {
 
     public static Json json(Object obj) {
         return Json.as(obj);
-    }
-
-    public static Xml xml(String xml) {
-        return Xml.with(xml);
-    }
-
-    public static Xml xml(Object obj) {
-        return Xml.as(obj);
     }
 
     public static HttpStatus status(int statusCode) {
