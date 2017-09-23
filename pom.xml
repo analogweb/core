@@ -47,14 +47,10 @@
 			<comments>All source code is under the MIT license</comments>
 		</license>
 	</licenses>
-    <properties>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-    </properties>
 	<parent>
 		<groupId>org.analogweb</groupId>
 		<artifactId>analogweb-parent-modules</artifactId>
-		<version>13</version>
+		<version>15</version>
 		<relativePath />
 	</parent>
 	<build>
