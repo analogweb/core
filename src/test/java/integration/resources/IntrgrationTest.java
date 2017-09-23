@@ -14,8 +14,10 @@ import org.analogweb.core.fake.FakeApplication;
 import org.analogweb.core.fake.ResponseResult;
 import org.analogweb.util.Maps;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class IntrgrationTest {
 
     private FakeApplication app;
