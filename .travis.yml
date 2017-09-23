@@ -4,4 +4,4 @@ jdk:
   - oraclejdk8
   - oraclejdk9
 dist: trusty
-script: "mvn clean cobertura:cobertura"
+script: "mvn clean test"
