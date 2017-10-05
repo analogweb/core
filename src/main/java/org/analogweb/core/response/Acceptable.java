@@ -17,7 +17,7 @@ import org.analogweb.WebApplicationException;
 import org.analogweb.util.StringUtils;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public class Acceptable implements Renderable {
 
@@ -25,10 +25,9 @@ public class Acceptable implements Renderable {
     protected static final Map<String, Creator> DEFAULT_MEDIA_TYPE_MAP = new HashMap<String, Creator>() {
 
         private static final long serialVersionUID = 1L;
+
         {
             put(MediaTypes.APPLICATION_JSON, Creators.json());
-            put(MediaTypes.APPLICATION_XML, Creators.xml());
-            put(MediaTypes.TEXT_XML, Creators.xml());
             put(MediaTypes.WILDCARD, Creators.json());
         }
     };
@@ -153,19 +152,6 @@ public class Acceptable implements Renderable {
 
                 public String toString() {
                     return "map with " + Json.class;
-                }
-            };
-        }
-
-        public static Creator xml() {
-            return new Creator() {
-
-                public Renderable create(Object source) {
-                    return Xml.as(source);
-                }
-
-                public String toString() {
-                    return "map with " + Xml.class;
                 }
             };
         }

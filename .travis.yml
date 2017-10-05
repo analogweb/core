@@ -1,5 +1,6 @@
 language: java
 jdk:
-  - oraclejdk7
+  - openjdk7
   - oraclejdk8
-script: "mvn clean cobertura:cobertura"
+  - oraclejdk9
+script: "mvn clean test"
