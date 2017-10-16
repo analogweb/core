@@ -6,15 +6,9 @@ import java.nio.charset.Charset;
 
 /**
  * Holding response entity to write.
- * @author snowgooseyk
+ * @author y2k2mt
  */
 public interface Response {
-
-    void putEntity(ReadableBuffer entity);
-
-    void putEntity(String entity);
-
-    void putEntity(String entity, Charset charset);
 
     void putEntity(ResponseEntity entity);
 
@@ -25,22 +19,7 @@ public interface Response {
     void commit(RequestContext request, ResponseContext response);
 
     Response NOT_FOUND = new Response() {
-    
-        @Override
-        public void putEntity(ReadableBuffer entity) {
-            //NOP
-        }
-    
-        @Override
-        public void putEntity(String entity) {
-            //NOP
-        }
-    
-        @Override
-        public void putEntity(String entity, Charset charset) {
-            //NOP
-        }
-    
+
         @Override
         public void putEntity(ResponseEntity entity) {
             //NOP
@@ -68,22 +47,6 @@ public interface Response {
         }
     };
     Response EMPTY = new Response() {
-    
-        @Override
-        public void putEntity(ReadableBuffer entity) {
-            //NOP
-        }
-    
-        @Override
-        public void putEntity(String entity) {
-            //NOP
-        }
-    
-        @Override
-        public void putEntity(String entity, Charset charset) {
-            //NOP
-        }
-    
         @Override
         public void putEntity(ResponseEntity entity) {
             //NOP

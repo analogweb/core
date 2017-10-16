@@ -23,6 +23,7 @@ import org.analogweb.Response;
 import org.analogweb.ResponseEntity;
 import org.analogweb.core.DefaultResponse;
 import org.analogweb.WebApplicationException;
+import org.analogweb.core.DefaultResponseEntity;
 import org.analogweb.core.DefaultWritableBuffer;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class AcceptableTest {
             public Response render(RequestContext context, ResponseContext response)
                     throws IOException, WebApplicationException {
                 Response r = new DefaultResponse();
-                r.putEntity("write with XML");
+                r.putEntity(new DefaultResponseEntity("write with XML"));
                 return r;
             }
         }, "text/xml");
@@ -119,7 +120,7 @@ public class AcceptableTest {
             public Response render(RequestContext context, ResponseContext response)
                     throws IOException, WebApplicationException {
                 Response r = new DefaultResponse();
-                r.putEntity("write with ANY");
+                r.putEntity(new DefaultResponseEntity("write with ANY"));
                 return r;
             }
         });

@@ -12,21 +12,6 @@ public class DefaultResponse implements Response {
     private ResponseEntity entity;
 
     @Override
-    public void putEntity(String entity) {
-        putEntity(entity, Charset.defaultCharset());
-    }
-
-    @Override
-    public void putEntity(String entity, Charset charset) {
-        putEntity(DefaultReadableBuffer.readBuffer(entity.getBytes(charset)));
-    }
-
-    @Override
-    public void putEntity(final ReadableBuffer entity) {
-        putEntity(new DefaultResponseEntity(entity));
-    }
-
-    @Override
     public void putEntity(ResponseEntity entity) {
         this.entity = entity;
     }

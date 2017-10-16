@@ -1,9 +1,6 @@
 package org.analogweb.core;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 
 import org.analogweb.ReadableBuffer;
@@ -11,7 +8,7 @@ import org.analogweb.ResponseEntity;
 import org.analogweb.WritableBuffer;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public class DefaultResponseEntity implements ResponseEntity {
 
@@ -37,26 +34,7 @@ public class DefaultResponseEntity implements ResponseEntity {
 
     @Override
     public void writeInto(WritableBuffer responseBody) throws IOException {
-        ReadableBuffer entity = getEntity();
-        ByteBuffer buffer;
-        if(entity.getLength() > 0) {
-            buffer = ByteBuffer.allocate((int)entity.getLength());
-        } else {
-            buffer = ByteBuffer.allocate(8192);
-        }
-        int read;
-        int readLength = 0;
-        ReadableByteChannel readable = entity.asChannel();
-        WritableByteChannel writable = responseBody.asChannel();
-        while((read = readable.read(buffer)) > 0) {
-            readLength += read;
-            buffer.flip();
-            writable.write(buffer);
-            buffer.clear();
-        }
-        if(readLength > this.length) {
-            this.length = readLength;
-        }
+        responseBody.from(getEntity());
     }
 
     @Override

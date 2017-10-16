@@ -26,21 +26,21 @@ public class DefaultResponseTest {
 
     @Test
     public void testWriteStringEntity() throws IOException {
-        String expected = "This Is Test Entity.";
+        DefaultResponseEntity expected = new DefaultResponseEntity("This Is Test Entity.");
         writer.putEntity(expected);
         ByteArrayOutputStream responseBody = new ByteArrayOutputStream();
         writer.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(responseBody));
-        assertThat(new String(responseBody.toByteArray()), is(expected));
+        assertThat(new String(responseBody.toByteArray()), is("This Is Test Entity."));
     }
 
     @Test
     public void testWriteStringEntityWithCharset() throws IOException {
-        String expected = "これはテストです。";
         Charset charset = Charset.forName("UTF-8");
-        writer.putEntity(expected, charset);
+        DefaultResponseEntity expected = new DefaultResponseEntity("これはテストです。",charset);
+        writer.putEntity(expected);
         ByteArrayOutputStream responseBody = new ByteArrayOutputStream();
         writer.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(responseBody));
-        assertThat(new String(responseBody.toByteArray(), charset), is(expected));
+        assertThat(new String(responseBody.toByteArray(), charset), is("これはテストです。"));
     }
 
     @Test
@@ -53,7 +53,7 @@ public class DefaultResponseTest {
                 throw new IOException();
             }
         };
-        writer.putEntity(DefaultReadableBuffer.readBuffer(entity));
+        writer.putEntity(new DefaultResponseEntity(DefaultReadableBuffer.readBuffer(entity)));
         ByteArrayOutputStream responseBody = new ByteArrayOutputStream();
         writer.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(responseBody));
     }
