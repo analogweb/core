@@ -3,6 +3,7 @@ package org.analogweb.core.fake;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.nio.channels.Channels;
 import java.util.ArrayList;
@@ -13,10 +14,7 @@ import java.util.Map;
 
 import org.analogweb.*;
 import org.analogweb.core.*;
-import org.analogweb.util.ClassCollector;
-import org.analogweb.util.FileClassCollector;
-import org.analogweb.util.JarClassCollector;
-import org.analogweb.util.Maps;
+import org.analogweb.util.*;
 
 /**
  * {@link Application} for test stub.
@@ -102,10 +100,17 @@ public class FakeApplication {
                     result.setResponseHeader(((MapHeaders) headers).toMap());
                 }
                 try {
+                    OutputStream out = result.getResponseBody();
                     ResponseEntity entity = response.getEntity();
-                    // no content.
                     if (entity != null) {
-                        entity.writeInto(DefaultWritableBuffer.writeBuffer(Channels.newChannel(result.getResponseBody())));
+                        Object entityBody = entity.entity();
+                        if(entityBody instanceof byte[]){
+                            out.write((byte[])entityBody);
+                        } else if (entityBody instanceof InputStream) {
+                            IOUtils.copy((InputStream)entityBody,out);
+                        } else if (entityBody instanceof ReadableBuffer) {
+                            DefaultWritableBuffer.writeBuffer(out).from((ReadableBuffer)entityBody);
+                        }
                     }
                     result.getResponseBody().flush();
                 } catch (IOException e) {

@@ -3,7 +3,6 @@ package org.analogweb.core.response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -14,12 +13,12 @@ import org.analogweb.ResponseContext;
 import org.analogweb.ResponseEntity;
 import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.DefaultReadableBuffer;
-import org.analogweb.core.DefaultResponseEntity;
+import org.analogweb.core.InStreamResponseEntity;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.StringUtils;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public class Resource extends BuildAndRenderableResponse<Resource> {
 
@@ -99,7 +98,7 @@ public class Resource extends BuildAndRenderableResponse<Resource> {
 
     @Override
     protected ResponseEntity extractResponseEntity(RequestContext request, ResponseContext response) {
-        return new DefaultResponseEntity(getInputStream());
+        return new InStreamResponseEntity(getInputStream());
     }
 
     protected String createContentDisposition() throws UnsupportedEncodingException {

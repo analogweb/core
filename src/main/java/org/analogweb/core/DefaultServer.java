@@ -524,7 +524,14 @@ public class DefaultServer implements Server {
                 sock.write(iso.encode(buffer));
                 ResponseEntity entity = response.getEntity();
                 if (entity != null) {
-                    entity.writeInto(DefaultWritableBuffer.writeBuffer(Channels.newChannel(out)));
+                    Object entityBody = entity.entity();
+                    if(entityBody instanceof byte[]){
+                        out.write((byte[])entityBody);
+                    } else if (entityBody instanceof InputStream) {
+                        IOUtils.copy((InputStream)entityBody,out);
+                    } else if (entityBody instanceof ReadableBuffer) {
+                        DefaultWritableBuffer.writeBuffer(out).from((ReadableBuffer)entityBody);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

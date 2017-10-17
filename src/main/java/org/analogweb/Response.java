@@ -1,5 +1,7 @@
 package org.analogweb;
 
+import org.analogweb.util.StringUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -52,13 +54,14 @@ public interface Response {
             //NOP
         }
     
-        ResponseEntity EMPTY_ENTITY = new ResponseEntity() {
-    
+        ResponseEntity EMPTY_ENTITY = new ResponseEntity<String>() {
+
             @Override
-            public void writeInto(WritableBuffer responseBody) throws IOException {
+            public String entity() {
                 //NOP
+                return "";
             }
-    
+
             @Override
             public long getContentLength() {
                 //NOP

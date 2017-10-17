@@ -1,6 +1,5 @@
 package org.analogweb.core.response;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 
@@ -20,10 +19,6 @@ public class RenderableResponses extends BuildAndRenderableResponse<RenderableRe
 
     public static RenderableResponses ok(ResponseEntity entity) {
         return ok().entity(entity);
-    }
-
-    public static RenderableResponses ok(ReadableBuffer body) {
-        return ok(new DefaultResponseEntity(body));
     }
 
     public static RenderableResponses ok(String entity, Charset charset) {

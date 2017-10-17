@@ -1,46 +1,38 @@
 package org.analogweb.core;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 
-import org.analogweb.ReadableBuffer;
 import org.analogweb.ResponseEntity;
-import org.analogweb.WritableBuffer;
 
 /**
  * @author y2k2mt
  */
-public class DefaultResponseEntity implements ResponseEntity {
+public class DefaultResponseEntity implements ResponseEntity<byte[]> {
 
-    private final ReadableBuffer entity;
-    private long length = Long.MIN_VALUE;
+    private byte[] body;
+    private int length;
 
     public DefaultResponseEntity(String entity) {
         this(entity, Charset.defaultCharset());
     }
 
     public DefaultResponseEntity(String entity, Charset charset) {
-        this(DefaultReadableBuffer.readBuffer(entity.getBytes(charset)));
+        this(entity.getBytes(charset));
     }
 
-    public DefaultResponseEntity(ReadableBuffer entity) {
-        this.entity = entity;
-        this.length = entity.getLength();
+    public DefaultResponseEntity(byte[] entity) {
+        this.body = entity;
+        this.length = entity.length;
     }
 
-    protected ReadableBuffer getEntity(){
-        return this.entity;
-    }
-
-    @Override
-    public void writeInto(WritableBuffer responseBody) throws IOException {
-        responseBody.from(getEntity());
+    public byte[] entity() {
+        return this.body;
     }
 
     @Override
     public long getContentLength() {
         if (this.length < 0) {
-                length = -1;
+            length = -1;
         }
         return length;
     }

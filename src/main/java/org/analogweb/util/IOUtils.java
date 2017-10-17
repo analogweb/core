@@ -85,8 +85,14 @@ public final class IOUtils {
         return sb.toString();
     }
 
+    public static final int DEFAULT_BUFFER_SIZE = 16 * 1024;
+
     public static void copy(final ReadableByteChannel src, final WritableByteChannel dest) throws IOException {
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
+        copy(src,dest,16 * 1024);
+    }
+
+    public static void copy(final ReadableByteChannel src, final WritableByteChannel dest,final int bufferSize) throws IOException {
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize);
         while (src.read(buffer) != -1) {
             buffer.flip();
             dest.write(buffer);
