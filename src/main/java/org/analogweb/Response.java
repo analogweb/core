@@ -1,18 +1,10 @@
 package org.analogweb;
 
-import org.analogweb.util.StringUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-
 /**
  * Holding response entity to write.
  * @author y2k2mt
  */
 public interface Response {
-
-    void putEntity(ResponseEntity entity);
 
     ResponseEntity getEntity();
 
@@ -22,11 +14,6 @@ public interface Response {
 
     Response NOT_FOUND = new Response() {
 
-        @Override
-        public void putEntity(ResponseEntity entity) {
-            //NOP
-        }
-    
         @Override
         public ResponseEntity getEntity() {
             //NOP
@@ -49,11 +36,7 @@ public interface Response {
         }
     };
     Response EMPTY = new Response() {
-        @Override
-        public void putEntity(ResponseEntity entity) {
-            //NOP
-        }
-    
+
         ResponseEntity EMPTY_ENTITY = new ResponseEntity<String>() {
 
             @Override

@@ -15,7 +15,7 @@ import org.analogweb.core.DefaultResponse;
 import org.analogweb.util.Maps;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public class DefaultRenderable implements Renderable {
 
@@ -28,27 +28,21 @@ public class DefaultRenderable implements Renderable {
             throws IOException, WebApplicationException {
         ResponseEntity entity = getResponseEntity();
         HttpStatus defaultStatus = HttpStatus.OK;
+        Response response;
         if (entity == null) {
             entity = extractResponseEntity(request, responseContext);
             if (entity == null) {
                 defaultStatus = HttpStatus.NO_CONTENT;
+                response = Response.EMPTY;
+            } else {
+                response = new DefaultResponse(entity);
             }
-        }
-        Response response = createResponse();
-        if (entity != null) {
-            putEntityToResponse(response, entity);
+        } else {
+            response = new DefaultResponse(entity);
         }
         mergeHeaders(request, responseContext, getHeaders(), entity);
         updateStatusToResponse(responseContext, getStatus() == null ? defaultStatus : getStatus());
         return response;
-    }
-
-    protected Response createResponse() {
-        return new DefaultResponse();
-    }
-
-    protected void putEntityToResponse(Response response, ResponseEntity entity) {
-        response.putEntity(entity);
     }
 
     protected void updateStatusToResponse(ResponseContext response, HttpStatus status) {
@@ -56,7 +50,7 @@ public class DefaultRenderable implements Renderable {
     }
 
     protected void mergeHeaders(RequestContext request, ResponseContext response,
-            Map<String, String> headers, ResponseEntity entity) {
+                                Map<String, String> headers, ResponseEntity entity) {
         Headers responseHeader = response.getResponseHeaders();
         for (Entry<String, String> entry : headers.entrySet()) {
             responseHeader.putValue(entry.getKey(), entry.getValue());

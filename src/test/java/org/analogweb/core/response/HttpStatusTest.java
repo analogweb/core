@@ -48,8 +48,8 @@ public class HttpStatusTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Response r = HttpStatus.NOT_FOUND.byReasonOf("foo is not found.").render(requestContext,
                 response);
-        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
-        assertThat(new String(out.toByteArray()), is("foo is not found."));
+        byte[] actual = (byte[])r.getEntity().entity();
+        assertThat(new String(actual), is("foo is not found."));
         verify(response).setStatus(404);
     }
 

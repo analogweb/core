@@ -13,7 +13,7 @@ import org.analogweb.ResponseContext;
 import org.analogweb.ResponseEntity;
 import org.analogweb.core.ApplicationRuntimeException;
 import org.analogweb.core.DefaultReadableBuffer;
-import org.analogweb.core.InStreamResponseEntity;
+import org.analogweb.core.ReadableBufferResponseEntity;
 import org.analogweb.util.Assertion;
 import org.analogweb.util.StringUtils;
 
@@ -98,7 +98,7 @@ public class Resource extends BuildAndRenderableResponse<Resource> {
 
     @Override
     protected ResponseEntity extractResponseEntity(RequestContext request, ResponseContext response) {
-        return new InStreamResponseEntity(getInputStream());
+        return new ReadableBufferResponseEntity(getInputStream());
     }
 
     protected String createContentDisposition() throws UnsupportedEncodingException {

@@ -1,18 +1,18 @@
 package org.analogweb.core;
 
-import java.nio.charset.Charset;
-
-import org.analogweb.*;
+import org.analogweb.RequestContext;
+import org.analogweb.Response;
+import org.analogweb.ResponseContext;
+import org.analogweb.ResponseEntity;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public class DefaultResponse implements Response {
 
     private ResponseEntity entity;
 
-    @Override
-    public void putEntity(ResponseEntity entity) {
+    public DefaultResponse(ResponseEntity entity) {
         this.entity = entity;
     }
 

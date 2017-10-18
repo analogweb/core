@@ -40,14 +40,6 @@ public class RenderableResponsesTest {
     }
 
     @Test
-    public void testOkWithEntityStream() throws Exception {
-        InputStream entity = new ByteArrayInputStream(new byte[0]);
-        RenderableResponses responses = RenderableResponses.ok(DefaultReadableBuffer.readBuffer(entity));
-        responses.render(request, response);
-        verify(response).setStatus(200);
-    }
-
-    @Test
     public void testOkWithEntityString() throws Exception {
         String entity = "foo";
         Charset cs = Charset.forName("UTF-8");

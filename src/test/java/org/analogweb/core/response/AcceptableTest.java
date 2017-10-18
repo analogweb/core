@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,11 +19,9 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.Response;
-import org.analogweb.ResponseEntity;
 import org.analogweb.core.DefaultResponse;
 import org.analogweb.WebApplicationException;
 import org.analogweb.core.DefaultResponseEntity;
-import org.analogweb.core.DefaultWritableBuffer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,9 +50,7 @@ public class AcceptableTest {
             @Override
             public Response render(RequestContext context, ResponseContext response)
                     throws IOException, WebApplicationException {
-                Response r = new DefaultResponse();
-                r.putEntity(new DefaultResponseEntity("write with XML"));
-                return r;
+                return new DefaultResponse(new DefaultResponseEntity("write with XML"));
             }
         }, "text/xml");
         final String actual = schenarioRender(" text/xml", m, a);
@@ -119,9 +114,7 @@ public class AcceptableTest {
             @Override
             public Response render(RequestContext context, ResponseContext response)
                     throws IOException, WebApplicationException {
-                Response r = new DefaultResponse();
-                r.putEntity(new DefaultResponseEntity("write with ANY"));
-                return r;
+                return new DefaultResponse(new DefaultResponseEntity("write with ANY"));
             }
         });
         final String actual = schenarioRender(" text/x-dvi,image/png, */*", m, a);
@@ -196,13 +189,13 @@ public class AcceptableTest {
         Headers responseHeaders = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(responseHeaders);
         when(headers.getValues("Accept")).thenReturn(Arrays.asList(accept.split(",")));
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Response writer = a.render(context, response);
-        ResponseEntity entity = writer.getEntity();
-        if (entity != null) {
-            entity.writeInto(DefaultWritableBuffer.writeBuffer(out));
+        Object entity = writer.getEntity().entity();
+        if(entity instanceof byte[]) {
+            return new String((byte[]) entity);
+        } else {
+            return (String)entity;
         }
-        return new String(out.toByteArray());
     }
 
     @Test

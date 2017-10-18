@@ -19,7 +19,6 @@ import org.analogweb.Headers;
 import org.analogweb.RequestContext;
 import org.analogweb.ResponseContext;
 import org.analogweb.Response;
-import org.analogweb.core.DefaultWritableBuffer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,14 +49,13 @@ public class JsonTest {
         Date birthDay = new SimpleDateFormat("yyyyMMdd").parse("20110420");
         Simple bean = new Simple("foo", 33, birthDay);
         Json json = Json.as(bean);
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         assertThat(json.resolveContentType(), is("application/json; charset=" + charset));
         assertThat(json.getCharsetAsText(), is(charset));
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
-        String actual = new String(out.toByteArray(), charset);
+        byte[] body = (byte[])r.getEntity().entity();
+        String actual = new String(body, charset);
         assertThat(actual, is("{\"age\": 33,\"birthDay\": " + birthDay.getTime()
                 + ",\"name\": \"foo\"}"));
         verify(headers).putValue("Content-Type", "application/json; charset=UTF-8");
@@ -67,12 +65,11 @@ public class JsonTest {
     public void testPlainJsonString() throws Exception {
         String charset = "UTF-8";
         Json json = Json.with("{\"value\": \"foo!\"}");
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
-        String actual = new String(out.toByteArray(), charset);
+        byte[] body = (byte[])r.getEntity().entity();
+        String actual = new String(body, charset);
         assertThat(actual, is("{\"value\": \"foo!\"}"));
     }
 
@@ -84,14 +81,13 @@ public class JsonTest {
         List<Simple> beans = Arrays.asList(new Simple("foo", 33, birthDay), new Simple("baa", 32,
                 birthDay2));
         Json json = Json.as(beans);
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         assertThat(json.resolveContentType(), is("application/json; charset=" + charset));
         assertThat(json.getCharsetAsText(), is(charset));
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
-        String actual = new String(out.toByteArray(), charset);
+        byte[] body = (byte[])r.getEntity().entity();
+        String actual = new String(body, charset);
         assertThat(actual, is("{[" + "{\"age\": 33,\"birthDay\": " + birthDay.getTime()
                 + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": " + birthDay2.getTime()
                 + ",\"name\": \"baa\"}" + "]}"));
@@ -105,14 +101,13 @@ public class JsonTest {
         Simple[] beans = new Simple[] { new Simple("foo", 33, birthDay),
                 new Simple("baa", 32, birthDay2) };
         Json json = Json.as(beans);
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         assertThat(json.resolveContentType(), is("application/json; charset=" + charset));
         assertThat(json.getCharsetAsText(), is(charset));
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
-        String actual = new String(out.toByteArray(), charset);
+        byte[] body = (byte[])r.getEntity().entity();
+        String actual = new String(body, charset);
         assertThat(actual, is("{[" + "{\"age\": 33,\"birthDay\": " + birthDay.getTime()
                 + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": " + birthDay2.getTime()
                 + ",\"name\": \"baa\"}" + "]}"));
@@ -123,12 +118,11 @@ public class JsonTest {
         Date birthDay = new SimpleDateFormat("yyyyMMdd").parse("20110420");
         Date birthDay2 = new SimpleDateFormat("yyyyMMdd").parse("20100712");
         Json json = Json.as(new ManyList());
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
-        String actual = new String(out.toByteArray(), "UTF-8");
+        byte[] body = (byte[])r.getEntity().entity();
+        String actual = new String(body, "UTF-8");
         assertThat(actual, is("{\"boo\": true,\"simples\": [" + "{\"age\": 33,\"birthDay\": "
                 + birthDay.getTime() + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": "
                 + birthDay2.getTime() + ",\"name\": \"baa\"}" + "]}"));
@@ -139,12 +133,11 @@ public class JsonTest {
         Date birthDay = new SimpleDateFormat("yyyyMMdd").parse("20110420");
         Date birthDay2 = new SimpleDateFormat("yyyyMMdd").parse("20100712");
         Json jsons = Json.as(new ManyArray());
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = jsons.render(context, response);
-        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
-        String actual = new String(out.toByteArray(), "UTF-8");
+        byte[] body = (byte[])r.getEntity().entity();
+        String actual = new String(body, "UTF-8");
         assertThat(actual, is("{\"id\": \"01\",\"simples\": [" + "{\"age\": 33,\"birthDay\": "
                 + birthDay.getTime() + ",\"name\": \"foo\"}," + "{\"age\": 32,\"birthDay\": "
                 + birthDay2.getTime() + ",\"name\": \"baa\"}" + "]}"));
@@ -155,12 +148,11 @@ public class JsonTest {
         String charset = "UTF-8";
         Simple bean = new Simple("foo", 33, null);
         Json json = Json.as(bean);
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         Headers headers = mock(Headers.class);
         when(response.getResponseHeaders()).thenReturn(headers);
         Response r = json.render(context, response);
-        r.getEntity().writeInto(DefaultWritableBuffer.writeBuffer(out));
-        String actual = new String(out.toByteArray(), charset);
+        byte[] body = (byte[])r.getEntity().entity();
+        String actual = new String(body, charset);
         assertThat(actual, is("{\"age\": 33,\"birthDay\": null,\"name\": \"foo\"}"));
     }
 
