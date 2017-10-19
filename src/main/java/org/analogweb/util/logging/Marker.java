@@ -5,5 +5,5 @@ package org.analogweb.util.logging;
  */
 public interface Marker {
 
-    String getName();
+	String getName();
 }

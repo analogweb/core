@@ -37,125 +37,131 @@ import org.junit.rules.TemporaryFolder;
 
 /**
  * TODO rename test to ApplicationPropertiesTest!
+ * 
  * @author snowgoose
  */
 public class WebApplicationTest {
 
-    private static final Log log = Logs.getLog(WebApplicationTest.class);
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    private WebApplication application;
-    private ClassLoader classLoader;
-    private ApplicationContext resolver;
-    private Collection<ClassCollector> collectors;
-    private RequestContext context;
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	private static final Log log = Logs.getLog(WebApplicationTest.class);
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+	private WebApplication application;
+	private ClassLoader classLoader;
+	private ApplicationContext resolver;
+	private Collection<ClassCollector> collectors;
+	private RequestContext context;
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    @Before
-    public void setUp() {
-        classLoader = Thread.currentThread().getContextClassLoader();
-        resolver = mock(ApplicationContext.class);
-        context = mock(RequestContext.class);
-        List<ClassCollector> collectors = new ArrayList<ClassCollector>();
-        collectors.add(new JarClassCollector());
-        collectors.add(new FileClassCollector());
-        this.collectors = collectors;
-    }
+	@Before
+	public void setUp() {
+		classLoader = Thread.currentThread().getContextClassLoader();
+		resolver = mock(ApplicationContext.class);
+		context = mock(RequestContext.class);
+		List<ClassCollector> collectors = new ArrayList<ClassCollector>();
+		collectors.add(new JarClassCollector());
+		collectors.add(new FileClassCollector());
+		this.collectors = collectors;
+	}
 
-    @After
-    public void tearDown() {
-        application.dispose();
-    }
+	@After
+	public void tearDown() {
+		application.dispose();
+	}
 
-    @Test
-    public void testInitApplication() throws Exception {
-        ApplicationProperties props = mock(ApplicationProperties.class);
-        when(props.getComponentPackageNames())
-                .thenReturn(Arrays.asList("jp.acme.test.actionsonly"));
-        File tempFolder = folder.newFolder("test");
-        when(props.getTempDir()).thenReturn(tempFolder);
-        application = new WebApplication();
-        application.run(resolver, props, collectors, classLoader);
-        RouteRegistry mapping = application.getRouteRegistry();
-        RequestPath pathAnyThing = mock(RequestPath.class);
-        when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
-        when(pathAnyThing.getRequestMethod()).thenReturn("POST");
-        when(context.getRequestPath()).thenReturn(pathAnyThing);
-        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(context, application
-                .getModules().getInvocationMetadataFinders());
-        log.debug(metadataAnyThing.toString());
-    }
+	@Test
+	public void testInitApplication() throws Exception {
+		ApplicationProperties props = mock(ApplicationProperties.class);
+		when(props.getComponentPackageNames()).thenReturn(
+				Arrays.asList("jp.acme.test.actionsonly"));
+		File tempFolder = folder.newFolder("test");
+		when(props.getTempDir()).thenReturn(tempFolder);
+		application = new WebApplication();
+		application.run(resolver, props, collectors, classLoader);
+		RouteRegistry mapping = application.getRouteRegistry();
+		RequestPath pathAnyThing = mock(RequestPath.class);
+		when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
+		when(pathAnyThing.getRequestMethod()).thenReturn("POST");
+		when(context.getRequestPath()).thenReturn(pathAnyThing);
+		InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(
+				context, application.getModules()
+						.getInvocationMetadataFinders());
+		log.debug(metadataAnyThing.toString());
+	}
 
-    @Test
-    public void testInitApplicationWithoutMetadata() throws Exception {
-        ApplicationProperties props = mock(ApplicationProperties.class);
-        //        when(props.getApplicationSpecifier()).thenReturn(null);
-        when(props.getComponentPackageNames())
-                .thenReturn(Arrays.asList("jp.acme.test.actionsonly"));
-        File tempFolder = folder.newFolder("test");
-        when(props.getTempDir()).thenReturn(tempFolder);
-        application = new WebApplication();
-        application.run(resolver, props, collectors, classLoader);
-        RouteRegistry mapping = application.getRouteRegistry();
-        RequestPath pathAnyThing = mock(RequestPath.class);
-        when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
-        when(pathAnyThing.getRequestMethod()).thenReturn("POST");
-        when(context.getRequestPath()).thenReturn(pathAnyThing);
-        InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(context, application
-                .getModules().getInvocationMetadataFinders());
-        log.debug(metadataAnyThing.toString());
-    }
+	@Test
+	public void testInitApplicationWithoutMetadata() throws Exception {
+		ApplicationProperties props = mock(ApplicationProperties.class);
+		// when(props.getApplicationSpecifier()).thenReturn(null);
+		when(props.getComponentPackageNames()).thenReturn(
+				Arrays.asList("jp.acme.test.actionsonly"));
+		File tempFolder = folder.newFolder("test");
+		when(props.getTempDir()).thenReturn(tempFolder);
+		application = new WebApplication();
+		application.run(resolver, props, collectors, classLoader);
+		RouteRegistry mapping = application.getRouteRegistry();
+		RequestPath pathAnyThing = mock(RequestPath.class);
+		when(pathAnyThing.getActualPath()).thenReturn("/baa/anything");
+		when(pathAnyThing.getRequestMethod()).thenReturn("POST");
+		when(context.getRequestPath()).thenReturn(pathAnyThing);
+		InvocationMetadata metadataAnyThing = mapping.findInvocationMetadata(
+				context, application.getModules()
+						.getInvocationMetadataFinders());
+		log.debug(metadataAnyThing.toString());
+	}
 
-    @Test
-    public void testInitApplicationWithoutRootComponentPackages() throws Exception {
-        ApplicationProperties props = mock(ApplicationProperties.class);
-        when(props.getComponentPackageNames()).thenReturn(null);
-        File tempFolder = folder.newFolder("test");
-        when(props.getTempDir()).thenReturn(tempFolder);
-        application = new WebApplication();
-        application.run(resolver, props, collectors, classLoader);
-    }
+	@Test
+	public void testInitApplicationWithoutRootComponentPackages()
+			throws Exception {
+		ApplicationProperties props = mock(ApplicationProperties.class);
+		when(props.getComponentPackageNames()).thenReturn(null);
+		File tempFolder = folder.newFolder("test");
+		when(props.getTempDir()).thenReturn(tempFolder);
+		application = new WebApplication();
+		application.run(resolver, props, collectors, classLoader);
+	}
 
-    @Test
-    public void testInitApplicationWithAdditionalComponents() throws Exception {
-        ApplicationProperties props = mock(ApplicationProperties.class);
-        when(props.getComponentPackageNames()).thenReturn(
-                Arrays.asList("jp.acme.test.additionalcomponents"));
-        File tempFolder = folder.newFolder("test");
-        when(props.getTempDir()).thenReturn(tempFolder);
-        application = new WebApplication();
-        application.run(resolver, props, collectors, classLoader);
-        Modules modules = application.getModules();
-        final List<ApplicationProcessor> processors = modules.getApplicationProcessors();
-        assertThat(processors, new NoDescribeMatcher<List<ApplicationProcessor>>() {
+	@Test
+	public void testInitApplicationWithAdditionalComponents() throws Exception {
+		ApplicationProperties props = mock(ApplicationProperties.class);
+		when(props.getComponentPackageNames()).thenReturn(
+				Arrays.asList("jp.acme.test.additionalcomponents"));
+		File tempFolder = folder.newFolder("test");
+		when(props.getTempDir()).thenReturn(tempFolder);
+		application = new WebApplication();
+		application.run(resolver, props, collectors, classLoader);
+		Modules modules = application.getModules();
+		final List<ApplicationProcessor> processors = modules
+				.getApplicationProcessors();
+		assertThat(processors,
+				new NoDescribeMatcher<List<ApplicationProcessor>>() {
 
-            @Override
-            @SuppressWarnings("unchecked")
-            public boolean matches(Object arg0) {
-                if (processors.getClass().isInstance(arg0)) {
-                    for (ApplicationProcessor processor : (List<ApplicationProcessor>) arg0) {
-                        if (processor instanceof StubPreProcessor) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-        });
-    }
+					@Override
+					@SuppressWarnings("unchecked")
+					public boolean matches(Object arg0) {
+						if (processors.getClass().isInstance(arg0)) {
+							for (ApplicationProcessor processor : (List<ApplicationProcessor>) arg0) {
+								if (processor instanceof StubPreProcessor) {
+									return true;
+								}
+							}
+						}
+						return false;
+					}
+				});
+	}
 
-    @Test
-    public void testDispose() throws Exception {
-        ApplicationProperties props = mock(ApplicationProperties.class);
-        when(props.getComponentPackageNames())
-                .thenReturn(Arrays.asList("jp.acme.test.actionsonly"));
-        File tempFolder = folder.newFolder("test");
-        when(props.getTempDir()).thenReturn(tempFolder);
-        application = new WebApplication();
-        application.run(resolver, props, collectors, classLoader);
-        application.dispose();
-        assertThat(application.getModules(), is(nullValue()));
-        assertThat(application.getRouteRegistry(), is(nullValue()));
-    }
+	@Test
+	public void testDispose() throws Exception {
+		ApplicationProperties props = mock(ApplicationProperties.class);
+		when(props.getComponentPackageNames()).thenReturn(
+				Arrays.asList("jp.acme.test.actionsonly"));
+		File tempFolder = folder.newFolder("test");
+		when(props.getTempDir()).thenReturn(tempFolder);
+		application = new WebApplication();
+		application.run(resolver, props, collectors, classLoader);
+		application.dispose();
+		assertThat(application.getModules(), is(nullValue()));
+		assertThat(application.getRouteRegistry(), is(nullValue()));
+	}
 }

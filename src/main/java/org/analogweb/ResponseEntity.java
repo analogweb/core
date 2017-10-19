@@ -6,7 +6,7 @@ import java.nio.channels.WritableByteChannel;
 
 public interface ResponseEntity<T> {
 
-    T entity();
+	T entity();
 
-    long getContentLength();
+	long getContentLength();
 }

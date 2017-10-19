@@ -4,26 +4,30 @@ import java.net.URI;
 
 /**
  * A path actually requested.
+ * 
  * @author snowgoose
  */
 public interface RequestPath extends RequestPathMetadata {
 
-    /**
-     * Requested HTTP method.
-     * @return Requested HTTP method.
-     */
-    String getRequestMethod();
+	/**
+	 * Requested HTTP method.
+	 * 
+	 * @return Requested HTTP method.
+	 */
+	String getRequestMethod();
 
-    /**
-     * Actually requested {@link URI}.
-     * @return {@link URI}
-     */
-    URI getRequestURI();
+	/**
+	 * Actually requested {@link URI}.
+	 * 
+	 * @return {@link URI}
+	 */
+	URI getRequestURI();
 
-    /**
-     * Application's context {@link URI}.
-     * mostly this {@link URI} contains protocol ,host and port.
-     * @return {@link URI}
-     */
-    URI getBaseURI();
+	/**
+	 * Application's context {@link URI}. mostly this {@link URI} contains
+	 * protocol ,host and port.
+	 * 
+	 * @return {@link URI}
+	 */
+	URI getBaseURI();
 }

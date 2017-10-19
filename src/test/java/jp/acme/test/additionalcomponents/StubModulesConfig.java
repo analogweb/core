@@ -8,9 +8,9 @@ import org.analogweb.UserModulesConfig;
  */
 public class StubModulesConfig implements UserModulesConfig {
 
-    @Override
-    public ModulesBuilder prepare(ModulesBuilder builder) {
-        builder.addApplicationProcessorClass(StubPreProcessor.class);
-        return builder;
-    }
+	@Override
+	public ModulesBuilder prepare(ModulesBuilder builder) {
+		builder.addApplicationProcessorClass(StubPreProcessor.class);
+		return builder;
+	}
 }

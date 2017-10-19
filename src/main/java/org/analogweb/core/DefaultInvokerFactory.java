@@ -11,8 +11,8 @@ import org.analogweb.InvokerFactory;
  */
 public class DefaultInvokerFactory implements InvokerFactory {
 
-    @Override
-    public Invoker createInvoker(List<InvocationInterceptor> interceptors) {
-        return new DefaultInvoker(interceptors);
-    }
+	@Override
+	public Invoker createInvoker(List<InvocationInterceptor> interceptors) {
+		return new DefaultInvoker(interceptors);
+	}
 }

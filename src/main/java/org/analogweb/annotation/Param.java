@@ -11,15 +11,16 @@ import org.analogweb.util.StringUtils;
 
 /**
  * Resolves query ,form, matrix parameter values.
- * @see ParameterValueResolver 
+ * 
+ * @see ParameterValueResolver
  * @author snowgooseyk
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Resolver(ParameterValueResolver.class)
 @Valiables
 public @interface Param {
 
-    String value() default StringUtils.EMPTY;
+	String value() default StringUtils.EMPTY;
 }

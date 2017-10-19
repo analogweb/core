@@ -7,6 +7,6 @@ import java.net.URI;
  */
 public interface ServerFactory {
 
-    Server create(URI uri, ApplicationProperties properties, ApplicationContext context,
-            Application application);
+	Server create(URI uri, ApplicationProperties properties,
+			ApplicationContext context, Application application);
 }

@@ -16,6 +16,7 @@ import org.analogweb.util.logging.Logs;
 
 /**
  * Default {@link ExceptionHandler} implementation.
+ * 
  * @author snowgoose
  */
 public class DefaultExceptionHandler implements ExceptionHandler, ModulesAware {

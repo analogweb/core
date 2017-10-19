@@ -3,4 +3,3 @@
  * This package defines fundamental interfaces.
  */
 package org.analogweb;
-

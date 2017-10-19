@@ -11,13 +11,13 @@ import org.analogweb.AttributesHandler;
 /**
  * @author snowgoose
  */
-@Target({ ElementType.PARAMETER })
+@Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Attributes {
 
-    /**
-     * @return {@link AttributesHandler}
-     */
-    Class<? extends AttributesHandler> value();
+	/**
+	 * @return {@link AttributesHandler}
+	 */
+	Class<? extends AttributesHandler> value();
 }

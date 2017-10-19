@@ -46,765 +46,809 @@ import org.analogweb.util.StringUtils;
 
 public class DefaultServer implements Server {
 
-    private static final int CR = 13;
-    private static final int LF = 10;
-    private static final byte[] CRLF = new byte[] { CR, LF };
-    private final URI serverURI;
-    private final AtomicReference<Application> app;
-    private final ApplicationContext resolver;
-    private final ApplicationProperties props;
-
-    public DefaultServer(String uri) {
-        this(URI.create(uri));
-    }
-
-    public DefaultServer(URI uri) {
-        this(uri, new WebApplication());
-    }
-
-    public DefaultServer(URI uri, Application app) {
-        this(uri, app, (ApplicationContext) null);
-    }
-
-    public DefaultServer(URI uri, Application app, ApplicationContext contextResolver) {
-        this(uri, app, contextResolver, defaultProperties());
-    }
-
-    public DefaultServer(URI uri, Application app, ApplicationProperties props) {
-        this(uri, app, null, props);
-    }
-
-    public DefaultServer(URI uri, Application app, ApplicationContext contextResolver,
-            ApplicationProperties props) {
-        Assertion.notNull(app, Application.class.getName());
-        this.serverURI = uri;
-        this.app = new AtomicReference<Application>(app);
-        this.resolver = contextResolver;
-        this.props = props;
-    }
-
-    @Override
-    public void run() {
-        ServerSocketChannel cnl = null;
-        try {
-            this.app.get().run(resolver, props, getClassCollectors(), Thread.currentThread()
-                    .getContextClassLoader());
-            cnl = SelectorProvider.provider().openServerSocketChannel();
-            cnl.configureBlocking(false);
-            cnl.socket().bind(new InetSocketAddress(this.serverURI.getPort()));
-            final Selector sl = Selector.open();
-            cnl.register(sl, SelectionKey.OP_ACCEPT);
-            runInternal(sl);
-        } catch (IOException e) {
-            throw new ApplicationRuntimeException(e) {
-
-                private static final long serialVersionUID = 1L;
-            };
-        } finally {
-            IOUtils.closeQuietly(cnl);
-        }
-    }
-
-    private Map<SelectableChannel, Handler> requests = Maps.newConcurrentHashMap();
-
-    private void runInternal(Selector sl) throws IOException {
-        while (true) {
-            while (sl.select(10) > 0) {
-                Iterator<SelectionKey> keys = sl.selectedKeys().iterator();
-                while (keys.hasNext()) {
-                    SelectionKey key = keys.next();
-                    keys.remove();
-                    if (key.isAcceptable()) {
-                        ServerSocketChannel ssock = (ServerSocketChannel) key.channel();
-                        SocketChannel channel = ssock.accept();
-                        channel.configureBlocking(false);
-                        channel.register(sl, SelectionKey.OP_READ);
-                    } else {
-                        if (key.isReadable()) {
-                            SelectableChannel channel = key.channel();
-                            Handler handler;
-                            if (requests.containsKey(channel)) {
-                                handler = requests.get(channel);
-                            } else {
-                                handler = new Handler();
-                                requests.put(channel, handler);
-                            }
-                            try {
-                                handler.read(key);
-                            } catch (RequestCancelledException e) {
-                                sendStatus((SocketChannel) key.channel(), e.getStatus(),
-                                        e.getBody());
-                                requests.remove(channel);
-                            }
-                        }
-                        if (key.isValid() && key.isWritable()) {
-                            SelectableChannel channel = key.channel();
-                            boolean completed = false;
-                            try {
-                                completed = requests.get(channel).write(key);
-                            } finally {
-                                if (completed) {
-                                    requests.remove(channel);
-                                    channel.close();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    final class Handler {
-
-        private RequestPath path;
-        private Map<String, List<String>> headerMap;
-        private RequestBody body;
-        private boolean executed;
-
-        public void read(SelectionKey key) throws IOException {
-            SocketChannel sock = (SocketChannel) key.channel();
-            sock.configureBlocking(false);
-            ByteBuffer buf = ByteBuffer.allocate(8192);
-            int read = sock.read(buf);
-            if (read == 1) {
-                // spinning.
-                return;
-            }
-            buf.flip();
-            if (read > 0) {
-                // Read first.
-                int eoh = 0;
-                if (headerMap == null || path == null) {
-                    eoh = endOfHeader(buf, read);
-                    while (eoh == 0) {
-                        buf.limit(8192);
-                        read = sock.read(buf);
-                        buf.flip();
-                        eoh = endOfHeader(buf, read);
-                    }
-                    BufferedReader r = new BufferedReader(new InputStreamReader(
-                            new ByteArrayInputStream(
-                                    ((ByteBuffer) buf.duplicate().limit(eoh)).array())));
-                    String aLine = r.readLine();
-                    if (aLine == null) {
-                        throw new RequestCancelledException(HttpStatus.BAD_REQUEST,
-                                StringUtils.EMPTY);
-                    }
-                    StringTokenizer st = new StringTokenizer(aLine);
-                    if (st.countTokens() < 2) {
-                        throw new RequestCancelledException(HttpStatus.BAD_REQUEST,
-                                StringUtils.EMPTY);
-                    }
-                    final String method = st.nextToken();
-                    final URI uri = URI.create(st.nextToken());
-                    path = new DefaultRequestPath(URI.create("/"), uri, method);
-                    headerMap = Maps.newEmptyHashMap();
-                    while ((aLine = r.readLine()) != null && aLine.trim().length() != 0) {
-                        int i = aLine.indexOf(':');
-                        if (i > 0 && i < aLine.length()) {
-                            String k = aLine.substring(0, i).trim();
-                            String value = aLine.substring(i + 1).trim();
-                            headerMap.put(k, Arrays.asList(value));
-                        }
-                    }
-                }
-                body = resolveRequestBody(sock, buf, eoh, read, path.getRequestMethod(),
-                        headerMap.get("Content-Length"));
-                if (body.resolved() && executed == false) {
-                    RequestContextImpl request = new RequestContextImpl(path, Locale.getDefault(),
-                            headerMap, body);
-                    ResponseContextImpl response = new ResponseContextImpl(request, sock);
-                    try {
-                        Response proceed = app.get().processRequest(request.getRequestPath(), request,
-                                response);
-                        if (proceed == Application.NOT_FOUND) {
-                            throw new RequestCancelledException(HttpStatus.NOT_FOUND,
-                                    StringUtils.EMPTY);
-                        } else {
-                            proceed.commit(request, response);
-                        }
-                    } catch (WebApplicationException e) {
-                        e.printStackTrace();
-                        throw new RequestCancelledException(HttpStatus.INTERNAL_SERVER_ERROR,
-                                e.getMessage());
-                    } finally {
-                        key.attach(response);
-                        this.executed = true;
-                        key.interestOps(SelectionKey.OP_WRITE);
-                    }
-                } else {
-                    key.interestOps(SelectionKey.OP_READ);
-                }
-            }
-        }
-
-        private RequestBody resolveRequestBody(SocketChannel sock, ByteBuffer buf, int eoh,
-                int read, String method, List<String> contentLengthHeader) throws IOException {
-            if (this.body != null) {
-                byte[] dst = new byte[read];
-                buf.get(dst);
-                body.update(dst);
-                buf.clear();
-                return body;
-            }
-            if (method.equalsIgnoreCase("POST") || method.equalsIgnoreCase("PUT")) {
-                int contentLength = CollectionUtils.isEmpty(contentLengthHeader) ? -1 : Integer
-                        .valueOf(contentLengthHeader.get(0));
-                if (contentLength < 0) {
-                    throw new RequestCancelledException(HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
-                }
-                int firstBodySize = buf.limit() - eoh;
-                byte[] ba = new byte[firstBodySize];
-                buf = (ByteBuffer) buf.position(eoh);
-                buf.get(ba);
-                buf.clear();
-                return new RequestBody(contentLength, ba, props);
-            } else {
-                return new RequestBody();
-            }
-        }
-
-        public boolean write(SelectionKey key) throws IOException {
-            SocketChannel sock = (SocketChannel) key.channel();
-            sock.configureBlocking(false);
-            ResponseContextImpl ri = (ResponseContextImpl) key.attachment();
-            if (ri.completed() == false) {
-                key.interestOps(SelectionKey.OP_WRITE);
-                return false;
-            }
-            ResponseBody rb = ri.getBody();
-            if (rb == null) {
-                key.channel().register(key.selector(), SelectionKey.OP_READ);
-                sock.close();
-                return true;
-            }
-            ByteBuffer buffer = rb.getByteBuffer();
-            if (buffer == null) {
-                key.channel().register(key.selector(), SelectionKey.OP_READ);
-                sock.close();
-                return true;
-            }
-            buffer.flip();
-            try {
-                sock.write(buffer);
-            } catch (Exception e) {
-            } finally {
-                if (buffer.hasRemaining() == false) {
-                    key.channel().register(key.selector(), SelectionKey.OP_READ);
-                    sock.close();
-                } else {
-                    buffer.compact();
-                    key.interestOps(SelectionKey.OP_WRITE);
-                }
-            }
-            return buffer.hasRemaining() == false;
-        }
-    }
-
-    private int endOfHeader(final ByteBuffer buf, int length) {
-        int splitbyte = 0;
-        while (splitbyte + 3 < length) {
-            if (buf.get(splitbyte) == '\r' && buf.get(splitbyte + 1) == '\n'
-                    && buf.get(splitbyte + 2) == '\r' && buf.get(splitbyte + 3) == '\n') {
-                return splitbyte + 4;
-            }
-            splitbyte++;
-        }
-        return 0;
-    }
-
-    private void sendStatus(final SocketChannel sock, HttpStatus status, String body) {
-        CharBuffer buffer = CharBuffer.allocate(8192);
-        buffer.append("HTTP/1.1").append(' ').append(String.valueOf(status.getStatusCode()))
-                .append(' ').append(status.getPhrase()).append('\r').append('\n');
-        SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'",
-                Locale.US);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        buffer.append("Date: ").append(dateFormat.format(new Date())).append('\r').append('\n');
-        if (StringUtils.isNotEmpty(body)) {
-            buffer.append("Content-Length: ").append(String.valueOf(body.length())).append('\r')
-                    .append('\n');
-        }
-        buffer.append("Connection: close");
-        buffer.append("\r\n");
-        buffer.append("\r\n");
-        buffer.flip();
-        Charset iso = Charset.forName("ISO-8859-1");
-        try {
-            sock.write(iso.encode(buffer));
-            if (StringUtils.isNotEmpty(body)) {
-                sock.write(ByteBuffer.wrap(body.getBytes()));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            IOUtils.closeQuietly(sock);
-        }
-    }
-
-    private static final class RequestCancelledException extends RuntimeException {
-
-        private static final long serialVersionUID = -5041505179564601790L;
-        private HttpStatus status;
-        private String body;
-
-        RequestCancelledException(HttpStatus status, String body) {
-            this.status = status;
-            this.body = body;
-        }
-
-        public HttpStatus getStatus() {
-            return this.status;
-        }
-
-        public String getBody() {
-            return this.body;
-        }
-    }
-
-    private static final class RequestContextImpl extends AbstractRequestContext implements
-            Disposable {
-
-        private Map<String, List<String>> headerMap;
-        private RequestBody body;
-
-        RequestContextImpl(RequestPath requestPath, Locale defaultLocale,
-                Map<String, List<String>> headerMap, RequestBody body) {
-            super(requestPath, defaultLocale);
-            this.body = body;
-            this.headerMap = headerMap;
-        }
-
-        @Override
-        public String getRequestMethod() {
-            return getRequestPath().getRequestMethods().get(0);
-        }
-
-        @Override
-        public Headers getRequestHeaders() {
-            return new MapHeaders(headerMap);
-        }
-
-        @Override
-        public ReadableBuffer getRequestBody() throws IOException {
-            return body.open();
-        }
-
-        @Override
-        public void dispose() {
-            this.headerMap.clear();
-            this.body.dispose();
-        }
-    }
-
-    private static final class RequestBody implements Disposable {
-
-        private static final ByteArrayInputStream EMPTY = new ByteArrayInputStream(new byte[0]);
-        private OutputStream out;
-        private InputStream in;
-        private int remain;
-        private boolean resolved;
-        private File file;
-        private RandomAccessFile ra;
-
-        RequestBody() {
-            this.in = new ByteArrayInputStream(new byte[0]);
-            this.resolved = true;
-        }
-
-        RequestBody(int remain, byte[] first, ApplicationProperties props) throws IOException {
-            this.remain = remain;
-            if (remain > 1024 * 1024) {
-                // Over 1M bytes.
-                this.file = File.createTempFile("Analogweb", "Request", props.getTempDir());
-                this.ra = new RandomAccessFile(file, "rw");
-                this.out = new FileOutputStream(ra.getFD());
-            } else {
-                // In memory mode.
-                this.out = new ByteArrayOutputStream();
-            }
-            update(first);
-        }
-
-        public boolean resolved() {
-            return this.resolved;
-        }
-
-        @Override
-        public void dispose() {
-            IOUtils.closeQuietly(this.ra);
-            IOUtils.closeQuietly(in);
-            this.in = null;
-            IOUtils.closeQuietly(out);
-            this.out = null;
-            if (this.file != null) {
-                this.file.deleteOnExit();
-            }
-        }
-
-        public void update(byte[] buffer) throws IOException {
-            if (this.out == null) {
-                return;
-            }
-            this.remain -= buffer.length;
-            this.out.write(buffer);
-            if (this.remain < 1) {
-                this.resolved = true;
-            }
-        }
-
-        public ReadableBuffer open() throws IOException {
-            if (this.ra != null) {
-                IOUtils.closeQuietly(this.ra);
-                this.ra = new RandomAccessFile(file, "r");
-                return DefaultReadableBuffer.readBuffer(Channels.newChannel(new FileInputStream(this.ra.getFD())));
-            } else {
-                if (this.out instanceof ByteArrayOutputStream) {
-                    return DefaultReadableBuffer.readBuffer(Channels.newChannel(new ByteArrayInputStream(((ByteArrayOutputStream) out).toByteArray())));
-                } else {
-                    return DefaultReadableBuffer.readBuffer(Channels.newChannel(EMPTY));
-                }
-            }
-        }
-    }
-
-    static final class ResponseContextImpl extends AbstractResponseContext {
-
-        private RequestContext request;
-        private SocketChannel sock;
-        private ResponseBody body;
-
-        ResponseContextImpl(final RequestContext request, final SocketChannel sock) {
-            this.request = request;
-            this.sock = sock;
-        }
-
-        public ResponseBody getBody() {
-            return this.body;
-        }
-
-        @Override
-        public void commit(RequestContext context, Response response) {
-            // write headers
-            CharBuffer buffer = CharBuffer.allocate(8192);
-            buffer.append("HTTP/1.1").append(' ').append(String.valueOf(getStatus())).append(' ')
-                    .append(HttpStatus.valueOf(getStatus()).getPhrase()).append("\r\n");
-            Headers h = getResponseHeaders();
-            if (h.contains("Date") == false) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'",
-                        Locale.US);
-                dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-                buffer.append("Date: ").append(dateFormat.format(new Date())).append("\r\n");
-            }
-            long length = response.getContentLength();
-            OutputStream out = null;
-            if (request.getRequestMethod().equals("HEAD") == false) {
-                if (h.contains("Content-Length") == false && length != -1) {
-                    buffer.append("Content-Length: ").append(String.valueOf(length)).append("\r\n");
-                    out = toFixedLengthOutputStream(length, sock);
-                }
-                if (length == -1) {
-                    buffer.append("Transfer-Encoding: chunked").append("\r\n");
-                    out = toChunkedOutputStream(sock);
-                }
-            }
-            for (String headerName : h.getNames()) {
-                Iterator<String> values = h.getValues(headerName).iterator();
-                buffer.append(headerName).append(": ").append(values.next());
-                while (values.hasNext()) {
-                    buffer.append(',').append(values.next());
-                }
-                buffer.append("\r\n");
-            }
-            buffer.append("\r\n");
-            buffer.flip();
-            Charset iso = Charset.forName("ISO-8859-1");
-            try {
-                sock.write(iso.encode(buffer));
-                ResponseEntity entity = response.getEntity();
-                if (entity != null) {
-                    Object entityBody = entity.entity();
-                    if(entityBody instanceof byte[]){
-                        out.write((byte[])entityBody);
-                    } else if (entityBody instanceof InputStream) {
-                        IOUtils.copy((InputStream)entityBody,out);
-                    } else if (entityBody instanceof ReadableBuffer) {
-                        DefaultWritableBuffer.writeBuffer(out).from((ReadableBuffer)entityBody);
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // write contents.s
-        }
-
-        private FixedLengthOutputStream toFixedLengthOutputStream(long length, SocketChannel sock) {
-            return new FixedLengthOutputStream(toOutputStream(), length);
-        }
-
-        private ChunkedOutputStream toChunkedOutputStream(SocketChannel sock) {
-            return new ChunkedOutputStream(8192, toOutputStream());
-        }
-
-        private OutputStream toOutputStream() {
-            this.body = new ResponseBody(ByteBuffer.allocate(64 * 1024));
-            return new OutputStream() {
-
-                @Override
-                public void write(int b) throws IOException {
-                    body.put(new byte[] { (byte) b });
-                }
-
-                @Override
-                public void write(byte[] b, int off, int len) throws IOException {
-                    body.put(b);
-                }
-            };
-        }
-    }
-
-    static final class ResponseBody {
-
-        private ByteBuffer backend;
-
-        private ResponseBody(ByteBuffer bb) {
-            this.backend = bb;
-        }
-
-        public static ResponseBody allocate(int capacity) {
-            return new ResponseBody(ByteBuffer.allocate(capacity));
-        }
-
-        public void put(byte[] src) {
-            ensureCapacity(src.length);
-            backend.put(src);
-        }
-
-        private void ensureCapacity(int size) {
-            int remaining = backend.remaining();
-            if (size > remaining) {
-                int missing = size - remaining;
-                int newSize = (int) ((backend.capacity() + missing) * 1.5);
-                reallocate(newSize);
-            }
-        }
-
-        // Preserves position.
-        private void reallocate(int newCapacity) {
-            int oldPosition = backend.position();
-            byte[] newBuffer = new byte[newCapacity];
-            System.arraycopy(backend.array(), 0, newBuffer, 0, backend.position());
-            backend = ByteBuffer.wrap(newBuffer);
-            backend.position(oldPosition);
-        }
-
-        public ByteBuffer getByteBuffer() {
-            return backend;
-        }
-
-        public void flip() {
-            backend.flip();
-        }
-
-        public int limit() {
-            return backend.limit();
-        }
-
-        public int position() {
-            return backend.position();
-        }
-
-        public byte[] array() {
-            return backend.array();
-        }
-
-        public int capacity() {
-            return backend.capacity();
-        }
-
-        public boolean hasRemaining() {
-            return backend.hasRemaining();
-        }
-
-        public ResponseBody compact() {
-            backend.compact();
-            return this;
-        }
-
-        public ResponseBody clear() {
-            backend.clear();
-            return this;
-        }
-    }
-
-    static final class FixedLengthOutputStream extends OutputStream {
-
-        private final OutputStream out;
-        private final long contentLength;
-        private long total = 0;
-        private boolean closed = false;
-
-        FixedLengthOutputStream(final OutputStream out, final long contentLength) {
-            super();
-            this.out = out;
-            this.contentLength = contentLength;
-        }
-
-        @Override
-        public void close() throws IOException {
-            if (!this.closed) {
-                this.closed = true;
-                this.out.flush();
-            }
-        }
-
-        @Override
-        public void flush() throws IOException {
-            this.out.flush();
-        }
-
-        @Override
-        public void write(final byte[] b, final int off, final int len) throws IOException {
-            if (this.closed) {
-                throw new IOException("Attempted write to closed stream.");
-            }
-            if (this.total < this.contentLength) {
-                final long max = this.contentLength - this.total;
-                int chunk = len;
-                if (chunk > max) {
-                    chunk = (int) max;
-                }
-                this.out.write(b, off, chunk);
-                this.total += chunk;
-            }
-        }
-
-        @Override
-        public void write(final byte[] b) throws IOException {
-            write(b, 0, b.length);
-        }
-
-        @Override
-        public void write(final int b) throws IOException {
-            if (this.closed) {
-                throw new IOException("Attempted write to closed stream.");
-            }
-            if (this.total < this.contentLength) {
-                this.out.write(b);
-                this.total++;
-            }
-        }
-    }
-
-    static final class ChunkedOutputStream extends OutputStream {
-
-        private final OutputStream out;
-        private final byte[] cache;
-        private int cachePosition = 0;
-        private boolean wroteLastChunk = false;
-        private boolean closed = false;
-
-        ChunkedOutputStream(final int bufferSize, final OutputStream out) {
-            super();
-            this.cache = new byte[bufferSize];
-            this.out = out;
-        }
-
-        protected void flushCache() throws IOException {
-            if (this.cachePosition > 0) {
-                this.out.write(Integer.toHexString(this.cachePosition).getBytes());
-                this.out.write(CRLF);
-                this.out.write(this.cache, 0, this.cachePosition);
-                this.out.write("".getBytes());
-                this.cachePosition = 0;
-            }
-        }
-
-        protected void flushCacheWithAppend(final byte bufferToAppend[], final int off,
-                final int len) throws IOException {
-            this.out.write(Integer.toHexString(this.cachePosition + len).getBytes());
-            this.out.write(CRLF);
-            this.out.write(this.cache, 0, this.cachePosition);
-            this.out.write(bufferToAppend, off, len);
-            this.out.write("".getBytes());
-            this.cachePosition = 0;
-        }
-
-        protected void writeClosingChunk() throws IOException {
-            this.out.write("0".getBytes());
-            this.out.write("".getBytes());
-        }
-
-        public void finish() throws IOException {
-            if (!this.wroteLastChunk) {
-                flushCache();
-                writeClosingChunk();
-                this.wroteLastChunk = true;
-            }
-        }
-
-        @Override
-        public void write(final int b) throws IOException {
-            if (this.closed) {
-                throw new IOException("Attempted write to closed stream.");
-            }
-            this.cache[this.cachePosition] = (byte) b;
-            this.cachePosition++;
-            if (this.cachePosition == this.cache.length) {
-                flushCache();
-            }
-        }
-
-        @Override
-        public void write(final byte b[]) throws IOException {
-            write(b, 0, b.length);
-        }
-
-        @Override
-        public void write(final byte src[], final int off, final int len) throws IOException {
-            if (this.closed) {
-                throw new IOException("Attempted write to closed stream.");
-            }
-            if (len >= this.cache.length - this.cachePosition) {
-                flushCacheWithAppend(src, off, len);
-            } else {
-                System.arraycopy(src, off, cache, this.cachePosition, len);
-                this.cachePosition += len;
-            }
-        }
-
-        @Override
-        public void flush() throws IOException {
-            flushCache();
-            this.out.flush();
-        }
-
-        @Override
-        public void close() throws IOException {
-            if (!this.closed) {
-                this.closed = true;
-                finish();
-                this.out.flush();
-            }
-        }
-    }
-
-    @Override
-    public void shutdown(int mode) {
-        app.get().dispose();
-    }
-
-    protected List<ClassCollector> getClassCollectors() {
-        List<ClassCollector> list = new ArrayList<ClassCollector>();
-        list.add(new JarClassCollector());
-        list.add(new FileClassCollector());
-        return Collections.unmodifiableList(list);
-    }
-    
+	private static final int CR = 13;
+	private static final int LF = 10;
+	private static final byte[] CRLF = new byte[]{CR, LF};
+	private final URI serverURI;
+	private final AtomicReference<Application> app;
+	private final ApplicationContext resolver;
+	private final ApplicationProperties props;
+
+	public DefaultServer(String uri) {
+		this(URI.create(uri));
+	}
+
+	public DefaultServer(URI uri) {
+		this(uri, new WebApplication());
+	}
+
+	public DefaultServer(URI uri, Application app) {
+		this(uri, app, (ApplicationContext) null);
+	}
+
+	public DefaultServer(URI uri, Application app,
+			ApplicationContext contextResolver) {
+		this(uri, app, contextResolver, defaultProperties());
+	}
+
+	public DefaultServer(URI uri, Application app, ApplicationProperties props) {
+		this(uri, app, null, props);
+	}
+
+	public DefaultServer(URI uri, Application app,
+			ApplicationContext contextResolver, ApplicationProperties props) {
+		Assertion.notNull(app, Application.class.getName());
+		this.serverURI = uri;
+		this.app = new AtomicReference<Application>(app);
+		this.resolver = contextResolver;
+		this.props = props;
+	}
+
+	@Override
+	public void run() {
+		ServerSocketChannel cnl = null;
+		try {
+			this.app.get().run(resolver, props, getClassCollectors(),
+					Thread.currentThread().getContextClassLoader());
+			cnl = SelectorProvider.provider().openServerSocketChannel();
+			cnl.configureBlocking(false);
+			cnl.socket().bind(new InetSocketAddress(this.serverURI.getPort()));
+			final Selector sl = Selector.open();
+			cnl.register(sl, SelectionKey.OP_ACCEPT);
+			runInternal(sl);
+		} catch (IOException e) {
+			throw new ApplicationRuntimeException(e) {
+
+				private static final long serialVersionUID = 1L;
+			};
+		} finally {
+			IOUtils.closeQuietly(cnl);
+		}
+	}
+
+	private Map<SelectableChannel, Handler> requests = Maps
+			.newConcurrentHashMap();
+
+	private void runInternal(Selector sl) throws IOException {
+		while (true) {
+			while (sl.select(10) > 0) {
+				Iterator<SelectionKey> keys = sl.selectedKeys().iterator();
+				while (keys.hasNext()) {
+					SelectionKey key = keys.next();
+					keys.remove();
+					if (key.isAcceptable()) {
+						ServerSocketChannel ssock = (ServerSocketChannel) key
+								.channel();
+						SocketChannel channel = ssock.accept();
+						channel.configureBlocking(false);
+						channel.register(sl, SelectionKey.OP_READ);
+					} else {
+						if (key.isReadable()) {
+							SelectableChannel channel = key.channel();
+							Handler handler;
+							if (requests.containsKey(channel)) {
+								handler = requests.get(channel);
+							} else {
+								handler = new Handler();
+								requests.put(channel, handler);
+							}
+							try {
+								handler.read(key);
+							} catch (RequestCancelledException e) {
+								sendStatus((SocketChannel) key.channel(),
+										e.getStatus(), e.getBody());
+								requests.remove(channel);
+							}
+						}
+						if (key.isValid() && key.isWritable()) {
+							SelectableChannel channel = key.channel();
+							boolean completed = false;
+							try {
+								completed = requests.get(channel).write(key);
+							} finally {
+								if (completed) {
+									requests.remove(channel);
+									channel.close();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	final class Handler {
+
+		private RequestPath path;
+		private Map<String, List<String>> headerMap;
+		private RequestBody body;
+		private boolean executed;
+
+		public void read(SelectionKey key) throws IOException {
+			SocketChannel sock = (SocketChannel) key.channel();
+			sock.configureBlocking(false);
+			ByteBuffer buf = ByteBuffer.allocate(8192);
+			int read = sock.read(buf);
+			if (read == 1) {
+				// spinning.
+				return;
+			}
+			buf.flip();
+			if (read > 0) {
+				// Read first.
+				int eoh = 0;
+				if (headerMap == null || path == null) {
+					eoh = endOfHeader(buf, read);
+					while (eoh == 0) {
+						buf.limit(8192);
+						read = sock.read(buf);
+						buf.flip();
+						eoh = endOfHeader(buf, read);
+					}
+					BufferedReader r = new BufferedReader(
+							new InputStreamReader(new ByteArrayInputStream(
+									((ByteBuffer) buf.duplicate().limit(eoh))
+											.array())));
+					String aLine = r.readLine();
+					if (aLine == null) {
+						throw new RequestCancelledException(
+								HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
+					}
+					StringTokenizer st = new StringTokenizer(aLine);
+					if (st.countTokens() < 2) {
+						throw new RequestCancelledException(
+								HttpStatus.BAD_REQUEST, StringUtils.EMPTY);
+					}
+					final String method = st.nextToken();
+					final URI uri = URI.create(st.nextToken());
+					path = new DefaultRequestPath(URI.create("/"), uri, method);
+					headerMap = Maps.newEmptyHashMap();
+					while ((aLine = r.readLine()) != null
+							&& aLine.trim().length() != 0) {
+						int i = aLine.indexOf(':');
+						if (i > 0 && i < aLine.length()) {
+							String k = aLine.substring(0, i).trim();
+							String value = aLine.substring(i + 1).trim();
+							headerMap.put(k, Arrays.asList(value));
+						}
+					}
+				}
+				body = resolveRequestBody(sock, buf, eoh, read,
+						path.getRequestMethod(),
+						headerMap.get("Content-Length"));
+				if (body.resolved() && executed == false) {
+					RequestContextImpl request = new RequestContextImpl(path,
+							Locale.getDefault(), headerMap, body);
+					ResponseContextImpl response = new ResponseContextImpl(
+							request, sock);
+					try {
+						Response proceed = app.get().processRequest(
+								request.getRequestPath(), request, response);
+						if (proceed == Application.NOT_FOUND) {
+							throw new RequestCancelledException(
+									HttpStatus.NOT_FOUND, StringUtils.EMPTY);
+						} else {
+							proceed.commit(request, response);
+						}
+					} catch (WebApplicationException e) {
+						e.printStackTrace();
+						throw new RequestCancelledException(
+								HttpStatus.INTERNAL_SERVER_ERROR,
+								e.getMessage());
+					} finally {
+						key.attach(response);
+						this.executed = true;
+						key.interestOps(SelectionKey.OP_WRITE);
+					}
+				} else {
+					key.interestOps(SelectionKey.OP_READ);
+				}
+			}
+		}
+
+		private RequestBody resolveRequestBody(SocketChannel sock,
+				ByteBuffer buf, int eoh, int read, String method,
+				List<String> contentLengthHeader) throws IOException {
+			if (this.body != null) {
+				byte[] dst = new byte[read];
+				buf.get(dst);
+				body.update(dst);
+				buf.clear();
+				return body;
+			}
+			if (method.equalsIgnoreCase("POST")
+					|| method.equalsIgnoreCase("PUT")) {
+				int contentLength = CollectionUtils
+						.isEmpty(contentLengthHeader) ? -1 : Integer
+						.valueOf(contentLengthHeader.get(0));
+				if (contentLength < 0) {
+					throw new RequestCancelledException(HttpStatus.BAD_REQUEST,
+							StringUtils.EMPTY);
+				}
+				int firstBodySize = buf.limit() - eoh;
+				byte[] ba = new byte[firstBodySize];
+				buf = (ByteBuffer) buf.position(eoh);
+				buf.get(ba);
+				buf.clear();
+				return new RequestBody(contentLength, ba, props);
+			} else {
+				return new RequestBody();
+			}
+		}
+
+		public boolean write(SelectionKey key) throws IOException {
+			SocketChannel sock = (SocketChannel) key.channel();
+			sock.configureBlocking(false);
+			ResponseContextImpl ri = (ResponseContextImpl) key.attachment();
+			if (ri.completed() == false) {
+				key.interestOps(SelectionKey.OP_WRITE);
+				return false;
+			}
+			ResponseBody rb = ri.getBody();
+			if (rb == null) {
+				key.channel().register(key.selector(), SelectionKey.OP_READ);
+				sock.close();
+				return true;
+			}
+			ByteBuffer buffer = rb.getByteBuffer();
+			if (buffer == null) {
+				key.channel().register(key.selector(), SelectionKey.OP_READ);
+				sock.close();
+				return true;
+			}
+			buffer.flip();
+			try {
+				sock.write(buffer);
+			} catch (Exception e) {
+			} finally {
+				if (buffer.hasRemaining() == false) {
+					key.channel()
+							.register(key.selector(), SelectionKey.OP_READ);
+					sock.close();
+				} else {
+					buffer.compact();
+					key.interestOps(SelectionKey.OP_WRITE);
+				}
+			}
+			return buffer.hasRemaining() == false;
+		}
+	}
+
+	private int endOfHeader(final ByteBuffer buf, int length) {
+		int splitbyte = 0;
+		while (splitbyte + 3 < length) {
+			if (buf.get(splitbyte) == '\r' && buf.get(splitbyte + 1) == '\n'
+					&& buf.get(splitbyte + 2) == '\r'
+					&& buf.get(splitbyte + 3) == '\n') {
+				return splitbyte + 4;
+			}
+			splitbyte++;
+		}
+		return 0;
+	}
+
+	private void sendStatus(final SocketChannel sock, HttpStatus status,
+			String body) {
+		CharBuffer buffer = CharBuffer.allocate(8192);
+		buffer.append("HTTP/1.1").append(' ')
+				.append(String.valueOf(status.getStatusCode())).append(' ')
+				.append(status.getPhrase()).append('\r').append('\n');
+		SimpleDateFormat dateFormat = new SimpleDateFormat(
+				"E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		buffer.append("Date: ").append(dateFormat.format(new Date()))
+				.append('\r').append('\n');
+		if (StringUtils.isNotEmpty(body)) {
+			buffer.append("Content-Length: ")
+					.append(String.valueOf(body.length())).append('\r')
+					.append('\n');
+		}
+		buffer.append("Connection: close");
+		buffer.append("\r\n");
+		buffer.append("\r\n");
+		buffer.flip();
+		Charset iso = Charset.forName("ISO-8859-1");
+		try {
+			sock.write(iso.encode(buffer));
+			if (StringUtils.isNotEmpty(body)) {
+				sock.write(ByteBuffer.wrap(body.getBytes()));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.closeQuietly(sock);
+		}
+	}
+
+	private static final class RequestCancelledException
+			extends
+				RuntimeException {
+
+		private static final long serialVersionUID = -5041505179564601790L;
+		private HttpStatus status;
+		private String body;
+
+		RequestCancelledException(HttpStatus status, String body) {
+			this.status = status;
+			this.body = body;
+		}
+
+		public HttpStatus getStatus() {
+			return this.status;
+		}
+
+		public String getBody() {
+			return this.body;
+		}
+	}
+
+	private static final class RequestContextImpl
+			extends
+				AbstractRequestContext implements Disposable {
+
+		private Map<String, List<String>> headerMap;
+		private RequestBody body;
+
+		RequestContextImpl(RequestPath requestPath, Locale defaultLocale,
+				Map<String, List<String>> headerMap, RequestBody body) {
+			super(requestPath, defaultLocale);
+			this.body = body;
+			this.headerMap = headerMap;
+		}
+
+		@Override
+		public String getRequestMethod() {
+			return getRequestPath().getRequestMethods().get(0);
+		}
+
+		@Override
+		public Headers getRequestHeaders() {
+			return new MapHeaders(headerMap);
+		}
+
+		@Override
+		public ReadableBuffer getRequestBody() throws IOException {
+			return body.open();
+		}
+
+		@Override
+		public void dispose() {
+			this.headerMap.clear();
+			this.body.dispose();
+		}
+	}
+
+	private static final class RequestBody implements Disposable {
+
+		private static final ByteArrayInputStream EMPTY = new ByteArrayInputStream(
+				new byte[0]);
+		private OutputStream out;
+		private InputStream in;
+		private int remain;
+		private boolean resolved;
+		private File file;
+		private RandomAccessFile ra;
+
+		RequestBody() {
+			this.in = new ByteArrayInputStream(new byte[0]);
+			this.resolved = true;
+		}
+
+		RequestBody(int remain, byte[] first, ApplicationProperties props)
+				throws IOException {
+			this.remain = remain;
+			if (remain > 1024 * 1024) {
+				// Over 1M bytes.
+				this.file = File.createTempFile("Analogweb", "Request",
+						props.getTempDir());
+				this.ra = new RandomAccessFile(file, "rw");
+				this.out = new FileOutputStream(ra.getFD());
+			} else {
+				// In memory mode.
+				this.out = new ByteArrayOutputStream();
+			}
+			update(first);
+		}
+
+		public boolean resolved() {
+			return this.resolved;
+		}
+
+		@Override
+		public void dispose() {
+			IOUtils.closeQuietly(this.ra);
+			IOUtils.closeQuietly(in);
+			this.in = null;
+			IOUtils.closeQuietly(out);
+			this.out = null;
+			if (this.file != null) {
+				this.file.deleteOnExit();
+			}
+		}
+
+		public void update(byte[] buffer) throws IOException {
+			if (this.out == null) {
+				return;
+			}
+			this.remain -= buffer.length;
+			this.out.write(buffer);
+			if (this.remain < 1) {
+				this.resolved = true;
+			}
+		}
+
+		public ReadableBuffer open() throws IOException {
+			if (this.ra != null) {
+				IOUtils.closeQuietly(this.ra);
+				this.ra = new RandomAccessFile(file, "r");
+				return DefaultReadableBuffer.readBuffer(Channels
+						.newChannel(new FileInputStream(this.ra.getFD())));
+			} else {
+				if (this.out instanceof ByteArrayOutputStream) {
+					return DefaultReadableBuffer
+							.readBuffer(Channels
+									.newChannel(new ByteArrayInputStream(
+											((ByteArrayOutputStream) out)
+													.toByteArray())));
+				} else {
+					return DefaultReadableBuffer.readBuffer(Channels
+							.newChannel(EMPTY));
+				}
+			}
+		}
+	}
+
+	static final class ResponseContextImpl extends AbstractResponseContext {
+
+		private RequestContext request;
+		private SocketChannel sock;
+		private ResponseBody body;
+
+		ResponseContextImpl(final RequestContext request,
+				final SocketChannel sock) {
+			this.request = request;
+			this.sock = sock;
+		}
+
+		public ResponseBody getBody() {
+			return this.body;
+		}
+
+		@Override
+		public void commit(RequestContext context, Response response) {
+			// write headers
+			CharBuffer buffer = CharBuffer.allocate(8192);
+			buffer.append("HTTP/1.1").append(' ')
+					.append(String.valueOf(getStatus())).append(' ')
+					.append(HttpStatus.valueOf(getStatus()).getPhrase())
+					.append("\r\n");
+			Headers h = getResponseHeaders();
+			if (h.contains("Date") == false) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat(
+						"E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+				dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+				buffer.append("Date: ").append(dateFormat.format(new Date()))
+						.append("\r\n");
+			}
+			long length = response.getContentLength();
+			OutputStream out = null;
+			if (request.getRequestMethod().equals("HEAD") == false) {
+				if (h.contains("Content-Length") == false && length != -1) {
+					buffer.append("Content-Length: ")
+							.append(String.valueOf(length)).append("\r\n");
+					out = toFixedLengthOutputStream(length, sock);
+				}
+				if (length == -1) {
+					buffer.append("Transfer-Encoding: chunked").append("\r\n");
+					out = toChunkedOutputStream(sock);
+				}
+			}
+			for (String headerName : h.getNames()) {
+				Iterator<String> values = h.getValues(headerName).iterator();
+				buffer.append(headerName).append(": ").append(values.next());
+				while (values.hasNext()) {
+					buffer.append(',').append(values.next());
+				}
+				buffer.append("\r\n");
+			}
+			buffer.append("\r\n");
+			buffer.flip();
+			Charset iso = Charset.forName("ISO-8859-1");
+			try {
+				sock.write(iso.encode(buffer));
+				ResponseEntity entity = response.getEntity();
+				if (entity != null) {
+					Object entityBody = entity.entity();
+					if (entityBody instanceof byte[]) {
+						out.write((byte[]) entityBody);
+					} else if (entityBody instanceof InputStream) {
+						IOUtils.copy((InputStream) entityBody, out);
+					} else if (entityBody instanceof ReadableBuffer) {
+						DefaultWritableBuffer.writeBuffer(out).from(
+								(ReadableBuffer) entityBody);
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			// write contents.s
+		}
+
+		private FixedLengthOutputStream toFixedLengthOutputStream(long length,
+				SocketChannel sock) {
+			return new FixedLengthOutputStream(toOutputStream(), length);
+		}
+
+		private ChunkedOutputStream toChunkedOutputStream(SocketChannel sock) {
+			return new ChunkedOutputStream(8192, toOutputStream());
+		}
+
+		private OutputStream toOutputStream() {
+			this.body = new ResponseBody(ByteBuffer.allocate(64 * 1024));
+			return new OutputStream() {
+
+				@Override
+				public void write(int b) throws IOException {
+					body.put(new byte[]{(byte) b});
+				}
+
+				@Override
+				public void write(byte[] b, int off, int len)
+						throws IOException {
+					body.put(b);
+				}
+			};
+		}
+	}
+
+	static final class ResponseBody {
+
+		private ByteBuffer backend;
+
+		private ResponseBody(ByteBuffer bb) {
+			this.backend = bb;
+		}
+
+		public static ResponseBody allocate(int capacity) {
+			return new ResponseBody(ByteBuffer.allocate(capacity));
+		}
+
+		public void put(byte[] src) {
+			ensureCapacity(src.length);
+			backend.put(src);
+		}
+
+		private void ensureCapacity(int size) {
+			int remaining = backend.remaining();
+			if (size > remaining) {
+				int missing = size - remaining;
+				int newSize = (int) ((backend.capacity() + missing) * 1.5);
+				reallocate(newSize);
+			}
+		}
+
+		// Preserves position.
+		private void reallocate(int newCapacity) {
+			int oldPosition = backend.position();
+			byte[] newBuffer = new byte[newCapacity];
+			System.arraycopy(backend.array(), 0, newBuffer, 0,
+					backend.position());
+			backend = ByteBuffer.wrap(newBuffer);
+			backend.position(oldPosition);
+		}
+
+		public ByteBuffer getByteBuffer() {
+			return backend;
+		}
+
+		public void flip() {
+			backend.flip();
+		}
+
+		public int limit() {
+			return backend.limit();
+		}
+
+		public int position() {
+			return backend.position();
+		}
+
+		public byte[] array() {
+			return backend.array();
+		}
+
+		public int capacity() {
+			return backend.capacity();
+		}
+
+		public boolean hasRemaining() {
+			return backend.hasRemaining();
+		}
+
+		public ResponseBody compact() {
+			backend.compact();
+			return this;
+		}
+
+		public ResponseBody clear() {
+			backend.clear();
+			return this;
+		}
+	}
+
+	static final class FixedLengthOutputStream extends OutputStream {
+
+		private final OutputStream out;
+		private final long contentLength;
+		private long total = 0;
+		private boolean closed = false;
+
+		FixedLengthOutputStream(final OutputStream out, final long contentLength) {
+			super();
+			this.out = out;
+			this.contentLength = contentLength;
+		}
+
+		@Override
+		public void close() throws IOException {
+			if (!this.closed) {
+				this.closed = true;
+				this.out.flush();
+			}
+		}
+
+		@Override
+		public void flush() throws IOException {
+			this.out.flush();
+		}
+
+		@Override
+		public void write(final byte[] b, final int off, final int len)
+				throws IOException {
+			if (this.closed) {
+				throw new IOException("Attempted write to closed stream.");
+			}
+			if (this.total < this.contentLength) {
+				final long max = this.contentLength - this.total;
+				int chunk = len;
+				if (chunk > max) {
+					chunk = (int) max;
+				}
+				this.out.write(b, off, chunk);
+				this.total += chunk;
+			}
+		}
+
+		@Override
+		public void write(final byte[] b) throws IOException {
+			write(b, 0, b.length);
+		}
+
+		@Override
+		public void write(final int b) throws IOException {
+			if (this.closed) {
+				throw new IOException("Attempted write to closed stream.");
+			}
+			if (this.total < this.contentLength) {
+				this.out.write(b);
+				this.total++;
+			}
+		}
+	}
+
+	static final class ChunkedOutputStream extends OutputStream {
+
+		private final OutputStream out;
+		private final byte[] cache;
+		private int cachePosition = 0;
+		private boolean wroteLastChunk = false;
+		private boolean closed = false;
+
+		ChunkedOutputStream(final int bufferSize, final OutputStream out) {
+			super();
+			this.cache = new byte[bufferSize];
+			this.out = out;
+		}
+
+		protected void flushCache() throws IOException {
+			if (this.cachePosition > 0) {
+				this.out.write(Integer.toHexString(this.cachePosition)
+						.getBytes());
+				this.out.write(CRLF);
+				this.out.write(this.cache, 0, this.cachePosition);
+				this.out.write("".getBytes());
+				this.cachePosition = 0;
+			}
+		}
+
+		protected void flushCacheWithAppend(final byte bufferToAppend[],
+				final int off, final int len) throws IOException {
+			this.out.write(Integer.toHexString(this.cachePosition + len)
+					.getBytes());
+			this.out.write(CRLF);
+			this.out.write(this.cache, 0, this.cachePosition);
+			this.out.write(bufferToAppend, off, len);
+			this.out.write("".getBytes());
+			this.cachePosition = 0;
+		}
+
+		protected void writeClosingChunk() throws IOException {
+			this.out.write("0".getBytes());
+			this.out.write("".getBytes());
+		}
+
+		public void finish() throws IOException {
+			if (!this.wroteLastChunk) {
+				flushCache();
+				writeClosingChunk();
+				this.wroteLastChunk = true;
+			}
+		}
+
+		@Override
+		public void write(final int b) throws IOException {
+			if (this.closed) {
+				throw new IOException("Attempted write to closed stream.");
+			}
+			this.cache[this.cachePosition] = (byte) b;
+			this.cachePosition++;
+			if (this.cachePosition == this.cache.length) {
+				flushCache();
+			}
+		}
+
+		@Override
+		public void write(final byte b[]) throws IOException {
+			write(b, 0, b.length);
+		}
+
+		@Override
+		public void write(final byte src[], final int off, final int len)
+				throws IOException {
+			if (this.closed) {
+				throw new IOException("Attempted write to closed stream.");
+			}
+			if (len >= this.cache.length - this.cachePosition) {
+				flushCacheWithAppend(src, off, len);
+			} else {
+				System.arraycopy(src, off, cache, this.cachePosition, len);
+				this.cachePosition += len;
+			}
+		}
+
+		@Override
+		public void flush() throws IOException {
+			flushCache();
+			this.out.flush();
+		}
+
+		@Override
+		public void close() throws IOException {
+			if (!this.closed) {
+				this.closed = true;
+				finish();
+				this.out.flush();
+			}
+		}
+	}
+
+	@Override
+	public void shutdown(int mode) {
+		app.get().dispose();
+	}
+
+	protected List<ClassCollector> getClassCollectors() {
+		List<ClassCollector> list = new ArrayList<ClassCollector>();
+		list.add(new JarClassCollector());
+		list.add(new FileClassCollector());
+		return Collections.unmodifiableList(list);
+	}
+
 	public void reload() {
 		Application newApplication = new WebApplication();
-		newApplication.run(resolver, props, getClassCollectors(), Thread.currentThread().getContextClassLoader());
+		newApplication.run(resolver, props, getClassCollectors(), Thread
+				.currentThread().getContextClassLoader());
 		this.app.compareAndSet(this.app.get(), newApplication);
 	}
 }

@@ -11,11 +11,11 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 public @interface As {
 
-    /**
-     * @return attribute name.
-     */
-    String value() default "";
+	/**
+	 * @return attribute name.
+	 */
+	String value() default "";
 }

@@ -18,18 +18,22 @@ import org.analogweb.util.StringUtils;
  */
 public class PathVariableValueResolver implements RequestValueResolver {
 
-	private static final String VARIABLES_CACHE_KEY = PathVariableValueResolver.class.getName()
-			+ ParameterValueResolver.class.hashCode();
+	private static final String VARIABLES_CACHE_KEY = PathVariableValueResolver.class
+			.getName() + ParameterValueResolver.class.hashCode();
 
 	@Override
-	public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata, String name,
-			Class<?> requiredType, Annotation[] annotations) {
+	public Object resolveValue(RequestContext requestContext,
+			InvocationMetadata metadata, String name, Class<?> requiredType,
+			Annotation[] annotations) {
 		RequestPathMetadata definedPath = metadata.getDefinedPath();
 		String actualPath = definedPath.getActualPath();
-		if (hasPlaceHolder(actualPath) || (StringUtils.isNotEmpty(actualPath) && actualPath.contains("$<"))) {
+		if (hasPlaceHolder(actualPath)
+				|| (StringUtils.isNotEmpty(actualPath) && actualPath
+						.contains("$<"))) {
 			RequestPath requestedPath = requestContext.getRequestPath();
 			if (definedPath.match(requestedPath)) {
-				Map<String, String> pathVariables = extractPathValues(definedPath.getActualPath(), requestContext);
+				Map<String, String> pathVariables = extractPathValues(
+						definedPath.getActualPath(), requestContext);
 				return pathVariables.get(name);
 			}
 		}
@@ -37,7 +41,8 @@ public class PathVariableValueResolver implements RequestValueResolver {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, String> extractPathValues(String definedPath, RequestContext rc) {
+	private Map<String, String> extractPathValues(String definedPath,
+			RequestContext rc) {
 		Object expected = rc.getAttribute(VARIABLES_CACHE_KEY);
 		if (expected instanceof Map<?, ?>) {
 			return (Map<String, String>) expected;
@@ -48,15 +53,18 @@ public class PathVariableValueResolver implements RequestValueResolver {
 		Map<String, String> context = Maps.newEmptyHashMap();
 		int index = 0;
 		for (String definedPathPart : definedPathes) {
-			if (definedPathPart.startsWith("{") && definedPathPart.endsWith("}")) {
-				String key = StringUtils.substring(definedPathPart, 1, definedPathPart.length() - 1);
+			if (definedPathPart.startsWith("{")
+					&& definedPathPart.endsWith("}")) {
+				String key = StringUtils.substring(definedPathPart, 1,
+						definedPathPart.length() - 1);
 				context.put(key, requestedPathes.get(index));
 			}
 			List<String> identifiners = StringUtils.split(definedPathPart, '$');
 			if (identifiners.size() == 2) {
 				String pattern = identifiners.get(1);
 				if (pattern.startsWith("<") && pattern.endsWith(">")) {
-					String regex = StringUtils.substring(pattern, 1, pattern.length() - 1);
+					String regex = StringUtils.substring(pattern, 1,
+							pattern.length() - 1);
 					String value = requestedPathes.get(index);
 					if (Pattern.matches(regex, value)) {
 						context.put(identifiners.get(0), value);

@@ -6,10 +6,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class FooBean {
 
-    @XmlElement
-    private String baa = "baz";
+	@XmlElement
+	private String baa = "baz";
 
-    public String getBaa() {
-        return this.baa;
-    }
+	public String getBaa() {
+		return this.baa;
+	}
 }
