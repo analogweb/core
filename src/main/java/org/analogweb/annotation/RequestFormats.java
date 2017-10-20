@@ -13,11 +13,11 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface RequestFormats {
 
-    /**
-     * @return Media-Type
-     */
-    String[] value() default {};
+	/**
+	 * @return Media-Type
+	 */
+	String[] value() default {};
 }

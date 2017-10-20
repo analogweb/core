@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 
-public interface ResponseEntity {
+public interface ResponseEntity<T> {
 
-    void writeInto(WritableBuffer responseBody) throws IOException;
+	T entity();
 
-    long getContentLength();
+	long getContentLength();
 }

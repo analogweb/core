@@ -1,126 +1,76 @@
 package org.analogweb;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-
 /**
  * Holding response entity to write.
- * @author snowgooseyk
+ * 
+ * @author y2k2mt
  */
 public interface Response {
 
-    void putEntity(ReadableBuffer entity);
+	ResponseEntity getEntity();
 
-    void putEntity(String entity);
+	long getContentLength();
 
-    void putEntity(String entity, Charset charset);
+	void commit(RequestContext request, ResponseContext response);
 
-    void putEntity(ResponseEntity entity);
+	Response NOT_FOUND = new Response() {
 
-    ResponseEntity getEntity();
+		@Override
+		public ResponseEntity getEntity() {
+			// NOP
+			return null;
+		}
 
-    long getContentLength();
+		@Override
+		public long getContentLength() {
+			// NOP
+			return 0;
+		}
 
-    void commit(RequestContext request, ResponseContext response);
+		@Override
+		public void commit(RequestContext request, ResponseContext response) {
+			try {
+				response.commit(request, this);
+			} finally {
+				response.ensure();
+			}
+		}
+	};
+	Response EMPTY = new Response() {
 
-    Response NOT_FOUND = new Response() {
-    
-        @Override
-        public void putEntity(ReadableBuffer entity) {
-            //NOP
-        }
-    
-        @Override
-        public void putEntity(String entity) {
-            //NOP
-        }
-    
-        @Override
-        public void putEntity(String entity, Charset charset) {
-            //NOP
-        }
-    
-        @Override
-        public void putEntity(ResponseEntity entity) {
-            //NOP
-        }
-    
-        @Override
-        public ResponseEntity getEntity() {
-            //NOP
-            return null;
-        }
-    
-        @Override
-        public long getContentLength() {
-            //NOP
-            return 0;
-        }
-    
-        @Override
-        public void commit(RequestContext request, ResponseContext response) {
-            try{
-                response.commit(request, this);
-            } finally {
-                response.ensure();
-            }
-        }
-    };
-    Response EMPTY = new Response() {
-    
-        @Override
-        public void putEntity(ReadableBuffer entity) {
-            //NOP
-        }
-    
-        @Override
-        public void putEntity(String entity) {
-            //NOP
-        }
-    
-        @Override
-        public void putEntity(String entity, Charset charset) {
-            //NOP
-        }
-    
-        @Override
-        public void putEntity(ResponseEntity entity) {
-            //NOP
-        }
-    
-        ResponseEntity EMPTY_ENTITY = new ResponseEntity() {
-    
-            @Override
-            public void writeInto(WritableBuffer responseBody) throws IOException {
-                //NOP
-            }
-    
-            @Override
-            public long getContentLength() {
-                //NOP
-                return 0;
-            }
-        };
-    
-        @Override
-        public ResponseEntity getEntity() {
-            //NOP
-            return EMPTY_ENTITY;
-        }
-    
-        @Override
-        public long getContentLength() {
-            return getEntity().getContentLength();
-        }
-    
-        @Override
-        public void commit(RequestContext request, ResponseContext response) {
-            try{
-                response.commit(request, this);
-            } finally {
-                response.ensure();
-            }
-        }
-    };
+		ResponseEntity EMPTY_ENTITY = new ResponseEntity<String>() {
+
+			@Override
+			public String entity() {
+				// NOP
+				return "";
+			}
+
+			@Override
+			public long getContentLength() {
+				// NOP
+				return 0;
+			}
+		};
+
+		@Override
+		public ResponseEntity getEntity() {
+			// NOP
+			return EMPTY_ENTITY;
+		}
+
+		@Override
+		public long getContentLength() {
+			return getEntity().getContentLength();
+		}
+
+		@Override
+		public void commit(RequestContext request, ResponseContext response) {
+			try {
+				response.commit(request, this);
+			} finally {
+				response.ensure();
+			}
+		}
+	};
 }

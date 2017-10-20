@@ -13,11 +13,11 @@ import org.analogweb.TypeMapper;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 public @interface Convert {
 
-    /**
-     * @return {@link TypeMapper}
-     */
-    Class<? extends TypeMapper> value() default TypeMapper.class;
+	/**
+	 * @return {@link TypeMapper}
+	 */
+	Class<? extends TypeMapper> value() default TypeMapper.class;
 }

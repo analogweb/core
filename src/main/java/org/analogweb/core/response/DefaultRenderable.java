@@ -15,87 +15,87 @@ import org.analogweb.core.DefaultResponse;
 import org.analogweb.util.Maps;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public class DefaultRenderable implements Renderable {
 
-    private Map<String, String> header = Maps.newEmptyHashMap();
-    private HttpStatus status;
-    private ResponseEntity entity;
+	private Map<String, String> header = Maps.newEmptyHashMap();
+	private HttpStatus status;
+	private ResponseEntity entity;
 
-    @Override
-    public Response render(RequestContext request, ResponseContext responseContext)
-            throws IOException, WebApplicationException {
-        ResponseEntity entity = getResponseEntity();
-        HttpStatus defaultStatus = HttpStatus.OK;
-        if (entity == null) {
-            entity = extractResponseEntity(request, responseContext);
-            if (entity == null) {
-                defaultStatus = HttpStatus.NO_CONTENT;
-            }
-        }
-        Response response = createResponse();
-        if (entity != null) {
-            putEntityToResponse(response, entity);
-        }
-        mergeHeaders(request, responseContext, getHeaders(), entity);
-        updateStatusToResponse(responseContext, getStatus() == null ? defaultStatus : getStatus());
-        return response;
-    }
+	@Override
+	public Response render(RequestContext request,
+			ResponseContext responseContext) throws IOException,
+			WebApplicationException {
+		ResponseEntity entity = getResponseEntity();
+		HttpStatus defaultStatus = HttpStatus.OK;
+		Response response;
+		if (entity == null) {
+			entity = extractResponseEntity(request, responseContext);
+			if (entity == null) {
+				defaultStatus = HttpStatus.NO_CONTENT;
+				response = Response.EMPTY;
+			} else {
+				response = new DefaultResponse(entity);
+			}
+		} else {
+			response = new DefaultResponse(entity);
+		}
+		mergeHeaders(request, responseContext, getHeaders(), entity);
+		updateStatusToResponse(responseContext, getStatus() == null
+				? defaultStatus
+				: getStatus());
+		return response;
+	}
 
-    protected Response createResponse() {
-        return new DefaultResponse();
-    }
+	protected void updateStatusToResponse(ResponseContext response,
+			HttpStatus status) {
+		response.setStatus(status.getStatusCode());
+	}
 
-    protected void putEntityToResponse(Response response, ResponseEntity entity) {
-        response.putEntity(entity);
-    }
+	protected void mergeHeaders(RequestContext request,
+			ResponseContext response, Map<String, String> headers,
+			ResponseEntity entity) {
+		Headers responseHeader = response.getResponseHeaders();
+		for (Entry<String, String> entry : headers.entrySet()) {
+			responseHeader.putValue(entry.getKey(), entry.getValue());
+		}
+	}
 
-    protected void updateStatusToResponse(ResponseContext response, HttpStatus status) {
-        response.setStatus(status.getStatusCode());
-    }
+	protected final void setStatus(int status) {
+		setStatus(HttpStatus.valueOf(status));
+	}
 
-    protected void mergeHeaders(RequestContext request, ResponseContext response,
-            Map<String, String> headers, ResponseEntity entity) {
-        Headers responseHeader = response.getResponseHeaders();
-        for (Entry<String, String> entry : headers.entrySet()) {
-            responseHeader.putValue(entry.getKey(), entry.getValue());
-        }
-    }
+	protected final void setStatus(HttpStatus status) {
+		this.status = status;
+	}
 
-    protected final void setStatus(int status) {
-        setStatus(HttpStatus.valueOf(status));
-    }
+	protected final void addHeader(String attribute, String value) {
+		this.header.put(attribute, value);
+	}
 
-    protected final void setStatus(HttpStatus status) {
-        this.status = status;
-    }
+	protected final void addHeaders(Map<String, String> headers) {
+		this.header.putAll(headers);
+	}
 
-    protected final void addHeader(String attribute, String value) {
-        this.header.put(attribute, value);
-    }
+	protected final void setResponseEntity(ResponseEntity entity) {
+		this.entity = entity;
+	}
 
-    protected final void addHeaders(Map<String, String> headers) {
-        this.header.putAll(headers);
-    }
+	protected final Map<String, String> getHeaders() {
+		return header;
+	}
 
-    protected final void setResponseEntity(ResponseEntity entity) {
-        this.entity = entity;
-    }
+	protected final HttpStatus getStatus() {
+		return status;
+	}
 
-    protected final Map<String, String> getHeaders() {
-        return header;
-    }
+	protected final ResponseEntity getResponseEntity() {
+		return this.entity;
+	}
 
-    protected final HttpStatus getStatus() {
-        return status;
-    }
-
-    protected final ResponseEntity getResponseEntity() {
-        return this.entity;
-    }
-
-    protected ResponseEntity extractResponseEntity(RequestContext request, ResponseContext response) {
-        return null;
-    }
+	protected ResponseEntity extractResponseEntity(RequestContext request,
+			ResponseContext response) {
+		return null;
+	}
 }

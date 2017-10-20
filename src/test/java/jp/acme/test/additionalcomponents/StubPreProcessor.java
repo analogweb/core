@@ -13,10 +13,10 @@ import org.analogweb.core.AbstractApplicationProcessor;
  */
 public class StubPreProcessor extends AbstractApplicationProcessor {
 
-    @Override
-    public Invocation prepareInvoke(InvocationArguments args,
-            InvocationMetadata metadata, RequestContext context, TypeMapperContext converters,
-            RequestValueResolvers handlers) {
-        return null;
-    }
+	@Override
+	public Invocation prepareInvoke(InvocationArguments args,
+			InvocationMetadata metadata, RequestContext context,
+			TypeMapperContext converters, RequestValueResolvers handlers) {
+		return null;
+	}
 }

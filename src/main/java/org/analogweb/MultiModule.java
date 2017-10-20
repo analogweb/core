@@ -2,12 +2,13 @@ package org.analogweb;
 
 /**
  * A Definable multiple {@link Module}.
+ * 
  * @author snowgoose
  */
 public interface MultiModule extends Module {
 
-    interface Filter {
+	interface Filter {
 
-        <T extends MultiModule> boolean isAppreciable(T aMultiModule);
-    }
+		<T extends MultiModule> boolean isAppreciable(T aMultiModule);
+	}
 }

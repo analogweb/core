@@ -9,18 +9,18 @@ import java.io.OutputStream;
  */
 public class CountingOutputStream extends FilterOutputStream {
 
-    private long count = 0L;
+	private long count = 0L;
 
-    public CountingOutputStream(OutputStream out) {
-        super(out);
-    }
+	public CountingOutputStream(OutputStream out) {
+		super(out);
+	}
 
-    public void write(int b) throws IOException {
-        super.write(b);
-        count++;
-    }
+	public void write(int b) throws IOException {
+		super.write(b);
+		count++;
+	}
 
-    public long getCount() {
-        return this.count;
-    }
+	public long getCount() {
+		return this.count;
+	}
 }

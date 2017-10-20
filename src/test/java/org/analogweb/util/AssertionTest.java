@@ -13,19 +13,19 @@ import org.junit.Test;
  */
 public class AssertionTest {
 
-    @Test
-    public void testAssertNotNull() {
-        try {
-            Assertion.notNull(null, "foo");
-            fail("expected exception not occured.");
-        } catch (AssertionFailureException e) {
-            assertThat(e.getRequiredName(), is("foo"));
-        }
-    }
+	@Test
+	public void testAssertNotNull() {
+		try {
+			Assertion.notNull(null, "foo");
+			fail("expected exception not occured.");
+		} catch (AssertionFailureException e) {
+			assertThat(e.getRequiredName(), is("foo"));
+		}
+	}
 
-    @Test
-    public void testAssertNotNullWithArg() {
-        Assertion.notNull("baa", "foo");
-        // nothing to do.
-    }
+	@Test
+	public void testAssertNotNullWithArg() {
+		Assertion.notNull("baa", "foo");
+		// nothing to do.
+	}
 }

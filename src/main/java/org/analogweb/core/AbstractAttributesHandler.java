@@ -10,20 +10,22 @@ import org.analogweb.RequestContext;
  */
 public abstract class AbstractAttributesHandler implements AttributesHandler {
 
-    @Override
-    public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata,
-            String key, Class<?> requiredType, Annotation[] annotations) {
-        // nop
-        return null;
-    }
+	@Override
+	public Object resolveValue(RequestContext requestContext,
+			InvocationMetadata metadata, String key, Class<?> requiredType,
+			Annotation[] annotations) {
+		// nop
+		return null;
+	}
 
-    @Override
-    public void putAttributeValue(RequestContext requestContext, String query, Object value) {
-        // nop
-    }
+	@Override
+	public void putAttributeValue(RequestContext requestContext, String query,
+			Object value) {
+		// nop
+	}
 
-    @Override
-    public void removeAttribute(RequestContext requestContext, String query) {
-        // nop
-    }
+	@Override
+	public void removeAttribute(RequestContext requestContext, String query) {
+		// nop
+	}
 }

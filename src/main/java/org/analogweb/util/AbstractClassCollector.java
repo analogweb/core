@@ -9,8 +9,8 @@ import java.util.Collection;
  */
 public abstract class AbstractClassCollector implements ClassCollector {
 
-    @Override
-    public Collection<Class<?>> collect(URL source, ClassLoader classLoader) {
-        return collect(StringUtils.EMPTY, source, classLoader);
-    }
+	@Override
+	public Collection<Class<?>> collect(URL source, ClassLoader classLoader) {
+		return collect(StringUtils.EMPTY, source, classLoader);
+	}
 }

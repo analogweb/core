@@ -13,27 +13,32 @@ import org.junit.Test;
 
 public class CollectionUtilsTest {
 
-    @Test
-    public void testIsEmpty() {
-        assertTrue(CollectionUtils.isEmpty(Collections.emptyList()));
-        assertTrue(CollectionUtils.isEmpty(null));
-        assertFalse(CollectionUtils.isEmpty(Arrays.asList("")));
-        assertFalse(CollectionUtils.isEmpty(Arrays.asList("a", "b")));
-    }
+	@Test
+	public void testIsEmpty() {
+		assertTrue(CollectionUtils.isEmpty(Collections.emptyList()));
+		assertTrue(CollectionUtils.isEmpty(null));
+		assertFalse(CollectionUtils.isEmpty(Arrays.asList("")));
+		assertFalse(CollectionUtils.isEmpty(Arrays.asList("a", "b")));
+	}
 
-    @Test
-    public void testIsNotEmpty() {
-        assertFalse(CollectionUtils.isNotEmpty(Collections.emptyList()));
-        assertFalse(CollectionUtils.isNotEmpty(null));
-        assertTrue(CollectionUtils.isNotEmpty(Arrays.asList("")));
-        assertTrue(CollectionUtils.isNotEmpty(Arrays.asList("a", "b")));
-    }
+	@Test
+	public void testIsNotEmpty() {
+		assertFalse(CollectionUtils.isNotEmpty(Collections.emptyList()));
+		assertFalse(CollectionUtils.isNotEmpty(null));
+		assertTrue(CollectionUtils.isNotEmpty(Arrays.asList("")));
+		assertTrue(CollectionUtils.isNotEmpty(Arrays.asList("a", "b")));
+	}
 
-    @Test
-    public void testIndexOf() {
-        assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), 1), is("b"));
-        assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), 3), is(nullValue()));
-        assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), -1), is(nullValue()));
-        assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), 3, "d"), is("d"));
-    }
+	@Test
+	public void testIndexOf() {
+		assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), 1),
+				is("b"));
+		assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), 3),
+				is(nullValue()));
+		assertThat(CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), -1),
+				is(nullValue()));
+		assertThat(
+				CollectionUtils.indexOf(Arrays.asList("a", "b", "c"), 3, "d"),
+				is("d"));
+	}
 }

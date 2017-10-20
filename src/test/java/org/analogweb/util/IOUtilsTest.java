@@ -22,88 +22,89 @@ import org.junit.rules.ExpectedException;
  */
 public class IOUtilsTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-    @Test
-    public void testCloseQuierly() throws IOException {
-        Closeable closeable = mock(Closeable.class);
-        IOUtils.closeQuietly(closeable);
-        verify(closeable).close();
-    }
+	@Test
+	public void testCloseQuierly() throws IOException {
+		Closeable closeable = mock(Closeable.class);
+		IOUtils.closeQuietly(closeable);
+		verify(closeable).close();
+	}
 
-    @Test
-    public void testCloseQuierlyThrowsException() throws IOException {
-        Closeable closeable = mock(Closeable.class);
-        doThrow(new IOException()).when(closeable).close();
-        IOUtils.closeQuietly(closeable);
-    }
+	@Test
+	public void testCloseQuierlyThrowsException() throws IOException {
+		Closeable closeable = mock(Closeable.class);
+		doThrow(new IOException()).when(closeable).close();
+		IOUtils.closeQuietly(closeable);
+	}
 
-    @Test
-    public void testCloseQuierlyWithoutResource() throws IOException {
-        Closeable closeable = null;
-        IOUtils.closeQuietly(closeable);
-    }
+	@Test
+	public void testCloseQuierlyWithoutResource() throws IOException {
+		Closeable closeable = null;
+		IOUtils.closeQuietly(closeable);
+	}
 
-    @Test
-    public void testCopyQuietly() {
-        InputStream in = new ByteArrayInputStream("this is test!".getBytes());
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        assertThat(IOUtils.copyQuietly(in, out), is(13));
-        assertThat(new String(out.toByteArray()), is("this is test!"));
-    }
+	@Test
+	public void testCopyQuietly() {
+		InputStream in = new ByteArrayInputStream("this is test!".getBytes());
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		assertThat(IOUtils.copyQuietly(in, out), is(13));
+		assertThat(new String(out.toByteArray()), is("this is test!"));
+	}
 
-    @Test
-    public void testCopy() throws Exception {
-        InputStream in = new ByteArrayInputStream("this is test!".getBytes());
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        assertThat(IOUtils.copy(in, out), is(13));
-        assertThat(new String(out.toByteArray()), is("this is test!"));
-    }
+	@Test
+	public void testCopy() throws Exception {
+		InputStream in = new ByteArrayInputStream("this is test!".getBytes());
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		assertThat(IOUtils.copy(in, out), is(13));
+		assertThat(new String(out.toByteArray()), is("this is test!"));
+	}
 
-    @Test
-    public void testCopyQuietlyOnException() throws Exception {
-        InputStream in = new ByteArrayInputStream("this is test!".getBytes());
-        ByteArrayOutputStream out = new ByteArrayOutputStream() {
+	@Test
+	public void testCopyQuietlyOnException() throws Exception {
+		InputStream in = new ByteArrayInputStream("this is test!".getBytes());
+		ByteArrayOutputStream out = new ByteArrayOutputStream() {
 
-            @Override
-            public void flush() throws IOException {
-                write(" with exception!".getBytes());
-                throw new IOException();
-            }
-        };
-        assertThat(IOUtils.copyQuietly(in, out), is(-1));
-        assertThat(new String(out.toByteArray()), is("this is test! with exception!"));
-    }
+			@Override
+			public void flush() throws IOException {
+				write(" with exception!".getBytes());
+				throw new IOException();
+			}
+		};
+		assertThat(IOUtils.copyQuietly(in, out), is(-1));
+		assertThat(new String(out.toByteArray()),
+				is("this is test! with exception!"));
+	}
 
-    @Test
-    public void testCopyOnException() throws Exception {
-        thrown.expect(IOException.class);
-        InputStream in = new ByteArrayInputStream("this is test!".getBytes());
-        ByteArrayOutputStream out = new ByteArrayOutputStream() {
+	@Test
+	public void testCopyOnException() throws Exception {
+		thrown.expect(IOException.class);
+		InputStream in = new ByteArrayInputStream("this is test!".getBytes());
+		ByteArrayOutputStream out = new ByteArrayOutputStream() {
 
-            @Override
-            public void flush() throws IOException {
-                write(" with exception!".getBytes());
-                throw new IOException("exception thrown!");
-            }
-        };
-        IOUtils.copy(in, out);
-    }
+			@Override
+			public void flush() throws IOException {
+				write(" with exception!".getBytes());
+				throw new IOException("exception thrown!");
+			}
+		};
+		IOUtils.copy(in, out);
+	}
 
-    @Test
-    public void testToStringViaReader() throws Exception {
-        String expected = "this is test!";
-        InputStream in = new ByteArrayInputStream(expected.getBytes());
-        String actual = IOUtils.toString(new InputStreamReader(in));
-        assertThat(actual, is(expected));
-    }
+	@Test
+	public void testToStringViaReader() throws Exception {
+		String expected = "this is test!";
+		InputStream in = new ByteArrayInputStream(expected.getBytes());
+		String actual = IOUtils.toString(new InputStreamReader(in));
+		assertThat(actual, is(expected));
+	}
 
-    @Test
-    public void testToStringViaStream() throws Exception {
-        String expected = "this is test!";
-        InputStream in = new ByteArrayInputStream(expected.getBytes());
-        String actual = IOUtils.toString(in);
-        assertThat(actual, is(expected));
-    }
+	@Test
+	public void testToStringViaStream() throws Exception {
+		String expected = "this is test!";
+		InputStream in = new ByteArrayInputStream(expected.getBytes());
+		String actual = IOUtils.toString(in);
+		assertThat(actual, is(expected));
+	}
 }

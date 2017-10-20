@@ -33,7 +33,8 @@ public class RequestPathDefinitionTest {
 	public void testDefine() {
 		String root = "/foo";
 		String path = "/baa/something";
-		RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path);
+		RequestPathDefinition mappedPath = RequestPathDefinition.define(root,
+				path);
 		assertThat(mappedPath.getActualPath(), is("/foo/baa/something"));
 		assertThat(mappedPath.getRequestMethods().get(0), is("GET"));
 		assertThat(mappedPath.getRequestMethods().get(1), is("POST"));
@@ -43,8 +44,9 @@ public class RequestPathDefinitionTest {
 	public void testDefineWithMethod() {
 		String root = "/foo";
 		String path = "/baa/something";
-		String[] requestMethods = { "POST", "GET", "PUT" };
-		RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path, requestMethods);
+		String[] requestMethods = {"POST", "GET", "PUT"};
+		RequestPathDefinition mappedPath = RequestPathDefinition.define(root,
+				path, requestMethods);
 		assertThat(mappedPath.getActualPath(), is("/foo/baa/something"));
 		assertThat(mappedPath.getRequestMethods().get(0), is("POST"));
 		assertThat(mappedPath.getRequestMethods().get(1), is("GET"));
@@ -55,8 +57,9 @@ public class RequestPathDefinitionTest {
 	public void testDefineWithMethodEquals() {
 		String root = "/foo";
 		String path = "/baa/something";
-		String[] requestMethods = { "POST", "GET" };
-		RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path, requestMethods);
+		String[] requestMethods = {"POST", "GET"};
+		RequestPathDefinition mappedPath = RequestPathDefinition.define(root,
+				path, requestMethods);
 		RequestPath other = mock(RequestPath.class);
 		when(other.getActualPath()).thenReturn("/foo/baa/something");
 		when(other.getRequestMethod()).thenReturn("POST");
@@ -68,8 +71,9 @@ public class RequestPathDefinitionTest {
 		thrown.expect(RequestMethodUnsupportedException.class);
 		String root = "/foo";
 		String path = "/baa/something";
-		String[] requestMethods = { "POST", "GET" };
-		RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path, requestMethods);
+		String[] requestMethods = {"POST", "GET"};
+		RequestPathDefinition mappedPath = RequestPathDefinition.define(root,
+				path, requestMethods);
 		RequestPath other = mock(RequestPath.class);
 		when(other.getActualPath()).thenReturn("/foo/baa/something");
 		when(other.getRequestMethod()).thenReturn("DELETE");
@@ -81,7 +85,8 @@ public class RequestPathDefinitionTest {
 		String root = "/foo";
 		String path = "/baa/something";
 		String[] requestMethods = null;
-		RequestPathDefinition mappedPath = RequestPathDefinition.define(root, path, requestMethods);
+		RequestPathDefinition mappedPath = RequestPathDefinition.define(root,
+				path, requestMethods);
 		assertThat(mappedPath.getActualPath(), is("/foo/baa/something"));
 		assertThat(mappedPath.getRequestMethods().size(), is(2));
 		assertThat(mappedPath.getRequestMethods().get(0), is("GET"));
@@ -120,7 +125,8 @@ public class RequestPathDefinitionTest {
 	public void testDefineWithNoSubPathSlash() {
 		String root = "foo";
 		String path = "baa/something";
-		RequestPathMetadata mappedPath = RequestPathDefinition.define(root, path);
+		RequestPathMetadata mappedPath = RequestPathDefinition.define(root,
+				path);
 		assertThat(mappedPath.getActualPath(), is("/foo/baa/something"));
 	}
 
@@ -128,7 +134,8 @@ public class RequestPathDefinitionTest {
 	public void testDefineWithWildCard() {
 		String root = "foo";
 		String path = "baa/*/something";
-		RequestPathMetadata mappedPath = RequestPathDefinition.define(root, path);
+		RequestPathMetadata mappedPath = RequestPathDefinition.define(root,
+				path);
 		assertThat(mappedPath.getActualPath(), is("/foo/baa/*/something"));
 	}
 
@@ -136,7 +143,8 @@ public class RequestPathDefinitionTest {
 	public void testDefineEndsWithWildCard() {
 		String root = "foo";
 		String path = "baa/anything/*";
-		RequestPathMetadata mappedPath = RequestPathDefinition.define(root, path);
+		RequestPathMetadata mappedPath = RequestPathDefinition.define(root,
+				path);
 		assertThat(mappedPath.getActualPath(), is("/foo/baa/anything/*"));
 	}
 
@@ -175,11 +183,15 @@ public class RequestPathDefinitionTest {
 	@Test
 	public void testMatchStatically() {
 		assertThat("/foo/baa/something", is(matchFor("/foo/baa/something")));
-		assertThat("/foo/baa/something.html", is(matchFor("/foo/baa/something.html")));
+		assertThat("/foo/baa/something.html",
+				is(matchFor("/foo/baa/something.html")));
 		assertThat("/foo/baa/something", is(not(matchFor("/foo/something"))));
-		assertThat("/foo/baa/something", is(not(matchFor("/foo/baa/something.html"))));
-		assertThat("/foo/baa/something", is(not(matchFor("/foo/baa/a/something"))));
-		assertThat("/foo/baa/something", is(not(matchFor("/foo/baa/something/a/"))));
+		assertThat("/foo/baa/something",
+				is(not(matchFor("/foo/baa/something.html"))));
+		assertThat("/foo/baa/something",
+				is(not(matchFor("/foo/baa/a/something"))));
+		assertThat("/foo/baa/something",
+				is(not(matchFor("/foo/baa/something/a/"))));
 	}
 
 	@Test
@@ -188,7 +200,8 @@ public class RequestPathDefinitionTest {
 		assertThat("/foo/baa/*", is(matchFor("/foo/baa/something/anything")));
 		assertThat("/foo/*/baa", is(matchFor("/foo/something/baa")));
 		assertThat("/foo/*/baa", is(matchFor("/foo/something/anything/baa")));
-		assertThat("/foo/*/baa", is(matchFor("/foo/something/anything/nothing/baa")));
+		assertThat("/foo/*/baa",
+				is(matchFor("/foo/something/anything/nothing/baa")));
 		assertThat("*/foo/baa/*", is(matchFor("/something/foo/baa/anything")));
 		assertThat("*/foo/*/baa", is(matchFor("/baz/foo/something/baa")));
 		assertThat("*/foo/*/baa", is(matchFor("/baa/baz/foo/something/baa")));
@@ -200,33 +213,46 @@ public class RequestPathDefinitionTest {
 		assertThat("*.html", is(not(matchFor("/baa/baz"))));
 		assertThat("*.html", is(not(matchFor("/baa/html"))));
 		assertThat("*.html", is(not(matchFor("/baa/baz.htm"))));
-		assertThat("*/foo/*/baa", is(not(matchFor("/baa/baz/foo/something/baa/baz"))));
-		assertThat("/foo/baa/*", is(not(matchFor("/something/foo/baa/anything"))));
-		assertThat("/foo/baa/*", is(not(matchFor("/foo/something/baa/anything"))));
-		assertThat("/foo/baa/*", is(not(matchFor("/something/baa/foo/anything"))));
+		assertThat("*/foo/*/baa",
+				is(not(matchFor("/baa/baz/foo/something/baa/baz"))));
+		assertThat("/foo/baa/*",
+				is(not(matchFor("/something/foo/baa/anything"))));
+		assertThat("/foo/baa/*",
+				is(not(matchFor("/foo/something/baa/anything"))));
+		assertThat("/foo/baa/*",
+				is(not(matchFor("/something/baa/foo/anything"))));
 		assertThat("/foo/*/baa", is(not(matchFor("/foo/something/baa/baz"))));
 	}
 
 	@Test
 	public void testMatchWithPlaceHolder() {
 		assertThat("/foo/baa/{baz}", is(matchFor("/foo/baa/something")));
-		assertThat("/foo/baa/{baz}/{hoge}", is(matchFor("/foo/baa/something/anything")));
-		assertThat("/foo/baa/{baz}/{hoge}/fuga", is(matchFor("/foo/baa/something/anything/fuga")));
-		assertThat("/foo/baa/{baz}", is(not(matchFor("/foo/baa/something/anything"))));
+		assertThat("/foo/baa/{baz}/{hoge}",
+				is(matchFor("/foo/baa/something/anything")));
+		assertThat("/foo/baa/{baz}/{hoge}/fuga",
+				is(matchFor("/foo/baa/something/anything/fuga")));
+		assertThat("/foo/baa/{baz}",
+				is(not(matchFor("/foo/baa/something/anything"))));
 		assertThat("/foo/baa/{baz}", is(not(matchFor("/foo/baa"))));
-		assertThat("/foo/baa/{baz}/{hoge}", is(not(matchFor("/foo/baa/something/anything/nothing"))));
-		assertThat("/foo/baa/{baz}/{hoge}/fuga", is(not(matchFor("/foo/baa/something/anything/else"))));
-		assertThat("/foo/baa/{baz}/{hoge}/fuga", is(not(matchFor("/foo/baa/something/anything/nothing/fuga"))));
+		assertThat("/foo/baa/{baz}/{hoge}",
+				is(not(matchFor("/foo/baa/something/anything/nothing"))));
+		assertThat("/foo/baa/{baz}/{hoge}/fuga",
+				is(not(matchFor("/foo/baa/something/anything/else"))));
+		assertThat("/foo/baa/{baz}/{hoge}/fuga",
+				is(not(matchFor("/foo/baa/something/anything/nothing/fuga"))));
 		assertThat("/foo/baa/{baz", is(not(matchFor("/foo/baa/something"))));
 	}
 
 	@Test
 	public void testMatchWithRegexPlaceHolder() {
 		assertThat("/foo/baa/baz$<[0-9]>", is(matchFor("/foo/baa/1")));
-		assertThat("/foo/baa/{baz}/hoge$<[a-c]>", is(matchFor("/foo/baa/something/a")));
-		assertThat("/foo/baa/baz$<[0-9]>", is(not(matchFor("/foo/baa/something/anything"))));
+		assertThat("/foo/baa/{baz}/hoge$<[a-c]>",
+				is(matchFor("/foo/baa/something/a")));
+		assertThat("/foo/baa/baz$<[0-9]>",
+				is(not(matchFor("/foo/baa/something/anything"))));
 		assertThat("/foo/baa/{baz}", is(not(matchFor("/foo/baa"))));
-		assertThat("/foo/baa/{baz}/hoge$<[a-c]>", is(not(matchFor("/foo/baa/something/anything/d"))));
+		assertThat("/foo/baa/{baz}/hoge$<[a-c]>",
+				is(not(matchFor("/foo/baa/something/anything/d"))));
 	}
 
 	@Test
@@ -234,7 +260,8 @@ public class RequestPathDefinitionTest {
 		thrown.expect(RequestMethodUnsupportedException.class);
 		String root = "/foo";
 		String path = "/baa/something";
-		RequestPathMetadata actual = RequestPathDefinition.define(root, path, new String[] { "POST", "GET" });
+		RequestPathMetadata actual = RequestPathDefinition.define(root, path,
+				new String[]{"POST", "GET"});
 		RequestPath actualSame = mock(RequestPath.class);
 		when(actualSame.getActualPath()).thenReturn("/foo/baa/something");
 		when(actualSame.getRequestMethod()).thenReturn("PUT");
@@ -250,10 +277,12 @@ public class RequestPathDefinitionTest {
 
 			@Override
 			protected boolean matchesSafely(String item) {
-				RequestPathMetadata definedPath = RequestPathDefinition.define("", item, new String[] { "GET" });
-				DefaultRequestPath requestedPath = new DefaultRequestPath(URI.create("/"), URI.create(requested),
-						"GET");
-				log.debug(String.format("Compare %s to %s", definedPath.toString(), requestedPath.toString()));
+				RequestPathMetadata definedPath = RequestPathDefinition.define(
+						"", item, new String[]{"GET"});
+				DefaultRequestPath requestedPath = new DefaultRequestPath(
+						URI.create("/"), URI.create(requested), "GET");
+				log.debug(String.format("Compare %s to %s",
+						definedPath.toString(), requestedPath.toString()));
 				return definedPath.match(requestedPath);
 			}
 		};
