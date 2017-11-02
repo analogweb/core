@@ -9,10 +9,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 
-import org.analogweb.InvocationMetadata;
-import org.analogweb.RequestContext;
-import org.analogweb.RequestPath;
-import org.analogweb.RequestPathMetadata;
+import org.analogweb.*;
 import org.analogweb.util.Maps;
 import org.junit.Before;
 import org.junit.Test;
@@ -107,11 +104,34 @@ public class DefaultInvocationMetadataFinderTest {
 		when(meta2.getDefinedPath()).thenReturn(path2);
 		when(context.getRequestPath()).thenReturn(requestPath1);
 		InvocationMetadata actual = finder.find(metadatas, context);
-		assertThat(actual, is(meta1));
+		assertThat(((InvocationMetadataFinder.Cacheable) actual).getCachable(),
+				is(meta1));
 		RequestPath requestPath2 = new DefaultRequestPath(URI.create("/"),
 				URI.create("/path"), "POST");
 		when(context.getRequestPath()).thenReturn(requestPath2);
 		actual = finder.find(metadatas, context);
-		assertThat(actual, is(meta2));
+		assertThat(((InvocationMetadataFinder.Cacheable) actual).getCachable(),
+				is(meta2));
+	}
+
+	@Test(expected = RequestMethodUnsupportedException.class)
+	public void testDuplicatePathMethodNotFound() {
+		InvocationMetadata meta1 = mock(InvocationMetadata.class);
+		InvocationMetadata meta2 = mock(InvocationMetadata.class);
+		RequestPathMetadata path1 = RequestPathDefinition.define("/", "/path",
+				new String[]{"GET"});
+		when(meta1.getDefinedPath()).thenReturn(path1);
+		RequestPathMetadata path2 = RequestPathDefinition.define("/", "/path",
+				new String[]{"POST"});
+		when(meta2.getDefinedPath()).thenReturn(path2);
+		Map<RequestPathMetadata, InvocationMetadata> metadatas = Maps
+				.newEmptyHashMap();
+		metadatas.put(path1, meta1);
+		metadatas.put(path2, meta2);
+		metadatas = Collections.unmodifiableMap(metadatas);
+		RequestPath requestPath = new DefaultRequestPath(URI.create("/"),
+				URI.create("/path"), "PUT");
+		when(context.getRequestPath()).thenReturn(requestPath);
+		finder.find(metadatas, context);
 	}
 }

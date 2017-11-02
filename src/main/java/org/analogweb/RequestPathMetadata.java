@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * A entry point path.
  * 
- * @author snowgoose
+ * @author y2k2mt
  */
 public interface RequestPathMetadata {
 

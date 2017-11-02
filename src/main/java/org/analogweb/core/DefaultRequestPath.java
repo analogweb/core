@@ -3,6 +3,7 @@ package org.analogweb.core;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.analogweb.RequestPath;
 import org.analogweb.util.Assertion;
@@ -11,7 +12,7 @@ import org.analogweb.util.StringUtils;
 /**
  * Default implementation of {@link RequestPath}.
  * 
- * @author snowgoose
+ * @author y2k2mt
  */
 public class DefaultRequestPath extends AbstractRequestPathMetadata
 		implements
@@ -42,7 +43,8 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata
 
 	@Override
 	public boolean match(RequestPath requestPath) {
-		return getActualPath().equals(requestPath.getActualPath());
+		return getActualPath().equals(requestPath.getActualPath())
+				&& getRequestMethod().equals(requestPath.getRequestMethod());
 	}
 
 	private String getFormattedPath(String requestUri, String contextPath) {
@@ -76,11 +78,28 @@ public class DefaultRequestPath extends AbstractRequestPathMetadata
 
 	@Override
 	public String toString() {
-		return getActualPath();
+		return new StringBuilder(64).append('[').append(getRequestMethod())
+				.append("]:").append(getRequestMethod()).toString();
 	}
 
 	@Override
 	public URI getBaseURI() {
 		return this.baseURI;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof RequestPath) {
+			RequestPath otherPath = (RequestPath) other;
+			return getActualPath().equals(otherPath.getActualPath())
+					&& getRequestMethod().equals(otherPath.getRequestMethod());
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getActualPath(), getRequestMethod());
 	}
 }

@@ -14,7 +14,7 @@ import org.analogweb.util.StringUtils;
 /**
  * Define {@link RequestPath} that enable entry-point to invoke.
  * 
- * @author snowgoose
+ * @author y2k2mt
  */
 public class RequestPathDefinition extends AbstractRequestPathMetadata {
 
@@ -124,13 +124,12 @@ public class RequestPathDefinition extends AbstractRequestPathMetadata {
 	}
 
 	private boolean containsRequestMethod(RequestPath other) {
-		boolean contains = getRequestMethods().contains(
-				other.getRequestMethod());
-		if (contains == false) {
+		if (getRequestMethods().contains(other.getRequestMethod()) == false) {
 			throw new RequestMethodUnsupportedException(this,
 					getRequestMethods(), other.getRequestMethod());
+		} else {
+			return true;
 		}
-		return contains;
 	}
 
 	private boolean matchPlaceHolder(RequestPath rp) {
