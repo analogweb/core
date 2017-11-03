@@ -1,5 +1,7 @@
 package org.analogweb.core;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -9,8 +11,9 @@ import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 
 /**
- * @author snowgooseyk
- *
+ * Default implementation of {@link org.analogweb.InvocationMetadataFinder}
+ * 
+ * @author y2k2mt
  */
 public class DefaultInvocationMetadataFinder
 		extends
@@ -27,11 +30,20 @@ public class DefaultInvocationMetadataFinder
 			return direct;
 		}
 		// pattern match
+		List<String> requireMethods = new ArrayList<String>();
 		for (Entry<RequestPathMetadata, InvocationMetadata> pathEntry : metadatas
 				.entrySet()) {
-			if (pathEntry.getKey().match(requestPath)) {
-				return cacheable(pathEntry.getValue());
+			try {
+				if (pathEntry.getKey().match(requestPath)) {
+					return cacheable(pathEntry.getValue());
+				}
+			} catch (RequestMethodUnsupportedException e) {
+				requireMethods.addAll(e.getDefinedMethods());
 			}
+		}
+		if (!requireMethods.isEmpty()) {
+			throw new RequestMethodUnsupportedException(requestPath,
+					requireMethods, request.getRequestMethod());
 		}
 		return null;
 	}

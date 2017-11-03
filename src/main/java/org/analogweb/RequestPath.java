@@ -5,7 +5,7 @@ import java.net.URI;
 /**
  * A path actually requested.
  * 
- * @author snowgoose
+ * @author y2k2mt
  */
 public interface RequestPath extends RequestPathMetadata {
 
