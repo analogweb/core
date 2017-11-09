@@ -11,7 +11,7 @@ import org.analogweb.util.CollectionUtils;
 import org.analogweb.util.Maps;
 
 /**
- * @author snowgoose
+ * @author y2k2mt
  */
 public class MapHeaders implements Headers {
 
@@ -55,6 +55,6 @@ public class MapHeaders implements Headers {
 	}
 
 	public Map<String, List<String>> toMap() {
-		return this.source;
+		return Collections.unmodifiableMap(this.source);
 	}
 }
