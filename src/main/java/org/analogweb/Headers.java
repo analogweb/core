@@ -1,16 +1,17 @@
 package org.analogweb;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Request or response header.
  * 
- * @author snowgoose
+ * @author y2k2mt
  */
 public interface Headers {
 
 	/**
-	 * Get header value.
+	 * Get header values.
 	 * 
 	 * @param name
 	 *            Key of header value.
@@ -43,4 +44,11 @@ public interface Headers {
 	 * @return when header value presence, returns {@code true}
 	 */
 	boolean contains(String name);
+
+	/**
+	 * Get current header values snapshot as read-only {@link java.util.Map}.
+	 *
+	 * @return all header key and values as {@link java.util.Map}
+	 */
+	Map<String,List<String>> toMap();
 }
