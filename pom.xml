@@ -39,6 +39,10 @@
 		<developerConnection>scm:git:git@github.com:analogweb/core.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
+	<properties>
+                <maven.compiler.source>1.8</maven.compiler.source>
+                <maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
 	<licenses>
 		<license>
 			<name>MIT license</name>

@@ -5,7 +5,7 @@ Analogweb Framework
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.analogweb/analogweb-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.analogweb/analogweb-core)
 
 Analogweb is a tiny HTTP oriented framework.
-It depends only Java 6+.
+It depends only Java 8+.
 
 ## Example
 
