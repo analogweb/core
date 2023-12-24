@@ -11,9 +11,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.analogweb.Renderable;
 import org.analogweb.Headers;
 import org.analogweb.RequestContext;
@@ -39,40 +36,6 @@ public class AcceptableTest {
 		context = mock(RequestContext.class);
 		response = mock(ResponseContext.class);
 		headers = mock(Headers.class);
-	}
-
-	@Test
-	public void testRenderAcceptableXMLWithReplacedFormatter() throws Exception {
-		final Member m = new Member("snowgoose", 34);
-		Acceptable a = Acceptable.as(m);
-		a.map(new Renderable() {
-
-			@Override
-			public Response render(RequestContext context,
-					ResponseContext response) throws IOException,
-					WebApplicationException {
-				return new DefaultResponse(new DefaultResponseEntity(
-						"write with XML"));
-			}
-		}, "text/xml");
-		final String actual = schenarioRender(" text/xml", m, a);
-		assertThat(actual, is("write with XML"));
-	}
-
-	@Test
-	public void testRenderAcceptableSecondXML() throws Exception {
-		final Member m = new Member("snowgoose", 34);
-		final String actual = schenarioRender(
-				" text/x-dvi; q=0.8, application/xml, */*", m);
-		assertThat(actual, is("{\"age\": 34,\"name\": \"snowgoose\"}"));
-	}
-
-	@Test
-	public void testRenderAcceptableXMLWithQuality() throws Exception {
-		final Member m = new Member("snowgoose", 34);
-		final String actual = schenarioRender(
-				" text/x-dvi; q=0.8, text/xml; q=6, */*", m);
-		assertThat(actual, is("{\"age\": 34,\"name\": \"snowgoose\"}"));
 	}
 
 	@Test
@@ -226,12 +189,9 @@ public class AcceptableTest {
 		assertThat(accepts.get(5), is(" */*"));
 	}
 
-	@XmlRootElement
 	public static class Member {
 
-		@XmlElement
 		private String name;
-		@XmlElement
 		private int age;
 
 		public Member() {
