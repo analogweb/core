@@ -10,31 +10,31 @@ import org.analogweb.ResponseEntity;
  */
 public class DefaultResponse implements Response {
 
-	private ResponseEntity entity;
+    private ResponseEntity entity;
 
-	public DefaultResponse(ResponseEntity entity) {
-		this.entity = entity;
-	}
+    public DefaultResponse(ResponseEntity entity) {
+        this.entity = entity;
+    }
 
-	@Override
-	public ResponseEntity getEntity() {
-		return entity;
-	}
+    @Override
+    public ResponseEntity getEntity() {
+        return entity;
+    }
 
-	public long getContentLength() {
-		ResponseEntity e = getEntity();
-		if (e != null) {
-			return e.getContentLength();
-		}
-		return 0L;
-	}
+    public long getContentLength() {
+        ResponseEntity e = getEntity();
+        if (e != null) {
+            return e.getContentLength();
+        }
+        return 0L;
+    }
 
-	@Override
-	public void commit(RequestContext request, ResponseContext response) {
-		try {
-			response.commit(request, this);
-		} finally {
-			response.ensure();
-		}
-	}
+    @Override
+    public void commit(RequestContext request, ResponseContext response) {
+        try {
+            response.commit(request, this);
+        } finally {
+            response.ensure();
+        }
+    }
 }

@@ -22,56 +22,55 @@ import org.junit.Test;
 
 public class DefaultRenderableTest {
 
-	private DefaultRenderable response;
-	private RequestContext requestContext;
-	private ResponseContext responseContext;
+    private DefaultRenderable response;
+    private RequestContext requestContext;
+    private ResponseContext responseContext;
 
-	@Before
-	public void setUp() throws Exception {
-		requestContext = mock(RequestContext.class);
-		responseContext = mock(ResponseContext.class);
-	}
+    @Before
+    public void setUp() throws Exception {
+        requestContext = mock(RequestContext.class);
+        responseContext = mock(ResponseContext.class);
+    }
 
-	@Test
-	public void testRenderDefault() throws Exception {
-		response = new DefaultRenderable();
-		response.render(requestContext, responseContext);
-		assertThat(response.getHeaders(), is(emptyMap()));
-		assertThat(response.getResponseEntity(), is(nullValue()));
-		verify(responseContext)
-				.setStatus(HttpStatus.NO_CONTENT.getStatusCode());
-	}
+    @Test
+    public void testRenderDefault() throws Exception {
+        response = new DefaultRenderable();
+        response.render(requestContext, responseContext);
+        assertThat(response.getHeaders(), is(emptyMap()));
+        assertThat(response.getResponseEntity(), is(nullValue()));
+        verify(responseContext).setStatus(HttpStatus.NO_CONTENT.getStatusCode());
+    }
 
-	@Test
-	public void testRenderEntityAndHeaders() throws Exception {
-		response = new DefaultRenderable();
-		ResponseEntity entity = new DefaultResponseEntity("This Is TEST!");
-		response.setResponseEntity(entity);
-		response.addHeader("Content-Type", "text/plain");
-		Headers responseHeaders = mock(Headers.class);
-		when(responseContext.getResponseHeaders()).thenReturn(responseHeaders);
-		response.render(requestContext, responseContext);
-		assertThat(response.getHeaders().size(), is(1));
-		assertThat(response.getHeaders().get("Content-Type"), is("text/plain"));
-		assertThat(response.getResponseEntity(), is(entity));
-		verify(responseHeaders).putValue("Content-Type", "text/plain");
-		verify(responseContext).setStatus(HttpStatus.OK.getStatusCode());
-	}
+    @Test
+    public void testRenderEntityAndHeaders() throws Exception {
+        response = new DefaultRenderable();
+        ResponseEntity entity = new DefaultResponseEntity("This Is TEST!");
+        response.setResponseEntity(entity);
+        response.addHeader("Content-Type", "text/plain");
+        Headers responseHeaders = mock(Headers.class);
+        when(responseContext.getResponseHeaders()).thenReturn(responseHeaders);
+        response.render(requestContext, responseContext);
+        assertThat(response.getHeaders().size(), is(1));
+        assertThat(response.getHeaders().get("Content-Type"), is("text/plain"));
+        assertThat(response.getResponseEntity(), is(entity));
+        verify(responseHeaders).putValue("Content-Type", "text/plain");
+        verify(responseContext).setStatus(HttpStatus.OK.getStatusCode());
+    }
 
-	private Matcher<Object> emptyMap() {
-		return new BaseMatcher<Object>() {
+    private Matcher<Object> emptyMap() {
+        return new BaseMatcher<Object>() {
 
-			@Override
-			public boolean matches(Object item) {
-				if (item instanceof Map && ((Map<?, ?>) item).isEmpty()) {
-					return true;
-				}
-				return false;
-			}
+            @Override
+            public boolean matches(Object item) {
+                if (item instanceof Map && ((Map<?, ?>) item).isEmpty()) {
+                    return true;
+                }
+                return false;
+            }
 
-			@Override
-			public void describeTo(Description description) {
-			}
-		};
-	}
+            @Override
+            public void describeTo(Description description) {
+            }
+        };
+    }
 }

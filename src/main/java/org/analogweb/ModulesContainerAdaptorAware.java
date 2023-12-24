@@ -5,5 +5,5 @@ package org.analogweb;
  */
 public interface ModulesContainerAdaptorAware {
 
-	void setModulesContainerAdaptor(ContainerAdaptor containerAdaptor);
+    void setModulesContainerAdaptor(ContainerAdaptor containerAdaptor);
 }

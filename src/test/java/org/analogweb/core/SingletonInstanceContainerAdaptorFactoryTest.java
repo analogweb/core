@@ -13,21 +13,19 @@ import org.junit.Test;
  */
 public class SingletonInstanceContainerAdaptorFactoryTest {
 
-	private ApplicationContext resolver;
+    private ApplicationContext resolver;
 
-	@Before
-	public void setUp() {
-		resolver = mock(ApplicationContext.class);
-	}
+    @Before
+    public void setUp() {
+        resolver = mock(ApplicationContext.class);
+    }
 
-	@Test
-	public void testCreateContainerAdaptor() {
-		SingletonInstanceContainerAdaptorFactory factory = new SingletonInstanceContainerAdaptorFactory();
-		SingletonInstanceContainerAdaptor adaptor = factory
-				.createContainerAdaptor(resolver);
-		assertNotNull(adaptor);
-		SingletonInstanceContainerAdaptor otherAdaptor = factory
-				.createContainerAdaptor(resolver);
-		assertNotSame(adaptor, otherAdaptor);
-	}
+    @Test
+    public void testCreateContainerAdaptor() {
+        SingletonInstanceContainerAdaptorFactory factory = new SingletonInstanceContainerAdaptorFactory();
+        SingletonInstanceContainerAdaptor adaptor = factory.createContainerAdaptor(resolver);
+        assertNotNull(adaptor);
+        SingletonInstanceContainerAdaptor otherAdaptor = factory.createContainerAdaptor(resolver);
+        assertNotSame(adaptor, otherAdaptor);
+    }
 }

@@ -4,18 +4,18 @@ import java.io.InputStream;
 
 /**
  * Multiple part request.
- * 
+ *
  * @author snowgoose
  */
 public interface Multipart {
 
-	String getName();
+    String getName();
 
-	String getResourceName();
+    String getResourceName();
 
-	InputStream getInputStream();
+    InputStream getInputStream();
 
-	byte[] getBytes();
+    byte[] getBytes();
 
-	String getContentType();
+    String getContentType();
 }

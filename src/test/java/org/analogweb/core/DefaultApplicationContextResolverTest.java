@@ -12,21 +12,20 @@ import org.junit.Test;
 
 public class DefaultApplicationContextResolverTest {
 
-	@Test
-	public void testResolve() {
-		Object value = "baa";
-		ApplicationContext context = DefaultApplicationContext.context("foo",
-				value);
-		assertThat(context.getAttribute(String.class, "foo"), is("baa"));
-		assertThat(context.getAttribute(String.class, "baz"), is(nullValue()));
-	}
+    @Test
+    public void testResolve() {
+        Object value = "baa";
+        ApplicationContext context = DefaultApplicationContext.context("foo", value);
+        assertThat(context.getAttribute(String.class, "foo"), is("baa"));
+        assertThat(context.getAttribute(String.class, "baz"), is(nullValue()));
+    }
 
-	@Test
-	public void testResolveMap() {
-		Object value = "baa";
-		Map<String, ?> map = Maps.newHashMap("foo", value);
-		ApplicationContext context = DefaultApplicationContext.context(map);
-		assertThat(context.getAttribute(String.class, "foo"), is("baa"));
-		assertThat(context.getAttribute(String.class, "baz"), is(nullValue()));
-	}
+    @Test
+    public void testResolveMap() {
+        Object value = "baa";
+        Map<String, ?> map = Maps.newHashMap("foo", value);
+        ApplicationContext context = DefaultApplicationContext.context(map);
+        assertThat(context.getAttribute(String.class, "foo"), is("baa"));
+        assertThat(context.getAttribute(String.class, "baz"), is(nullValue()));
+    }
 }

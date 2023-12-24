@@ -10,14 +10,15 @@ import org.analogweb.core.RequestContextValueResolver;
 
 /**
  * Resolves {@link org.analogweb.RequestContext} specific instances.
- * 
+ *
  * @see RequestContextValueResolver
+ *
  * @author snowgooseyk
  */
 @As
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 @Resolver(RequestContextValueResolver.class)
 public @interface Context {
 }

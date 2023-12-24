@@ -4,10 +4,10 @@ import java.util.List;
 
 /**
  * Arguments of invocation.
- * 
+ *
  * @author snowgoose
  */
 public interface PreparedInvocationArguments {
 
-	List<Object> asList();
+    List<Object> asList();
 }

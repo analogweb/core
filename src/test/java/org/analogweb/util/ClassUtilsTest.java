@@ -14,27 +14,24 @@ import org.junit.rules.ExpectedException;
  */
 public class ClassUtilsTest {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Test
-	public void testForNameQuietly() {
-		Class<?> actual = ClassUtils.forNameQuietly(ClassUtilsTest.class
-				.getCanonicalName());
-		assertThat(actual.getCanonicalName(), is(this.getClass()
-				.getCanonicalName()));
-	}
+    @Test
+    public void testForNameQuietly() {
+        Class<?> actual = ClassUtils.forNameQuietly(ClassUtilsTest.class.getCanonicalName());
+        assertThat(actual.getCanonicalName(), is(this.getClass().getCanonicalName()));
+    }
 
-	@Test
-	public void testForNameQuietlyNotAviableClass() {
-		Class<?> actual = ClassUtils
-				.forNameQuietly("jp.snowgoose.not.exists.Class");
-		assertNull(actual);
-	}
+    @Test
+    public void testForNameQuietlyNotAviableClass() {
+        Class<?> actual = ClassUtils.forNameQuietly("jp.snowgoose.not.exists.Class");
+        assertNull(actual);
+    }
 
-	@Test
-	public void testForNameQuietlyNullClass() {
-		thrown.expect(NullPointerException.class);
-		ClassUtils.forNameQuietly(null);
-	}
+    @Test
+    public void testForNameQuietlyNullClass() {
+        thrown.expect(NullPointerException.class);
+        ClassUtils.forNameQuietly(null);
+    }
 }

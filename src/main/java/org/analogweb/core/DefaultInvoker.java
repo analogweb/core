@@ -14,21 +14,20 @@ import org.analogweb.ResponseContext;
  */
 public class DefaultInvoker implements Invoker {
 
-	private final List<InvocationInterceptor> interceptors;
+    private final List<InvocationInterceptor> interceptors;
 
-	public DefaultInvoker(List<InvocationInterceptor> interceptors) {
-		super();
-		this.interceptors = interceptors;
-	}
+    public DefaultInvoker(List<InvocationInterceptor> interceptors) {
+        super();
+        this.interceptors = interceptors;
+    }
 
-	@Override
-	public Object invoke(Invocation invocation, InvocationMetadata metadata,
-			RequestContext request, ResponseContext response) {
-		return InvocationChain.create(invocation, metadata,
-				getInvocationInterceptors()).invoke();
-	}
+    @Override
+    public Object invoke(Invocation invocation, InvocationMetadata metadata, RequestContext request,
+            ResponseContext response) {
+        return InvocationChain.create(invocation, metadata, getInvocationInterceptors()).invoke();
+    }
 
-	protected List<InvocationInterceptor> getInvocationInterceptors() {
-		return this.interceptors;
-	}
+    protected List<InvocationInterceptor> getInvocationInterceptors() {
+        return this.interceptors;
+    }
 }

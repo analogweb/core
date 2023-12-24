@@ -24,103 +24,94 @@ import org.junit.rules.ExpectedException;
  */
 public class RedirectTest {
 
-	private RequestContext context;
-	private ResponseContext response;
-	private Headers responseHeader;
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    private RequestContext context;
+    private ResponseContext response;
+    private Headers responseHeader;
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		context = mock(RequestContext.class);
-		response = mock(ResponseContext.class);
-		responseHeader = mock(Headers.class);
-		when(response.getResponseHeaders()).thenReturn(responseHeader);
-	}
+    /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
+        responseHeader = mock(Headers.class);
+        when(response.getResponseHeaders()).thenReturn(responseHeader);
+    }
 
-	@Test
-	public void testRender() throws Exception {
-		Redirect.to("/some/foo.rn").render(context, response);
-		verify(response).setStatus(302);
-		verify(responseHeader).putValue("Location", "/some/foo.rn");
-	}
+    @Test
+    public void testRender() throws Exception {
+        Redirect.to("/some/foo.rn").render(context, response);
+        verify(response).setStatus(302);
+        verify(responseHeader).putValue("Location", "/some/foo.rn");
+    }
 
-	@Test
-	public void testRenderWithNotReturnCode() throws Exception {
-		// not redirect response code.
-		Redirect.to("/some/foo.rn").resoposeCode(404).render(context, response);
-		verify(response).setStatus(302);
-		verify(responseHeader).putValue("Location", "/some/foo.rn");
-	}
+    @Test
+    public void testRenderWithNotReturnCode() throws Exception {
+        // not redirect response code.
+        Redirect.to("/some/foo.rn").resoposeCode(404).render(context, response);
+        verify(response).setStatus(302);
+        verify(responseHeader).putValue("Location", "/some/foo.rn");
+    }
 
-	@Test
-	public void testRenderWithNullContext() throws Exception {
-		thrown.expect(AssertionFailureException.class);
-		Redirect.to("/some/foo.rn").render(null, response);
-	}
+    @Test
+    public void testRenderWithNullContext() throws Exception {
+        thrown.expect(AssertionFailureException.class);
+        Redirect.to("/some/foo.rn").render(null, response);
+    }
 
-	@Test
-	public void testRenderWithParameter() throws Exception {
-		Redirect.to("/some/foo.rn").addParameter("foo", "baa")
-				.addParameter("hoge", "fuga").render(context, response);
-		verify(response).setStatus(302);
-		verify(responseHeader).putValue("Location",
-				"/some/foo.rn?foo=baa&hoge=fuga");
-	}
+    @Test
+    public void testRenderWithParameter() throws Exception {
+        Redirect.to("/some/foo.rn").addParameter("foo", "baa").addParameter("hoge", "fuga").render(context, response);
+        verify(response).setStatus(302);
+        verify(responseHeader).putValue("Location", "/some/foo.rn?foo=baa&hoge=fuga");
+    }
 
-	@Test
-	public void testRenderWithScheme() throws Exception {
-		Redirect.to("https://github.com/").addParameter("foo", "baa")
-				.render(context, response);
-		verify(response).setStatus(302);
-		verify(responseHeader).putValue("Location",
-				"https://github.com/?foo=baa");
-	}
+    @Test
+    public void testRenderWithScheme() throws Exception {
+        Redirect.to("https://github.com/").addParameter("foo", "baa").render(context, response);
+        verify(response).setStatus(302);
+        verify(responseHeader).putValue("Location", "https://github.com/?foo=baa");
+    }
 
-	@Test
-	public void testRenderWithParametarizedURLAndParameter() throws Exception {
-		// sort parameter name by natural order.
-		Redirect.to("/some/foo.rn?boo=baz").addParameter("hoge", "fuga")
-				.addParameter("foo", "baa").encodeWith("ISO-8859-1")
-				.render(context, response);
-		verify(response).setStatus(302);
-		verify(responseHeader).putValue("Location",
-				"/some/foo.rn?boo=baz&foo=baa&hoge=fuga");
-	}
+    @Test
+    public void testRenderWithParametarizedURLAndParameter() throws Exception {
+        // sort parameter name by natural order.
+        Redirect.to("/some/foo.rn?boo=baz").addParameter("hoge", "fuga").addParameter("foo", "baa")
+                .encodeWith("ISO-8859-1").render(context, response);
+        verify(response).setStatus(302);
+        verify(responseHeader).putValue("Location", "/some/foo.rn?boo=baz&foo=baa&hoge=fuga");
+    }
 
-	@Test
-	public void testRenderWithEmptyPath() throws Exception {
-		thrown.expect(new NoDescribeMatcher<MissingRequirmentsException>() {
+    @Test
+    public void testRenderWithEmptyPath() throws Exception {
+        thrown.expect(new NoDescribeMatcher<MissingRequirmentsException>() {
 
-			@Override
-			public boolean matches(Object arg0) {
-				if (arg0 instanceof MissingRequirmentsException) {
-					MissingRequirmentsException ex = (MissingRequirmentsException) arg0;
-					assertThat(ex.getRequirment(), is("redirect path"));
-					assertThat(ex.getUnresolvableInvocationResult(),
-							is(nullValue()));
-					return true;
-				}
-				return false;
-			}
-		});
-		Redirect.to(null);
-	}
+            @Override
+            public boolean matches(Object arg0) {
+                if (arg0 instanceof MissingRequirmentsException) {
+                    MissingRequirmentsException ex = (MissingRequirmentsException) arg0;
+                    assertThat(ex.getRequirment(), is("redirect path"));
+                    assertThat(ex.getUnresolvableInvocationResult(), is(nullValue()));
+                    return true;
+                }
+                return false;
+            }
+        });
+        Redirect.to(null);
+    }
 
-	@Test
-	public void testEquals() throws Exception {
-		assertThat(Redirect.to("/foo/bar"), is(Redirect.to("/foo/bar")));
-		assertThat(Redirect.to("/foo/bar"), is(not(Redirect.to("/foo/bar2"))));
-	}
+    @Test
+    public void testEquals() throws Exception {
+        assertThat(Redirect.to("/foo/bar"), is(Redirect.to("/foo/bar")));
+        assertThat(Redirect.to("/foo/bar"), is(not(Redirect.to("/foo/bar2"))));
+    }
 
-	@Test
-	public void testHashCode() throws Exception {
-		assertThat(Redirect.to("/foo/bar").hashCode(),
-				is(Redirect.to("/foo/bar").hashCode()));
-		assertThat(Redirect.to("/foo/bar").hashCode(),
-				is(not(Redirect.to("/foo/bar2").hashCode())));
-	}
+    @Test
+    public void testHashCode() throws Exception {
+        assertThat(Redirect.to("/foo/bar").hashCode(), is(Redirect.to("/foo/bar").hashCode()));
+        assertThat(Redirect.to("/foo/bar").hashCode(), is(not(Redirect.to("/foo/bar2").hashCode())));
+    }
 }

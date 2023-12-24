@@ -31,110 +31,102 @@ import org.junit.Test;
 
 /**
  * {@link ScopedMapArgumentPreparator}に対するテストケースです。
- * 
+ *
  * @author snowgoose
  */
 public class ScopedMapArgumentPreparatorTest {
 
-	private ScopedMapArgumentPreparator preparator;
-	private InvocationMetadata metadata;
-	private InvocationArguments args;
-	private RequestContext context;
-	private TypeMapperContext typeMapper;
-	private RequestValueResolvers handlers;
-	private AttributesHandler handler;
+    private ScopedMapArgumentPreparator preparator;
+    private InvocationMetadata metadata;
+    private InvocationArguments args;
+    private RequestContext context;
+    private TypeMapperContext typeMapper;
+    private RequestValueResolvers handlers;
+    private AttributesHandler handler;
 
-	/**
-	 * テストの事前準備を行います。
-	 */
-	@Before
-	public void setUp() {
-		preparator = new ScopedMapArgumentPreparator();
-		metadata = mock(InvocationMetadata.class);
-		args = mock(InvocationArguments.class);
-		context = mock(RequestContext.class);
-		typeMapper = mock(TypeMapperContext.class);
-		handlers = mock(RequestValueResolvers.class);
-		handler = mock(AttributesHandler.class);
-	}
+    /**
+     * テストの事前準備を行います。
+     */
+    @Before
+    public void setUp() {
+        preparator = new ScopedMapArgumentPreparator();
+        metadata = mock(InvocationMetadata.class);
+        args = mock(InvocationArguments.class);
+        context = mock(RequestContext.class);
+        typeMapper = mock(TypeMapperContext.class);
+        handlers = mock(RequestValueResolvers.class);
+        handler = mock(AttributesHandler.class);
+    }
 
-	@Test
-	public void testMapToFirstArgument() {
-		Class<?>[] parameterTypes = new Class[]{Map.class, String.class};
-		Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class,
-				"doSomething", parameterTypes);
-		when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-		when(metadata.resolveMethod()).thenReturn(doSomething);
-		preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
-		verify(args).putInvocationArgument(eq(0), isA(ContextExtractor.class));
-	}
+    @Test
+    public void testMapToFirstArgument() {
+        Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doSomething", parameterTypes);
+        when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
+        when(metadata.resolveMethod()).thenReturn(doSomething);
+        preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
+        verify(args).putInvocationArgument(eq(0), isA(ContextExtractor.class));
+    }
 
-	@Test
-	public void testMapToFirstArgumentWithNullMethod() {
-		Class<?>[] parameterTypes = new Class[]{Map.class, String.class};
-		Method doSomething = null;
-		when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-		when(metadata.resolveMethod()).thenReturn(doSomething);
-		Object actual = preparator.prepareInvoke(args, metadata, context,
-				typeMapper, handlers);
-		assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
-	}
+    @Test
+    public void testMapToFirstArgumentWithNullMethod() {
+        Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
+        Method doSomething = null;
+        when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
+        when(metadata.resolveMethod()).thenReturn(doSomething);
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
+        assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
+    }
 
-	@Test
-	public void testMapWithNullArgument() {
-		Class<?>[] parameterTypes = new Class[]{Map.class, String.class};
-		Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class,
-				"doSomething", parameterTypes);
-		when(metadata.getArgumentTypes()).thenReturn(null);
-		when(metadata.resolveMethod()).thenReturn(doSomething);
-		Object actual = preparator.prepareInvoke(args, metadata, context,
-				typeMapper, handlers);
-		assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
-	}
+    @Test
+    public void testMapWithNullArgument() {
+        Class<?>[] parameterTypes = new Class[] { Map.class, String.class };
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doSomething", parameterTypes);
+        when(metadata.getArgumentTypes()).thenReturn(null);
+        when(metadata.resolveMethod()).thenReturn(doSomething);
+        Object actual = preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
+        assertThat(actual, is(ApplicationProcessor.NO_INTERRUPTION));
+    }
 
-	@Test
-	public void testMapToFirstArgumentNotAssignableFromMap() {
-		Class<?>[] parameterTypes = new Class[]{String.class, String.class};
-		Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class,
-				"doAnything", parameterTypes);
-		when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-		when(metadata.resolveMethod()).thenReturn(doSomething);
-		preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
-	}
+    @Test
+    public void testMapToFirstArgumentNotAssignableFromMap() {
+        Class<?>[] parameterTypes = new Class[] { String.class, String.class };
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doAnything", parameterTypes);
+        when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
+        when(metadata.resolveMethod()).thenReturn(doSomething);
+        preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
+    }
 
-	@Test
-	public void testMapToFirstArgumentNotEqualsMap() {
-		Class<?>[] parameterTypes = new Class[]{HashMap.class, String.class};
-		Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class,
-				"doNothing", parameterTypes);
-		when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
-		when(metadata.resolveMethod()).thenReturn(doSomething);
-		preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
-	}
+    @Test
+    public void testMapToFirstArgumentNotEqualsMap() {
+        Class<?>[] parameterTypes = new Class[] { HashMap.class, String.class };
+        Method doSomething = ReflectionUtils.getMethodQuietly(MockAction.class, "doNothing", parameterTypes);
+        when(metadata.getArgumentTypes()).thenReturn(parameterTypes);
+        when(metadata.resolveMethod()).thenReturn(doSomething);
+        preparator.prepareInvoke(args, metadata, context, typeMapper, handlers);
+    }
 
-	interface Session extends AttributesHandler {
-	}
+    interface Session extends AttributesHandler {
+    }
 
-	@Test
-	public void testExtractToSpecifiedScopeFirstArgument() {
-		Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(
-				Session.class);
-		BigDecimal amount = new BigDecimal("1000");
-		scopedMap.put("amount", amount);
-		when(handlers.findAttributesHandler(Session.class)).thenReturn(handler);
-		ArrayList<Object> list = new ArrayList<Object>();
-		list.add(scopedMap);
-		when(args.asList()).thenReturn(list);
-		Object invocationResult = new Object();
-		preparator.postInvoke(invocationResult, args, metadata, context,
-				handlers);
-		verify(handler).putAttributeValue(context, "amount", amount);
-	}
+    @Test
+    public void testExtractToSpecifiedScopeFirstArgument() {
+        Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(Session.class);
+        BigDecimal amount = new BigDecimal("1000");
+        scopedMap.put("amount", amount);
+        when(handlers.findAttributesHandler(Session.class)).thenReturn(handler);
+        ArrayList<Object> list = new ArrayList<Object>();
+        list.add(scopedMap);
+        when(args.asList()).thenReturn(list);
+        Object invocationResult = new Object();
+        preparator.postInvoke(invocationResult, args, metadata, context, handlers);
+        verify(handler).putAttributeValue(context, "amount", amount);
+    }
 
-	interface Request extends AttributesHandler {
-	}
+    interface Request extends AttributesHandler {
+    }
 
-	@Test
+    @Test
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testExtractToScopeFirstArgument() {
 		when(metadata.getInvocationClass())
@@ -156,49 +148,41 @@ public class ScopedMapArgumentPreparatorTest {
 		verify(handler).putAttributeValue(context, "amount", amount);
 	}
 
-	@Test
-	public void testExtractAndRemoveToScopeFirstArgument() {
-		Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(
-				Session.class);
-		scopedMap.remove("amount");
-		when(handlers.findAttributesHandler(Session.class)).thenReturn(handler);
-		ArrayList<Object> list = new ArrayList<Object>();
-		list.add("boobaa");
-		list.add(scopedMap);
-		when(args.asList()).thenReturn(list);
-		Object invocationResult = new Object();
-		preparator.postInvoke(invocationResult, args, metadata, context,
-				handlers);
-		verify(handler).removeAttribute(context, "amount");
-	}
+    @Test
+    public void testExtractAndRemoveToScopeFirstArgument() {
+        Map<String, Object> scopedMap = new ScopedMapArgumentPreparator.ContextExtractor<Object>(Session.class);
+        scopedMap.remove("amount");
+        when(handlers.findAttributesHandler(Session.class)).thenReturn(handler);
+        ArrayList<Object> list = new ArrayList<Object>();
+        list.add("boobaa");
+        list.add(scopedMap);
+        when(args.asList()).thenReturn(list);
+        Object invocationResult = new Object();
+        preparator.postInvoke(invocationResult, args, metadata, context, handlers);
+        verify(handler).removeAttribute(context, "amount");
+    }
 
-	@Route
-	private static class MockAction {
+    @Route
+    private static class MockAction {
 
-		@Route
-		public String doSomething(
-				@Attributes(Request.class) Map<String, ?> foo,
-				@As("baa") String baa) {
-			return "do something!";
-		}
+        @Route
+        public String doSomething(@Attributes(Request.class) Map<String, ?> foo, @As("baa") String baa) {
+            return "do something!";
+        }
 
-		@Route
-		public String doSomethingElse(
-				@Attributes(Session.class) Map<String, Object> session,
-				@As("baa") String baa) {
-			return "do something!";
-		}
+        @Route
+        public String doSomethingElse(@Attributes(Session.class) Map<String, Object> session, @As("baa") String baa) {
+            return "do something!";
+        }
 
-		@Route
-		public String doNothing(HashMap<String, ?> foo, @As("baa") String baa) {
-			return "do something!";
-		}
+        @Route
+        public String doNothing(HashMap<String, ?> foo, @As("baa") String baa) {
+            return "do something!";
+        }
 
-		@Route
-		public String doAnything(
-				@Attributes(AttributesHandler.class) String notMap,
-				@As("baa") String baa) {
-			return "do something!";
-		}
-	}
+        @Route
+        public String doAnything(@Attributes(AttributesHandler.class) String notMap, @As("baa") String baa) {
+            return "do something!";
+        }
+    }
 }

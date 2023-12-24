@@ -7,14 +7,14 @@ import org.analogweb.RequestPathMetadata;
  */
 public class UnsatisfiedRequestException extends ApplicationRuntimeException {
 
-	private static final long serialVersionUID = -5701810553477314954L;
-	private RequestPathMetadata metadata;
+    private static final long serialVersionUID = -5701810553477314954L;
+    private RequestPathMetadata metadata;
 
-	public UnsatisfiedRequestException(RequestPathMetadata metadata) {
-		this.metadata = metadata;
-	}
+    public UnsatisfiedRequestException(RequestPathMetadata metadata) {
+        this.metadata = metadata;
+    }
 
-	public RequestPathMetadata getMetadata() {
-		return this.metadata;
-	}
+    public RequestPathMetadata getMetadata() {
+        return this.metadata;
+    }
 }

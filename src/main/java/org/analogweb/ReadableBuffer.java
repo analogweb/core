@@ -8,11 +8,17 @@ import java.nio.charset.Charset;
 
 public interface ReadableBuffer {
 
-	ReadableBuffer read(byte[] dst, int index, int length) throws IOException;
-	ReadableBuffer read(ByteBuffer buffer) throws IOException;
-	String asString(Charset charset) throws IOException;
-	InputStream asInputStream() throws IOException;
-	ReadableByteChannel asChannel() throws IOException;
-	ReadableBuffer to(WritableBuffer writable) throws IOException;
-	long getLength();
+    ReadableBuffer read(byte[] dst, int index, int length) throws IOException;
+
+    ReadableBuffer read(ByteBuffer buffer) throws IOException;
+
+    String asString(Charset charset) throws IOException;
+
+    InputStream asInputStream() throws IOException;
+
+    ReadableByteChannel asChannel() throws IOException;
+
+    ReadableBuffer to(WritableBuffer writable) throws IOException;
+
+    long getLength();
 }

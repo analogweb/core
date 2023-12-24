@@ -5,7 +5,7 @@ package org.analogweb;
  */
 public interface ScopedAttributeName {
 
-	String getScope();
+    String getScope();
 
-	String getName();
+    String getName();
 }

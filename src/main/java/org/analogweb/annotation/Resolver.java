@@ -13,8 +13,8 @@ import org.analogweb.RequestValueResolver;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 public @interface Resolver {
 
-	Class<? extends RequestValueResolver> value();
+    Class<? extends RequestValueResolver> value();
 }

@@ -8,8 +8,8 @@ import org.hamcrest.Description;
  */
 public abstract class NoDescribeMatcher<T> extends BaseMatcher<T> {
 
-	@Override
-	public void describeTo(Description arg0) {
-		// nop.
-	}
+    @Override
+    public void describeTo(Description arg0) {
+        // nop.
+    }
 }

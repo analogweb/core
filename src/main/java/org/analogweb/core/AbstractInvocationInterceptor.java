@@ -10,13 +10,13 @@ import org.analogweb.Precedence;
  */
 public class AbstractInvocationInterceptor implements InvocationInterceptor {
 
-	@Override
-	public int getPrecedence() {
-		return Precedence.LOWEST;
-	}
+    @Override
+    public int getPrecedence() {
+        return Precedence.LOWEST;
+    }
 
-	@Override
-	public Object onInvoke(Invocation invocation, InvocationMetadata metadata) {
-		return invocation.invoke();
-	}
+    @Override
+    public Object onInvoke(Invocation invocation, InvocationMetadata metadata) {
+        return invocation.invoke();
+    }
 }

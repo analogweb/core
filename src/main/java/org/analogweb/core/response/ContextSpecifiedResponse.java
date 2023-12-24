@@ -8,18 +8,15 @@ import org.analogweb.Response;
 import org.analogweb.ResponseContext;
 import org.analogweb.WebApplicationException;
 
-public abstract class ContextSpecifiedResponse<T extends RequestContext>
-		implements
-			Renderable {
+public abstract class ContextSpecifiedResponse<T extends RequestContext> implements Renderable {
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public Response render(RequestContext context, ResponseContext response)
-			throws IOException, WebApplicationException {
-		return renderInternal((T) context, response);
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public Response render(RequestContext context, ResponseContext response)
+            throws IOException, WebApplicationException {
+        return renderInternal((T) context, response);
+    }
 
-	protected abstract Response renderInternal(T context,
-			ResponseContext response) throws IOException,
-			WebApplicationException;
+    protected abstract Response renderInternal(T context, ResponseContext response)
+            throws IOException, WebApplicationException;
 }

@@ -22,27 +22,27 @@ import org.junit.rules.ExpectedException;
 
 public class HttpStatusTest {
 
-	private RequestContext requestContext;
-	private ResponseContext response;
-	private Headers headers;
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    private RequestContext requestContext;
+    private ResponseContext response;
+    private Headers headers;
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Before
-	public void setUp() throws Exception {
-		requestContext = mock(RequestContext.class);
-		response = mock(ResponseContext.class);
-		headers = mock(Headers.class);
-	}
+    @Before
+    public void setUp() throws Exception {
+        requestContext = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
+        headers = mock(Headers.class);
+    }
 
-	@Test
+    @Test
 	public void testRender() throws Exception {
 		when(response.getResponseHeaders()).thenReturn(headers);
 		HttpStatus.OK.render(requestContext, response);
 		verify(response).setStatus(200);
 	}
 
-	@Test
+    @Test
 	public void testRenderWithError() throws Exception {
 		when(response.getResponseHeaders()).thenReturn(headers);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -53,7 +53,7 @@ public class HttpStatusTest {
 		verify(response).setStatus(404);
 	}
 
-	@Test
+    @Test
 	public void testRenderWithHeader() throws Exception {
 		when(response.getResponseHeaders()).thenReturn(headers);
 		HttpStatus.FOUND.withHeader(
@@ -63,7 +63,7 @@ public class HttpStatusTest {
 		verify(headers).putValue("Location", "http://foo.com/baa");
 	}
 
-	@Test
+    @Test
 	public void testRenderWithPreRenderResponse() throws Exception {
 		when(response.getResponseHeaders()).thenReturn(headers);
 		Renderable direction = mock(Renderable.class);
@@ -72,21 +72,21 @@ public class HttpStatusTest {
 		verify(direction).render(requestContext, response);
 	}
 
-	@Test
-	public void testValueOfNumber() {
-		HttpStatus actual = HttpStatus.valueOf(200);
-		assertThat(actual, is(HttpStatus.OK));
-		actual = HttpStatus.valueOf(404);
-		assertThat(actual, is(HttpStatus.NOT_FOUND));
-		actual = HttpStatus.valueOf(301);
-		assertThat(actual, is(HttpStatus.MOVED_PERMANENTLY));
-		actual = HttpStatus.valueOf(500);
-		assertThat(actual, is(HttpStatus.INTERNAL_SERVER_ERROR));
-	}
+    @Test
+    public void testValueOfNumber() {
+        HttpStatus actual = HttpStatus.valueOf(200);
+        assertThat(actual, is(HttpStatus.OK));
+        actual = HttpStatus.valueOf(404);
+        assertThat(actual, is(HttpStatus.NOT_FOUND));
+        actual = HttpStatus.valueOf(301);
+        assertThat(actual, is(HttpStatus.MOVED_PERMANENTLY));
+        actual = HttpStatus.valueOf(500);
+        assertThat(actual, is(HttpStatus.INTERNAL_SERVER_ERROR));
+    }
 
-	@Test
-	public void testValueOfInvalidStatusNumber() {
-		thrown.expect(IllegalArgumentException.class);
-		HttpStatus.valueOf(9999);
-	}
+    @Test
+    public void testValueOfInvalidStatusNumber() {
+        thrown.expect(IllegalArgumentException.class);
+        HttpStatus.valueOf(9999);
+    }
 }
