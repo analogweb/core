@@ -3,6 +3,8 @@ package org.analogweb.core;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,8 +17,6 @@ import org.analogweb.RequestPath;
 import org.analogweb.RequestPathMetadata;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Matchers.anyMapOf;
-import static org.mockito.Matchers.eq;
 
 /**
  * @author snowgoose
@@ -49,20 +49,17 @@ public class DefaultRouteRegistryTest {
 		InvocationMetadataFinder finder1 = mock(InvocationMetadataFinder.class);
 		when(
 				finder1.find(
-						anyMapOf(RequestPathMetadata.class,
-								InvocationMetadata.class), eq(context)))
+						anyMap(), eq(context)))
 				.thenReturn(null);
 		InvocationMetadataFinder finder2 = mock(InvocationMetadataFinder.class);
 		when(
 				finder2.find(
-						anyMapOf(RequestPathMetadata.class,
-								InvocationMetadata.class), eq(context)))
+						anyMap(), eq(context)))
 				.thenReturn(metadata2);
 		InvocationMetadataFinder finder3 = mock(InvocationMetadataFinder.class);
 		when(
 				finder3.find(
-						anyMapOf(RequestPathMetadata.class,
-								InvocationMetadata.class), eq(context)))
+						anyMap(), eq(context)))
 				.thenReturn(null);
 		assertThat(
 				registry.findInvocationMetadata(context,
@@ -87,20 +84,17 @@ public class DefaultRouteRegistryTest {
 		InvocationMetadataFinder finder1 = mock(InvocationMetadataFinder.class);
 		when(
 				finder1.find(
-						anyMapOf(RequestPathMetadata.class,
-								InvocationMetadata.class), eq(context)))
+						anyMap(), eq(context)))
 				.thenReturn(null);
 		InvocationMetadataFinder finder2 = mock(InvocationMetadataFinder.class);
 		when(
 				finder2.find(
-						anyMapOf(RequestPathMetadata.class,
-								InvocationMetadata.class), eq(context)))
+						anyMap(), eq(context)))
 				.thenReturn(null);
 		InvocationMetadataFinder finder3 = mock(InvocationMetadataFinder.class);
 		when(
 				finder3.find(
-						anyMapOf(RequestPathMetadata.class,
-								InvocationMetadata.class), eq(context)))
+						anyMap(), eq(context)))
 				.thenReturn(null);
 		assertThat(
 				registry.findInvocationMetadata(context,
@@ -126,14 +120,12 @@ public class DefaultRouteRegistryTest {
 		InvocationMetadataFinder finder2 = mock(InvocationMetadataFinder.class);
 		when(
 				finder2.find(
-						anyMapOf(RequestPathMetadata.class,
-								InvocationMetadata.class), eq(context)))
+						anyMap(), eq(context)))
 				.thenReturn(null);
 		InvocationMetadataFinder finder3 = mock(InvocationMetadataFinder.class);
 		when(
 				finder3.find(
-						anyMapOf(RequestPathMetadata.class,
-								InvocationMetadata.class), eq(context)))
+						anyMap(), eq(context)))
 				.thenReturn(metadata3);
 		when(metadata3.getCachable()).thenReturn(metadata1);
 		assertThat(
