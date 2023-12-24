@@ -3,11 +3,11 @@ package org.analogweb;
 import java.io.IOException;
 
 /**
- * Handle {@link Renderable}.<br/>
+ * Handle {@link Renderable}.
  * Usually,this handler executes only
  * {@link Renderable#render(RequestContext, ResponseContext)}.
  * 
- * @author snowgoose
+ * @author y2k2mt
  */
 public interface ResponseHandler extends Module {
 

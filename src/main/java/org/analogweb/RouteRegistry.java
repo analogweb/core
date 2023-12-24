@@ -5,12 +5,12 @@ import java.util.List;
 /**
  * Registry of {@link InvocationMetadata}.
  * 
- * @author snowgoose
+ * @author y2k2mt
  */
 public interface RouteRegistry extends Disposable {
 
 	/**
-	 * Find matched {@link InvocationMetadata}.<br/>
+	 * Find matched {@link InvocationMetadata}.
 	 * 
 	 * @param requestContext
 	 *            {@link RequestContext}
