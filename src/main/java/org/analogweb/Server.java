@@ -5,7 +5,7 @@ package org.analogweb;
  */
 public interface Server {
 
-	void run();
+    void run();
 
-	void shutdown(int mode);
+    void shutdown(int mode);
 }

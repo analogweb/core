@@ -18,67 +18,60 @@ import org.analogweb.util.StringUtils;
 
 final class AnnotatedArguments {
 
-	private AnnotatedArguments() {
-		// nop.
-	}
+    private AnnotatedArguments() {
+        // nop.
+    }
 
-	static <T> T resolveArguent(Annotation[] parameterAnnotations,
-			Class<T> argType, RequestContext context,
-			InvocationMetadata metadata, TypeMapperContext converters,
-			RequestValueResolvers handlers) {
-		return resolveArguent(StringUtils.EMPTY, parameterAnnotations, argType,
-				context, metadata, converters, handlers);
-	}
+    static <T> T resolveArguent(Annotation[] parameterAnnotations, Class<T> argType, RequestContext context,
+            InvocationMetadata metadata, TypeMapperContext converters, RequestValueResolvers handlers) {
+        return resolveArguent(StringUtils.EMPTY, parameterAnnotations, argType, context, metadata, converters,
+                handlers);
+    }
 
-	static <T> T resolveArguent(String name, Annotation[] parameterAnnotations,
-			Class<T> argType, RequestContext context,
-			InvocationMetadata metadata, TypeMapperContext converters,
-			RequestValueResolvers handlers) {
-		String bindAttributeName = resolveName(parameterAnnotations);
-		if (StringUtils.isEmpty(bindAttributeName)) {
-			bindAttributeName = name;
-		}
-		if (bindAttributeName != null) {
-			Resolver scope = AnnotationUtils.findAnnotation(Resolver.class,
-					parameterAnnotations);
-			RequestValueResolver handler;
-			if (scope == null) {
-				handler = handlers.findDefaultRequestValueResolver();
-			} else {
-				handler = handlers.findRequestValueResolver(scope.value());
-			}
-			if (handler != null) {
-				Object value = handler.resolveValue(context, metadata,
-						bindAttributeName, argType, parameterAnnotations);
-				if (value != null) {
-					Convert mapWith = AnnotationUtils.findAnnotation(
-							Convert.class, parameterAnnotations);
-					Class<? extends TypeMapper> mapperType = TypeMapper.class;
-					if (mapWith != null) {
-						mapperType = mapWith.value();
-					}
-					Formats f = AnnotationUtils.findAnnotation(Formats.class,
-							parameterAnnotations);
-					T convertedValue = converters.mapToType(mapperType, value,
-							argType, (f != null) ? f.value() : new String[0]);
-					return convertedValue;
-				}
-			}
-		}
-		return null;
-	}
+    static <T> T resolveArguent(String name, Annotation[] parameterAnnotations, Class<T> argType,
+            RequestContext context, InvocationMetadata metadata, TypeMapperContext converters,
+            RequestValueResolvers handlers) {
+        String bindAttributeName = resolveName(parameterAnnotations);
+        if (StringUtils.isEmpty(bindAttributeName)) {
+            bindAttributeName = name;
+        }
+        if (bindAttributeName != null) {
+            Resolver scope = AnnotationUtils.findAnnotation(Resolver.class, parameterAnnotations);
+            RequestValueResolver handler;
+            if (scope == null) {
+                handler = handlers.findDefaultRequestValueResolver();
+            } else {
+                handler = handlers.findRequestValueResolver(scope.value());
+            }
+            if (handler != null) {
+                Object value = handler.resolveValue(context, metadata, bindAttributeName, argType,
+                        parameterAnnotations);
+                if (value != null) {
+                    Convert mapWith = AnnotationUtils.findAnnotation(Convert.class, parameterAnnotations);
+                    Class<? extends TypeMapper> mapperType = TypeMapper.class;
+                    if (mapWith != null) {
+                        mapperType = mapWith.value();
+                    }
+                    Formats f = AnnotationUtils.findAnnotation(Formats.class, parameterAnnotations);
+                    T convertedValue = converters.mapToType(mapperType, value, argType,
+                            (f != null) ? f.value() : new String[0]);
+                    return convertedValue;
+                }
+            }
+        }
+        return null;
+    }
 
-	private static String resolveName(Annotation[] parameterAnnotations) {
-		for (Annotation an : parameterAnnotations) {
-			if (AnnotationUtils
-					.isDeclared(Valiables.class, an.annotationType())) {
-				return AnnotationUtils.getValue(an);
-			}
-		}
-		As as = AnnotationUtils.findAnnotation(As.class, parameterAnnotations);
-		if (as != null) {
-			return as.value();
-		}
-		return null;
-	}
+    private static String resolveName(Annotation[] parameterAnnotations) {
+        for (Annotation an : parameterAnnotations) {
+            if (AnnotationUtils.isDeclared(Valiables.class, an.annotationType())) {
+                return AnnotationUtils.getValue(an);
+            }
+        }
+        As as = AnnotationUtils.findAnnotation(As.class, parameterAnnotations);
+        if (as != null) {
+            return as.value();
+        }
+        return null;
+    }
 }

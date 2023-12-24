@@ -5,6 +5,6 @@ package org.analogweb.util.classcollector;
  */
 public class Baz extends Foo {
 
-	public static class Bee {
-	}
+    public static class Bee {
+    }
 }

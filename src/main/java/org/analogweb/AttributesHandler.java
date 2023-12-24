@@ -5,8 +5,7 @@ package org.analogweb;
  */
 public interface AttributesHandler extends RequestValueResolver {
 
-	void putAttributeValue(RequestContext requestContext, String query,
-			Object value);
+    void putAttributeValue(RequestContext requestContext, String query, Object value);
 
-	void removeAttribute(RequestContext requestContext, String query);
+    void removeAttribute(RequestContext requestContext, String query);
 }

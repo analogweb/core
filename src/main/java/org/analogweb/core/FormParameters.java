@@ -13,19 +13,16 @@ import org.analogweb.util.StringUtils;
 
 public class FormParameters extends QueryParameters {
 
-	public FormParameters(URI requestURI, ReadableBuffer body,
-			MediaType contentType) {
-		super(requestURI, body, contentType);
-	}
+    public FormParameters(URI requestURI, ReadableBuffer body, MediaType contentType) {
+        super(requestURI, body, contentType);
+    }
 
-	@Override
-	protected String resolveParametersParts(URI requestURI,
-			ReadableBuffer body, MediaType contentType, Charset charset)
-			throws IOException {
-		if (MediaTypes.APPLICATION_FORM_URLENCODED_TYPE
-				.isCompatible(contentType)) {
-			return body.asString(charset);
-		}
-		return StringUtils.EMPTY;
-	}
+    @Override
+    protected String resolveParametersParts(URI requestURI, ReadableBuffer body, MediaType contentType, Charset charset)
+            throws IOException {
+        if (MediaTypes.APPLICATION_FORM_URLENCODED_TYPE.isCompatible(contentType)) {
+            return body.asString(charset);
+        }
+        return StringUtils.EMPTY;
+    }
 }

@@ -13,15 +13,15 @@ import static org.mockito.Mockito.when;
 
 public class DefaultMutableRequestContextTest {
 
-	private DefaultMutableRequestContext target;
-	private RequestContext context;
+    private DefaultMutableRequestContext target;
+    private RequestContext context;
 
-	@Before
-	public void setUp() throws Exception {
-		context = mock(RequestContext.class);
-	}
+    @Before
+    public void setUp() throws Exception {
+        context = mock(RequestContext.class);
+    }
 
-	@Test
+    @Test
 	public void testNotOverridden() {
 		when(context.getRequestMethod()).thenReturn("GET");
 		RequestPath path = mock(RequestPath.class);
@@ -32,7 +32,7 @@ public class DefaultMutableRequestContextTest {
 		assertThat(actual.getRequestPath(), is(path));
 	}
 
-	@Test
+    @Test
 	public void testOverridden() {
 		when(context.getRequestMethod()).thenReturn("GET");
 		RequestPath path = mock(RequestPath.class);

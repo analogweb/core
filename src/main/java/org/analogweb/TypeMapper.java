@@ -5,5 +5,5 @@ package org.analogweb;
  */
 public interface TypeMapper extends Module {
 
-	Object mapToType(Object from, Class<?> requiredType, String[] formats);
+    Object mapToType(Object from, Class<?> requiredType, String[] formats);
 }

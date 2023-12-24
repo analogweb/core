@@ -10,7 +10,7 @@ import org.analogweb.core.BeanAttributeValueResolver;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 @Resolver(BeanAttributeValueResolver.class)
 @Valiables
 public @interface Bean {

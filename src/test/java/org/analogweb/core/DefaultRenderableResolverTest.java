@@ -21,62 +21,57 @@ import org.junit.Test;
 
 public class DefaultRenderableResolverTest {
 
-	private DefaultRenderableResolver resolver;
-	private InvocationMetadata metadata;
-	private RequestContext context;
-	private ResponseContext response;
-	private Headers headers;
+    private DefaultRenderableResolver resolver;
+    private InvocationMetadata metadata;
+    private RequestContext context;
+    private ResponseContext response;
+    private Headers headers;
 
-	@Before
-	public void setUp() throws Exception {
-		resolver = new DefaultRenderableResolver();
-		metadata = mock(InvocationMetadata.class);
-		context = mock(RequestContext.class);
-		response = mock(ResponseContext.class);
-		headers = mock(Headers.class);
-	}
+    @Before
+    public void setUp() throws Exception {
+        resolver = new DefaultRenderableResolver();
+        metadata = mock(InvocationMetadata.class);
+        context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
+        headers = mock(Headers.class);
+    }
 
-	@Test
-	public void testResolve() {
-		Renderable invocationResult = mock(Renderable.class);
-		Renderable actual = resolver.resolve(invocationResult, metadata,
-				context, response);
-		assertThat(actual, is(sameInstance(invocationResult)));
-	}
+    @Test
+    public void testResolve() {
+        Renderable invocationResult = mock(Renderable.class);
+        Renderable actual = resolver.resolve(invocationResult, metadata, context, response);
+        assertThat(actual, is(sameInstance(invocationResult)));
+    }
 
-	@Test
-	public void testResolveWithNumber() {
-		Integer invocationResult = 500;
-		HttpStatus actual = (HttpStatus) resolver.resolve(invocationResult,
-				metadata, context, response);
-		assertThat(actual, is(sameInstance(HttpStatus.INTERNAL_SERVER_ERROR)));
-	}
+    @Test
+    public void testResolveWithNumber() {
+        Integer invocationResult = 500;
+        HttpStatus actual = (HttpStatus) resolver.resolve(invocationResult, metadata, context, response);
+        assertThat(actual, is(sameInstance(HttpStatus.INTERNAL_SERVER_ERROR)));
+    }
 
-	@Test
-	public void testResolveWithPrimitiveNumber() {
-		int invocationResult = 500;
-		HttpStatus actual = (HttpStatus) resolver.resolve(invocationResult,
-				metadata, context, response);
-		assertThat(actual, is(sameInstance(HttpStatus.INTERNAL_SERVER_ERROR)));
-	}
+    @Test
+    public void testResolveWithPrimitiveNumber() {
+        int invocationResult = 500;
+        HttpStatus actual = (HttpStatus) resolver.resolve(invocationResult, metadata, context, response);
+        assertThat(actual, is(sameInstance(HttpStatus.INTERNAL_SERVER_ERROR)));
+    }
 
-	@Test
-	public void testResolveWithText() {
-		String invocationResult = "this is simple text.";
-		Text actual = (Text) resolver.resolve(invocationResult, metadata,
-				context, response);
-		assertThat(actual.toString(), is(invocationResult));
-	}
+    @Test
+    public void testResolveWithText() {
+        String invocationResult = "this is simple text.";
+        Text actual = (Text) resolver.resolve(invocationResult, metadata, context, response);
+        assertThat(actual.toString(), is(invocationResult));
+    }
 
-	@Test
-	public void testResolveWithoutResult() {
-		Renderable invocationResult = null;
-		HttpStatus actual = (HttpStatus) resolver.resolve(invocationResult,
-				metadata, context, response);
-		assertThat(actual, is(sameInstance(HttpStatus.NO_CONTENT)));
-	}
+    @Test
+    public void testResolveWithoutResult() {
+        Renderable invocationResult = null;
+        HttpStatus actual = (HttpStatus) resolver.resolve(invocationResult, metadata, context, response);
+        assertThat(actual, is(sameInstance(HttpStatus.NO_CONTENT)));
+    }
 
-	@Test
+    @Test
 	public void testAcceptableResult() {
 		when(context.getRequestHeaders()).thenReturn(headers);
 		when(headers.getValues("Accept")).thenReturn(

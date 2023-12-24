@@ -17,16 +17,16 @@ import org.junit.Test;
 
 public class AcceptLanguagesTest {
 
-	private RequestContext request;
-	private Headers headers;
+    private RequestContext request;
+    private Headers headers;
 
-	@Before
-	public void setUp() {
-		request = mock(RequestContext.class);
-		headers = mock(Headers.class);
-	}
+    @Before
+    public void setUp() {
+        request = mock(RequestContext.class);
+        headers = mock(Headers.class);
+    }
 
-	@Test
+    @Test
 	public void testGetLocale() {
 		when(request.getRequestHeaders()).thenReturn(headers);
 		when(headers.getValues("Accept-Language"))
@@ -39,7 +39,7 @@ public class AcceptLanguagesTest {
 		assertThat(lang.getLocale(), is(Locale.CANADA));
 	}
 
-	@Test
+    @Test
 	public void testGetLocaleWithEmptyHeader() {
 		when(request.getRequestHeaders()).thenReturn(headers);
 		when(headers.getValues("Accept-Language")).thenReturn(null);

@@ -7,10 +7,9 @@ import org.analogweb.core.AssertionFailureException;
  */
 public final class Assertion {
 
-	public static void notNull(Object anObject, String name)
-			throws AssertionFailureException {
-		if (anObject == null) {
-			throw new AssertionFailureException(name);
-		}
-	}
+    public static void notNull(Object anObject, String name) throws AssertionFailureException {
+        if (anObject == null) {
+            throw new AssertionFailureException(name);
+        }
+    }
 }

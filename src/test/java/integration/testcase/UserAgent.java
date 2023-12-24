@@ -11,6 +11,6 @@ import org.analogweb.annotation.Header;
 @Header
 @As("User-Agent")
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+@Target({ ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
 public @interface UserAgent {
 }

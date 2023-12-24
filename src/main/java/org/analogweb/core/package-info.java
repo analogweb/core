@@ -1,5 +1,4 @@
 /**
- * Analogweb's core (default) implementations.<br/>
- * These instance are recognized by an application automatically.
+ * Analogweb's core (default) implementations. These instance are recognized by an application automatically.
  */
 package org.analogweb.core;

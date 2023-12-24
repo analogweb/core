@@ -1,11 +1,11 @@
 Analogweb Framework
 ===============================================
 
-[![Build Status](https://travis-ci.org/analogweb/core.svg?branch=master)](https://travis-ci.org/analogweb/core)
+[![Build Status](https://github.com/analogweb/core/actions/workflows/ci.yml/badge.svg)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.analogweb/analogweb-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.analogweb/analogweb-core)
 
 Analogweb is a tiny HTTP oriented framework.
-It depends only Java 8+.
+It depends only Java 11+.
 
 ## Example
 

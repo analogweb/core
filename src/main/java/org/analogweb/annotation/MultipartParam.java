@@ -16,10 +16,10 @@ import org.analogweb.util.StringUtils;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 @Resolver(MultipartParameterResolver.class)
 @Valiables
 public @interface MultipartParam {
 
-	String value() default StringUtils.EMPTY;
+    String value() default StringUtils.EMPTY;
 }

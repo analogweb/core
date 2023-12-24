@@ -26,18 +26,18 @@ import org.junit.rules.ExpectedException;
  */
 public class DefaultModulesConfigTest {
 
-	private RootModulesConfig config;
-	private ModulesBuilder modulesBuilder;
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    private RootModulesConfig config;
+    private ModulesBuilder modulesBuilder;
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Before
-	public void setUp() {
-		config = new RootModulesConfig();
-		modulesBuilder = mock(ModulesBuilder.class);
-	}
+    @Before
+    public void setUp() {
+        config = new RootModulesConfig();
+        modulesBuilder = mock(ModulesBuilder.class);
+    }
 
-	@Test
+    @Test
 	public void testPrepare() {
 		when(
 				modulesBuilder
@@ -84,9 +84,9 @@ public class DefaultModulesConfigTest {
 		config.prepare(modulesBuilder);
 	}
 
-	@Test
-	public void testPrepareWithNullBuilder() {
-		thrown.expect(AssertionFailureException.class);
-		config.prepare(null);
-	}
+    @Test
+    public void testPrepareWithNullBuilder() {
+        thrown.expect(AssertionFailureException.class);
+        config.prepare(null);
+    }
 }

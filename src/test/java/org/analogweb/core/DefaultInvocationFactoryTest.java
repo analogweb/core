@@ -32,52 +32,47 @@ import org.junit.rules.ExpectedException;
  */
 public class DefaultInvocationFactoryTest {
 
-	private ContainerAdaptor provider;
-	private InvocationMetadata metadata;
-	private RequestContext context;
-	private ResponseContext response;
-	private TypeMapperContext converters;
-	private List<ApplicationProcessor> processors;
-	private ApplicationProcessor processor;
-	private RequestValueResolvers handlers;
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    private ContainerAdaptor provider;
+    private InvocationMetadata metadata;
+    private RequestContext context;
+    private ResponseContext response;
+    private TypeMapperContext converters;
+    private List<ApplicationProcessor> processors;
+    private ApplicationProcessor processor;
+    private RequestValueResolvers handlers;
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		provider = mock(ContainerAdaptor.class);
-		metadata = mock(InvocationMetadata.class);
-		context = mock(RequestContext.class);
-		response = mock(ResponseContext.class);
-		converters = mock(TypeMapperContext.class);
-		processors = new ArrayList<ApplicationProcessor>();
-		processor = mock(ApplicationProcessor.class);
-		processors.add(processor);
-		handlers = mock(RequestValueResolvers.class);
-	}
+    /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        provider = mock(ContainerAdaptor.class);
+        metadata = mock(InvocationMetadata.class);
+        context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
+        converters = mock(TypeMapperContext.class);
+        processors = new ArrayList<ApplicationProcessor>();
+        processor = mock(ApplicationProcessor.class);
+        processors.add(processor);
+        handlers = mock(RequestValueResolvers.class);
+    }
 
-	@Test
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	public void testCreateViaProvider() {
-		StubResource instance = new StubResource();
-		when(provider.getInstanceOfType(StubResource.class)).thenReturn(
-				instance);
-		when(metadata.getInvocationClass()).thenReturn(
-				(Class) StubResource.class);
-		when(metadata.getMethodName()).thenReturn("doSomething");
-		when(metadata.getArgumentTypes()).thenReturn(
-				new Class<?>[]{String.class});
-		DefaultInvocationFactory factory = new DefaultInvocationFactory();
-		Invocation invocation = factory.createInvocation(provider, metadata,
-				context, response, converters, handlers);
-		assertThat((StubResource) invocation.getInvocationInstance(),
-				is(sameInstance(instance)));
-	}
+    @Test
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void testCreateViaProvider() {
+        StubResource instance = new StubResource();
+        when(provider.getInstanceOfType(StubResource.class)).thenReturn(instance);
+        when(metadata.getInvocationClass()).thenReturn((Class) StubResource.class);
+        when(metadata.getMethodName()).thenReturn("doSomething");
+        when(metadata.getArgumentTypes()).thenReturn(new Class<?>[] { String.class });
+        DefaultInvocationFactory factory = new DefaultInvocationFactory();
+        Invocation invocation = factory.createInvocation(provider, metadata, context, response, converters, handlers);
+        assertThat((StubResource) invocation.getInvocationInstance(), is(sameInstance(instance)));
+    }
 
-	@Test
+    @Test
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void testCreateContainerProvidesNullInstance() {
 		when(provider.getInstanceOfType(StubResource.class)).thenReturn(null);
@@ -92,72 +87,68 @@ public class DefaultInvocationFactoryTest {
 		assertThat(invocation.getInvocationInstance(), is(not(nullValue())));
 	}
 
-	@Test
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void testCreateUnInstanticatable() {
-		thrown.expect(new NoDescribeMatcher<UnresolvableInvocationException>() {
+    @Test
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void testCreateUnInstanticatable() {
+        thrown.expect(new NoDescribeMatcher<UnresolvableInvocationException>() {
 
-			@Override
-			public boolean matches(Object arg0) {
-				if (arg0 instanceof UnresolvableInvocationException) {
-					UnresolvableInvocationException ex = (UnresolvableInvocationException) arg0;
-					InvocationMetadata actual = ex.getSourceMetadata();
-					assertThat(actual, is(metadata));
-					return true;
-				}
-				return false;
-			}
-		});
-		when(provider.getInstanceOfType(StubResourceUnInstanticatable.class))
-				.thenReturn(null);
-		when(metadata.getInvocationClass()).thenReturn(
-				(Class) StubResourceUnInstanticatable.class);
-		when(metadata.getMethodName()).thenReturn("doSomething");
-		when(metadata.getArgumentTypes()).thenReturn(
-				new Class<?>[]{String.class});
-		DefaultInvocationFactory factory = new DefaultInvocationFactory();
-		factory.createInvocation(provider, metadata, context, response,
-				converters, handlers);
-	}
+            @Override
+            public boolean matches(Object arg0) {
+                if (arg0 instanceof UnresolvableInvocationException) {
+                    UnresolvableInvocationException ex = (UnresolvableInvocationException) arg0;
+                    InvocationMetadata actual = ex.getSourceMetadata();
+                    assertThat(actual, is(metadata));
+                    return true;
+                }
+                return false;
+            }
+        });
+        when(provider.getInstanceOfType(StubResourceUnInstanticatable.class)).thenReturn(null);
+        when(metadata.getInvocationClass()).thenReturn((Class) StubResourceUnInstanticatable.class);
+        when(metadata.getMethodName()).thenReturn("doSomething");
+        when(metadata.getArgumentTypes()).thenReturn(new Class<?>[] { String.class });
+        DefaultInvocationFactory factory = new DefaultInvocationFactory();
+        factory.createInvocation(provider, metadata, context, response, converters, handlers);
+    }
 
-	@Route
-	public static class StubResource {
+    @Route
+    public static class StubResource {
 
-		@Route
-		public String doSomething(@As("foo") String foo) {
-			return foo + " is anything!!";
-		}
-	}
+        @Route
+        public String doSomething(@As("foo") String foo) {
+            return foo + " is anything!!";
+        }
+    }
 
-	@Route
-	public static class StubResourceWithConstractor {
+    @Route
+    public static class StubResourceWithConstractor {
 
-		private final String value;
+        private final String value;
 
-		public StubResourceWithConstractor(@As("baa") String value) {
-			this.value = value;
-		}
+        public StubResourceWithConstractor(@As("baa") String value) {
+            this.value = value;
+        }
 
-		public String getValue() {
-			return this.value;
-		}
+        public String getValue() {
+            return this.value;
+        }
 
-		@Route
-		public String doSomething(@As("foo") String foo) {
-			return foo + " is anything!!";
-		}
-	}
+        @Route
+        public String doSomething(@As("foo") String foo) {
+            return foo + " is anything!!";
+        }
+    }
 
-	@Route
-	public static class StubResourceUnInstanticatable {
+    @Route
+    public static class StubResourceUnInstanticatable {
 
-		private StubResourceUnInstanticatable() {
-			// nop.
-		}
+        private StubResourceUnInstanticatable() {
+            // nop.
+        }
 
-		@Route
-		public String doSomething(@As("foo") String foo) {
-			return foo + " is anything!!";
-		}
-	}
+        @Route
+        public String doSomething(@As("foo") String foo) {
+            return foo + " is anything!!";
+        }
+    }
 }

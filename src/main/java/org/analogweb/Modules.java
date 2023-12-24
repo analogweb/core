@@ -4,39 +4,38 @@ import java.util.List;
 
 /**
  * All modules that compose an application.
- * 
+ *
  * @author snowgoose
  */
 public interface Modules extends Disposable, ResponseFormatterFinder {
 
-	List<InvocationMetadataFactory> getInvocationMetadataFactories();
+    List<InvocationMetadataFactory> getInvocationMetadataFactories();
 
-	List<InvocationMetadataFinder> getInvocationMetadataFinders();
+    List<InvocationMetadataFinder> getInvocationMetadataFinders();
 
-	List<ExceptionMapper> getExceptionMappers();
+    List<ExceptionMapper> getExceptionMappers();
 
-	Invoker getInvoker();
+    Invoker getInvoker();
 
-	ContainerAdaptor getInvocationInstanceProvider();
+    ContainerAdaptor getInvocationInstanceProvider();
 
-	List<ApplicationProcessor> getApplicationProcessors();
+    List<ApplicationProcessor> getApplicationProcessors();
 
-	List<InvocationInterceptor> getInvocationInterceptors();
+    List<InvocationInterceptor> getInvocationInterceptors();
 
-	InvocationFactory getInvocationFactory();
+    InvocationFactory getInvocationFactory();
 
-	RenderableResolver getResponseResolver();
+    RenderableResolver getResponseResolver();
 
-	ResponseHandler getResponseHandler();
+    ResponseHandler getResponseHandler();
 
-	ExceptionHandler getExceptionHandler();
+    ExceptionHandler getExceptionHandler();
 
-	TypeMapperContext getTypeMapperContext();
+    TypeMapperContext getTypeMapperContext();
 
-	ContainerAdaptor getModulesContainerAdaptor();
+    ContainerAdaptor getModulesContainerAdaptor();
 
-	RequestValueResolvers getRequestValueResolvers();
+    RequestValueResolvers getRequestValueResolvers();
 
-	ResponseFormatter findResponseFormatter(
-			Class<? extends Renderable> mapToResponse);
+    ResponseFormatter findResponseFormatter(Class<? extends Renderable> mapToResponse);
 }

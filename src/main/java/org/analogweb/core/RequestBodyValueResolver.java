@@ -13,39 +13,36 @@ import org.analogweb.util.logging.Logs;
 import org.analogweb.util.logging.Markers;
 
 /**
- * Resolve request body as {@link InputStream} or {@link String}. returns
- * {@code null} when request body not readable.
- * 
+ * Resolve request body as {@link InputStream} or {@link String}. returns {@code null} when request body not readable.
+ *
  * @see RequestContext#getRequestBody()
+ *
  * @author snowgoose
  */
 public class RequestBodyValueResolver implements RequestValueResolver {
 
-	private Log log = Logs.getLog(RequestBodyValueResolver.class);
+    private Log log = Logs.getLog(RequestBodyValueResolver.class);
 
-	@Override
-	public Object resolveValue(RequestContext requestContext,
-			InvocationMetadata metadata, String query, Class<?> type,
-			Annotation[] annotations) {
-		if (type == null) {
-			return null;
-		}
-		try {
-			if (InputStream.class.isAssignableFrom(type)) {
-				return requestContext.getRequestBody().asInputStream();
-			} else if (String.class.isAssignableFrom(type)) {
-				return requestContext.getRequestBody().asString(
-						Charset.defaultCharset());
-			}
-			log.log(Markers.BOOT_APPLICATION, "WV000001",
-					RequestBodyValueResolver.class.getCanonicalName(),
-					type.getCanonicalName());
-			throw new UnresolvableValueException(this, type, query);
-		} catch (IOException e) {
-			throw new ApplicationRuntimeException(e) {
+    @Override
+    public Object resolveValue(RequestContext requestContext, InvocationMetadata metadata, String query, Class<?> type,
+            Annotation[] annotations) {
+        if (type == null) {
+            return null;
+        }
+        try {
+            if (InputStream.class.isAssignableFrom(type)) {
+                return requestContext.getRequestBody().asInputStream();
+            } else if (String.class.isAssignableFrom(type)) {
+                return requestContext.getRequestBody().asString(Charset.defaultCharset());
+            }
+            log.log(Markers.BOOT_APPLICATION, "WV000001", RequestBodyValueResolver.class.getCanonicalName(),
+                    type.getCanonicalName());
+            throw new UnresolvableValueException(this, type, query);
+        } catch (IOException e) {
+            throw new ApplicationRuntimeException(e) {
 
-				private static final long serialVersionUID = 1L;
-			};
-		}
-	}
+                private static final long serialVersionUID = 1L;
+            };
+        }
+    }
 }

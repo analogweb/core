@@ -6,11 +6,10 @@ import org.analogweb.core.response.HttpStatus;
  * @author snowgooseyk
  */
 public class InvalidRequestFormatExceptionMapper
-		extends
-			TypeAssignableFromExceptionMapper<InvalidRequestFormatException> {
+        extends TypeAssignableFromExceptionMapper<InvalidRequestFormatException> {
 
-	@Override
-	public Object mapToResult(Throwable throwable) {
-		return HttpStatus.BAD_REQUEST;
-	}
+    @Override
+    public Object mapToResult(Throwable throwable) {
+        return HttpStatus.BAD_REQUEST;
+    }
 }

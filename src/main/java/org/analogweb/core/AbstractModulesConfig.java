@@ -9,15 +9,14 @@ import org.analogweb.ModulesConfig;
  */
 public abstract class AbstractModulesConfig implements ModulesConfig {
 
-	@Override
-	public boolean equals(Object other) {
-		return other instanceof ModulesConfig
-				&& other.getClass().getCanonicalName()
-						.equals(getClass().getCanonicalName());
-	}
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof ModulesConfig
+                && other.getClass().getCanonicalName().equals(getClass().getCanonicalName());
+    }
 
-	@Override
-	public int hashCode() {
-		return getClass().getCanonicalName().hashCode();
-	}
+    @Override
+    public int hashCode() {
+        return getClass().getCanonicalName().hashCode();
+    }
 }

@@ -13,89 +13,89 @@ import org.analogweb.util.Assertion;
  */
 public class RequestContextWrapper implements RequestContext {
 
-	private RequestContext original;
+    private RequestContext original;
 
-	public RequestContextWrapper(RequestContext context) {
-		Assertion.notNull(context, RequestContext.class.getName());
-		this.original = context;
-	}
+    public RequestContextWrapper(RequestContext context) {
+        Assertion.notNull(context, RequestContext.class.getName());
+        this.original = context;
+    }
 
-	public RequestContext getOriginalRequestContext() {
-		return this.original;
-	}
+    public RequestContext getOriginalRequestContext() {
+        return this.original;
+    }
 
-	@Override
-	public Cookies getCookies() {
-		return getOriginalRequestContext().getCookies();
-	}
+    @Override
+    public Cookies getCookies() {
+        return getOriginalRequestContext().getCookies();
+    }
 
-	@Override
-	public Headers getRequestHeaders() {
-		return getOriginalRequestContext().getRequestHeaders();
-	}
+    @Override
+    public Headers getRequestHeaders() {
+        return getOriginalRequestContext().getRequestHeaders();
+    }
 
-	@Override
-	public Parameters getFormParameters() {
-		return getOriginalRequestContext().getFormParameters();
-	}
+    @Override
+    public Parameters getFormParameters() {
+        return getOriginalRequestContext().getFormParameters();
+    }
 
-	@Override
-	public Parameters getQueryParameters() {
-		return getOriginalRequestContext().getQueryParameters();
-	}
+    @Override
+    public Parameters getQueryParameters() {
+        return getOriginalRequestContext().getQueryParameters();
+    }
 
-	@Override
-	public Parameters getMatrixParameters() {
-		return getOriginalRequestContext().getMatrixParameters();
-	}
+    @Override
+    public Parameters getMatrixParameters() {
+        return getOriginalRequestContext().getMatrixParameters();
+    }
 
-	@Override
-	public ReadableBuffer getRequestBody() throws IOException {
-		return getOriginalRequestContext().getRequestBody();
-	}
+    @Override
+    public ReadableBuffer getRequestBody() throws IOException {
+        return getOriginalRequestContext().getRequestBody();
+    }
 
-	@Override
-	public MediaType getContentType() {
-		return getOriginalRequestContext().getContentType();
-	}
+    @Override
+    public MediaType getContentType() {
+        return getOriginalRequestContext().getContentType();
+    }
 
-	@Override
-	public RequestPath getRequestPath() {
-		return getOriginalRequestContext().getRequestPath();
-	}
+    @Override
+    public RequestPath getRequestPath() {
+        return getOriginalRequestContext().getRequestPath();
+    }
 
-	@Override
-	public Locale getLocale() {
-		return getOriginalRequestContext().getLocale();
-	}
+    @Override
+    public Locale getLocale() {
+        return getOriginalRequestContext().getLocale();
+    }
 
-	@Override
-	public List<Locale> getLocales() {
-		return getOriginalRequestContext().getLocales();
-	}
+    @Override
+    public List<Locale> getLocales() {
+        return getOriginalRequestContext().getLocales();
+    }
 
-	@Override
-	public long getContentLength() {
-		return getOriginalRequestContext().getContentLength();
-	}
+    @Override
+    public long getContentLength() {
+        return getOriginalRequestContext().getContentLength();
+    }
 
-	@Override
-	public String getCharacterEncoding() {
-		return getOriginalRequestContext().getCharacterEncoding();
-	}
+    @Override
+    public String getCharacterEncoding() {
+        return getOriginalRequestContext().getCharacterEncoding();
+    }
 
-	@Override
-	public String getRequestMethod() {
-		return getOriginalRequestContext().getRequestMethod();
-	}
+    @Override
+    public String getRequestMethod() {
+        return getOriginalRequestContext().getRequestMethod();
+    }
 
-	@Override
-	public <T> T getAttribute(String name) {
-		return getOriginalRequestContext().getAttribute(name);
-	}
+    @Override
+    public <T> T getAttribute(String name) {
+        return getOriginalRequestContext().getAttribute(name);
+    }
 
-	@Override
-	public <T> void setAttribute(String name, T value) {
-		getOriginalRequestContext().setAttribute(name, value);
-	}
+    @Override
+    public <T> void setAttribute(String name, T value) {
+        getOriginalRequestContext().setAttribute(name, value);
+    }
 }

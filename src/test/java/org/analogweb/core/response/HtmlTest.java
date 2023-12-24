@@ -12,16 +12,15 @@ import org.junit.rules.ExpectedException;
 
 public class HtmlTest {
 
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Test
-	public void test() throws Exception {
-		thrown.expect(UnsupportedOperationException.class);
-		Html html = Html
-				.as("pathOfHtmlTemplate", new HashMap<String, Object>());
-		RequestContext context = mock(RequestContext.class);
-		ResponseContext response = mock(ResponseContext.class);
-		html.render(context, response);
-	}
+    @Test
+    public void test() throws Exception {
+        thrown.expect(UnsupportedOperationException.class);
+        Html html = Html.as("pathOfHtmlTemplate", new HashMap<String, Object>());
+        RequestContext context = mock(RequestContext.class);
+        ResponseContext response = mock(ResponseContext.class);
+        html.render(context, response);
+    }
 }

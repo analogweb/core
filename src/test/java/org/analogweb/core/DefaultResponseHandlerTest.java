@@ -18,35 +18,33 @@ import org.junit.rules.ExpectedException;
 
 public class DefaultResponseHandlerTest {
 
-	private DefaultResponseHandler handler;
-	private RenderableResolver resolver;
-	private InvocationMetadata metadata;
-	private RequestContext context;
-	private ResponseContext response;
-	private ExceptionHandler exceptionHandler;
-	private ResponseFormatterFinder finder;
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+    private DefaultResponseHandler handler;
+    private RenderableResolver resolver;
+    private InvocationMetadata metadata;
+    private RequestContext context;
+    private ResponseContext response;
+    private ExceptionHandler exceptionHandler;
+    private ResponseFormatterFinder finder;
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
-	@Before
-	public void setUp() throws Exception {
-		handler = new DefaultResponseHandler();
-		resolver = mock(RenderableResolver.class);
-		metadata = mock(InvocationMetadata.class);
-		context = mock(RequestContext.class);
-		response = mock(ResponseContext.class);
-		exceptionHandler = mock(ExceptionHandler.class);
-		finder = mock(ResponseFormatterFinder.class);
-	}
+    @Before
+    public void setUp() throws Exception {
+        handler = new DefaultResponseHandler();
+        resolver = mock(RenderableResolver.class);
+        metadata = mock(InvocationMetadata.class);
+        context = mock(RequestContext.class);
+        response = mock(ResponseContext.class);
+        exceptionHandler = mock(ExceptionHandler.class);
+        finder = mock(ResponseFormatterFinder.class);
+    }
 
-	@Test
-	public void testHandleResult() throws Exception {
-		Renderable result = mock(Renderable.class);
-		when(resolver.resolve(result, metadata, context, response)).thenReturn(
-				result);
-		handler.handleResult(result, metadata, resolver, context, response,
-				exceptionHandler, finder);
-		verify(result).render(context, response);
-	}
+    @Test
+    public void testHandleResult() throws Exception {
+        Renderable result = mock(Renderable.class);
+        when(resolver.resolve(result, metadata, context, response)).thenReturn(result);
+        handler.handleResult(result, metadata, resolver, context, response, exceptionHandler, finder);
+        verify(result).render(context, response);
+    }
 
 }

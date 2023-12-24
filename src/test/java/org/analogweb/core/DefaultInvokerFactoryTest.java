@@ -13,11 +13,11 @@ import org.junit.Test;
 
 public class DefaultInvokerFactoryTest {
 
-	@Test
-	public void test() {
-		List<InvocationInterceptor> interceptors = new ArrayList<InvocationInterceptor>();
-		DefaultInvokerFactory factory = new DefaultInvokerFactory();
-		Invoker invoker = factory.createInvoker(interceptors);
-		assertThat(invoker, is(instanceOf(DefaultInvoker.class)));
-	}
+    @Test
+    public void test() {
+        List<InvocationInterceptor> interceptors = new ArrayList<InvocationInterceptor>();
+        DefaultInvokerFactory factory = new DefaultInvokerFactory();
+        Invoker invoker = factory.createInvoker(interceptors);
+        assertThat(invoker, is(instanceOf(DefaultInvoker.class)));
+    }
 }

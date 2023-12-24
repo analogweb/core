@@ -17,23 +17,23 @@ import org.junit.Test;
  */
 public class AbstractAttributesHandlerTest {
 
-	private AbstractAttributesHandler handler;
-	private RequestContext requestContext;
-	private InvocationMetadata metadata;
+    private AbstractAttributesHandler handler;
+    private RequestContext requestContext;
+    private InvocationMetadata metadata;
 
-	@Before
-	public void setUp() throws Exception {
-		handler = new AbstractAttributesHandler() {
-		};
-		requestContext = mock(RequestContext.class);
-		metadata = mock(InvocationMetadata.class);
-	}
+    @Before
+    public void setUp() throws Exception {
+        handler = new AbstractAttributesHandler() {
+        };
+        requestContext = mock(RequestContext.class);
+        metadata = mock(InvocationMetadata.class);
+    }
 
-	@Test
-	public void testNop() {
-		assertThat(handler.resolveValue(requestContext, metadata, "foo",
-				String.class, new Annotation[0]), is(nullValue()));
-		handler.putAttributeValue(requestContext, "foo", new Object());
-		handler.removeAttribute(requestContext, "foo");
-	}
+    @Test
+    public void testNop() {
+        assertThat(handler.resolveValue(requestContext, metadata, "foo", String.class, new Annotation[0]),
+                is(nullValue()));
+        handler.putAttributeValue(requestContext, "foo", new Object());
+        handler.removeAttribute(requestContext, "foo");
+    }
 }

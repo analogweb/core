@@ -6,38 +6,38 @@ import java.util.Locale;
 
 /**
  * Context per request.
- * 
+ *
  * @author snowgoose
  */
 public interface RequestContext {
 
-	Cookies getCookies();
+    Cookies getCookies();
 
-	Headers getRequestHeaders();
+    Headers getRequestHeaders();
 
-	Parameters getFormParameters();
+    Parameters getFormParameters();
 
-	Parameters getQueryParameters();
+    Parameters getQueryParameters();
 
-	Parameters getMatrixParameters();
+    Parameters getMatrixParameters();
 
-	ReadableBuffer getRequestBody() throws IOException;
+    ReadableBuffer getRequestBody() throws IOException;
 
-	MediaType getContentType();
+    MediaType getContentType();
 
-	RequestPath getRequestPath();
+    RequestPath getRequestPath();
 
-	Locale getLocale();
+    Locale getLocale();
 
-	List<Locale> getLocales();
+    List<Locale> getLocales();
 
-	long getContentLength();
+    long getContentLength();
 
-	String getCharacterEncoding();
+    String getCharacterEncoding();
 
-	String getRequestMethod();
+    String getRequestMethod();
 
-	<T> T getAttribute(String name);
+    <T> T getAttribute(String name);
 
-	<T> void setAttribute(String name, T value);
+    <T> void setAttribute(String name, T value);
 }

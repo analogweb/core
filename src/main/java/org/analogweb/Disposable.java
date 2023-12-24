@@ -5,8 +5,8 @@ package org.analogweb;
  */
 public interface Disposable {
 
-	/**
-	 * Dispose all the states.
-	 */
-	void dispose();
+    /**
+     * Dispose all the states.
+     */
+    void dispose();
 }

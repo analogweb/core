@@ -5,18 +5,16 @@ import org.analogweb.InvocationMetadata;
 /**
  * @author snowgoose
  */
-public class UnresolvableInvocationException
-		extends
-			ApplicationRuntimeException {
+public class UnresolvableInvocationException extends ApplicationRuntimeException {
 
-	private static final long serialVersionUID = -7930360311054396569L;
-	private InvocationMetadata sourceMetadata;
+    private static final long serialVersionUID = -7930360311054396569L;
+    private InvocationMetadata sourceMetadata;
 
-	public UnresolvableInvocationException(InvocationMetadata source) {
-		this.sourceMetadata = source;
-	}
+    public UnresolvableInvocationException(InvocationMetadata source) {
+        this.sourceMetadata = source;
+    }
 
-	public InvocationMetadata getSourceMetadata() {
-		return this.sourceMetadata;
-	}
+    public InvocationMetadata getSourceMetadata() {
+        return this.sourceMetadata;
+    }
 }

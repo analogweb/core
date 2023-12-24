@@ -5,5 +5,5 @@ package org.analogweb;
  */
 public interface RenderableHolder {
 
-	Renderable getRenderable();
+    Renderable getRenderable();
 }
